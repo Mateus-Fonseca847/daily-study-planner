@@ -19,7 +19,8 @@
     "e2e": "pnpm --filter @daily/web e2e",
     "visual:app": "pnpm --filter @daily/web visual:app",
     "visual:focus": "pnpm --filter @daily/web visual:focus",
-    "visual:stats": "pnpm --filter @daily/web visual:stats"
+    "visual:stats": "pnpm --filter @daily/web visual:stats",
+    "visual:habits": "pnpm --filter @daily/web visual:habits"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

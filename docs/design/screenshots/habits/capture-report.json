@@ -1,0 +1,32 @@
+[
+  {
+    "page": "habitos-pagina",
+    "viewport": "1920x1080",
+    "overflowX": false
+  },
+  {
+    "page": "estatisticas-habitos",
+    "viewport": "1920x1080",
+    "overflowX": false
+  },
+  {
+    "page": "habitos-pagina",
+    "viewport": "1440x900",
+    "overflowX": false
+  },
+  {
+    "page": "estatisticas-habitos",
+    "viewport": "1440x900",
+    "overflowX": false
+  },
+  {
+    "page": "habitos-pagina",
+    "viewport": "1280x720",
+    "overflowX": false
+  },
+  {
+    "page": "estatisticas-habitos",
+    "viewport": "1280x720",
+    "overflowX": false
+  }
+]

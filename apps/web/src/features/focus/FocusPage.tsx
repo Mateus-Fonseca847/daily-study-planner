@@ -143,14 +143,11 @@ export function FocusPage() {
             </>
           ) : (
             <>
-              <div className="flex items-baseline justify-center gap-2">
-                <DurationInput
-                  seconds={seconds}
-                  onCommit={commitSeconds}
-                  onNotice={setAnnouncement}
-                />
-                <span aria-hidden className="inline-block min-w-focus-frac" />
-              </div>
+              <DurationInput
+                seconds={seconds}
+                onCommit={commitSeconds}
+                onNotice={setAnnouncement}
+              />
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <FocusPill
                   aria-pressed={lockChoice}

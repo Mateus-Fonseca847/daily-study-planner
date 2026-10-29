@@ -7,7 +7,7 @@ import { restanteMs } from '../../lib/focus/session';
 interface DigitsProps {
   text: string;
   label: string;
-  /** Milésimos ao lado dos dígitos (só enquanto roda); o espaço é sempre reservado. */
+  /** Milésimos ao lado dos dígitos (só enquanto roda); posição absoluta ao lado, sem deslocar os dígitos. */
   fraction?: string;
   blink?: boolean;
 }
@@ -15,7 +15,7 @@ interface DigitsProps {
 /** Dígitos grandes (somente leitura) com a fração em cinza no baseline. */
 export function Digits({ text, label, fraction, blink }: DigitsProps) {
   return (
-    <div className="flex items-baseline justify-center gap-2">
+    <div className="flex items-baseline justify-center">
       <span
         role="timer"
         aria-label={label}
@@ -28,7 +28,7 @@ export function Digits({ text, label, fraction, blink }: DigitsProps) {
       </span>
       <span
         aria-hidden
-        className="inline-block min-w-focus-frac text-left text-focus-frac font-medium tabular-nums text-frac"
+        className="relative left-2 inline-block w-0 overflow-visible text-left text-focus-frac font-medium whitespace-nowrap tabular-nums text-frac"
       >
         {fraction}
       </span>
