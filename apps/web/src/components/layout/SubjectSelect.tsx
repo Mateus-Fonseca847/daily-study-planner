@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import { SUBJECTS } from '../../mocks/subjects';
+import { useData } from '../../lib/data/app-store';
 import { Avatar } from '../ui/Avatar';
 
 interface SubjectSelectProps {
@@ -10,7 +10,8 @@ interface SubjectSelectProps {
 const ALL = { id: 'all', name: 'Todas as matérias' };
 
 export function SubjectSelect({ value, onChange }: SubjectSelectProps) {
-  const options = [ALL, ...SUBJECTS];
+  const subjects = useData((s) => s.subjects);
+  const options = [ALL, ...subjects];
   const current = options.find((o) => o.id === value) ?? ALL;
   return (
     <div className="flex items-center gap-2">
