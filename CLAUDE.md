@@ -39,6 +39,7 @@ pnpm e2e          # Playwright (1ª vez: pnpm --filter @daily/web exec playwrigh
 pnpm visual:capture  # screenshots + comparação com a referência em docs/design/screenshots/
 pnpm visual:stats    # capturas da página de Estatísticas (docs/design/screenshots/stats/)
 pnpm visual:habits   # capturas de /habitos, modal, popover e Estatísticas (docs/design/screenshots/habits/)
+pnpm visual:views    # capturas das visões do calendário (docs/design/screenshots/views/)
 pnpm format       # prettier --write
 ```
 
@@ -56,6 +57,7 @@ como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é seque
 - Mudou o formato salvo? Suba `DATA_VERSION`, escreva a migração em `envelope.ts` e atualize o histórico em `docs/data-model.md`.
 - Modo Foco: lógica pura em `lib/focus` (`session.ts` = máquina de estados por timestamps, `hold.ts`, `time-input.ts`, `format.ts`, `top-days.ts`); efeitos em `controller.ts`; a sessão ativa fica numa chave própria (`daily:v2:focus`), fora do backup. O relógio é injetável: as funções recebem `nowMs`.
 - Hábitos: lógica pura em `lib/habits` (`repeat.ts` = repetição reaproveitável, `engine.ts`, `matrix.ts`, `aggregate.ts`, `edit.ts`, `form.ts`); fontes automáticas leem água, foco e blocos via `HabitContext`. Editar repetição/meta/horário cria uma **regra nova a partir de hoje** (nunca reescreva o passado). As classes `habit-<cor>` precisam aparecer **literalmente** no código (`HABIT_COLOR_CLASS`).
+- Calendário: a visão e a data vivem na URL (`?visao=dia|semana|mes|ano&data=yyyy-MM-dd`, `features/calendar/lib/views.ts`); a grade de horas (`TimeGrid`) posiciona blocos por **porcentagem** do intervalo, e o layout de simultâneos é a função pura `layoutSobreposicoes` (`lib/time-layout.ts`). Nunca monte classes do Tailwind por template: use mapas literais (`HABIT_COLOR_CLASS`, `DENSITY_CLASS`) ou variáveis CSS de tokens.
 - Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
 
 ## Fixture visual

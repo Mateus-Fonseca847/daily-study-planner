@@ -5,6 +5,18 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Adicionado (Prompt 06 — visões do calendário)
+
+- O calendário tem **Dia | Semana | Mês | Ano**. A visão e a data ficam na URL (`/calendario?visao=semana&data=2026-10-29`; valores inválidos caem em Mês + hoje) e o botão voltar do navegador as respeita. O botão "Hoje" saiu do segmentado e virou uma pílula ao lado das setas (`‹ ›  Hoje  título do período`); as setas andam por dia, semana, mês ou ano.
+- **Grade de horas** (`TimeGrid`) para Dia e Semana: 06h–24h expandida quando há eventos fora dela, blocos posicionados por **porcentagem** do intervalo, duração visual mínima de 30 min, corte na meia-noite, linha de "agora" e rolagem inicial na hora atual (ou 07h). Eventos simultâneos ficam lado a lado (`layoutSobreposicoes`). Blocos mostram 3, 2 ou 1 linha conforme a altura, com tooltip. Clicar num espaço vazio abre o formulário já com data e horário (arredondado para 30 min).
+- **Semana:** faixa "Hábitos" fixa com pílulas dos hábitos sem horário (marca hábito manual de hoje e dos dias passados; quantidade mostra valor/meta; automáticos são só leitura) e blocos tracejados para hábitos com horário. **Dia ("Hoje"):** grade larga e painel com "Hábitos do dia", "Próxima prova" e "Tarefas do dia". **Ano:** 12 mini-meses com densidade de eventos (0, 1, 2, 3+), marcador de prova, hoje com contorno e navegação por teclado; o dia abre a visão Dia e o nome do mês, a visão Mês.
+- Atalhos `←` `→` (período), `T` (hoje) e `D` `S` `M` `A` (visão), desativados em campos de texto, com modal aberto e com o app travado; `aria-keyshortcuts` e dica no tooltip.
+- Fixture `?fixture=views`, `pnpm visual:views`, tokens e a seção "Visões do calendário" no design system.
+
+### Alterado (Prompt 06)
+
+- A auditoria de contraste passou a cobrir o calendário; corrigidos o texto "valor/meta" das pílulas e o nível 2 da densidade do Ano.
+
 ### Adicionado (Prompt 05 — hábitos recorrentes)
 
 - Página `/habitos` e item "Hábitos" na sidebar (contador de pendentes hoje; oculto em zero, como o de Tarefas): um cartão por hábito, com ícone e cor, resumo da repetição, sequência, melhor sequência, taxa de 90 dias, controle de hoje, menu (Editar, Duplicar, Arquivar, Excluir com "Desfazer") e o **heatmap de contribuições** (semanas em colunas, rótulos de mês e dia, legenda, hoje com contorno, teclado e `aria-label` por dia, tooltip, tabela oculta por mês, rolagem horizontal abaixo de 1100 px).

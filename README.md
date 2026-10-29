@@ -47,7 +47,7 @@ O projeto está em desenvolvimento, organizado em marcos.
 
 ### Já disponíveis
 
-- [x] Calendário mensal com navegação por mês e ano e botão "Hoje"
+- [x] **Calendário com 4 visões — Dia, Semana, Mês e Ano** (`/calendario?visao=semana&data=2026-10-29`): visão e data na URL, botão "Hoje" ao lado das setas (volta ao período atual na visão em que se está), atalhos de teclado (`←` `→` `T` `D` `S` `M` `A`)
 - [x] Dia atual destacado e dias de outros meses esmaecidos
 - [x] Chips de evento por tipo (prova, estudo, entrega, revisão, especial) com "+N mais" em dias cheios
 - [x] Popover de evento com data, horário, matéria, tipo e status
@@ -72,7 +72,6 @@ O projeto está em desenvolvimento, organizado em marcos.
 
 - [ ] Autenticação (e-mail/senha ou Google)
 - [ ] Sincronização com back-end
-- [ ] Visões Semana e Ano
 - [ ] Notificações e lembretes periódicos
 - [ ] PWA instalável (manifest e service worker)
 - [ ] Atalhos de teclado
@@ -220,7 +219,8 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - Com várias abas abertas, **a última escrita vence** (o evento `storage` recarrega a aba que não gravou; não há mesclagem de edições simultâneas)
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
 - Busca e notificações ainda são apenas visuais
-- Visões Semana e Ano são placeholders; Atalhos, FAQ e Convidar amigos são páginas placeholder
+- Atalhos, FAQ e Convidar amigos são páginas placeholder
+- Calendário: nas visões Dia e Semana não dá para arrastar nem redimensionar eventos, não há eventos de vários dias (os que cruzam a meia-noite são cortados em cada dia) nem recorrência de eventos; clicar num espaço vazio é uma ação de mouse (o teclado cria pelo botão do dia no cabeçalho da Semana e pelo "Nova Prova")
 - Hábitos: os registros ficam só neste navegador; correções retroativas só para hábitos manuais e até 366 dias atrás; a regra de repetição ainda não vale para eventos do calendário (recorrência de eventos fica para depois); mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
 - Estatísticas: a água é registrada só neste navegador; as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas

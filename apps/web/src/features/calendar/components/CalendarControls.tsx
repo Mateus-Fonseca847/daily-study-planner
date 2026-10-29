@@ -70,6 +70,7 @@ export function CalendarControls({
         <SegmentedControl
           aria-label="Visualização do calendário"
           options={VIEW_OPTIONS}
+          compact
           value={view}
           onChange={onViewChange}
         />

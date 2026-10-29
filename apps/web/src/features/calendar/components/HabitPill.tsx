@@ -22,14 +22,19 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
   const Icon = HABIT_ICON_COMPONENT[habit.icon];
   const done = isDone(habit, date, ctx);
   const state = stateText(dayState(habit, date, ctx));
+  // Na pílula, só “valor/meta” (a unidade fica no rótulo e no tooltip).
+  const value = valueOn(habit, date, ctx);
+  const target = targetOn(habit, date);
   const quantity =
+    habit.type === 'quantidade' ? `${formatAmount(value, '')}/${formatAmount(target, '')}` : null;
+  const quantityLong =
     habit.type === 'quantidade'
-      ? `${formatAmount(valueOn(habit, date, ctx), habit.unit)}/${formatAmount(targetOn(habit, date), habit.unit)}`
+      ? `${formatAmount(value, habit.unit)}/${formatAmount(target, habit.unit)}`
       : null;
   const interactive = habit.source === 'manual' && date <= ctx.today;
-  const label = `${habit.name}: ${state}${quantity ? ` (${quantity})` : ''}`;
+  const label = `${habit.name}: ${state}${quantityLong ? ` (${quantityLong})` : ''}`;
   const className = cn(
-    'inline-flex h-habit-pill max-w-full items-center gap-1 rounded-full px-2 text-2xs font-medium',
+    'flex h-habit-pill w-full items-center gap-1 rounded-full px-2 text-2xs font-medium',
     HABIT_COLOR_CLASS[habit.color],
     done ? 'habit-bg text-accent-fg' : 'habit-bg-soft text-fg',
     interactive && 'hover:brightness-125',
@@ -41,7 +46,7 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
       ) : (
         <Icon aria-hidden strokeWidth={1.5} className="habit-text size-icon-sm shrink-0" />
       )}
-      <span className="truncate">{habit.name}</span>
+      <span className="min-w-0 flex-1 truncate">{habit.name}</span>
       {quantity && <span className="shrink-0 tabular-nums">{quantity}</span>}
     </>
   );

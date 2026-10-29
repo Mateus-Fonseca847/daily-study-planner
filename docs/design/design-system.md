@@ -1,4 +1,4 @@
-# Daily — Design System (v0.8)
+# Daily — Design System (v0.9)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -393,3 +393,12 @@ O calendário tem quatro visões: **Dia | Semana | Mês | Ano**. O botão “Hoj
 - **Dia:** uma coluna larga e, à direita, o painel de `--ds-day-panel-w` (320 px) com “Hábitos do dia”, “Próxima prova” e “Tarefas do dia”; abaixo de 1100 px o painel vai para cima da grade.
 - **Ano:** 12 mini-meses (cabeçalho com a inicial do dia da semana). Colunas: 4×3 a partir de 1600 px, 3×4 a partir de 1100 px e 2×6 abaixo (`--ds-year-gap` entre eles); células de `--ds-year-day` (24 px). Densidade por dia em 4 níveis (`--ds-density-0..3`: 0, 1, 2 e 3 ou mais eventos), marcador vermelho (`--ds-year-exam-dot`, 5 px) nos dias com prova e o hoje com contorno amarelo. Legenda “Menos … Mais”.
 - **Atalhos:** `←`/`→` período anterior e seguinte, `T` hoje, `D` `S` `M` `A` trocam a visão; desativados com foco em campo de texto, com modal aberto e com o app travado. Cada botão tem `aria-keyshortcuts` e a dica no `title`.
+
+### 12.1 Implementação (v0.9)
+
+- **Código:** `TimeGrid` (grade), `TimeGridView` (liga eventos, hábitos e relógio), `TimeBlock` (`EventBlock` e `HabitBlock`), `HabitPill`, `WeekView`, `DayView` + `DayPanel` e `YearView`; a lógica pura fica em `features/calendar/lib` (`views`, `time-layout`, `grid-items`, `year`) com testes.
+- **Simultâneos:** itens que se encadeiam por sobreposição formam um grupo e dividem as colunas dele; fora do grupo voltam à largura inteira. Hábitos com horário entram no mesmo layout dos eventos.
+- **Faixa de hábitos:** uma pílula por linha, na largura da coluna, com “valor/meta” sem unidade (a unidade vai no `aria-label` e no tooltip).
+- **Barra de controles:** o segmentado usa a variante `compact` (sem largura mínima) para o título do período caber em 1280 px.
+- **Contraste (`node apps/web/scripts/contrast-audit.mjs views`):** 1.107 textos medidos nas 4 visões e nas outras páginas; antes dos ajustes, o texto “valor/meta” das pílulas ficava em 2,9–3,6:1 e os números do nível 2 do Ano em 4,2:1; depois, menor razão **4,55:1** e nenhum abaixo de 4,5:1 (`docs/design/screenshots/stats/contrast-views.json`). O nível 2 de densidade passou de 50 % para 38 % do amarelo.
+- **Fixture `views`:** quinta-feira 29/10/2026, 10h30; semana densa (três simultâneos, encadeados, prova, evento que cruza a meia-noite, evento às 05h e dias vazios) e um hábito manual sem horário (“Meditação”).

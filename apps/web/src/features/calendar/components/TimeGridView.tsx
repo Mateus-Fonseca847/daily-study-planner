@@ -103,7 +103,7 @@ export function TimeGridView({
             ),
             stripLabel: 'Hábitos',
             renderStrip: (date: string) => (
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-col gap-1">
                 {untimedHabits(habits, date, ctx).map((habit) => (
                   <HabitPill key={habit.id} habit={habit} date={date} ctx={ctx} onToggle={toggle} />
                 ))}

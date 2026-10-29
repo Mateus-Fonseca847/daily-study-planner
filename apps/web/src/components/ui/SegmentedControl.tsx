@@ -18,6 +18,8 @@ interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
   /** Ações (ex.: “Hoje”) exibidas no mesmo trilho, mas que nunca ficam selecionadas. */
   actions?: readonly ActionItem[];
+  /** Itens mais justos (sem largura mínima), para barras de controles apertadas. */
+  compact?: boolean;
   'aria-label': string;
 }
 
@@ -28,6 +30,7 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
   actions = [],
+  compact = false,
   'aria-label': ariaLabel,
 }: SegmentedControlProps<T>) {
   return (
@@ -50,6 +53,7 @@ export function SegmentedControl<T extends string>({
               onClick={() => onChange(option.value)}
               className={cn(
                 ITEM,
+                compact && 'min-w-0! px-3!',
                 active ? 'bg-accent font-semibold text-accent-fg' : 'text-soft hover:text-fg',
               )}
             >
