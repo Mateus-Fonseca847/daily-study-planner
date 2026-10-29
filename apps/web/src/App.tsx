@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider, type RouteObject } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { MENU_ITEMS, SETTINGS_ITEMS } from './components/layout/nav';
 import { BlocksPage } from './features/blocks/BlocksPage';
 import { CalendarPage } from './features/calendar/CalendarPage';
 import { ExamsPage } from './features/exams/ExamsPage';
+import { FocusPage } from './features/focus/FocusPage';
 import { PreferencesPage } from './features/preferences/PreferencesPage';
 import { SubjectsPage } from './features/subjects/SubjectsPage';
 import { TasksPage } from './features/tasks/TasksPage';
@@ -19,25 +20,27 @@ const PAGES: Record<string, ReactNode> = {
   '/tarefas': <TasksPage />,
   '/materias': <SubjectsPage />,
   '/blocos': <BlocksPage />,
+  '/foco': <FocusPage />,
   '/preferencias': <PreferencesPage />,
 };
 
+const routes: RouteObject[] = [
+  {
+    // Roteador de dados: necessário para o bloqueador de navegação do Modo Foco (`useBlocker`).
+    element: <AppShell />,
+    children: [
+      { index: true, element: <Navigate to={CALENDAR_PATH} replace /> },
+      ...[...MENU_ITEMS, ...SETTINGS_ITEMS].map((item) => ({
+        path: item.to,
+        element: PAGES[item.to] ?? <PlaceholderPage item={item} />,
+      })),
+      { path: '*', element: <Navigate to={CALENDAR_PATH} replace /> },
+    ],
+  },
+];
+
+const router = createBrowserRouter(routes);
+
 export function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route index element={<Navigate to={CALENDAR_PATH} replace />} />
-          {[...MENU_ITEMS, ...SETTINGS_ITEMS].map((item) => (
-            <Route
-              key={item.to}
-              path={item.to}
-              element={PAGES[item.to] ?? <PlaceholderPage item={item} />}
-            />
-          ))}
-          <Route path="*" element={<Navigate to={CALENDAR_PATH} replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 }

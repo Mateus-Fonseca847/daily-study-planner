@@ -185,10 +185,9 @@
 @utility glow-accent {
   background-image: var(--ds-glow-accent);
 }
-/* Traço do anel do cronômetro (independe da escala do SVG). */
+/* Traço do anel do cronômetro (unidades do viewBox; ver tokens.css). */
 @utility stroke-timer {
   stroke-width: var(--ds-timer-stroke);
-  vector-effect: non-scaling-stroke;
 }
 @utility opacity-done {
   opacity: var(--ds-opacity-done);

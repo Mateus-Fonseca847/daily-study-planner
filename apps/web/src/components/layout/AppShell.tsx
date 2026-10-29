@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useData } from '../../lib/data/app-store';
 import { navCounts } from '../../lib/data/selectors';
+import { travado } from '../../lib/focus/session';
 import { appNow } from '../../lib/fixture';
 import { ModalHost } from '../forms/ModalHost';
 import { ToastRegion } from '../ui/ToastRegion';
+import { FocusLockGuard, FocusRuntime } from './FocusRuntime';
 import { ShellContext } from './shell-context';
 import { Sidebar } from './Sidebar';
 import { StorageNotices } from './StorageNotices';
@@ -14,14 +16,20 @@ export function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [subjectId, setSubjectId] = useState('all');
   const events = useData((s) => s.events);
+  const locked = travado(useData((s) => s.focusActive));
   const counts = useMemo(() => navCounts(events, appNow()), [events]);
 
   return (
     <ShellContext.Provider value={{ subjectId }}>
+      <FocusRuntime />
+      <FocusLockGuard locked={locked} />
       <div className="flex h-full min-w-0 bg-bg">
-        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} counts={counts} />
+        {/* Travado: sem barra lateral, sem topo e sem links — só a página do Modo Foco. */}
+        {!locked && (
+          <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} counts={counts} />
+        )}
         <main className="flex min-w-0 flex-1 flex-col">
-          <Topbar subjectId={subjectId} onSubjectChange={setSubjectId} />
+          {!locked && <Topbar subjectId={subjectId} onSubjectChange={setSubjectId} />}
           <StorageNotices />
           <Outlet />
         </main>

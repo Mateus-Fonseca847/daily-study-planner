@@ -215,7 +215,8 @@
   --ds-card-pad: 1.5rem;
   --ds-card-gap: 1rem;
   --ds-timer-size: 20rem;
-  --ds-timer-stroke: 0.875rem;
+  /* Espessura do anel em unidades do viewBox (100): 4,375 = 14 px com o anel de 20 rem. Recalcule se `--ds-timer-size` mudar. */
+  --ds-timer-stroke: 4.375;
   --ds-timer-knob: 1.5rem;
 }
 

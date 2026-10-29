@@ -8,6 +8,7 @@ import { createBackupFile, readBackupFile } from '../../lib/data/backup';
 import { useData } from '../../lib/data/app-store';
 import { appNow } from '../../lib/fixture';
 import { useToasts } from '../../lib/toast-store';
+import { ProfileSection } from './ProfileSection';
 
 function download(filename: string, content: string): void {
   const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }));
@@ -50,7 +51,8 @@ export function PreferencesPage() {
   };
 
   return (
-    <PageShell title="Preferências" description="Backup e restauração dos seus dados.">
+    <PageShell title="Preferências" description="Perfil, Modo Foco e backup dos seus dados.">
+      <ProfileSection />
       <section
         aria-labelledby="backup-title"
         className="flex flex-col gap-3 rounded-xl border-hair p-6"
