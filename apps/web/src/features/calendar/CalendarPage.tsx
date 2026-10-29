@@ -1,32 +1,38 @@
 import { useCallback, useMemo, useState } from 'react';
+import { parseISO } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 import { CalendarPlus, FileCheck2 } from 'lucide-react';
-import { startOfMonth } from 'date-fns';
 import { useShell } from '../../components/layout/shell-context';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { useData } from '../../lib/data/app-store';
+import { dayKey } from '../../lib/dates';
 import { appNow } from '../../lib/fixture';
 import { openEventForm } from '../../lib/ui-store';
 import { sampleSnapshot } from '../../mocks/events';
-import { CalendarControls, type CalendarView } from './components/CalendarControls';
+import { CalendarControls } from './components/CalendarControls';
 import { EventPopover } from './components/EventPopover';
 import { MonthGrid } from './components/MonthGrid';
+import { useCalendarShortcuts } from './lib/use-calendar-shortcuts';
+import {
+  buildCalendarSearch,
+  parseCalendarSearch,
+  shiftPeriod,
+  type CalendarView,
+} from './lib/views';
 
 interface Selection {
   eventId: string;
   anchor: HTMLElement;
 }
 
-const VIEW_LABEL: Record<Exclude<CalendarView, 'mes'>, string> = {
-  semana: 'Visualização semanal',
-  ano: 'Visualização anual',
-};
-
 export function CalendarPage() {
   const { subjectId } = useShell();
   const today = useMemo(() => appNow(), []);
-  const [month, setMonth] = useState(() => startOfMonth(today));
-  const [view, setView] = useState<CalendarView>('mes');
+  const todayKey = dayKey(today);
+  const [params, setParams] = useSearchParams();
+  const { view, date } = parseCalendarSearch(params, todayKey);
+  const month = useMemo(() => parseISO(`${date}T00:00:00`), [date]);
   const [selection, setSelection] = useState<Selection | null>(null);
   const allEvents = useData((s) => s.events);
   const subjectCount = useData((s) => s.subjects.length);
@@ -40,20 +46,28 @@ export function CalendarPage() {
   const selected = events.find((e) => e.id === selection?.eventId);
   const closePopover = useCallback(() => setSelection(null), []);
 
-  const changeMonth = (next: Date) => {
-    setSelection(null);
-    setMonth(startOfMonth(next));
-  };
+  /** Cada mudança de visão ou de data é uma entrada do histórico (voltar funciona). */
+  const go = useCallback(
+    (next: { view?: CalendarView; date?: string }) => {
+      setSelection(null);
+      setParams(buildCalendarSearch({ view: next.view ?? view, date: next.date ?? date }));
+    },
+    [setParams, view, date],
+  );
+  const step = useCallback((direction: 1 | -1) => go({ date: shiftPeriod(view, date, direction) }), [go, view, date]);
+  const goToday = useCallback(() => go({ date: todayKey }), [go, todayKey]);
+  useCalendarShortcuts({ onStep: step, onToday: goToday, onView: (next) => go({ view: next }) });
 
   return (
     <>
       <CalendarControls
-        month={month}
-        today={today}
         view={view}
-        onViewChange={setView}
-        onMonthChange={changeMonth}
-        onToday={() => changeMonth(today)}
+        date={date}
+        today={todayKey}
+        onViewChange={(next) => go({ view: next })}
+        onDateChange={(next) => go({ date: next })}
+        onStep={step}
+        onToday={goToday}
       />
       {allEvents.length === 0 && subjectCount === 0 && (
         <div className="px-page py-4">
@@ -83,7 +97,7 @@ export function CalendarPage() {
         />
       ) : (
         <div className="flex flex-1 items-center justify-center text-md text-muted">
-          {VIEW_LABEL[view]} em breve.
+          Esta visão chega nos próximos passos.
         </div>
       )}
       {selected && selection && (

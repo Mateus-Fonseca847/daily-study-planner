@@ -3,6 +3,8 @@ import { cn } from '../../lib/cn';
 interface Option<T extends string> {
   value: T;
   label: string;
+  /** Tecla de atalho (mostrada no tooltip e em `aria-keyshortcuts`). */
+  shortcut?: string;
 }
 
 interface ActionItem {
@@ -43,6 +45,8 @@ export function SegmentedControl<T extends string>({
               type="button"
               role="radio"
               aria-checked={active}
+              aria-keyshortcuts={option.shortcut}
+              title={option.shortcut ? `${option.label} (${option.shortcut})` : undefined}
               onClick={() => onChange(option.value)}
               className={cn(
                 ITEM,
