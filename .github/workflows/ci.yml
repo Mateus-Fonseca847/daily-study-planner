@@ -6,9 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# Em PRs, um push novo cancela a execução antiga; em main, cada commit é validado até o fim.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
