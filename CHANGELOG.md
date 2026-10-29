@@ -5,6 +5,13 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Adicionado (Prompt 04 — fase B: Estatísticas)
+
+- Página `/estatisticas` seguindo `docs/design/reference/stats-dashboard.png`: saudação com o nome, seção **Hoje** (horas de estudo da semana, preparação para a próxima prova, sequência, água com onda animada, metas do dia e agenda de hoje) e seção **Análises** (Semana | Mês | 90 dias) com seis cartões em SVG próprio.
+- Ações de dados: água (adicionar copo com "Desfazer"), metas (marcar, criar, renomear, reordenar, arquivar) e preferências de nome, meta de água e copo.
+- Funções puras de estatística em `lib/stats` (preparação, horas, foco, água, metas, sequência atual e melhor, variação entre períodos) com testes.
+- Fixtures de desenvolvimento `?fixture=stats` e `?fixture=focus`; testes e2e de estatísticas; `pnpm visual:stats`.
+
 ### Alterado (03.1 — Modo Foco minimalista)
 
 - `/foco` redesenhado: **só o anel com o tempo dentro**. O tempo é um campo editável por digitação (`25`, `25:30`, `1:30:00`, `90`; 1 min a 3 h; ↑/↓ ±1 min, Shift ±5), validado por uma função pura (`lib/focus/time-input.ts`), com avisos `aria-live`.

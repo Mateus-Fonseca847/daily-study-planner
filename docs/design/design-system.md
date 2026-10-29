@@ -1,4 +1,4 @@
-# Daily — Design System (v0.5)
+# Daily — Design System (v0.6)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -273,6 +273,16 @@ Alturas: linha 1 ≈ 288 px na imagem (≈ 20 rem no app); linha 2 ≈ 230 px (�
 ### Tokens previstos (definidos em `tokens.css`)
 
 `--ds-radius-card`, `--ds-radius-card-sm`, `--ds-card-pad`, `--ds-card-gap`, `--ds-glass-bg`, `--ds-glass-highlight`, `--ds-glow-accent`, `--ds-color-water`, `--ds-color-water-deep`, `--ds-color-water-wave`, `--ds-water-gradient`, `--ds-color-chart-track`, `--ds-color-chart-track-strong`, `--ds-hatch-planned`, `--ds-text-display`, `--ds-text-card-title`, `--ds-text-stat`.
+
+### 9.1 Implementação (v0.6) e “Análises”
+
+- **Página** (`features/stats`): saudação, seção “Hoje” (grid de 4 colunas a partir de 80 rem; 2 colunas abaixo) e seção “Análises”; rola na vertical, com conteúdo de até `--ds-container-stats`.
+- **Análises:** seis cartões `surface-glass` em 2 colunas (1 abaixo de 64 rem). Gráficos em **SVG próprio** (`features/stats/charts.tsx`): barras (trilha `chart-track-strong` = planejado, amarelo = realizado; linha de referência para a meta de água), barras horizontais na cor da matéria e mapa de calor de 12 semanas (opacidade do amarelo ∝ % de metas). Alturas por tokens (`h-chart`, `h-chart-sm`, `h-stat-bar`).
+- **Acessibilidade dos gráficos:** barras têm tabela `sr-only` com legenda; o mapa de calor é `role="img"` com resumo; todos os cartões vazios mostram “Ainda não há dados neste período”.
+- **Água:** onda animada (`animate-wave`) com a altura proporcional à meta; `prefers-reduced-motion` desliga a animação e a transição.
+- **Agenda:** linha do tempo 06h–23h rolada até o horário atual, cartões que se escalonam quando se sobrepõem (`lib/stats/agenda.ts`), linha de “agora”.
+- **Diferenças restantes em relação à referência:** o rótulo da matéria no cartão “Preparação” é truncado em janelas estreitas; a referência não tem a coluna de origem das metas automáticas; os cartões flutuantes da agenda não têm avatares (não usamos imagens da referência); o fundo texturizado da moldura não é reproduzido.
+- **Capturas:** `pnpm visual:stats` → `docs/design/screenshots/stats/` (página inteira e primeira dobra em 1920×1080, 1440×900 e 1280×720; lado a lado com a referência por região em 1920 e 1440).
 
 ## 10. Cronômetro do Modo Foco
 

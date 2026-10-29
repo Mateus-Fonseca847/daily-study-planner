@@ -37,6 +37,7 @@ pnpm test
 pnpm build
 pnpm e2e          # Playwright (1ª vez: pnpm --filter @daily/web exec playwright install chromium)
 pnpm visual:capture  # screenshots + comparação com a referência em docs/design/screenshots/
+pnpm visual:stats    # capturas da página de Estatísticas (docs/design/screenshots/stats/)
 pnpm format       # prettier --write
 ```
 

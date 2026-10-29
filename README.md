@@ -35,13 +35,13 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 O projeto está em desenvolvimento, organizado em marcos.
 
-| Marco                  | Escopo                                                        | Status       |
-| ---------------------- | ------------------------------------------------------------- | ------------ |
-| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados | Concluído    |
-| **1. Base**            | Dados locais, CRUD, páginas (feito); login, back-end e deploy | Em andamento |
-| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo   | Em andamento |
-| **3. Segunda tela**    | Modo Foco, notificações, lembretes, PWA instalável            | Planejado    |
-| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                    | Planejado    |
+| Marco                  | Escopo                                                                     | Status       |
+| ---------------------- | -------------------------------------------------------------------------- | ------------ |
+| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados              | Concluído    |
+| **1. Base**            | Dados locais, CRUD, páginas (feito); login, back-end e deploy              | Em andamento |
+| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo                | Em andamento |
+| **3. Segunda tela**    | Modo Foco e Estatísticas (feitos); notificações, lembretes, PWA instalável | Em andamento |
+| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                                 | Planejado    |
 
 ## Funcionalidades
 
@@ -65,6 +65,7 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
+- [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, metas do dia e agenda) e “Análises” (semana, mês ou 90 dias) com seis gráficos em SVG próprio
 
 ### Em planejamento
 
@@ -73,7 +74,6 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [ ] Visões Semana e Ano
 - [ ] Notificações e lembretes periódicos
 - [ ] PWA instalável (manifest e service worker)
-- [ ] Estatísticas de estudo
 - [ ] Atalhos de teclado
 
 ## Stack
@@ -217,7 +217,8 @@ O **cadeado** sob o anel (visível só com o cronômetro parado) liga a trava pa
 - Com várias abas abertas, **a última escrita vence** (o evento `storage` recarrega a aba que não gravou; não há mesclagem de edições simultâneas)
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
 - Busca e notificações ainda são apenas visuais
-- Visões Semana e Ano são placeholders; Estatísticas, Atalhos, FAQ e Convidar amigos são páginas placeholder
+- Visões Semana e Ano são placeholders; Atalhos, FAQ e Convidar amigos são páginas placeholder
+- Estatísticas: a água e as metas são registradas só neste navegador; a sequência olha no máximo 365 dias para trás; as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas

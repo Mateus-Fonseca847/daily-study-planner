@@ -89,14 +89,14 @@ componentes ──▶ useData (Zustand) ──▶ DataRepository ──▶ Local
 
 ## Entidades da versão 2
 
-| Entidade (`packages/shared`)    | Campos                                                                                                                                                         | Observações                                                                                                |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `Preferences` (uma)             | `name` (≤ 40), `waterGoalMl` (250–10 000, padrão 2000), `cupMl` (50–1000, padrão 250), `focusDurationMin` (1–180, padrão 25), `lockByDefault` (padrão `false`) | Nomes do prompt: nome, metaÁguaMl, copoMl, duraçãoFocoMin, travarPorPadrão                                 |
-| `Goal` (Meta)                   | `id`, `title`, `icon` (10 ícones lucide), `kind` (`manual` \| `auto-agua` \| `auto-estudo`), `order`, `createdAt`, `archivedAt?`                               | Metas padrão no primeiro acesso: Dormir 7h, Beber 2 L de água, Exercício, Cumprir blocos de estudo de hoje |
-| `GoalLog` (RegistroMeta)        | `id` (= `goalId:data`), `goalId`, `date` (`yyyy-MM-dd` local), `done`                                                                                          | O `id` determinístico permite `upsert` idempotente                                                         |
-| `WaterLog` (RegistroÁgua)       | `id`, `date`, `ml`, `time` (`HH:mm`)                                                                                                                           |                                                                                                            |
-| `FocusSession` (SessãoFoco)     | `id`, `startedAt`, `plannedSec`, `actualSec`, `status` (`concluida` \| `interrompida`), `subjectId?`, `examId?`, `blockId?`                                    | Entra no backup. Excluir a matéria/prova/bloco vinculado zera o vínculo                                    |
-| `ActiveFocus` (SessãoFocoAtiva) | `id`, `status` (`ocioso` \| `rodando` \| `pausado`), `durationSec`, `startedAtMs`, `endsAtMs` (rodando), `remainingMs` (pausado), `locked`, `link`, `tabId`    | **Fora do snapshot e do backup**: chave `daily:v2:focus`. No máximo uma. Só persiste rodando/pausada       |
+| Entidade (`packages/shared`)    | Campos                                                                                                                                                                                                         | Observações                                                                                                |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `Preferences` (uma)             | `name` (≤ 40), `waterGoalMl` (250–10 000, padrão 2000), `cupMl` (50–1000, padrão 250), `focusDurationSec` (60–10 800, padrão 1500; o antigo `focusDurationMin` ainda é lido), `lockByDefault` (padrão `false`) | Nomes do prompt: nome, metaÁguaMl, copoMl, duraçãoFocoSeg, travarPorPadrão                                 |
+| `Goal` (Meta)                   | `id`, `title`, `icon` (10 ícones lucide), `kind` (`manual` \| `auto-agua` \| `auto-estudo`), `order`, `createdAt`, `archivedAt?`                                                                               | Metas padrão no primeiro acesso: Dormir 7h, Beber 2 L de água, Exercício, Cumprir blocos de estudo de hoje |
+| `GoalLog` (RegistroMeta)        | `id` (= `goalId:data`), `goalId`, `date` (`yyyy-MM-dd` local), `done`                                                                                                                                          | O `id` determinístico permite `upsert` idempotente                                                         |
+| `WaterLog` (RegistroÁgua)       | `id`, `date`, `ml`, `time` (`HH:mm`)                                                                                                                                                                           |                                                                                                            |
+| `FocusSession` (SessãoFoco)     | `id`, `startedAt`, `plannedSec`, `actualSec`, `status` (`concluida` \| `interrompida`), `subjectId?`, `examId?`, `blockId?`                                                                                    | Entra no backup. Excluir a matéria/prova/bloco vinculado zera o vínculo                                    |
+| `ActiveFocus` (SessãoFocoAtiva) | `id`, `status` (`ocioso` \| `rodando` \| `pausado`), `durationSec`, `startedAtMs`, `endsAtMs` (rodando), `remainingMs` (pausado), `locked`, `link`, `tabId`                                                    | **Fora do snapshot e do backup**: chave `daily:v2:focus`. No máximo uma. Só persiste rodando/pausada       |
 
 Integridade (`dataSnapshotSchema`): ids únicos em todas as coleções; `GoalLog.goalId` e os vínculos das sessões precisam existir (matéria, prova **do tipo prova**, bloco **do tipo estudo**).
 
@@ -110,6 +110,18 @@ Integridade (`dataSnapshotSchema`): ids únicos em todas as coleções; `GoalLog
 | Versão | Mudança                                                                                                           |
 | ------ | ----------------------------------------------------------------------------------------------------------------- |
 | 2      | `preferences`, `goals`, `goalLogs`, `waterLogs`, `focusSessions`; chave `daily:v2`; sessão ativa em chave própria |
+
+### Derivados das estatísticas (não são salvos)
+
+Tudo em `apps/web/src/lib/stats` é função pura sobre o snapshot, com o “hoje” injetado:
+
+- **Dia** = `yyyy-MM-dd` local; **semana** = segunda a domingo.
+- **Próxima prova** e **preparação** (`nextExam`, `examPrep`): conteúdos concluídos ÷ total; prova sem conteúdos mostra “Adicione conteúdos”.
+- **Horas** (`studyHoursByDay`): blocos de estudo planejados × concluídos por dia; **foco** (`focusSecondsByDay`): sessões por dia.
+- **Água** (`waterOn`, `waterAnalysis`): soma por dia contra `waterGoalMl`.
+- **Metas** (`goalStates`, `goalsSummary`): uma meta vale num dia se `createdAt ≤ dia` e (`archivedAt` ausente ou `> dia`); as automáticas (`auto-agua`, `auto-estudo`) são calculadas a partir de água e blocos.
+- **Sequência** (`computeStreaks`): dias seguidos com todas as metas **que existiam naquele dia** cumpridas, olhando no máximo `MAX_STREAK_LOOKBACK_DAYS` (365); o dia de hoje só quebra a sequência depois de encerrado.
+- **Períodos** (`analysis.ts`): semana = 7, mês = 30, 90 dias = 90 (em barras semanais); a variação compara com o período anterior de mesmo tamanho.
 
 ### Sincronização entre abas
 
