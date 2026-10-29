@@ -12,7 +12,8 @@
     "visual:capture": "node scripts/visual-capture.mjs",
     "e2e": "playwright test",
     "visual:app": "node scripts/visual-capture-app.mjs",
-    "visual:focus": "node scripts/visual-capture-focus.mjs"
+    "visual:focus": "node scripts/visual-capture-focus.mjs",
+    "visual:stats": "node scripts/visual-capture-stats.mjs"
   },
   "dependencies": {
     "@daily/shared": "workspace:*",

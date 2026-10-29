@@ -18,7 +18,8 @@
     "visual:capture": "pnpm --filter @daily/web visual:capture",
     "e2e": "pnpm --filter @daily/web e2e",
     "visual:app": "pnpm --filter @daily/web visual:app",
-    "visual:focus": "pnpm --filter @daily/web visual:focus"
+    "visual:focus": "pnpm --filter @daily/web visual:focus",
+    "visual:stats": "pnpm --filter @daily/web visual:stats"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
