@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { HOLD_TO_UNLOCK_MS, MIN_SAVED_SESSION_SEC } from './constants';
-import { angleForMinutes, minutesFromKey, minutesFromPointer } from './dial';
-import { describeMinutes, formatClock, formatFocused, sessionTitle } from './format';
+import { formatClock, formatFocused, sessionTitle } from './format';
 import { holdProgress } from './hold';
 import {
-  adjustMinutes,
-  clampMinutes,
   createIdleSession,
   decorridoSec,
   emAndamento,
@@ -26,7 +23,7 @@ const T0 = new Date(2026, 10, 10, 14, 0, 0).getTime(); // 10/11/2026 14:00:00 (l
 const MIN = 60_000;
 
 const idle = (minutes = 25, extra = {}) =>
-  createIdleSession({ id: 's1', minutes, tabId: 'tab-1', ...extra });
+  createIdleSession({ id: 's1', seconds: minutes * 60, tabId: 'tab-1', ...extra });
 
 describe('máquina de estados do cronômetro', () => {
   it('ocioso mostra a duração inteira e iniciar calcula o fim por timestamp', () => {
@@ -175,53 +172,6 @@ describe('restauração após recarregar', () => {
   });
 });
 
-describe('ajuste de tempo', () => {
-  it('limita a 1–180 minutos', () => {
-    expect(clampMinutes(0)).toBe(1);
-    expect(clampMinutes(-10)).toBe(1);
-    expect(clampMinutes(181)).toBe(180);
-    expect(clampMinutes(25.4)).toBe(25);
-    expect(idle(500).durationSec).toBe(180 * 60);
-    expect(idle(0).durationSec).toBe(60);
-  });
-
-  it('passos de 1 min (teclado) e ±5 min (botões) respeitam os limites', () => {
-    expect(adjustMinutes(25, 1)).toBe(26);
-    expect(adjustMinutes(25, -5)).toBe(20);
-    expect(adjustMinutes(3, -5)).toBe(1);
-    expect(adjustMinutes(178, 5)).toBe(180);
-  });
-
-  it('teclado: setas ±1, PageUp/PageDown ±5, Home/End nas pontas, outras teclas ignoradas', () => {
-    expect(minutesFromKey('ArrowRight', 25)).toBe(26);
-    expect(minutesFromKey('ArrowUp', 25)).toBe(26);
-    expect(minutesFromKey('ArrowLeft', 25)).toBe(24);
-    expect(minutesFromKey('ArrowDown', 1)).toBe(1);
-    expect(minutesFromKey('PageUp', 25)).toBe(30);
-    expect(minutesFromKey('PageDown', 25)).toBe(20);
-    expect(minutesFromKey('Home', 25)).toBe(1);
-    expect(minutesFromKey('End', 25)).toBe(180);
-    expect(minutesFromKey('a', 25)).toBeNull();
-  });
-});
-
-describe('arrastar o anel', () => {
-  const center = { x: 100, y: 100 };
-  it('converte o ângulo do ponteiro em minutos (volta inteira = 180)', () => {
-    expect(minutesFromPointer(center, { x: 200, y: 100 }, 30)).toBe(45); // 3 h → 90° → 45 min
-    expect(minutesFromPointer(center, { x: 100, y: 200 }, 80)).toBe(90); // 180°
-    expect(minutesFromPointer(center, { x: 0, y: 100 }, 120)).toBe(135); // 270°
-    expect(angleForMinutes(90)).toBe(180);
-  });
-
-  it('não salta de 180 para 1 ao cruzar o topo: gruda na ponta', () => {
-    // Estava em 175 e o ponteiro passa um pouco da direita do topo (≈ 1 min).
-    expect(minutesFromPointer(center, { x: 101, y: 0 }, 175)).toBe(180);
-    // Estava em 3 e o ponteiro vai para a esquerda do topo (≈ 179 min).
-    expect(minutesFromPointer(center, { x: 99, y: 0 }, 3)).toBe(1);
-  });
-});
-
 describe('segurar para destravar', () => {
   it('progresso de 0 a 1 em 3 s; completa em 3 s ou mais', () => {
     expect(HOLD_TO_UNLOCK_MS).toBe(3000);
@@ -250,12 +200,7 @@ describe('formatação', () => {
     expect(formatClock(180 * MIN)).toBe('3:00:00');
   });
 
-  it('descrições em pt-BR para leitores de tela e resumo', () => {
-    expect(describeMinutes(1)).toBe('1 minuto');
-    expect(describeMinutes(25)).toBe('25 minutos');
-    expect(describeMinutes(60)).toBe('1 hora');
-    expect(describeMinutes(90)).toBe('1 hora e 30 minutos');
-    expect(describeMinutes(121)).toBe('2 horas e 1 minuto');
+  it('resumo curto da sessão', () => {
     expect(formatFocused(1500)).toBe('25 min');
     expect(formatFocused(3900)).toBe('1 h 05 min');
     expect(formatFocused(40)).toBe('40 s');

@@ -1,4 +1,4 @@
-import type { ActiveFocus, FocusLink } from '@daily/shared';
+import type { ActiveFocus } from '@daily/shared';
 import { useData } from '../data/app-store';
 import { TAB_ID } from '../tab-id';
 import { playChime, primeAudio } from './audio';
@@ -9,6 +9,7 @@ import {
   encerrar,
   finalizar,
   iniciar,
+  NO_LINK,
   pausar,
   restaurar,
   retomar,
@@ -23,14 +24,21 @@ const store = () => useData.getState();
 const active = (): ActiveFocus | null => store().focusActive;
 
 export interface StartConfig {
-  minutes: number;
+  /** Duração escolhida, em segundos. */
+  seconds: number;
   locked: boolean;
-  link: FocusLink;
 }
 
 /** Deve rodar dentro de um clique (tela cheia e áudio exigem gesto do usuário). */
-export function startFocus({ minutes, locked, link }: StartConfig): void {
-  const idle = createIdleSession({ id: crypto.randomUUID(), minutes, tabId: TAB_ID, locked, link });
+export function startFocus({ seconds, locked }: StartConfig): void {
+  // O vínculo (matéria/prova/bloco) segue no modelo, mas não há interface para escolhê-lo.
+  const idle = createIdleSession({
+    id: crypto.randomUUID(),
+    seconds,
+    tabId: TAB_ID,
+    locked,
+    link: NO_LINK,
+  });
   useFocusUi.getState().setSummary(null);
   useFocusUi.getState().setTitleAlert(false);
   primeAudio();
@@ -65,14 +73,13 @@ export function setFocusLocked(locked: boolean): void {
   else void leaveFullscreen();
 }
 
-/** Encerramento manual: salva como interrompida (se passou de 1 min) e mostra o resumo. */
+/** Encerramento manual: salva como interrompida (se passou de 1 min) e volta ao seletor de tempo. */
 export function stopFocus(): void {
   const current = active();
   if (!current) return;
   const record = encerrar(current, Date.now());
   if (record) store().addFocusSession(record);
   store().setFocusActive(null);
-  useFocusUi.getState().setSummary(record);
   void leaveFullscreen();
 }
 

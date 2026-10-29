@@ -1,12 +1,7 @@
-import {
-  FOCUS_MAX_MINUTES,
-  FOCUS_MIN_MINUTES,
-  type ActiveFocus,
-  type FocusLink,
-  type FocusSession,
-} from '@daily/shared';
+import { type ActiveFocus, type FocusLink, type FocusSession } from '@daily/shared';
 import { toLocalIso } from '../dates';
 import { MIN_SAVED_SESSION_SEC } from './constants';
+import { clampSeconds } from './time-input';
 
 /**
  * Máquina de estados do cronômetro, toda pura: cada função recebe `nowMs` (epoch ms).
@@ -18,16 +13,10 @@ import { MIN_SAVED_SESSION_SEC } from './constants';
 
 export const NO_LINK: FocusLink = { subjectId: null, examId: null, blockId: null };
 
-export const clampMinutes = (minutes: number): number =>
-  Math.min(FOCUS_MAX_MINUTES, Math.max(FOCUS_MIN_MINUTES, Math.round(minutes)));
-
-/** Ajuste de tempo (só faz sentido no estado ocioso): 1 a 180 min. */
-export const adjustMinutes = (current: number, delta: number): number =>
-  clampMinutes(current + delta);
-
 export interface NewSession {
   id: string;
-  minutes: number;
+  /** Duração escolhida em segundos (1 min a 3 h). */
+  seconds: number;
   tabId: string;
   locked?: boolean;
   link?: FocusLink;
@@ -35,7 +24,7 @@ export interface NewSession {
 
 export function createIdleSession({
   id,
-  minutes,
+  seconds,
   tabId,
   locked = false,
   link = NO_LINK,
@@ -43,7 +32,7 @@ export function createIdleSession({
   return {
     id,
     status: 'ocioso',
-    durationSec: clampMinutes(minutes) * 60,
+    durationSec: clampSeconds(seconds),
     startedAtMs: null,
     endsAtMs: null,
     remainingMs: null,

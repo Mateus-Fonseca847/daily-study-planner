@@ -18,6 +18,7 @@
   --color-chart-track: var(--ds-color-chart-track);
   --color-chart-track-strong: var(--ds-color-chart-track-strong);
   --color-timer-track: var(--ds-color-timer-track);
+  --color-timer-idle: var(--ds-color-timer-idle);
   --color-timer-progress: var(--ds-color-timer-progress);
   --color-timer-paused: var(--ds-color-timer-paused);
   --color-timer-done: var(--ds-color-timer-done);
@@ -145,6 +146,7 @@
   --spacing-card: var(--ds-card-pad);
   --spacing-card-gap: var(--ds-card-gap);
   --spacing-timer: var(--ds-timer-size);
+  --spacing-timer-input: var(--ds-timer-input-w);
   --spacing-timer-knob: var(--ds-timer-knob);
   --spacing-modal-h: var(--ds-modal-max-h);
   --spacing-menu: var(--ds-menu-w);

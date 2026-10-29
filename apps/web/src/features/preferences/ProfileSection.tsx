@@ -6,7 +6,7 @@ import { TextField } from '../../components/ui/Field';
 import { useData } from '../../lib/data/app-store';
 import { useToasts } from '../../lib/toast-store';
 
-type Field = 'name' | 'waterGoalMl' | 'cupMl' | 'focusDurationMin';
+type Field = 'name' | 'waterGoalMl' | 'cupMl';
 
 /** Nome, meta de água, copo, duração padrão do foco e “Travar por padrão”. */
 export function ProfileSection() {
@@ -16,7 +16,6 @@ export function ProfileSection() {
     name: saved.name,
     waterGoalMl: String(saved.waterGoalMl),
     cupMl: String(saved.cupMl),
-    focusDurationMin: String(saved.focusDurationMin),
     lockByDefault: saved.lockByDefault,
   });
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
@@ -29,8 +28,7 @@ export function ProfileSection() {
       name: values.name,
       waterGoalMl: values.waterGoalMl.trim() === '' ? NaN : Number(values.waterGoalMl),
       cupMl: values.cupMl.trim() === '' ? NaN : Number(values.cupMl),
-      focusDurationMin:
-        values.focusDurationMin.trim() === '' ? NaN : Number(values.focusDurationMin),
+      focusDurationSec: saved.focusDurationSec,
       lockByDefault: values.lockByDefault,
     });
     if (!parsed.success) {
@@ -57,7 +55,8 @@ export function ProfileSection() {
           Perfil e Modo Foco
         </h2>
         <p className="mt-1 text-md text-muted">
-          Usado na saudação, nas metas de água e como padrão do cronômetro.
+          Usado na saudação e nas metas de água. A duração do Modo Foco é a última que você
+          confirmou lá.
         </p>
       </div>
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
@@ -67,7 +66,7 @@ export function ProfileSection() {
           error={errors.name}
           onChange={(e) => set({ name: e.target.value })}
         />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <TextField
             label="Meta de água (ml)"
             type="number"
@@ -83,14 +82,6 @@ export function ProfileSection() {
             value={values.cupMl}
             error={errors.cupMl}
             onChange={(e) => set({ cupMl: e.target.value })}
-          />
-          <TextField
-            label="Duração padrão do foco (min)"
-            type="number"
-            inputMode="numeric"
-            value={values.focusDurationMin}
-            error={errors.focusDurationMin}
-            onChange={(e) => set({ focusDurationMin: e.target.value })}
           />
         </div>
         <Checkbox

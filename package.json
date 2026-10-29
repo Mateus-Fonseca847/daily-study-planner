@@ -17,7 +17,8 @@
     "test": "pnpm -r test",
     "visual:capture": "pnpm --filter @daily/web visual:capture",
     "e2e": "pnpm --filter @daily/web e2e",
-    "visual:app": "pnpm --filter @daily/web visual:app"
+    "visual:app": "pnpm --filter @daily/web visual:app",
+    "visual:focus": "pnpm --filter @daily/web visual:focus"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

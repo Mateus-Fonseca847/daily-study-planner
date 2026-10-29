@@ -43,7 +43,7 @@ describe('primeiro acesso', () => {
       name: '',
       waterGoalMl: 2000,
       cupMl: 250,
-      focusDurationMin: 25,
+      focusDurationSec: 1500,
       lockByDefault: false,
     });
     expect(s.goals).toHaveLength(4);
@@ -62,7 +62,7 @@ describe('migração v1 → v2', () => {
     expect(repo.subjects.list().map((s) => s.name)).toEqual(['Matemática']);
     expect(repo.events.list().map((e) => e.id)).toEqual(['e1']);
     expect(repo.snapshot().goals).toHaveLength(4);
-    expect(repo.snapshot().preferences.focusDurationMin).toBe(25);
+    expect(repo.snapshot().preferences.focusDurationSec).toBe(1500);
 
     expect(storage.getItem(PRE_MIGRATION_KEY)).toBe(v1Raw); // backup feito antes de migrar
     expect(storage.getItem(LEGACY_KEY)).toBe(v1Raw); // o v1 nunca é alterado
@@ -147,12 +147,12 @@ describe('sessão ativa e preferências no repositório', () => {
 
   it('atualiza preferências validando limites', () => {
     const { repo } = memoryRepo();
-    expect(repo.preferences.update({ name: 'Ana', focusDurationMin: 50 })).toMatchObject({
+    expect(repo.preferences.update({ name: 'Ana', focusDurationSec: 50 * 60 + 30 })).toMatchObject({
       name: 'Ana',
-      focusDurationMin: 50,
+      focusDurationSec: 3030,
     });
-    expect(() => repo.preferences.update({ focusDurationMin: 500 })).toThrow();
-    expect(repo.preferences.get().focusDurationMin).toBe(50);
+    expect(() => repo.preferences.update({ focusDurationSec: 500 * 60 })).toThrow();
+    expect(repo.preferences.get().focusDurationSec).toBe(3030); // preserva segundos
   });
 
   it('upsert é idempotente (duas abas finalizando a mesma sessão)', () => {

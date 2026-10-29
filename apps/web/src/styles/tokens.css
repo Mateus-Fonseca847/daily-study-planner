@@ -99,6 +99,7 @@
 
   /* Cronômetro do Modo Foco */
   --ds-color-timer-track: rgb(255 255 255 / 0.1);
+  --ds-color-timer-idle: rgb(255 255 255 / 0.28);
   --ds-color-timer-progress: var(--ds-color-accent);
   --ds-color-timer-paused: var(--ds-color-fg-soft);
   --ds-color-timer-done: var(--ds-color-event-revisao);
@@ -214,9 +215,10 @@
   --ds-banner-gap: 0.75rem;
   --ds-card-pad: 1.5rem;
   --ds-card-gap: 1rem;
-  --ds-timer-size: 20rem;
-  /* Espessura do anel em unidades do viewBox (100): 4,375 = 14 px com o anel de 20 rem. Recalcule se `--ds-timer-size` mudar. */
-  --ds-timer-stroke: 4.375;
+  --ds-timer-size: 22rem;
+  /* Espessura do anel em unidades do viewBox (100): 1,5 ≈ 5 px com o anel de 22 rem. Recalcule se `--ds-timer-size` mudar. */
+  --ds-timer-stroke: 1.5;
+  --ds-timer-input-w: 18rem;
   --ds-timer-knob: 1.5rem;
 }
 

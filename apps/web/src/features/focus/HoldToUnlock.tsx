@@ -52,7 +52,7 @@ export function HoldToUnlock({ onUnlock }: HoldToUnlockProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center">
       <button
         type="button"
         aria-describedby="hold-hint"
@@ -75,16 +75,8 @@ export function HoldToUnlock({ onUnlock }: HoldToUnlockProps) {
         <LockOpen aria-hidden strokeWidth={1.5} className="relative size-icon" />
         <span className="relative">Segurar para destravar</span>
       </button>
-      <span
-        id="hold-hint"
-        role="progressbar"
-        aria-label="Progresso do destravamento"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.round(progress * 100)}
-        className="text-sm text-muted"
-      >
-        Segure por 3 segundos
+      <span id="hold-hint" className="sr-only">
+        Segure por 3 segundos para destravar. A sessão continua.
       </span>
     </div>
   );

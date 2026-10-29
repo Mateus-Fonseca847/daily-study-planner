@@ -65,16 +65,16 @@ describe('preferências, metas e sessão ativa', () => {
       name: '',
       waterGoalMl: 2000,
       cupMl: 250,
-      focusDurationMin: 25,
+      focusDurationSec: 1500,
       lockByDefault: false,
     });
   });
 
   it('validam limites com mensagens em pt-BR', () => {
-    const result = preferencesSchema.safeParse({ focusDurationMin: 181, cupMl: 10 });
+    const result = preferencesSchema.safeParse({ focusDurationSec: 181 * 60, cupMl: 10 });
     expect(result.success).toBe(false);
     const messages = !result.success && result.error.issues.map((i) => i.message);
-    expect(messages).toContain('A duração máxima é de 180 minutos.');
+    expect(messages).toContain('A duração máxima é de 3 horas.');
     expect(messages).toContain('O copo deve ter pelo menos 50 ml.');
   });
 

@@ -9,16 +9,6 @@ export function formatClock(ms: number): string {
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
 }
 
-/** Para leitores de tela: “25 minutos”, “1 hora e 30 minutos”. */
-export function describeMinutes(minutes: number): string {
-  const unit = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (h === 0) return unit(m, 'minuto', 'minutos');
-  if (m === 0) return unit(h, 'hora', 'horas');
-  return `${unit(h, 'hora', 'horas')} e ${unit(m, 'minuto', 'minutos')}`;
-}
-
 /** Resumo curto: “25 min”, “1 h 05 min”, “40 s” (sessões abaixo de 1 min). */
 export function formatFocused(seconds: number): string {
   if (seconds < 60) return `${seconds} s`;
