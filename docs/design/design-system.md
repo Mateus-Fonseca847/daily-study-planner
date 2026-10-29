@@ -1,4 +1,4 @@
-# Daily — Design System (v0.4)
+# Daily — Design System (v0.5)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -276,6 +276,8 @@ Alturas: linha 1 ≈ 288 px na imagem (≈ 20 rem no app); linha 2 ≈ 230 px (�
 
 ## 10. Cronômetro do Modo Foco
 
+> **v0.5 (03.1):** o cronômetro foi redesenhado para ser minimalista. **Os valores da tabela abaixo (v0.4) foram substituídos pelos da seção 10.1**, que traz o antes/depois. A tabela fica como histórico.
+
 Especificação visual **estimada** no mesmo sistema (a referência não tem cronômetro). Rota `/foco`: página limpa, só o anel, os dígitos e os controles, centralizados.
 
 | Item                      | Valor                                                                                                                                                                                           | Token                                  |
@@ -294,3 +296,32 @@ Especificação visual **estimada** no mesmo sistema (a referência não tem cro
 | Hold-to-unlock            | botão `outline` com anel de progresso que preenche em 3 s                                                                                                                                       | `HOLD_TO_UNLOCK_MS`                    |
 
 Acessibilidade do anel: `role="slider"` (`aria-valuemin=1`, `aria-valuemax=180`, `aria-valuenow`, `aria-valuetext` “25 minutos”), teclado (setas ±1, PageUp/PageDown ±5, Home/End), arraste por ponteiro (mouse e toque). Os dígitos têm `role="timer"` e não são anunciados a cada segundo (sem `aria-live`).
+
+### 10.1 Cronômetro minimalista (v0.5) — antes/depois
+
+Princípio: o anel com o tempo dentro, e quase mais nada. Sem cartões, sem textos auxiliares; as explicações vão para `aria-describedby`, tooltips (`title`) e README. Valores **estimados**.
+
+| Item                                                                                       | Antes (v0.4)                                                  | Depois (v0.5)                                                                  | Token                          |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------ |
+| Diâmetro do anel                                                                           | 320 px (20 rem)                                               | **352 px (22 rem)**                                                            | `--ds-timer-size`              |
+| Espessura do traço                                                                         | 14 px (4,375 un. do viewBox)                                  | **≈ 5 px (1,5 un.)**                                                           | `--ds-timer-stroke`            |
+| Anel ocioso                                                                                | arco = duração/180 + alça arrastável                          | **anel completo, neutro** (branco a 28 %)                                      | `--ds-color-timer-idle` (novo) |
+| Alça (bolinha) e arrastar                                                                  | sim                                                           | **removidos** (o anel só indica progresso)                                     | —                              |
+| Dígitos                                                                                    | 72 px, peso 300, `tabular-nums`                               | igual (72 px, 300, tabulares) — mais respiro ao redor                          | `--ds-text-timer`              |
+| Largura do campo de tempo                                                                  | —                                                             | 288 px (18 rem), centralizado                                                  | `--ds-timer-input-w` (novo)    |
+| Controles dentro do anel                                                                   | Iniciar/Pausar/Reiniciar/Encerrar em botões com texto, abaixo | **só ícones** dentro do anel, abaixo dos dígitos                               | `Button variant="icon"`        |
+| Atalhos de tempo (15–90), −5/+5, seletor “Estudando”, parágrafo da trava, “Segure por 3 s” | visíveis                                                      | **removidos da tela**                                                          | —                              |
+| Cadeado (travar ao iniciar)                                                                | caixa de seleção com texto                                    | ícone pequeno discreto sob o anel (`aria-pressed`), só com o cronômetro parado | —                              |
+| Posição do anel                                                                            | no fluxo, empurrado pelos controles                           | **centralizado** na área útil; o que fica abaixo é posicionado fora do fluxo   | —                              |
+
+Estados (v0.5):
+
+| Estado                        | Anel                   | Dentro do anel                                                                                              | Sob o anel                       |
+| ----------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| Ocioso                        | completo, neutro       | tempo **editável** + play (amarelo)                                                                         | cadeado                          |
+| Rodando (sem trava)           | amarelo, diminui       | tempo + pausar                                                                                              | —                                |
+| Pausado (sem trava)           | cinza claro, congelado | tempo **piscando** (`animate-pulse`, desligado com `prefers-reduced-motion`) + retomar, reiniciar, encerrar | —                                |
+| Rodando/pausado **com trava** | amarelo / cinza        | só o tempo                                                                                                  | só “Segurar para destravar”      |
+| Concluído                     | completo, verde        | “Concluído” + duração focada + nova sessão                                                                  | link discreto “Ver estatísticas” |
+
+Campo de tempo: `<input>` sem caixa nem borda (apenas sublinhado sutil de 1 px no hover e no foco, cursor amarelo); aceita só dígitos e “:”; `25` = 25 min, `25:30`, `1:30:00`, `90` = 1 h 30; Enter e sair confirmam, Esc cancela, ↑/↓ ±1 min (Shift ±5); mínimo 1 min, máximo 3 h (valores fora são ajustados com aviso `aria-live`; formato inválido volta ao valor anterior).

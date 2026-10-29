@@ -5,6 +5,17 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Alterado (03.1 — Modo Foco minimalista)
+
+- `/foco` redesenhado: **só o anel com o tempo dentro**. O tempo é um campo editável por digitação (`25`, `25:30`, `1:30:00`, `90`; 1 min a 3 h; ↑/↓ ±1 min, Shift ±5), validado por uma função pura (`lib/focus/time-input.ts`), com avisos `aria-live`.
+- Estados: ocioso (play + cadeado), rodando (pausar), pausado (retomar/reiniciar/encerrar; o tempo pisca), travado (**só** o anel e "Segurar para destravar") e concluído ("Concluído", duração e nova sessão).
+- A última duração confirmada é o padrão e é guardada em **segundos** (`focusDurationSec`); o formato antigo em minutos (`focusDurationMin`) continua sendo lido, sem migração de versão.
+- Anel mais fino (≈ 5 px) e maior (22 rem); novos tokens `--ds-color-timer-idle` e `--ds-timer-input-w`.
+
+### Removido (03.1)
+
+- Botões −5/+5, atalhos 15–90, alça e arrastar do anel, seletor "Estudando" e "Marcar bloco como concluído" (os campos de vínculo continuam no modelo), textos auxiliares, o campo "duração padrão" em Preferências e o botão "Voltar à tela cheia" da tela travada.
+
 ### Adicionado (Prompt 03 — fase A: Modo Foco)
 
 - **Modo Foco** (`/foco`): cronômetro circular (1–180 min) com anel arrastável (`role="slider"`), teclado, botões ±5 e atalhos; tempo restante por timestamps; pausar/retomar/reiniciar/encerrar; vínculo opcional com matéria, prova ou bloco de hoje (com "Marcar bloco como concluído"); som de fim (Web Audio), título da aba e resumo.

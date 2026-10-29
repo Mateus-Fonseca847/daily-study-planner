@@ -62,7 +62,7 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] Estados do evento: pendente, em andamento, concluído e cancelado
 - [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
 - [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 e v2)
-- [x] **Modo Foco** (`/foco`): cronômetro circular de 1 a 180 min, vínculo com matéria/prova/bloco, histórico de sessões e **travamento do app** (veja abaixo)
+- [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
 
@@ -190,18 +190,16 @@ Decisões maiores serão registradas em `docs/adr/`.
 
 ## Modo Foco e travamento
 
-O **Modo Foco** (`/foco`) é um cronômetro circular: arraste o anel, use as setas do teclado (1 min), os botões −5/+5 ou os atalhos 15/25/45/60/90 min. O tempo restante é sempre calculado por **timestamps** (fim − agora), então a contagem continua exata com a aba em segundo plano, e a sessão **sobrevive a recarregamentos** (rodando, continua; pausada, mantém o restante; se o fim passou enquanto a página estava fechada, vira "concluída"). No fim há um som curto (Web Audio, só na aba que iniciou), o título da aba muda para "Sessão concluída" e aparece um resumo; sessões com mais de 1 minuto entram no histórico.
+O **Modo Foco** (`/foco`) é só um anel com o tempo dentro. **Digite a duração** no próprio relógio (`25` = 25 min, `25:30`, `1:30:00`, `90` = 1 h 30; mínimo 1 min, máximo 3 h; ↑/↓ ajustam 1 min, Shift 5 min) e toque no play. A última duração confirmada vira o padrão (guardada em segundos). Rodando, o anel amarelo diminui; pausado, o tempo pisca de leve e aparecem retomar, reiniciar e encerrar; ao fim há um som curto (Web Audio, só na aba que iniciou), o título da aba vira "Sessão concluída" e o anel mostra a duração focada. O tempo restante é sempre calculado por **timestamps** (fim − agora): fica exato com a aba em segundo plano e a sessão **sobrevive a recarregamentos**. Sessões com mais de 1 minuto entram no histórico (usado nas Estatísticas).
 
-**O que a trava ("Travar tela") faz**, enquanto o cronômetro roda ou está pausado:
+O **cadeado** sob o anel (visível só com o cronômetro parado) liga a trava para a próxima sessão; ele guarda a última escolha. Com a **trava** ligada e o cronômetro rodando ou pausado:
 
-- esconde a barra lateral, o topo e os links; a navegação interna é bloqueada e qualquer rota digitada na URL volta para `/foco`;
-- pede **tela cheia** (se você sair com Esc, o app continua travado e mostra "Voltar à tela cheia"; **Esc nunca destrava**);
-- mantém a tela ligada (**Screen Wake Lock**, quando o navegador suporta);
-- mostra o aviso padrão do navegador ao recarregar ou fechar a aba;
-- só o Espaço (pausar/retomar) continua como atalho;
+- só ficam na tela o anel com o tempo e **"Segurar para destravar"** (sem pausar, reiniciar, encerrar nem a tecla Espaço);
+- somem a barra lateral, o topo e os links; a navegação interna é bloqueada e qualquer rota digitada volta para `/foco`;
+- o app pede **tela cheia** (se você sair com Esc, continua travado; **Esc nunca destrava**), mantém a tela ligada (**Wake Lock**, quando houver suporte) e mostra o aviso do navegador ao recarregar ou fechar a aba;
 - para destravar, **segure o botão por 3 segundos** (mouse, toque ou Enter/Espaço). Destravar **não encerra** a sessão.
 
-**O que ela NÃO pode fazer.** É um travamento _do aplicativo_, para evitar distração acidental, **não uma medida de segurança**. Navegadores não permitem bloquear Alt+Tab, Ctrl+W, fechar a janela, trocar de aba/janela nem o sistema operacional; quem quiser sair sempre consegue. O Wake Lock e a tela cheia também dependem do navegador.
+**O que ela NÃO pode fazer.** É um travamento _do aplicativo_, para evitar distração acidental, **não uma medida de segurança**. Navegadores não permitem bloquear Alt+Tab, Ctrl+W, fechar a janela, trocar de aba/janela nem o sistema operacional; quem quiser sair sempre consegue. O Wake Lock e a tela cheia também dependem do navegador (e a tela cheia não pode ser reaberta depois de um Esc: a tela fica travada, mas em janela normal).
 
 **Ideia futura:** instalar o Daily como PWA e abri-lo em **janela própria** (modo standalone/kiosk), o que reduz as distrações da barra de abas e dá mais controle sobre a tela cheia.
 
