@@ -1,4 +1,4 @@
-# Daily — Design System (v0.2)
+# Daily — Design System (v0.3)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -114,3 +114,106 @@ Eventos: prova, estudo, entrega, revisão, especial. “Matéria” substitui �
 - Sem moldura de dispositivo, cursor ou botão “Chat with Eva” (vira “Modo Foco”).
 - Chips ~44 px em vez de ~56 px (ver acima); chips da referência aparecem “esmaecidos” em parte dos dias — aqui só os dias de outros meses são esmaecidos.
 - O seletor de matéria mantém a seta (é um `<select>` funcional).
+
+## 7. Componentes do Prompt 02 (formulários, menus, avisos e estados)
+
+Todos usam apenas utilitários derivados de tokens; nenhum valor visual literal.
+
+### Botões (`ui/Button`)
+
+| Variante    | Uso                                    | Tokens principais                                             |
+| ----------- | -------------------------------------- | ------------------------------------------------------------- |
+| `primary`   | Ação principal (amarelo)               | `accent`, `accent-fg`, `text-nav` 16 px semibold, `h-control` |
+| `secondary` | Ação secundária contornada             | `border-strong`, `text-md` 14 px                              |
+| `outline`   | Contornado de 13 px (Modo Foco, toast) | igual ao secundário com `text-base`                           |
+| `pill`      | “Criar” da sidebar                     | `white-pill`, `create-w` × `create-h`                         |
+| `icon`      | Círculo preenchido (topbar, sidebar)   | `surface`; tamanhos `xs 24 / sm 32 / md 40`                   |
+| `tile`      | Quadrado arredondado (popover, modal)  | `hover`, `radius-md`; tamanho `xs` 24 px                      |
+
+Acessibilidade: botões só com ícone **exigem** `aria-label` (garantido pelo tipo); foco visível via anel amarelo global; `disabled` reduz a opacidade.
+
+### Modal (`ui/Modal`)
+
+- Camada: `scrim` (preto a 40 %) cobrindo a tela; painel `surface-raised`, `radius-xl`, `shadow-popover`, largura `--ds-modal-w` (32 rem), altura máxima `--ds-modal-max-h` (90 dvh) com rolagem interna.
+- Estrutura: título `text-title` semibold + botão `tile` “Fechar”; corpo com `px-6`; rodapé alinhado à direita com `gap-2` (Cancelar `secondary`, Salvar `primary`).
+- Acessibilidade: `role="dialog"`, `aria-modal`, `aria-labelledby`; foco preso (Tab/Shift+Tab), foco inicial em `[data-autofocus]` (ou no primeiro controle), **Esc fecha** e o foco volta a quem abriu (hook `useFocusScope`, também usado pelo popover).
+
+### Menu (`ui/Menu`)
+
+- Painel `surface-raised` com `border-hair`, `radius-lg`, `shadow-popover`, largura `--ds-menu-w` (13 rem); itens de `h-select` (36 px), `text-md`, ícone de 16 px em `muted`; hover/foco com `hover`.
+- Fica logo após o gatilho no DOM (sem portal), por isso funciona dentro do popover.
+- Acessibilidade: gatilho com `aria-haspopup="menu"`, `aria-expanded`, `aria-controls`; painel `role="menu"`, itens `role="menuitem"`; foco no primeiro item ao abrir; ↑/↓ circulam, Home/End vão às pontas, **Esc fecha só o menu** e devolve o foco ao gatilho, Tab e clique fora fecham.
+
+### Toast (`ui/ToastRegion`)
+
+- Cartão `surface-raised`, `radius-lg`, `shadow-popover`, largura máxima `--ds-toast-w` (26 rem), centralizado na base; mensagem `text-md` e botão `outline` “Desfazer”.
+- Duração: 6 s com “Desfazer” (`UNDO_MS`); avisos simples, 4 s.
+- Acessibilidade: a região é `role="status"` com `aria-live="polite"`, então cada toast é anunciado; o botão é alcançável por teclado.
+
+### Formulários (`ui/Field`)
+
+| Componente      | Controle                                                                                           |
+| --------------- | -------------------------------------------------------------------------------------------------- |
+| `TextField`     | Input de `h-select` (36 px), `surface`, `border-hair`, `radius-md`, `text-md`, placeholder `muted` |
+| `TextAreaField` | Mesmo estilo, altura mínima `--ds-textarea-h` (5 rem), redimensionável na vertical                 |
+| `SelectField`   | `<select>` nativo estilizado (`ui/Select`) com seta                                                |
+
+- Rótulo acima (`text-base` medium, `soft`), **sempre** associado por `htmlFor`/`id`; ajuda em `text-sm muted`; erro em `text-sm danger` (`--ds-color-danger`, 5,4:1 sobre o painel), no `role="alert"`.
+- Campo inválido: `aria-invalid="true"` + `aria-describedby` para a mensagem + borda `danger`; ao enviar com erro o foco vai ao primeiro campo inválido.
+- Datas e horários usam os controles nativos (`color-scheme: dark`). `radio`/`checkbox` nativos usam `accent-color` amarelo.
+- Mensagens de erro em pt-BR, geradas pelos schemas zod.
+
+### Lista de conteúdos (`forms/ContentsEditor`)
+
+- Linha: input (`h-select`) + três botões `tile` `xs` (subir, descer, remover) com `gap-1`; “Adicionar conteúdo” em `secondary`. Enter na última linha cria outra.
+- Acessibilidade: cada controle tem `aria-label` com o número (“Mover conteúdo 2 para cima”); subir/descer ficam `disabled` nas pontas; reordenar não exige arrastar.
+- No popover (`EventPopover`): checkbox por conteúdo (riscado e `muted` quando concluído), contador `done/total`, `ProgressBar` (`role="progressbar"`, `aria-valuenow`) e input “Adicionar conteúdo” de 24 px (`h-field`) com botão `tile`.
+
+### Abas (`ui/Tabs`) e estado vazio (`ui/EmptyState`)
+
+- Abas: trilho igual ao segmentado (`surface`, ativo amarelo); `role="tablist"/"tab"/"tabpanel"`, ←/→ movem a seleção, `tabIndex` roving.
+- Estado vazio: borda `hair`, `radius-xl`, ícone de 32 px `muted`, título `text-lg`, texto `text-md muted` (largura máx. do modal), ações centralizadas.
+
+### Estados de evento (`concluído` e `cancelado`)
+
+| Estado                 | Chip (calendário e listas)                              | Token                      |
+| ---------------------- | ------------------------------------------------------- | -------------------------- |
+| pendente, em andamento | normal                                                  | —                          |
+| concluído              | esmaecido + título riscado                              | `--ds-opacity-done` 0,55   |
+| cancelado              | igual ao concluído (a diferença é o rótulo “Cancelado”) | `--ds-opacity-done`        |
+| dia de outro mês       | esmaecido (já existia)                                  | `--ds-opacity-dimmed` 0,45 |
+
+O estado nunca depende só da cor/opacidade: o status aparece por extenso no popover, nas listas e no formulário.
+
+### Cores de matéria
+
+Paleta fixa de 8 cores (`--ds-color-subject-vermelho … rosa`); aparece como ponto de `--ds-dot` (10 px) nas listas e como seletor de `--ds-swatch` (28 px) no formulário (`role="radiogroup"`, cada cor com `aria-label` e `aria-checked`).
+
+### Tokens adicionados no Prompt 02 e 02.1
+
+| Token                     | Valor                      | Uso                                      |
+| ------------------------- | -------------------------- | ---------------------------------------- |
+| `--ds-color-danger`       | `#FF6B78`                  | erros de formulário/alertas              |
+| `--ds-color-subject-*`    | 8 cores                    | paleta de matérias                       |
+| `--ds-opacity-done`       | 0,55                       | chips concluídos/cancelados              |
+| `--ds-modal-w` / `-max-h` | 32 rem / 90 dvh            | modal                                    |
+| `--ds-menu-w`             | 13 rem                     | menu suspenso                            |
+| `--ds-toast-w`            | 26 rem                     | toast                                    |
+| `--ds-page-max-w`         | 56 rem                     | largura do conteúdo das páginas de lista |
+| `--ds-textarea-h`         | 5 rem                      | altura mínima do textarea                |
+| `--ds-chip-pad-y`         | 3 px (4 px em telas altas) | respiro vertical do chip                 |
+
+## 8. Telas altas (segunda tela em 1920×1080)
+
+Com `min-height: 1000px` (`@media` em `tokens.css`): `--ds-chip-pad-y` sobe de 3 px para 4 px e `--ds-cell-min-h` de 9 rem para 9,4 rem.
+
+| Medida (Nov/2026, dados de exemplo)                  | Antes (1920×1080) | Depois (1920×1080)          | 1440×900 (inalterado) |
+| ---------------------------------------------------- | ----------------- | --------------------------- | --------------------- |
+| Altura do chip                                       | 46 px             | **48 px**                   | 46 px                 |
+| Linha do grid, mês de 5 semanas                      | 181 px            | 181 px (preenche a tela)    | 145 px                |
+| Linha do grid, mês de 6 semanas                      | 151 px            | 151 px (≥ mínimo de 150 px) | 144 px (rola)         |
+| Conteúdo necessário por célula (2 chips + “+N mais”) | 142 px            | 150 px                      | 142 px                |
+
+Regra: o chip só cresce até o ponto em que **2 chips + “+N mais” ainda cabem numa linha de mês de 6 semanas** (a pior hipótese em 1080 px). Em meses de 5 semanas sobra ~30 px abaixo dos chips; aceitável, e o grid continua ocupando toda a altura.
+
+Capturas: `docs/design/screenshots/app/*-1440x900.png` e `*-1920x1080.png` (`pnpm visual:app`).

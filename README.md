@@ -186,8 +186,16 @@ Cada ciclo fica registrado em [`docs/prompts/`](docs/prompts/) (`NN-prompt.md` e
 
 Decisões maiores serão registradas em `docs/adr/`.
 
+## Dados e privacidade
+
+- Seus dados (matérias, provas, tarefas, blocos de estudo e conteúdos) ficam **somente no seu navegador**, no `localStorage` deste site. Nada é enviado a servidores, não há conta nem rastreamento.
+- Por isso, **limpar os dados do site, trocar de navegador ou de computador faz os dados "sumirem"**. Para guardar uma cópia, use **Preferências → Exportar dados (JSON)**; para restaurar ou levar a outro lugar, **Importar dados (JSON)**.
+- O Daily mantém automaticamente uma cópia do último estado válido e, se o dado salvo ficar corrompido, avisa e oferece restaurá-la (detalhes em [`docs/data-model.md`](docs/data-model.md)).
+- Em navegação anônima/privada os dados podem não persistir; o app avisa quando não consegue salvar.
+
 ## Limitações conhecidas
 
+- **Testado apenas no Chromium** (Playwright e uso manual); Firefox e Safari não foram verificados, e os campos nativos de data e hora variam entre navegadores
 - Os dados vivem **só neste navegador** (sem conta nem sincronização): limpar os dados do site apaga tudo. Use Preferências → Exportar para guardar uma cópia
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
 - Busca, notificações e o botão "Modo Foco" da topbar ainda são apenas visuais
