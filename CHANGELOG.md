@@ -5,6 +5,23 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Adicionado (Prompt 05 — hábitos recorrentes)
+
+- Página `/habitos` e item "Hábitos" na sidebar (contador de pendentes hoje; oculto em zero, como o de Tarefas): um cartão por hábito, com ícone e cor, resumo da repetição, sequência, melhor sequência, taxa de 90 dias, controle de hoje, menu (Editar, Duplicar, Arquivar, Excluir com "Desfazer") e o **heatmap de contribuições** (semanas em colunas, rótulos de mês e dia, legenda, hoje com contorno, teclado e `aria-label` por dia, tooltip, tabela oculta por mês, rolagem horizontal abaixo de 1100 px).
+- Hábitos com repetição por dias da semana ou a cada N dias, horário opcional, tipo check ou quantidade, fontes automáticas (água, foco, blocos de estudo) e **regras versionadas**: editar repetição, meta ou horário vale a partir de hoje e o histórico não muda.
+- Modal Novo/Editar hábito (validação em pt-BR), popover do dia (corrige dias passados de hábitos manuais, até 366 dias), 4 sugestões no estado vazio e seção "Arquivados".
+- `lib/habits` (agendamento, valor, estado e nível do dia, sequências, taxa, matriz do heatmap e agregados) e `lib/habits/repeat.ts` (repetição reaproveitável), com testes; fixture `?fixture=habits`, `pnpm visual:habits` e seção "Heatmap de hábitos" no design system.
+- Formato de dados **v3** (`daily:v3`, backup do v2 em `daily:v2:pre-v3`); importação de arquivos v1, v2 e v3.
+
+### Alterado (Prompt 05)
+
+- As **metas** viraram hábitos (migração automática, sem perda de registros). Estatísticas: "Metas do dia" → **Hábitos de hoje** (o lápis leva a `/habitos`), "Metas" nas Análises → **Consistência** (heatmap das últimas 52 semanas, sequência geral, melhor e taxas de 30 e 90 dias) e a pílula de sequência usa a sequência geral.
+- `/foco`: a fração dos milésimos fica ao lado dos dígitos em posição absoluta (os dígitos ficam centralizados com as pílulas); o botão "Modo Foco" da topbar ganha estado ativo em `/foco`.
+
+### Removido (Prompt 05)
+
+- Cartão, modal e funções de Metas (`goalStates`, `computeStreaks`…), o mapa de calor antigo e o token `--ds-heat-min`; os schemas de metas ficam só em `legacy-goals.ts` para migrar e importar arquivos v2.
+
 ### Alterado (04.1)
 
 - `/foco` redesenhado **sem o anel**: dígitos grandes e pesados (editáveis quando parado), fração de milésimos em cinza no baseline só enquanto roda (com movimento reduzido, os dígitos atualizam uma vez por segundo), botões em pílula por estado e, à esquerda, o painel **Dias de mais foco** (abaixo de 1100 px ele desce). Com a trava, só os dígitos e "Segurar para destravar" (agora com um anel de progresso em volta do cadeado).

@@ -35,13 +35,13 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 O projeto está em desenvolvimento, organizado em marcos.
 
-| Marco                  | Escopo                                                                     | Status       |
-| ---------------------- | -------------------------------------------------------------------------- | ------------ |
-| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados              | Concluído    |
-| **1. Base**            | Dados locais, CRUD, páginas (feito); login, back-end e deploy              | Em andamento |
-| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo                | Em andamento |
-| **3. Segunda tela**    | Modo Foco e Estatísticas (feitos); notificações, lembretes, PWA instalável | Em andamento |
-| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                                 | Planejado    |
+| Marco                  | Escopo                                                                              | Status       |
+| ---------------------- | ----------------------------------------------------------------------------------- | ------------ |
+| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados                       | Concluído    |
+| **1. Base**            | Dados locais, CRUD, páginas (feito); login, back-end e deploy                       | Em andamento |
+| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo                         | Em andamento |
+| **3. Segunda tela**    | Modo Foco, Estatísticas e Hábitos (feitos); notificações, lembretes, PWA instalável | Em andamento |
+| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                                          | Planejado    |
 
 ## Funcionalidades
 
@@ -61,11 +61,12 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] Páginas **Provas** (contagem regressiva), **Tarefas** (filtros e criação rápida), **Matérias** (cores) e **Blocos de estudo** (semana)
 - [x] Estados do evento: pendente, em andamento, concluído e cancelado
 - [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
-- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 e v2)
+- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1, v2 e v3)
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
-- [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, metas do dia e agenda) e “Análises” (semana, mês ou 90 dias) com cinco gráficos em SVG próprio
+- [x] **Hábitos recorrentes** (`/habitos`): dias da semana ou a cada N dias, horário opcional, tipo check ou quantidade, fontes automáticas (água, foco, blocos de estudo), **calendário de contribuições** por hábito (estilo GitHub), sequência, melhor sequência e taxa; as antigas metas migram para hábitos
+- [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, hábitos de hoje e agenda) e “Análises” (semana, mês ou 90 dias) com cinco gráficos em SVG próprio e o heatmap de consistência dos hábitos
 
 ### Em planejamento
 
@@ -207,7 +208,7 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 
 ## Dados e privacidade
 
-- Seus dados (matérias, provas, tarefas, blocos de estudo e conteúdos) ficam **somente no seu navegador**, no `localStorage` deste site. Nada é enviado a servidores, não há conta nem rastreamento.
+- Seus dados (matérias, provas, tarefas, blocos de estudo, conteúdos e hábitos) ficam **somente no seu navegador**, no `localStorage` deste site. Nada é enviado a servidores, não há conta nem rastreamento.
 - Por isso, **limpar os dados do site, trocar de navegador ou de computador faz os dados "sumirem"**. Para guardar uma cópia, use **Preferências → Exportar dados (JSON)**; para restaurar ou levar a outro lugar, **Importar dados (JSON)**.
 - O Daily mantém automaticamente uma cópia do último estado válido e, se o dado salvo ficar corrompido, avisa e oferece restaurá-la (detalhes em [`docs/data-model.md`](docs/data-model.md)).
 - Em navegação anônima/privada os dados podem não persistir; o app avisa quando não consegue salvar.
@@ -220,7 +221,8 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
 - Busca e notificações ainda são apenas visuais
 - Visões Semana e Ano são placeholders; Atalhos, FAQ e Convidar amigos são páginas placeholder
-- Estatísticas: a água e as metas são registradas só neste navegador; a sequência olha no máximo 365 dias para trás; as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
+- Hábitos: os registros ficam só neste navegador; correções retroativas só para hábitos manuais e até 366 dias atrás; a regra de repetição ainda não vale para eventos do calendário (recorrência de eventos fica para depois); mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
+- Estatísticas: a água é registrada só neste navegador; as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas

@@ -1,5 +1,7 @@
 # Modelo de dados
 
+> **v3 (Prompt 05):** as metas viraram **hábitos** (`habits`, `habitLogs`; seção “Entidades da versão 3”, no fim), a chave passou a `daily:v3` e `goals`/`goalLogs` saíram do snapshot (os schemas ficam em `legacy-goals.ts` só para migrar e importar).
+>
 > **v2 (Prompt 03):** o snapshot ganhou `preferences`, `goals`, `goalLogs`, `waterLogs` e `focusSessions` (seção “Entidades da versão 2”, no fim). O restante deste documento continua valendo.
 
 Definido com zod em `packages/shared/src` (fonte de verdade dos tipos). Hoje os dados vivem no
@@ -52,11 +54,14 @@ Regras (em `apps/web/src/lib/data/rules.ts`):
 
 ## Armazenamento (`localStorage`)
 
-| Chave              | Conteúdo                                                                  |
-| ------------------ | ------------------------------------------------------------------------- |
-| `daily:v1`         | Envelope `{ app: "daily", version, savedAt, data: { subjects, events } }` |
-| `daily:v2:backup`  | Último estado **válido** anterior à gravação mais recente                 |
-| `daily:v2:corrupt` | Cópia do dado ilegível, guardada para recuperação manual                  |
+| Chave                                | Conteúdo                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| `daily:v3`                           | Envelope `{ app: "daily", version: 3, savedAt, data }` (formato atual) |
+| `daily:v3:backup`                    | Último estado **válido** anterior à gravação mais recente              |
+| `daily:v3:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
+| `daily:v2`, `daily:v1`               | Formatos antigos: lidos uma vez na migração e **nunca alterados**      |
+| `daily:v2:pre-v3`, `daily:v1:pre-v2` | Cópia do original feita **antes** de migrar                            |
+| `daily:v2:focus`                     | Sessão de foco ativa (fora do snapshot e do backup; chave histórica)   |
 
 A chave leva a versão do formato; o campo `version` do envelope dispara as migrações
 (`MIGRATIONS[n]` converte n → n+1). Arquivos exportados têm o mesmo formato do envelope.
@@ -71,7 +76,8 @@ A chave leva a versão do formato; o campo `version` do envelope dispara as migr
 ### Fluxo de carregamento
 
 ```
-getItem(daily:v1) ─ null ───────────────▶ vazio
+getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
+        │ (v2 ou v1 presentes: guarda o original em :pre-v3 / :pre-v2, migra e grava em daily:v3)
         │
         ▼ parseEnvelope (JSON → versão → migração → zod)
    ok ──┴── erro ──▶ vazio + issue{corrupt} + salva original em :corrupt
@@ -89,14 +95,14 @@ componentes ──▶ useData (Zustand) ──▶ DataRepository ──▶ Local
 
 ## Entidades da versão 2
 
-| Entidade (`packages/shared`)    | Campos                                                                                                                                                                                                         | Observações                                                                                                |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `Preferences` (uma)             | `name` (≤ 40), `waterGoalMl` (250–10 000, padrão 2000), `cupMl` (50–1000, padrão 250), `focusDurationSec` (60–10 800, padrão 1500; o antigo `focusDurationMin` ainda é lido), `lockByDefault` (padrão `false`) | Nomes do prompt: nome, metaÁguaMl, copoMl, duraçãoFocoSeg, travarPorPadrão                                 |
-| `Goal` (Meta)                   | `id`, `title`, `icon` (10 ícones lucide), `kind` (`manual` \| `auto-agua` \| `auto-estudo`), `order`, `createdAt`, `archivedAt?`                                                                               | Metas padrão no primeiro acesso: Dormir 7h, Beber 2 L de água, Exercício, Cumprir blocos de estudo de hoje |
-| `GoalLog` (RegistroMeta)        | `id` (= `goalId:data`), `goalId`, `date` (`yyyy-MM-dd` local), `done`                                                                                                                                          | O `id` determinístico permite `upsert` idempotente                                                         |
-| `WaterLog` (RegistroÁgua)       | `id`, `date`, `ml`, `time` (`HH:mm`)                                                                                                                                                                           |                                                                                                            |
-| `FocusSession` (SessãoFoco)     | `id`, `startedAt`, `plannedSec`, `actualSec`, `status` (`concluida` \| `interrompida`), `subjectId?`, `examId?`, `blockId?`                                                                                    | Entra no backup. Excluir a matéria/prova/bloco vinculado zera o vínculo                                    |
-| `ActiveFocus` (SessãoFocoAtiva) | `id`, `status` (`ocioso` \| `rodando` \| `pausado`), `durationSec`, `startedAtMs`, `endsAtMs` (rodando), `remainingMs` (pausado), `locked`, `link`, `tabId`                                                    | **Fora do snapshot e do backup**: chave `daily:v2:focus`. No máximo uma. Só persiste rodando/pausada       |
+| Entidade (`packages/shared`)    | Campos                                                                                                                                                                                                         | Observações                                                                                                      |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `Preferences` (uma)             | `name` (≤ 40), `waterGoalMl` (250–10 000, padrão 2000), `cupMl` (50–1000, padrão 250), `focusDurationSec` (60–10 800, padrão 1500; o antigo `focusDurationMin` ainda é lido), `lockByDefault` (padrão `false`) | Nomes do prompt: nome, metaÁguaMl, copoMl, duraçãoFocoSeg, travarPorPadrão                                       |
+| `Goal` (Meta)                   | `id`, `title`, `icon` (10 ícones lucide), `kind` (`manual` \| `auto-agua` \| `auto-estudo`), `order`, `createdAt`, `archivedAt?`                                                                               | Metas padrão no primeiro acesso: Dormir 7h, Beber 2 L de água, Exercício, Cumprir blocos de estudo de hoje       |
+| `GoalLog` (RegistroMeta)        | `id` (= `goalId:data`), `goalId`, `date` (`yyyy-MM-dd` local), `done`                                                                                                                                          | O `id` determinístico permite `upsert` idempotente                                                               |
+| `WaterLog` (RegistroÁgua)       | `id`, `date`, `ml`, `time` (`HH:mm`)                                                                                                                                                                           |                                                                                                                  |
+| `FocusSession` (SessãoFoco)     | `id`, `startedAt`, `plannedSec`, `actualSec`, `status` (`concluida` \| `interrompida`), `subjectId?`, `examId?`, `blockId?`                                                                                    | Entra no backup. Excluir a matéria/prova/bloco vinculado zera o vínculo                                          |
+| `ActiveFocus` (SessãoFocoAtiva) | `id`, `status` (`ocioso` \| `rodando` \| `pausado`), `durationSec`, `startedAtMs`, `endsAtMs` (rodando), `remainingMs` (pausado), `locked`, `link`, `tabId`                                                    | **Fora do snapshot e do backup**: chave `daily:v2:focus` (histórica). No máximo uma. Só persiste rodando/pausada |
 
 Integridade (`dataSnapshotSchema`): ids únicos em todas as coleções; `GoalLog.goalId` e os vínculos das sessões precisam existir (matéria, prova **do tipo prova**, bloco **do tipo estudo**).
 
@@ -111,6 +117,37 @@ Integridade (`dataSnapshotSchema`): ids únicos em todas as coleções; `GoalLog
 | ------ | ----------------------------------------------------------------------------------------------------------------- |
 | 2      | `preferences`, `goals`, `goalLogs`, `waterLogs`, `focusSessions`; chave `daily:v2`; sessão ativa em chave própria |
 
+## Entidades da versão 3 (hábitos)
+
+| Entidade (`packages/shared/src/habits.ts`) | Campos                                                                                                                                                                                                                                      | Observações                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `Habit` (Hábito)                           | `id`, `name` (≤ 60), `icon` (12 ícones lucide), `color` (7 chaves da paleta), `type` (`check` \| `quantidade`), `unit` (≤ 12), `source` (`manual` \| `agua` \| `foco` \| `blocos`), `rules`, `createdAt`, `archivedAt?`, `endsOn?`, `order` | Fontes `agua`/`foco` exigem `quantidade`; `blocos` exige `check`. `endsOn` encerra a agenda sem arquivar        |
+| `HabitRule` (Regra, versionada)            | `since` (início, âncora do intervalo), `repeat`, `target` (> 0 e obrigatória em `quantidade`), `time?` (`start` `HH:mm` + `durationMin`)                                                                                                    | Lista com ≥ 1 item, em ordem **estritamente crescente** de `since`; a última com `since ≤ dia` vale naquele dia |
+| `Repeat`                                   | `dias-da-semana` (`days` 0–6, 0 = domingo; “todo dia” = os 7) ou `a-cada-n-dias` (`interval` 2–365)                                                                                                                                         | Módulo próprio (`lib/habits/repeat.ts`), reaproveitável pela recorrência de eventos                             |
+| `HabitLog` (RegistroHábito)                | `id` (= `habitId:data`), `habitId`, `date`, `value` (≥ 0), `updatedAt`                                                                                                                                                                      | Só hábitos `manual`; `upsert` idempotente. Check: 0 ou 1                                                        |
+
+Integridade: ids únicos; `HabitLog.habitId` precisa existir. Editar repetição, meta ou horário **acrescenta uma regra com `since` = hoje** (ou substitui a de hoje); o passado continua como era. Arquivar define `archivedAt`: o próprio dia conta, os seguintes não. Excluir remove também os registros (o “Desfazer” restaura o snapshot de antes).
+
+### Migração v2 → v3
+
+1. Primeiro acesso a `daily:v3` vazio com `daily:v2` presente: o v2 é copiado para `daily:v2:pre-v3` (antes de migrar) e permanece intacto.
+2. Cada `Goal` vira um `Habit` **com o mesmo `id`**: `manual` → check/manual; `auto-agua` → quantidade em `ml`, fonte `agua`, meta = `waterGoalMl` das preferências; `auto-estudo` → check, fonte `blocos`. Todos “todo dia”, com `since` = dia de `createdAt`. Preservam título, `createdAt`, `archivedAt`, ordem e ícone (fora do conjunto → `target`); as cores são distribuídas pela paleta.
+3. Cada `GoalLog` vira um `HabitLog` com valor 1 (concluída) ou 0. Diferença sutil: a meta antiga valia **até o dia anterior** ao arquivamento; o hábito vale **até o próprio dia**.
+4. Idempotente: roda só sobre dados v2; dado ilegível segue o fluxo de corrupção (aviso + restaurar backup). Importar aceita arquivos v1, v2 e v3.
+
+| Versão | Mudança                                                                |
+| ------ | ---------------------------------------------------------------------- |
+| 3      | `habits`, `habitLogs` no lugar de `goals`/`goalLogs`; chave `daily:v3` |
+
+### Derivados dos hábitos (não são salvos; `apps/web/src/lib/habits`)
+
+- **Agendado** (`isScheduled`): regra vigente na data + repetição + `archivedAt` + `endsOn`; fonte `blocos` sem blocos no dia = não agendado.
+- **Valor** (`valueOn`): manual = registro; `agua` = ml do dia; `foco` = minutos reais das sessões (por dia de início); `blocos` = proporção concluída.
+- **Estado do dia**: `futuro` | `nao-agendado` | `feito` | `parcial` | `perdido` | `pendente` (hoje, agendado e ainda não cumprido). **Nível** 0–4: check = 0 ou 4; quantidade = 0, ≤ 25 %, ≤ 50 %, < 100 %, ≥ 100 % da meta.
+- **Sequência** e **melhor**: contam só dias agendados; dias não agendados não quebram nem somam; hoje pendente não quebra. **Taxa**: cumpridos ÷ agendados na janela (30 e 90 dias; hoje pendente fica de fora).
+- **Agregado**: `dayConsistency` (% dos hábitos agendados cumpridos; sem hábitos agendados = neutro), `generalStreaks`, `aggregateMatrix` (52 semanas) e `generalRate`.
+- Contas sempre em dias locais (sem `toISOString`/UTC): testadas em meses de 28 a 31 dias, ano bissexto e virada de ano. Edição retroativa: só hábitos manuais, de hoje até 366 dias atrás.
+
 ### Derivados das estatísticas (não são salvos)
 
 Tudo em `apps/web/src/lib/stats` é função pura sobre o snapshot, com o “hoje” injetado:
@@ -119,8 +156,7 @@ Tudo em `apps/web/src/lib/stats` é função pura sobre o snapshot, com o “hoj
 - **Próxima prova** e **preparação** (`nextExam`, `examPrep`): conteúdos concluídos ÷ total; prova sem conteúdos mostra “Adicione conteúdos”.
 - **Horas** (`studyHoursByDay`): blocos de estudo planejados × concluídos por dia; **foco** (`focusSecondsByDay`): sessões por dia.
 - **Água** (`waterOn`): soma por dia contra `waterGoalMl` (usada em “Hoje” e na meta automática de água).
-- **Metas** (`goalStates`, `goalsSummary`): uma meta vale num dia se `createdAt ≤ dia` e (`archivedAt` ausente ou `> dia`); as automáticas (`auto-agua`, `auto-estudo`) são calculadas a partir de água e blocos.
-- **Sequência** (`computeStreaks`): dias seguidos com todas as metas **que existiam naquele dia** cumpridas, olhando no máximo `MAX_STREAK_LOOKBACK_DAYS` (365); o dia de hoje só quebra a sequência depois de encerrado.
+- **Hábitos**: ver “Derivados dos hábitos” (sequência, taxa e consistência); as Estatísticas só consomem `lib/habits`.
 - **Períodos** (`analysis.ts`): semana = 7, mês = 30, 90 dias = 90 (em barras semanais); a variação compara com o período anterior de mesmo tamanho.
 
 ### Sincronização entre abas

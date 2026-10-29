@@ -1,4 +1,4 @@
-# Daily — Design System (v0.7)
+# Daily — Design System (v0.8)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -371,3 +371,11 @@ Composição inspirada no gráfico de contribuições do GitHub (só a estrutura
 - **Tipografia dos rótulos:** `--ds-text-heat` = 11 px, cor `muted` (contraste AA medido na auditoria).
 - **Paleta dos hábitos (7):** `amarelo` (o do Daily), `azul`, `verde`, `laranja`, `rosa`, `violeta`, `turquesa` (`--ds-habit-*`). A cor do hábito entra por `--habit` (utilitários `habit-<cor>`, `habit-text`, `habit-bg`, `heat-lvl-0..4`, `heat-off`).
 - **Não depende só da cor:** cada célula tem `aria-label` (“ter., 21 de out. — Musculação: feito”), tooltip no hover e no foco e uma tabela visualmente oculta com o resumo por mês.
+
+### 11.1 Implementação (v0.8)
+
+- **Componente:** `features/habits/HeatGrid.tsx` (grade genérica) com `HabitHeatmap` (um hábito) e `AggregateHeatmap` (consistência na cor do Daily, 52 semanas). `role="grid"` com `role="row"` por dia da semana (7 linhas), foco móvel (← → andam uma semana, ↑ ↓ um dia, Enter abre o dia), tooltip no hover e no foco, resumo mensal em tabela `sr-only`.
+- **Largura:** as colunas usam `minmax(--ds-heat-cell-min, 1fr)` e o contêiner tem `max-width` = rótulos + semanas × (`--ds-heat-cell-max` + vão); abaixo disso a grade rola na horizontal, começando na semana mais recente.
+- **Contraste (`node apps/web/scripts/contrast-audit.mjs habits`):** 254 textos medidos em `/estatisticas`, `/foco` e `/habitos` (rótulos de mês e dia, legenda, controles); menor razão 4,71:1, nenhum abaixo de 4,5:1 (`docs/design/screenshots/stats/contrast-habits.json`). As células são gráficos: o nível 0 (`heat-0`, branco a 12 %) é decorativo e a informação nunca depende só da cor (cada dia tem `aria-label`, tooltip e a tabela oculta).
+- **Cores dos hábitos:** a classe `habit-<cor>` define `--habit`; ícones usam `habit-bg-soft habit-text`. Mapa literal em `HABIT_COLOR_CLASS` (o Tailwind só gera classes escritas por extenso).
+- **Estatísticas:** "Hábitos de hoje" substitui "Metas do dia"; "Consistência" ocupa a última linha inteira das Análises.

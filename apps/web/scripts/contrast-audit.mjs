@@ -13,7 +13,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(here, '..');
 const outDir = path.resolve(webRoot, '../../docs/design/screenshots/stats');
 const label = process.argv[2] ?? 'audit';
-const PAGES = ['/estatisticas?fixture=stats', '/foco?fixture=stats'];
+const PAGES = ['/estatisticas?fixture=stats', '/foco?fixture=stats', '/habitos?fixture=habits'];
 
 const lum = ([r, g, b]) => {
   const f = (v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
