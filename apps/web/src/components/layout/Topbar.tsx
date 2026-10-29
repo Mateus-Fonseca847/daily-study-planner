@@ -18,7 +18,7 @@ export function Topbar({ subjectId, onSubjectChange }: TopbarProps) {
         <Button variant="icon" aria-label="Notificações">
           <Bell aria-hidden strokeWidth={1.5} className="size-icon" />
         </Button>
-        <Button variant="secondary">
+        <Button variant="outline">
           Modo Foco
           <Focus aria-hidden strokeWidth={1.5} className="size-icon" />
         </Button>

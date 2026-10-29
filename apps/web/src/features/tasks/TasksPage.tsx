@@ -107,12 +107,14 @@ export function TasksPage() {
           className="h-control w-full rounded-full border-hair bg-surface px-5 text-md text-fg placeholder:text-muted"
         />
       </form>
-      <SegmentedControl
-        aria-label="Filtro de tarefas"
-        options={FILTERS}
-        value={filter}
-        onChange={setFilter}
-      />
+      <div className="self-start">
+        <SegmentedControl
+          aria-label="Filtro de tarefas"
+          options={FILTERS}
+          value={filter}
+          onChange={setFilter}
+        />
+      </div>
       {list.length === 0 ? (
         <EmptyState
           icon={ListChecks}

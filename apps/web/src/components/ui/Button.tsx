@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
-type Variant = 'primary' | 'secondary' | 'pill' | 'icon' | 'tile';
+type Variant = 'primary' | 'secondary' | 'outline' | 'pill' | 'icon' | 'tile';
 type IconSize = 'xs' | 'sm' | 'md';
 
 const BASE =
@@ -11,6 +11,9 @@ const VARIANTS: Record<Variant, string> = {
   primary:
     'h-control rounded-full bg-accent px-5 text-nav font-semibold text-accent-fg hover:brightness-95',
   secondary:
+    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-md text-fg hover:bg-hover',
+  /** Igual ao secundário, em 13 px (como o botão da topbar na referência). */
+  outline:
     'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-base text-fg hover:bg-hover',
   pill: 'h-create w-create-btn rounded-full bg-pill px-4 text-nav font-semibold text-pill-fg hover:brightness-95',
   icon: 'rounded-full bg-surface text-fg hover:brightness-125',

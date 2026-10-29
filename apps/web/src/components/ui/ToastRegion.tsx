@@ -14,8 +14,8 @@ function ToastItem({ toast }: { toast: Toast }) {
       <span>{toast.message}</span>
       {toast.actionLabel && (
         <Button
-          variant="secondary"
-          className="h-control-sm px-3 text-base"
+          variant="outline"
+          className="h-control-sm px-3"
           onClick={() => {
             toast.onAction?.();
             dismiss(toast.id);

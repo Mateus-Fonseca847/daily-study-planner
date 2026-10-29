@@ -16,7 +16,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "visual:capture": "pnpm --filter @daily/web visual:capture",
-    "e2e": "pnpm --filter @daily/web e2e"
+    "e2e": "pnpm --filter @daily/web e2e",
+    "visual:app": "pnpm --filter @daily/web visual:app"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

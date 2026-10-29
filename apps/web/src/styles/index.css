@@ -98,6 +98,7 @@
   --spacing-controls: var(--ds-controls-h);
   --spacing-weekday: var(--ds-weekday-h);
   --spacing-cell: var(--ds-cell-min-h);
+  --spacing-chip-y: var(--ds-chip-pad-y);
   --spacing-page: var(--ds-page-pad-x);
   --spacing-control: var(--ds-control-h);
   --spacing-control-sm: var(--ds-control-h-sm);
@@ -186,5 +187,9 @@
   }
   button {
     cursor: pointer;
+  }
+  input[type='radio'],
+  input[type='checkbox'] {
+    accent-color: var(--ds-color-accent);
   }
 }
