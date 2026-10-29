@@ -18,9 +18,9 @@ export function SidebarItem({ item, collapsed, count }: SidebarItemProps) {
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
         cn(
-          'relative flex h-item items-center gap-3 px-4 text-md font-medium transition-colors',
-          collapsed && 'justify-center',
-          isActive ? 'bg-surface text-accent' : 'text-muted hover:bg-hover hover:text-fg',
+          'relative flex h-item items-center text-nav font-medium transition-colors',
+          collapsed ? 'justify-center' : 'ml-inset gap-3 rounded-l-md pr-3 pl-4.5',
+          isActive ? 'bg-hover text-accent' : 'text-soft hover:bg-hover hover:text-fg',
         )
       }
     >

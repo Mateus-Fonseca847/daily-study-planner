@@ -48,10 +48,8 @@ export function CalendarControls({
           options={VIEW_OPTIONS}
           value={view}
           onChange={onViewChange}
+          actions={[{ label: 'Hoje', onClick: onToday }]}
         />
-        <Button variant="secondary" onClick={onToday}>
-          Hoje
-        </Button>
       </div>
       <div className="flex items-center gap-2">
         <Select

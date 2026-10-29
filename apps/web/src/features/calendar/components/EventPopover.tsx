@@ -19,8 +19,8 @@ interface EventPopoverProps {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center gap-2">
-      <dt className="w-popover-label shrink-0 text-sm text-muted">{label}</dt>
-      <dd className="flex h-control-sm min-w-0 flex-1 items-center rounded-md bg-hover px-2 text-sm">
+      <dt className="w-popover-label shrink-0 text-base text-muted">{label}</dt>
+      <dd className="flex h-field min-w-0 flex-1 items-center rounded-md bg-hover px-2 text-base font-medium">
         <span className="truncate">{value}</span>
       </dd>
     </div>
@@ -41,7 +41,7 @@ export function EventPopover({
       <div className="mb-4 flex items-center justify-between">
         <div className="flex gap-2">
           <Button
-            variant="icon"
+            variant="tile"
             size="xs"
             aria-label="Excluir evento"
             onClick={() => {
@@ -51,20 +51,20 @@ export function EventPopover({
           >
             <Trash2 aria-hidden strokeWidth={1.5} className="size-icon-sm" />
           </Button>
-          <Button variant="icon" size="xs" aria-label="Mais opções">
+          <Button variant="tile" size="xs" aria-label="Mais opções">
             <Ellipsis aria-hidden strokeWidth={1.5} className="size-icon-sm" />
           </Button>
         </div>
-        <Button variant="icon" size="xs" aria-label="Fechar" onClick={onClose}>
+        <Button variant="tile" size="xs" aria-label="Fechar" onClick={onClose}>
           <X aria-hidden strokeWidth={1.5} className="size-icon-sm" />
         </Button>
       </div>
 
-      <h2 className="text-lg font-semibold tracking-tight">{event.title}</h2>
-      <p className="mt-1 text-base text-muted">{eventLongDate(event)}</p>
-      <p className="text-base text-muted">{eventTimeRange(event)}</p>
+      <h2 className="text-title font-semibold tracking-tight">{event.title}</h2>
+      <p className="mt-1 text-md text-muted">{eventLongDate(event)}</p>
+      <p className="text-md text-muted">{eventTimeRange(event)}</p>
 
-      <dl className="mt-4 flex flex-col gap-2">
+      <dl className="mt-4 flex flex-col gap-1">
         <Field label="Matéria" value={subjectName(event.subjectId)} />
         <Field label="Tipo" value={EVENT_TYPE_META[event.type].label} />
         <Field label="Status" value={EVENT_STATUS_LABEL[event.status]} />

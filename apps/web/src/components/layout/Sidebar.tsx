@@ -23,7 +23,7 @@ function NavGroup({ label, items, collapsed, counts }: NavGroupProps) {
     <nav aria-label={label}>
       <h2
         className={cn(
-          'mb-2 px-4 text-sm font-medium tracking-label text-muted',
+          'mb-4 px-inset text-base font-medium tracking-label text-muted',
           collapsed && 'sr-only',
         )}
       >
@@ -55,7 +55,7 @@ export function Sidebar({ collapsed, onToggle, counts }: SidebarProps) {
     >
       <div
         className={cn(
-          'flex h-sidebar-header shrink-0 items-center px-4',
+          'flex h-sidebar-header shrink-0 items-center border-b-hair px-inset pt-3',
           collapsed ? 'justify-center' : 'justify-between',
         )}
       >
@@ -75,9 +75,9 @@ export function Sidebar({ collapsed, onToggle, counts }: SidebarProps) {
         </Button>
       </div>
 
-      <div className="mb-6 px-4">
+      <div className="mt-4 mb-7 px-inset">
         {collapsed ? (
-          <Button variant="icon" size="md" aria-label="Criar" className="bg-pill text-pill-fg">
+          <Button variant="icon" size="md" aria-label="Criar" className="bg-pill! text-pill-fg!">
             <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
           </Button>
         ) : (

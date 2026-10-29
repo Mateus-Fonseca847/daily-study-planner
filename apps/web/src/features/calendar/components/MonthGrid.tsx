@@ -24,7 +24,7 @@ export function MonthGrid({ month, events, today, selectedId, onSelect }: MonthG
           <div
             key={name}
             role="columnheader"
-            className="flex items-center justify-center border-r-hair text-xs font-medium uppercase tracking-caps text-muted"
+            className="flex items-center justify-center border-r-hair text-xs font-bold uppercase tracking-label text-fg"
           >
             {name}
           </div>

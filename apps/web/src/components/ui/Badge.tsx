@@ -7,8 +7,8 @@ interface BadgeProps {
 }
 
 const VARIANTS = {
-  counter: 'min-w-5 bg-badge px-1.5 text-xs font-semibold text-badge-fg',
-  new: 'bg-accent px-2 text-2xs font-bold uppercase text-accent-fg',
+  counter: 'min-w-badge bg-badge px-2 text-xs font-semibold text-badge-fg',
+  new: 'bg-accent-soft px-2 text-2xs font-bold uppercase text-accent',
 } as const;
 
 export function Badge({ variant, children }: BadgeProps) {
