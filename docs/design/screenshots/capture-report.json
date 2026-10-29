@@ -7,9 +7,9 @@
     "file": "fixture-popover-1440x900@1x.png",
     "popover": {
       "x": 924.140625,
-      "y": 466,
+      "y": 434,
       "width": 288,
-      "height": 426
+      "height": 458
     },
     "overflowX": false
   },
@@ -21,9 +21,9 @@
     "file": "fixture-popover-1440x900@2x.png",
     "popover": {
       "x": 924.140625,
-      "y": 466,
+      "y": 434,
       "width": 288,
-      "height": 426
+      "height": 458
     },
     "overflowX": false
   },
@@ -31,9 +31,9 @@
     "file": "fixture-popover-1280x720@1x.png",
     "popover": {
       "x": 832.703125,
-      "y": 286,
+      "y": 254,
       "width": 288,
-      "height": 426
+      "height": 458
     },
     "overflowX": false
   },
@@ -41,9 +41,9 @@
     "file": "fixture-popover-1280x800@1x.png",
     "popover": {
       "x": 832.703125,
-      "y": 366,
+      "y": 334,
       "width": 288,
-      "height": 426
+      "height": 458
     },
     "overflowX": false
   }

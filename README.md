@@ -35,13 +35,13 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 O projeto está em desenvolvimento, organizado em marcos.
 
-| Marco                  | Escopo                                                        | Status    |
-| ---------------------- | ------------------------------------------------------------- | --------- |
-| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados | Concluído |
-| **1. Base**            | Login, CRUD de tarefas, matérias, back-end e deploy           | Planejado |
-| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo   | Planejado |
-| **3. Segunda tela**    | Modo Foco, notificações, lembretes, PWA instalável            | Planejado |
-| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                    | Planejado |
+| Marco                  | Escopo                                                        | Status       |
+| ---------------------- | ------------------------------------------------------------- | ------------ |
+| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados | Concluído    |
+| **1. Base**            | Dados locais, CRUD, páginas (feito); login, back-end e deploy | Em andamento |
+| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo   | Em andamento |
+| **3. Segunda tela**    | Modo Foco, notificações, lembretes, PWA instalável            | Planejado    |
+| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                    | Planejado    |
 
 ## Funcionalidades
 
@@ -55,18 +55,24 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] Filtro do calendário por matéria
 - [x] Sidebar recolhível e interface em pt-BR
 - [x] Design system documentado, com tokens centralizados em CSS
+- [x] **Dados salvos no navegador** (`localStorage` versionado, com validação, migração e backup)
+- [x] **Criar, editar, duplicar e excluir** provas, tarefas, blocos de estudo e matérias, com "Desfazer" por 6 s
+- [x] Conteúdos da prova como mini tarefas (adicionar, renomear, remover, reordenar, marcar) com progresso
+- [x] Páginas **Provas** (contagem regressiva), **Tarefas** (filtros e criação rápida), **Matérias** (cores) e **Blocos de estudo** (semana)
+- [x] Estados do evento: pendente, em andamento, concluído e cancelado
+- [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
+- [x] Exportar e importar dados em JSON (validado, com confirmação)
 
 ### Em planejamento
 
-- [ ] Persistência real (hoje o estado é local e some ao recarregar)
 - [ ] Autenticação (e-mail/senha ou Google)
-- [ ] Criação, edição e exclusão de provas, tarefas e blocos de estudo
+- [ ] Sincronização com back-end
 - [ ] Visões Semana e Ano
 - [ ] Modo Foco para segunda tela
 - [ ] Notificações e lembretes periódicos
 - [ ] PWA instalável (manifest e service worker)
 - [ ] Estatísticas de estudo
-- [ ] Atalhos de teclado e entrada rápida de tarefas
+- [ ] Atalhos de teclado
 
 ## Stack
 
@@ -169,32 +175,35 @@ Cada ciclo fica registrado em [`docs/prompts/`](docs/prompts/) (`NN-prompt.md` e
 
 ## Decisões técnicas
 
-| Decisão                      | Motivo                                            |
-| ---------------------------- | ------------------------------------------------- |
-| Monorepo com pnpm            | Compartilhar tipos e schemas entre front e API    |
-| TypeScript 5.9 fixado        | O `typescript-eslint` ainda não suporta o TS 7    |
-| Mocks relativos à data atual | O calendário nunca aparece vazio, em qualquer mês |
-| Tokens CSS obrigatórios      | Fidelidade visual e manutenção em um único lugar  |
-| PWA em vez de app nativo     | Um código só para "app de PC" e versão online     |
+| Decisão                      | Motivo                                                                                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Monorepo com pnpm            | Compartilhar tipos e schemas entre front e API                                                                               |
+| TypeScript 5.9 fixado        | O `typescript-eslint` ainda não suporta o TS 7                                                                               |
+| Mocks relativos à data atual | O calendário nunca aparece vazio, em qualquer mês                                                                            |
+| Tokens CSS obrigatórios      | Fidelidade visual e manutenção em um único lugar                                                                             |
+| PWA em vez de app nativo     | Um código só para "app de PC" e versão online                                                                                |
+| `Repository` + Zustand       | A UI não conhece o `localStorage`; trocar por uma API é trocar o adaptador (veja [`docs/data-model.md`](docs/data-model.md)) |
 
 Decisões maiores serão registradas em `docs/adr/`.
 
 ## Limitações conhecidas
 
-- Os dados são mockados e o estado é local: checklist e exclusões somem ao recarregar
-- "+ Nova Prova", busca, notificações e o menu do popover são apenas visuais
-- Visões Semana e Ano são placeholders
+- Os dados vivem **só neste navegador** (sem conta nem sincronização): limpar os dados do site apaga tudo. Use Preferências → Exportar para guardar uma cópia
+- O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
+- Busca, notificações e o botão "Modo Foco" da topbar ainda são apenas visuais
+- Visões Semana e Ano são placeholders; Estatísticas, Modo Foco, Atalhos, FAQ e Convidar amigos são páginas placeholder
+- Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas
 - Ainda não há manifest nem service worker (PWA)
 - A comparação com a referência é lado a lado, a olho (sem diff de pixels automatizado)
-- A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`)
+- A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`) e usa dados em memória, sem tocar nos seus dados
 
 ## Roadmap
 
 - [x] **Marco 0:** monorepo, design system e calendário mensal
-- [ ] **Marco 1:** autenticação, API, banco de dados, CRUD e deploy
-- [ ] **Marco 2:** provas com contagem regressiva, conteúdos e blocos de estudo
+- [ ] **Marco 1:** autenticação, API, banco de dados e deploy (CRUD local já feito)
+- [x] **Marco 2 (parte local):** provas com contagem regressiva, conteúdos e blocos de estudo
 - [ ] **Marco 3:** Modo Foco, notificações e PWA instalável
 - [ ] **Marco 4:** acabamento, documentação final e divulgação
 
