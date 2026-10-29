@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { HeatCell, SeriesItem, SubjectHours } from '../../lib/stats/analysis';
 import type { SUBJECT_COLOR_CLASS } from '../../components/ui/SubjectDot';
 
@@ -150,7 +151,6 @@ interface HeatmapProps {
 
 const CELL = 10;
 const CELL_GAP = 2;
-const MIN_HEAT_OPACITY = 0.2;
 
 /** Mapa de calor das metas: quanto mais amarelo, maior a % cumprida no dia. */
 export function Heatmap({ weeks, caption }: HeatmapProps) {
@@ -173,11 +173,11 @@ export function Heatmap({ weeks, caption }: HeatmapProps) {
             width={CELL}
             height={CELL}
             rx={2}
-            className={cell.percent === null ? 'fill-chart-track' : 'fill-accent'}
-            fillOpacity={
+            className={cell.percent === null ? 'fill-chart-track' : 'fill-accent heat-cell'}
+            style={
               cell.percent === null
-                ? 1
-                : MIN_HEAT_OPACITY + (1 - MIN_HEAT_OPACITY) * (cell.percent / 100)
+                ? undefined
+                : ({ '--heat': cell.percent / 100 } as CSSProperties)
             }
           />
         )),

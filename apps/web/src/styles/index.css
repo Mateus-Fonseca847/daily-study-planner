@@ -19,7 +19,7 @@
   --color-chart-track: var(--ds-color-chart-track);
   --color-chart-track-strong: var(--ds-color-chart-track-strong);
   --color-frac: var(--ds-color-focus-frac);
-  --color-focus-rank: var(--ds-color-focus-rank);
+  --color-focus-sub: var(--ds-color-focus-sub);
   --color-danger: var(--ds-color-danger);
   --color-subject-vermelho: var(--ds-color-subject-vermelho);
   --color-subject-laranja: var(--ds-color-subject-laranja);
@@ -239,6 +239,10 @@
   @media (width < 80rem) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+/* Célula do mapa de calor: `--heat` (0–1) vai de `--ds-heat-min` até opacidade total. */
+@utility heat-cell {
+  fill-opacity: calc(var(--ds-heat-min) + (1 - var(--ds-heat-min)) * var(--heat));
 }
 /* Hachurado dos blocos planejados. */
 @utility bg-hatch {

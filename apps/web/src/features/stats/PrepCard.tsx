@@ -30,8 +30,11 @@ export function PrepCard({ prep, subjectName, now }: PrepCardProps) {
               </span>
             </ProgressRing>
           </div>
-          <div className="flex items-end justify-between gap-3">
-            <p className="min-w-0 truncate text-md text-muted" title={prep.exam.title}>
+          <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
+            <p
+              className="max-w-full line-clamp-2 text-md text-muted"
+              title={subjectName ?? prep.exam.title}
+            >
               {subjectName ?? 'Sem matéria'}
             </p>
             <span className="shrink-0 text-stat font-normal">

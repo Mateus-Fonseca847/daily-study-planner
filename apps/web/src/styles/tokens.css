@@ -99,8 +99,10 @@
   );
 
   /* Cronômetro do Modo Foco */
+  /* Mapa de calor das metas: opacidade do amarelo no nível mais baixo (3:1 contra o cartão). */
+  --ds-heat-min: 0.4;
   --ds-color-focus-frac: var(--ds-color-fg-muted);
-  --ds-color-focus-rank: var(--ds-color-fg-muted);
+  --ds-color-focus-sub: var(--ds-color-fg-soft);
 
   --ds-opacity-dimmed: 0.45;
   --ds-opacity-done: 0.55;

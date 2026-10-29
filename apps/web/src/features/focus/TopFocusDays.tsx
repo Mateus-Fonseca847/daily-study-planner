@@ -30,7 +30,7 @@ export function TopFocusDays() {
               key={day.day}
               className="grid h-focus-row grid-cols-[2rem_1fr_auto] items-center gap-3 rounded-focus-row px-3 odd:bg-hover"
             >
-              <span className="text-md tabular-nums text-focus-rank">{i + 1}º</span>
+              <span className="text-md tabular-nums text-focus-sub">{i + 1}º</span>
               <span className="flex min-w-0 items-center gap-2 text-md text-fg">
                 <span className="truncate">{formatShortDay(day.day)}</span>
                 {day.today && (
@@ -50,7 +50,7 @@ export function TopFocusDays() {
                 >
                   {formatDayTotal(day.seconds)}
                 </span>
-                <span className="text-xs text-muted">{formatSessionCount(day.sessions)}</span>
+                <span className="text-xs text-focus-sub">{formatSessionCount(day.sessions)}</span>
               </span>
             </li>
           ))}
