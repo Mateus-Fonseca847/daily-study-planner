@@ -100,6 +100,29 @@
 
   /* Cronômetro do Modo Foco */
   /* Mapa de calor das metas: opacidade do amarelo no nível mais baixo (3:1 contra o cartão). */
+  /* Heatmap de hábitos (docs/design/design-system.md → “Heatmap de hábitos”) */
+  --ds-heat-cell-max: 1.125rem;
+  --ds-heat-gap: 0.1875rem;
+  --ds-heat-radius: 0.1875rem;
+  --ds-heat-label-w: 2rem;
+  --ds-text-heat: 0.6875rem;
+  --ds-text-heat-lh: 1rem;
+  /* Agendado e não feito / não agendado (mais transparente). */
+  --ds-color-heat-0: rgb(255 255 255 / 0.12);
+  --ds-color-heat-off: rgb(255 255 255 / 0.04);
+  /* Intensidade dos níveis 1–4: % da cor do hábito misturada sobre `heat-0`. */
+  --ds-heat-mix-1: 30%;
+  --ds-heat-mix-2: 52%;
+  --ds-heat-mix-3: 76%;
+  --ds-heat-mix-4: 100%;
+  /* Paleta dos hábitos (7 cores; o amarelo é o do Daily). */
+  --ds-habit-amarelo: var(--ds-color-accent);
+  --ds-habit-azul: #4d8dff;
+  --ds-habit-verde: #2fd16b;
+  --ds-habit-laranja: #ff9f1c;
+  --ds-habit-rosa: #ff5cb8;
+  --ds-habit-violeta: #a78bfa;
+  --ds-habit-turquesa: #2dd4bf;
   --ds-heat-min: 0.4;
   --ds-color-focus-frac: var(--ds-color-fg-muted);
   --ds-color-focus-sub: var(--ds-color-fg-soft);

@@ -359,3 +359,15 @@ Estados: **parado** (dígitos editáveis; pílulas “Travar” — `aria-presse
 Fração e dígitos: com movimento normal os dígitos **truncam** o segundo (24:59.200, não 25:00) e atualizam por `requestAnimationFrame`, só rodando e com a aba visível; com `prefers-reduced-motion` não há fração e os dígitos arredondam para cima e atualizam uma vez por segundo.
 
 Painel “Dias de mais foco”: lista semântica (`ol`) dos **7 dias com mais tempo focado** em todo o histórico (sessões concluídas e interrompidas, por `actualSec`). Uma sessão conta no **dia local em que começou** (uma sessão que cruza a meia-noite fica inteira no dia do início). Empate: o dia mais recente primeiro. A linha 1 tem o tempo em amarelo; hoje leva um ponto amarelo (`aria-label="hoje"`). Vazio: “Complete uma sessão para ver seus dias de maior foco.”.
+
+## 11. Heatmap de hábitos
+
+Composição inspirada no gráfico de contribuições do GitHub (só a estrutura; sem a marca nem as cores). Valores **estimados**; todos em `tokens.css`.
+
+- **Grade:** semanas em colunas, 7 linhas por semana, semana começando no **domingo** (como o calendário do Daily). Rótulos de mês no topo (na primeira semana do mês) e rótulos de dia à esquerda (Seg, Qua, Sex). Legenda “Menos ▢▢▢▢▢ Mais” abaixo, no canto direito (5 quadrados: `heat-0` e os níveis 1–4).
+- **Célula:** quadrada; o tamanho acompanha a largura do cartão (`--ds-heat-cell-max` = 18 px no máximo, sem sobrar espaço vazio); vão `--ds-heat-gap` = 3 px; raio `--ds-heat-radius` = 3 px. Abaixo de 1100 px a grade mantém um tamanho mínimo e **rola na horizontal, começando na semana mais recente**.
+- **Estados:** hoje tem contorno (anel de 1 px na cor do hábito); dias futuros ficam esmaecidos (opacidade reduzida); dia não agendado usa `--ds-color-heat-off` (branco a 4 %, mais transparente); agendado e não feito usa `--ds-color-heat-0` (branco a 12 %).
+- **Níveis 1–4:** a cor do hábito misturada sobre `heat-0` por `color-mix` (`--ds-heat-mix-1..4` = 30, 52, 76 e 100 %). Check usa só 0 ou 4; quantidade usa 0, ≤ 25 %, ≤ 50 %, < 100 % e ≥ 100 % da meta.
+- **Tipografia dos rótulos:** `--ds-text-heat` = 11 px, cor `muted` (contraste AA medido na auditoria).
+- **Paleta dos hábitos (7):** `amarelo` (o do Daily), `azul`, `verde`, `laranja`, `rosa`, `violeta`, `turquesa` (`--ds-habit-*`). A cor do hábito entra por `--habit` (utilitários `habit-<cor>`, `habit-text`, `habit-bg`, `heat-lvl-0..4`, `heat-off`).
+- **Não depende só da cor:** cada célula tem `aria-label` (“ter., 21 de out. — Musculação: feito”), tooltip no hover e no foco e uma tabela visualmente oculta com o resumo por mês.

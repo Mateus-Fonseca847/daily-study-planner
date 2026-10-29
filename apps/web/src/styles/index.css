@@ -20,6 +20,8 @@
   --color-chart-track-strong: var(--ds-color-chart-track-strong);
   --color-frac: var(--ds-color-focus-frac);
   --color-focus-sub: var(--ds-color-focus-sub);
+  --color-heat-0: var(--ds-color-heat-0);
+  --color-heat-off: var(--ds-color-heat-off);
   --color-danger: var(--ds-color-danger);
   --color-subject-vermelho: var(--ds-color-subject-vermelho);
   --color-subject-laranja: var(--ds-color-subject-laranja);
@@ -78,6 +80,8 @@
   --text-card-title--line-height: var(--ds-text-card-title-lh);
   --text-stat: var(--ds-text-stat);
   --text-stat--line-height: var(--ds-text-stat-lh);
+  --text-heat: var(--ds-text-heat);
+  --text-heat--line-height: var(--ds-text-heat-lh);
   --text-focus: var(--ds-text-focus);
   --text-focus--line-height: var(--ds-text-focus-lh);
   --text-focus-frac: var(--ds-text-focus-frac);
@@ -104,6 +108,7 @@
   --radius-md: var(--ds-radius-md);
   --radius-lg: var(--ds-radius-lg);
   --radius-xl: var(--ds-radius-xl);
+  --radius-heat: var(--ds-heat-radius);
   --radius-card: var(--ds-radius-card);
   --radius-card-sm: var(--ds-radius-card-sm);
   --radius-full: var(--ds-radius-full);
@@ -162,6 +167,9 @@
   --spacing-agenda-card-w: var(--ds-agenda-card-w);
   --spacing-agenda-card-h: var(--ds-agenda-card-h);
   --spacing-chart: var(--ds-chart-h);
+  --spacing-heat-gap: var(--ds-heat-gap);
+  --spacing-heat-cell-max: var(--ds-heat-cell-max);
+  --spacing-heat-label: var(--ds-heat-label-w);
   --spacing-focus-gap: var(--ds-focus-gap);
   --spacing-focus-panel: var(--ds-focus-panel-w);
   --spacing-focus-row: var(--ds-focus-row-h);
@@ -239,6 +247,55 @@
   @media (width < 80rem) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+/* Hábitos: a cor do hábito vem de `--habit`; os níveis do heatmap derivam dela sobre `heat-0`. */
+@utility habit-amarelo {
+  --habit: var(--ds-habit-amarelo);
+}
+@utility habit-azul {
+  --habit: var(--ds-habit-azul);
+}
+@utility habit-verde {
+  --habit: var(--ds-habit-verde);
+}
+@utility habit-laranja {
+  --habit: var(--ds-habit-laranja);
+}
+@utility habit-rosa {
+  --habit: var(--ds-habit-rosa);
+}
+@utility habit-violeta {
+  --habit: var(--ds-habit-violeta);
+}
+@utility habit-turquesa {
+  --habit: var(--ds-habit-turquesa);
+}
+@utility habit-text {
+  color: var(--habit);
+}
+@utility habit-bg {
+  background-color: var(--habit);
+}
+@utility habit-bg-soft {
+  background-color: color-mix(in srgb, var(--habit) 18%, transparent);
+}
+@utility heat-lvl-0 {
+  background-color: var(--ds-color-heat-0);
+}
+@utility heat-lvl-1 {
+  background-color: color-mix(in srgb, var(--habit) var(--ds-heat-mix-1), var(--ds-color-heat-0));
+}
+@utility heat-lvl-2 {
+  background-color: color-mix(in srgb, var(--habit) var(--ds-heat-mix-2), var(--ds-color-heat-0));
+}
+@utility heat-lvl-3 {
+  background-color: color-mix(in srgb, var(--habit) var(--ds-heat-mix-3), var(--ds-color-heat-0));
+}
+@utility heat-lvl-4 {
+  background-color: color-mix(in srgb, var(--habit) var(--ds-heat-mix-4), var(--ds-color-heat-0));
+}
+@utility heat-off {
+  background-color: var(--ds-color-heat-off);
 }
 /* Célula do mapa de calor: `--heat` (0–1) vai de `--ds-heat-min` até opacidade total. */
 @utility heat-cell {
