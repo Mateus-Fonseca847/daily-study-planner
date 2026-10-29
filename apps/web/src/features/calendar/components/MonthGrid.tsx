@@ -11,9 +11,17 @@ interface MonthGridProps {
   today: Date;
   selectedId: string | null;
   onSelect: (event: StudyEvent, anchor: HTMLElement) => void;
+  onCreate: (dayKey: string) => void;
 }
 
-export function MonthGrid({ month, events, today, selectedId, onSelect }: MonthGridProps) {
+export function MonthGrid({
+  month,
+  events,
+  today,
+  selectedId,
+  onSelect,
+  onCreate,
+}: MonthGridProps) {
   const weeks = buildMonthGrid(month);
   const byDay = groupEventsByDay(events);
 
@@ -44,6 +52,7 @@ export function MonthGrid({ month, events, today, selectedId, onSelect }: MonthG
                 isToday={isSameDay(day.date, today)}
                 selectedId={selectedId}
                 onSelect={onSelect}
+                onCreate={onCreate}
               />
             ))}
           </div>

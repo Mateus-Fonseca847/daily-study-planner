@@ -1,8 +1,9 @@
-import { ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
-import type { NavCounts } from '../../mocks/counts';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react';
+import type { NavCounts } from '../../lib/data/selectors';
 import { cn } from '../../lib/cn';
 import { Button } from '../ui/Button';
 import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem } from './nav';
+import { CreateMenu } from './CreateMenu';
 import { SidebarItem } from './SidebarItem';
 
 interface SidebarProps {
@@ -76,16 +77,7 @@ export function Sidebar({ collapsed, onToggle, counts }: SidebarProps) {
       </div>
 
       <div className="mt-4 mb-7 px-inset">
-        {collapsed ? (
-          <Button variant="icon" size="md" aria-label="Criar" className="bg-pill! text-pill-fg!">
-            <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
-          </Button>
-        ) : (
-          <Button variant="pill">
-            <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
-            Criar
-          </Button>
-        )}
+        <CreateMenu collapsed={collapsed} />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col justify-between overflow-y-auto pb-4">

@@ -4,7 +4,7 @@ Organizador de estudos (PWA) para estudantes, pensado para ficar aberto o dia to
 tela do PC. Projeto de portfólio: TypeScript estrito, código limpo, documentação e testes bem
 escolhidos. Idioma da UI: **pt-BR**. Viewport-alvo: desktop 1440×900 (aceitável a partir de 1280 px).
 
-Estado atual: só front-end com dados mockados (`apps/web/src/mocks`). `apps/api` é apenas um README.
+Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v1`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
 
 ## Stack
 
@@ -46,9 +46,17 @@ A cada prompt de trabalho, salve o prompt em `docs/prompts/NN-prompt.md` e gere 
 `docs/prompts/NN-report.md` (o que foi feito, decisões, valores estimados, diferenças restantes,
 como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é sequencial (01, 02…).
 
+## Dados
+
+- Entidades e relações: `docs/data-model.md`; schemas zod em `packages/shared`.
+- UI → `useData` (Zustand, `lib/data/app-store.ts`) → `DataRepository` → `LocalStorageRepository`. **Componentes nunca acessam `localStorage`.**
+- Regras de domínio ficam em funções puras (`lib/data/rules.ts`, `selectors.ts`, `task-filters.ts`, `countdown.ts`), com teste.
+- Mudou o formato salvo? Suba `DATA_VERSION`, escreva a migração em `envelope.ts` e atualize o histórico em `docs/data-model.md`.
+- Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
+
 ## Fixture visual
 
-`/calendario?fixture=reference` (só em `pnpm dev`) carrega novembro/2024 com densidade da referência e data fixa; é usada por `visual:capture` e pelo e2e.
+`/calendario?fixture=reference` (só em `pnpm dev`) carrega novembro/2024 com densidade da referência e data fixa, em memória (não toca nos dados reais); é usada por `visual:capture` e pelo e2e de fumaça.
 
 ## Referências
 

@@ -59,7 +59,20 @@
     transparent
   );
 
+  --ds-color-danger: #ff6b78;
+
+  /* Paleta fixa de matérias */
+  --ds-color-subject-vermelho: #ff4d5e;
+  --ds-color-subject-laranja: #ff9f1c;
+  --ds-color-subject-amarelo: #f5e94b;
+  --ds-color-subject-verde: #2fd16b;
+  --ds-color-subject-turquesa: #1fc8c0;
+  --ds-color-subject-azul: #3b82f6;
+  --ds-color-subject-violeta: #9b7bff;
+  --ds-color-subject-rosa: #ff5fb0;
+
   --ds-opacity-dimmed: 0.45;
+  --ds-opacity-done: 0.55;
 
   /* Tipografia */
   --ds-font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -146,4 +159,13 @@
   --ds-course-select-w: 12rem;
   --ds-segment-min-w: 4.875rem;
   --ds-search-w: 18rem;
+  --ds-modal-w: 32rem;
+  --ds-modal-max-h: 90dvh;
+  --ds-menu-w: 13rem;
+  --ds-toast-w: 26rem;
+  --ds-page-max-w: 56rem;
+  --ds-textarea-h: 5rem;
+  --ds-swatch: 1.75rem;
+  --ds-dot: 0.625rem;
+  --ds-banner-gap: 0.75rem;
 }

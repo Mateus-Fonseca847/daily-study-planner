@@ -1,8 +1,12 @@
-import { addMinutes, format, setHours, setMinutes } from 'date-fns';
-import { studyEventSchema, type EventType, type StudyEvent } from '@daily/shared';
-import { REFERENCE_NOW } from '../lib/fixture';
-
-const LOCAL_ISO = "yyyy-MM-dd'T'HH:mm:ss";
+import { addMinutes, setHours, setMinutes } from 'date-fns';
+import {
+  studyEventSchema,
+  type DataSnapshot,
+  type EventType,
+  type StudyEvent,
+} from '@daily/shared';
+import { toLocalIso } from '../lib/dates';
+import { SUBJECTS } from './subjects';
 
 interface Row {
   day: number;
@@ -60,15 +64,27 @@ export function referenceEvents(): StudyEvent[] {
       id: `ref-${index}`,
       title: row.title,
       type: row.type,
-      status: end < REFERENCE_NOW ? 'concluida' : 'agendada',
+      // Sempre pendente: concluído esmaeceria os chips e a fixture reproduz a referência.
+      status: 'pendente',
       subjectId: row.subjectId,
-      start: format(start, LOCAL_ISO),
-      end: format(end, LOCAL_ISO),
-      contents: (row.contents ?? []).map((title, i) => ({
-        id: `ref-${index}-c${i}`,
-        title,
-        done: i < (row.doneCount ?? 0),
-      })),
+      start: toLocalIso(start),
+      end: toLocalIso(end),
+      notes: '',
+      ...(row.type === 'prova'
+        ? {
+            contents: (row.contents ?? []).map((title, i) => ({
+              id: `ref-${index}-c${i}`,
+              title,
+              done: i < (row.doneCount ?? 0),
+              order: i,
+            })),
+          }
+        : {}),
     });
   });
 }
+
+export const referenceSnapshot = (): DataSnapshot => ({
+  subjects: [...SUBJECTS],
+  events: referenceEvents(),
+});

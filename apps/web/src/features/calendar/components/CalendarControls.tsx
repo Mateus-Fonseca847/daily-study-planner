@@ -3,6 +3,7 @@ import { getYear, setMonth, setYear } from 'date-fns';
 import { Button } from '../../../components/ui/Button';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { Select } from '../../../components/ui/Select';
+import { openEventForm } from '../../../lib/ui-store';
 import { MONTH_OPTIONS } from '../lib/format';
 
 export type CalendarView = 'semana' | 'mes' | 'ano';
@@ -18,6 +19,8 @@ const YEAR_SPAN = 5;
 
 interface CalendarControlsProps {
   month: Date;
+  /** Hoje (respeita a fixture); define a faixa de anos. */
+  today: Date;
   view: CalendarView;
   onViewChange: (view: CalendarView) => void;
   onMonthChange: (month: Date) => void;
@@ -26,12 +29,13 @@ interface CalendarControlsProps {
 
 export function CalendarControls({
   month,
+  today,
   view,
   onViewChange,
   onMonthChange,
   onToday,
 }: CalendarControlsProps) {
-  const thisYear = getYear(new Date());
+  const thisYear = getYear(today);
   const year = getYear(month);
   const first = Math.min(thisYear, year) - YEAR_SPAN;
   const last = Math.max(thisYear, year) + YEAR_SPAN;
@@ -66,7 +70,7 @@ export function CalendarControls({
           value={year}
           onChange={(e) => onMonthChange(setYear(month, Number(e.target.value)))}
         />
-        <Button>
+        <Button onClick={() => openEventForm({ type: 'prova' })}>
           <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
           Nova Prova
         </Button>
