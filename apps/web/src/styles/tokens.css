@@ -99,11 +99,8 @@
   );
 
   /* Cronômetro do Modo Foco */
-  --ds-color-timer-track: rgb(255 255 255 / 0.1);
-  --ds-color-timer-idle: rgb(255 255 255 / 0.28);
-  --ds-color-timer-progress: var(--ds-color-accent);
-  --ds-color-timer-paused: var(--ds-color-fg-soft);
-  --ds-color-timer-done: var(--ds-color-event-revisao);
+  --ds-color-focus-frac: var(--ds-color-fg-muted);
+  --ds-color-focus-rank: var(--ds-color-fg-muted);
 
   --ds-opacity-dimmed: 0.45;
   --ds-opacity-done: 0.55;
@@ -134,8 +131,10 @@
   --ds-text-card-title-lh: 1.75rem;
   --ds-text-stat: 1.875rem;
   --ds-text-stat-lh: 2.25rem;
-  --ds-text-timer: 4.5rem;
-  --ds-text-timer-lh: 1;
+  --ds-text-focus: clamp(5.5rem, 8vw, 10rem);
+  --ds-text-focus-lh: 1;
+  --ds-text-focus-frac: clamp(1.5rem, 2.6vw, 3rem);
+  --ds-text-focus-frac-lh: 1;
   --ds-text-xl: 1.5rem;
   --ds-text-xl-lh: 2rem;
   --ds-weight-light: 300;
@@ -143,6 +142,7 @@
   --ds-weight-medium: 500;
   --ds-weight-semibold: 600;
   --ds-weight-bold: 700;
+  --ds-weight-extrabold: 800;
   --ds-tracking-caps: 0.08em;
   --ds-tracking-label: 0.01em;
   --ds-tracking-tight: -0.01em;
@@ -241,11 +241,16 @@
   --ds-chart-h-sm: 4rem;
   --ds-card-pad: 1.5rem;
   --ds-card-gap: 1rem;
-  --ds-timer-size: 22rem;
-  /* Espessura do anel em unidades do viewBox (100): 1,5 ≈ 5 px com o anel de 22 rem. Recalcule se `--ds-timer-size` mudar. */
-  --ds-timer-stroke: 1.5;
-  --ds-timer-input-w: 18rem;
-  --ds-timer-knob: 1.5rem;
+  /* Modo Foco: dígitos grandes, painel lateral e pílulas */
+  --ds-focus-gap: clamp(2.5rem, 6vw, 6rem);
+  --ds-focus-panel-w: 20rem;
+  --ds-focus-row-h: 3.5rem;
+  --ds-focus-row-radius: 1rem;
+  --ds-focus-pill-h: 3.25rem;
+  --ds-focus-pill-px: 1.5rem;
+  --ds-focus-frac-w: 4ch;
+  --ds-focus-hold-size: 1.75rem;
+  --ds-focus-hold-ring: 0.1875rem;
 }
 
 /*

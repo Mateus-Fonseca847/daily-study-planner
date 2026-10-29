@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { LockOpen } from 'lucide-react';
 import { holdProgress } from '../../lib/focus/hold';
+import { pillClass } from './FocusPill';
 
 interface HoldToUnlockProps {
   onUnlock: () => void;
 }
 
 /**
- * “Segurar para destravar”: o anel preenche em 3 s (mouse, toque ou Enter/Espaço segurados).
+ * “Segurar para destravar”: o anel em volta do cadeado preenche em 3 s (mouse, toque ou Enter/Espaço segurados).
  * Soltar antes zera o progresso. O destravamento NÃO encerra a sessão.
  */
 export function HoldToUnlock({ onUnlock }: HoldToUnlockProps) {
@@ -65,15 +66,20 @@ export function HoldToUnlock({ onUnlock }: HoldToUnlockProps) {
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
         onBlur={stop}
-        className="relative inline-flex h-control touch-none items-center gap-2 overflow-hidden rounded-full border-hair border-line-strong px-5 text-base font-medium text-fg select-none"
+        className={pillClass('outline', 'touch-none select-none')}
       >
         <span
           aria-hidden
-          className="absolute inset-y-0 left-0 bg-accent-soft"
-          style={{ width: `${progress * 100}%` }}
-        />
-        <LockOpen aria-hidden strokeWidth={1.5} className="relative size-icon" />
-        <span className="relative">Segurar para destravar</span>
+          className="relative size-focus-hold rounded-full"
+          style={{
+            background: `conic-gradient(var(--color-accent) ${progress * 360}deg, var(--color-line-strong) 0)`,
+          }}
+        >
+          <span className="absolute inset-focus-hold-ring grid place-items-center rounded-full bg-bg">
+            <LockOpen strokeWidth={1.5} className="size-icon-sm" />
+          </span>
+        </span>
+        <span>Segurar para destravar</span>
       </button>
       <span id="hold-hint" className="sr-only">
         Segure por 3 segundos para destravar. A sessão continua.

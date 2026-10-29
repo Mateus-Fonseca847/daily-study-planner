@@ -77,3 +77,46 @@ export function useNowMs(intervalMs: number, enabled: boolean): number {
   }, [intervalMs, enabled]);
   return now;
 }
+
+/* ───────────── Movimento reduzido e quadros de animação ───────────── */
+
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+
+const subscribeReducedMotion = (cb: () => void) => {
+  const query = window.matchMedia(REDUCED_MOTION);
+  query.addEventListener('change', cb);
+  return () => query.removeEventListener('change', cb);
+};
+
+/** `true` quando o sistema pede menos movimento. */
+export const usePrefersReducedMotion = (): boolean =>
+  useSyncExternalStore(subscribeReducedMotion, () => window.matchMedia(REDUCED_MOTION).matches);
+
+/**
+ * Timestamp atualizado a cada quadro de animação, só enquanto `enabled` e a aba está visível
+ * (o navegador já pausa `requestAnimationFrame` em abas ocultas; o ouvinte religa o laço ao voltar).
+ */
+export function useFrameNow(enabled: boolean): number {
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (!enabled) return;
+    let frame = 0;
+    const loop = () => {
+      setNow(Date.now());
+      frame = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      cancelAnimationFrame(frame);
+      if (document.visibilityState === 'visible') frame = requestAnimationFrame(loop);
+    };
+    const onVisibility = () =>
+      document.visibilityState === 'visible' ? start() : cancelAnimationFrame(frame);
+    start();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [enabled]);
+  return now;
+}

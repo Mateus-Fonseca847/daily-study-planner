@@ -5,7 +5,8 @@ const NOW = new Date('2026-11-10T10:00:00');
 const timeField = (page: Page) => page.getByRole('textbox', { name: 'Duração da sessão' });
 const timer = (page: Page) => page.getByRole('timer');
 const play = (page: Page) => page.getByRole('button', { name: 'Iniciar', exact: true });
-const lockToggle = (page: Page) => page.getByRole('button', { name: 'Travar tela ao iniciar' });
+const lockToggle = (page: Page) => page.getByRole('button', { name: 'Travar', exact: true });
+const topDays = (page: Page) => page.getByRole('region', { name: 'Dias de mais foco' });
 const sidebarCreate = (page: Page) => page.getByRole('button', { name: 'Criar', exact: true });
 const savedSessions = (page: Page) =>
   page.evaluate(() => {
@@ -22,7 +23,7 @@ async function setDuration(page: Page, text: string) {
 }
 
 test.describe('Modo Foco minimalista', () => {
-  test('ocioso: só o tempo editável, o play e o cadeado (sem atalhos nem vínculo)', async ({
+  test('parado: só o tempo editável, “Travar” e “Iniciar” (sem atalhos, vínculo nem anel)', async ({
     page,
   }) => {
     await page.goto('/foco');
@@ -34,6 +35,10 @@ test.describe('Modo Foco minimalista', () => {
     await expect(page.getByRole('button', { name: /min$/ })).toHaveCount(0);
     await expect(page.getByRole('combobox', { name: 'Estudando' })).toHaveCount(0);
     await expect(page.getByRole('slider')).toHaveCount(0);
+    await expect(page.locator('svg[viewBox="0 0 100 100"]')).toHaveCount(0); // sem anel de progresso
+    await expect(topDays(page)).toContainText(
+      'Complete uma sessão para ver seus dias de maior foco.',
+    );
     await expect(page.getByText('Ajuste o tempo')).toHaveCount(0);
     await expect(page.getByText('Segure por 3 segundos')).toHaveCount(0);
     for (const name of ['Pausar', 'Retomar', 'Reiniciar', 'Encerrar']) {
@@ -103,30 +108,36 @@ test.describe('Modo Foco minimalista', () => {
     await play(page).click();
 
     // Rodando sem trava: só o pause; o cadeado some e o tempo vira somente leitura.
-    await expect(timer(page)).toHaveText('02:00');
+    await expect(timer(page)).toHaveText(/^(02:00|01:5\d)$/); // trunca: o primeiro quadro já pode mostrar 01:59
     await expect(page.getByRole('button', { name: 'Pausar' })).toBeVisible();
     await expect(lockToggle(page)).toHaveCount(0);
     await expect(timeField(page)).toHaveCount(0);
 
     await page.clock.fastForward(30_000);
-    await expect(timer(page)).toHaveText('01:30');
+    await expect(timer(page)).toHaveText(/^01:(30|2\d)$/); // dígitos truncados: 01:29 logo após os 30 s
 
     // Pausado: o tempo congela e aparecem retomar, reiniciar e encerrar.
     await page.getByRole('button', { name: 'Pausar' }).click();
     for (const name of ['Retomar', 'Reiniciar', 'Encerrar']) {
       await expect(page.getByRole('button', { name })).toBeVisible();
     }
+    const frozen = await timer(page).innerText();
     await page.clock.fastForward(60_000);
-    await expect(timer(page)).toHaveText('01:30');
+    await expect(timer(page)).toHaveText(frozen);
 
     await page.getByRole('button', { name: 'Retomar' }).click();
     await page.clock.fastForward(91_000);
 
-    // Concluído: anel cheio, duração focada, nova sessão e link discreto; sessão salva.
-    await expect(page.getByText('Concluído', { exact: true })).toBeVisible();
-    await expect(page.getByRole('timer', { name: /Duração focada: 2 min/ })).toBeVisible();
+    // Concluído: dígitos zerados, duração focada, “Nova sessão” e “Ver estatísticas”; sessão salva.
+    await expect(page.getByText('Concluído · 2 min')).toBeVisible();
+    await expect(timer(page)).toHaveText('00:00');
     await expect(page).toHaveTitle('Sessão concluída');
-    await expect(page.getByRole('link', { name: 'Ver estatísticas' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Ver estatísticas' })).toHaveCount(2); // pílula + painel
+    // O painel já traz a sessão nova, com o dia de hoje marcado.
+    await expect(topDays(page).getByRole('listitem')).toHaveCount(1);
+    await expect(topDays(page)).toContainText('2 min');
+    await expect(topDays(page)).toContainText('1 sessão');
+    await expect(topDays(page).getByRole('img', { name: 'hoje' })).toBeVisible();
     expect(await savedSessions(page)).toMatchObject([
       { status: 'concluida', plannedSec: 120, actualSec: 120 },
     ]);
@@ -180,8 +191,29 @@ test.describe('Modo Foco minimalista', () => {
   });
 });
 
+test.describe('Dias de mais foco', () => {
+  test('a fixture mostra o ranking dos 7 dias, do maior para o menor, com o 1º em destaque', async ({
+    page,
+  }) => {
+    await page.goto('/foco?fixture=stats');
+    const rows = topDays(page).getByRole('listitem');
+    await expect(rows).toHaveCount(7);
+    await expect(rows.first()).toContainText('1º');
+    await expect(rows.first().locator('.text-accent')).toBeVisible();
+    await expect(rows.nth(1).locator('.text-accent')).toHaveCount(0);
+
+    // “2h15” / “45 min” → minutos, para conferir a ordem decrescente.
+    const minutes = (await rows.locator('.font-semibold').allInnerTexts()).map((text) => {
+      const hm = /^(\d+)h(\d+)?$/.exec(text);
+      if (hm) return Number(hm[1]) * 60 + Number(hm[2] ?? 0);
+      return Number.parseInt(text, 10);
+    });
+    expect(minutes).toEqual([...minutes].sort((a, b) => b - a));
+  });
+});
+
 test.describe('Modo Foco travado', () => {
-  test('só restam o anel e “Segurar para destravar”; Esc e Espaço não fazem nada; 3 s destravam sem encerrar', async ({
+  test('só restam os dígitos e “Segurar para destravar”; Esc e Espaço não fazem nada; 3 s destravam sem encerrar', async ({
     page,
   }) => {
     page.on('dialog', (dialog) => void dialog.accept()); // aviso do navegador ao recarregar travado
@@ -195,6 +227,7 @@ test.describe('Modo Foco travado', () => {
     await expect(page.getByRole('button', { name: /Segurar para destravar/ })).toBeVisible();
     await expect(page.getByRole('button')).toHaveCount(1);
     await expect(page.getByRole('link')).toHaveCount(0);
+    await expect(topDays(page)).toHaveCount(0); // o painel some com a trava
     await expect(timer(page)).toHaveText(/^4[45]:\d\d$/);
 
     // Esc e Espaço não fazem nada.
@@ -249,7 +282,8 @@ test.describe('Modo Foco travado', () => {
     await expect(page.getByRole('button')).toHaveCount(1);
 
     await page.clock.fastForward(61_000);
-    await expect(page.getByText('Concluído', { exact: true })).toBeVisible();
+    await expect(page.getByText(/^Concluído · /)).toBeVisible();
+    await expect(topDays(page)).toBeVisible(); // o painel reaparece
     await expect(sidebarCreate(page)).toBeVisible(); // destravou
   });
 

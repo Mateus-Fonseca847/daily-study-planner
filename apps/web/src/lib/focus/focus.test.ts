@@ -8,7 +8,6 @@ import {
   emAndamento,
   encerrar,
   finalizar,
-  fracaoRestante,
   iniciar,
   pausar,
   reiniciar,
@@ -40,7 +39,6 @@ describe('máquina de estados do cronômetro', () => {
     const running = iniciar(idle(25), T0);
     // Aba em segundo plano: nenhum tick por 7 minutos e o valor continua exato.
     expect(restanteMs(running, T0 + 7 * MIN + 123)).toBe(18 * MIN - 123);
-    expect(fracaoRestante(running, T0 + 5 * MIN)).toBeCloseTo(0.8);
   });
 
   it('pausar congela o restante; retomar recalcula o fim a partir de agora', () => {

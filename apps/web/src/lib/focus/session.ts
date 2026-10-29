@@ -93,10 +93,6 @@ export function restanteMs(session: ActiveFocus, nowMs: number): number {
   }
 }
 
-/** Fração do tempo que ainda falta (1 = cheio, 0 = acabou). */
-export const fracaoRestante = (session: ActiveFocus, nowMs: number): number =>
-  restanteMs(session, nowMs) / (session.durationSec * 1000);
-
 /** Segundos de foco efetivos até agora (a pausa não conta). */
 export const decorridoSec = (session: ActiveFocus, nowMs: number): number =>
   Math.min(

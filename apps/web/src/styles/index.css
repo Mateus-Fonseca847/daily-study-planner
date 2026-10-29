@@ -18,11 +18,8 @@
   --color-water-button: var(--ds-color-water-button);
   --color-chart-track: var(--ds-color-chart-track);
   --color-chart-track-strong: var(--ds-color-chart-track-strong);
-  --color-timer-track: var(--ds-color-timer-track);
-  --color-timer-idle: var(--ds-color-timer-idle);
-  --color-timer-progress: var(--ds-color-timer-progress);
-  --color-timer-paused: var(--ds-color-timer-paused);
-  --color-timer-done: var(--ds-color-timer-done);
+  --color-frac: var(--ds-color-focus-frac);
+  --color-focus-rank: var(--ds-color-focus-rank);
   --color-danger: var(--ds-color-danger);
   --color-subject-vermelho: var(--ds-color-subject-vermelho);
   --color-subject-laranja: var(--ds-color-subject-laranja);
@@ -81,8 +78,10 @@
   --text-card-title--line-height: var(--ds-text-card-title-lh);
   --text-stat: var(--ds-text-stat);
   --text-stat--line-height: var(--ds-text-stat-lh);
-  --text-timer: var(--ds-text-timer);
-  --text-timer--line-height: var(--ds-text-timer-lh);
+  --text-focus: var(--ds-text-focus);
+  --text-focus--line-height: var(--ds-text-focus-lh);
+  --text-focus-frac: var(--ds-text-focus-frac);
+  --text-focus-frac--line-height: var(--ds-text-focus-frac-lh);
   --text-xl: var(--ds-text-xl);
   --text-xl--line-height: var(--ds-text-xl-lh);
 
@@ -92,6 +91,7 @@
   --font-weight-medium: var(--ds-weight-medium);
   --font-weight-semibold: var(--ds-weight-semibold);
   --font-weight-bold: var(--ds-weight-bold);
+  --font-weight-extrabold: var(--ds-weight-extrabold);
 
   --tracking-*: initial;
   --tracking-caps: var(--ds-tracking-caps);
@@ -163,9 +163,15 @@
   --spacing-agenda-card-h: var(--ds-agenda-card-h);
   --spacing-chart: var(--ds-chart-h);
   --spacing-chart-sm: var(--ds-chart-h-sm);
-  --spacing-timer: var(--ds-timer-size);
-  --spacing-timer-input: var(--ds-timer-input-w);
-  --spacing-timer-knob: var(--ds-timer-knob);
+  --spacing-focus-gap: var(--ds-focus-gap);
+  --spacing-focus-panel: var(--ds-focus-panel-w);
+  --spacing-focus-row: var(--ds-focus-row-h);
+  --spacing-focus-pill: var(--ds-focus-pill-h);
+  --spacing-focus-pill-px: var(--ds-focus-pill-px);
+  --spacing-focus-frac: var(--ds-focus-frac-w);
+  --spacing-focus-hold: var(--ds-focus-hold-size);
+  --spacing-focus-hold-ring: var(--ds-focus-hold-ring);
+  --radius-focus-row: var(--ds-focus-row-radius);
   --spacing-modal-h: var(--ds-modal-max-h);
   --spacing-menu: var(--ds-menu-w);
   --spacing-textarea: var(--ds-textarea-h);
@@ -206,9 +212,15 @@
 @utility glow-accent {
   background-image: var(--ds-glow-accent);
 }
-/* Traço do anel do cronômetro (unidades do viewBox; ver tokens.css). */
-@utility stroke-timer {
-  stroke-width: var(--ds-timer-stroke);
+/* Modo Foco: duas colunas (painel + relógio; o relógio vem primeiro no DOM); abaixo de 1100 px o painel desce para baixo dos botões. */
+@utility focus-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-focus-gap);
+  @media (width >= 68.75rem) {
+    flex-direction: row-reverse;
+  }
 }
 /* Grid 4×2 do dashboard (≥ 1280 px); 2 colunas abaixo disso. */
 @utility grid-stats {

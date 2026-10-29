@@ -17,7 +17,7 @@ interface DurationInputProps {
 }
 
 /**
- * Tempo editável dentro do anel (estado ocioso): um `<input>` sem caixa, com a mesma tipografia dos
+ * Tempo editável dentro dos dígitos (estado parado): um `<input>` sem caixa, com a mesma tipografia dos
  * dígitos. Aceita só dígitos e “:”. Enter e sair do campo confirmam; Esc cancela; ↑/↓ = ±1 min (Shift ±5).
  */
 export function DurationInput({ seconds, onCommit, onNotice }: DurationInputProps) {
@@ -77,7 +77,8 @@ export function DurationInput({ seconds, onCommit, onNotice }: DurationInputProp
       onChange={(e) => setDraft(sanitizeDurationText(e.target.value))}
       onKeyDown={onKeyDown}
       onBlur={commit}
-      className="w-timer-input border-b-hair border-transparent bg-transparent text-center text-timer font-light tabular-nums text-fg caret-accent hover:border-line-strong focus:border-line-strong focus:outline-none"
+      style={{ width: `${Math.max(5, shown.length)}ch` }}
+      className="border-b-hair border-transparent bg-transparent text-center text-focus font-extrabold tracking-tight tabular-nums text-fg caret-accent hover:border-line-strong focus:border-line-strong focus:outline-none"
     />
   );
 }
