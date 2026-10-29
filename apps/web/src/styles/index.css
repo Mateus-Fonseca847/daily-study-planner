@@ -13,10 +13,12 @@
   --color-hover: var(--ds-color-hover);
   --color-scrim: var(--ds-color-scrim);
   --color-accent: var(--ds-color-accent);
+  --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
   --color-badge: var(--ds-color-badge);
   --color-badge-fg: var(--ds-color-badge-fg);
   --color-fg: var(--ds-color-fg);
+  --color-soft: var(--ds-color-fg-soft);
   --color-muted: var(--ds-color-fg-muted);
   --color-subtle: var(--ds-color-fg-subtle);
   --color-pill: var(--ds-color-white-pill);
@@ -43,6 +45,10 @@
   --text-sm--line-height: var(--ds-text-sm-lh);
   --text-base: var(--ds-text-base);
   --text-base--line-height: var(--ds-text-base-lh);
+  --text-nav: var(--ds-text-nav);
+  --text-nav--line-height: var(--ds-text-nav-lh);
+  --text-title: var(--ds-text-title);
+  --text-title--line-height: var(--ds-text-title-lh);
   --text-md: var(--ds-text-md);
   --text-md--line-height: var(--ds-text-md-lh);
   --text-lg: var(--ds-text-lg);
@@ -76,6 +82,7 @@
 
   --spacing: var(--ds-space-unit);
   --spacing-sidebar: var(--ds-sidebar-w);
+  --spacing-inset: var(--ds-sidebar-inset);
   --spacing-sidebar-collapsed: var(--ds-sidebar-w-collapsed);
   --spacing-sidebar-header: var(--ds-sidebar-header-h);
   --spacing-topbar: var(--ds-topbar-h);
@@ -86,6 +93,9 @@
   --spacing-control: var(--ds-control-h);
   --spacing-control-sm: var(--ds-control-h-sm);
   --spacing-create: var(--ds-create-h);
+  --spacing-create-btn: var(--ds-create-w);
+  --spacing-select: var(--ds-select-h);
+  --spacing-field: var(--ds-field-h);
   --spacing-item: var(--ds-item-h);
   --spacing-icon: var(--ds-icon);
   --spacing-icon-sm: var(--ds-icon-sm);
@@ -95,6 +105,7 @@
   --spacing-today: var(--ds-today-size);
   --spacing-progress: var(--ds-progress-h);
   --spacing-checkbox: var(--ds-checkbox);
+  --spacing-segment: var(--ds-segment-min-w);
   --spacing-select-month: var(--ds-select-month-w);
   --spacing-select-year: var(--ds-select-year-w);
   --spacing-popover: var(--ds-popover-w);
