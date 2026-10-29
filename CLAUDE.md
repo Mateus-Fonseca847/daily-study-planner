@@ -53,7 +53,7 @@ como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é seque
 - UI → `useData` (Zustand, `lib/data/app-store.ts`) → `DataRepository` → `LocalStorageRepository`. **Componentes nunca acessam `localStorage`.**
 - Regras de domínio ficam em funções puras (`lib/data/rules.ts`, `selectors.ts`, `task-filters.ts`, `countdown.ts`), com teste.
 - Mudou o formato salvo? Suba `DATA_VERSION`, escreva a migração em `envelope.ts` e atualize o histórico em `docs/data-model.md`.
-- Modo Foco: lógica pura em `lib/focus` (`session.ts` = máquina de estados por timestamps, `hold.ts`, `dial.ts`, `format.ts`, `link.ts`); efeitos em `controller.ts`; a sessão ativa fica numa chave própria (`daily:v2:focus`), fora do backup. O relógio é injetável: as funções recebem `nowMs`.
+- Modo Foco: lógica pura em `lib/focus` (`session.ts` = máquina de estados por timestamps, `hold.ts`, `time-input.ts`, `format.ts`, `top-days.ts`); efeitos em `controller.ts`; a sessão ativa fica numa chave própria (`daily:v2:focus`), fora do backup. O relógio é injetável: as funções recebem `nowMs`.
 - Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
 
 ## Fixture visual

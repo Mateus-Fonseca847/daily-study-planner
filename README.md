@@ -65,7 +65,7 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
-- [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, metas do dia e agenda) e “Análises” (semana, mês ou 90 dias) com seis gráficos em SVG próprio
+- [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, metas do dia e agenda) e “Análises” (semana, mês ou 90 dias) com cinco gráficos em SVG próprio
 
 ### Em planejamento
 
@@ -190,14 +190,16 @@ Decisões maiores serão registradas em `docs/adr/`.
 
 ## Modo Foco e travamento
 
-O **Modo Foco** (`/foco`) é só um anel com o tempo dentro. **Digite a duração** no próprio relógio (`25` = 25 min, `25:30`, `1:30:00`, `90` = 1 h 30; mínimo 1 min, máximo 3 h; ↑/↓ ajustam 1 min, Shift 5 min) e toque no play. A última duração confirmada vira o padrão (guardada em segundos). Rodando, o anel amarelo diminui; pausado, o tempo pisca de leve e aparecem retomar, reiniciar e encerrar; ao fim há um som curto (Web Audio, só na aba que iniciou), o título da aba vira "Sessão concluída" e o anel mostra a duração focada. O tempo restante é sempre calculado por **timestamps** (fim − agora): fica exato com a aba em segundo plano e a sessão **sobrevive a recarregamentos**. Sessões com mais de 1 minuto entram no histórico (usado nas Estatísticas).
+O **Modo Foco** (`/foco`) mostra só **dígitos grandes**. **Digite a duração** no próprio relógio (`25` = 25 min, `25:30`, `1:30:00`, `90` = 1 h 30; mínimo 1 min, máximo 3 h; ↑/↓ ajustam 1 min, Shift 5 min) e use as pílulas **Travar** e **Iniciar**. A última duração confirmada vira o padrão (guardada em segundos). Rodando, uma fração de milésimos aparece em cinza ao lado dos dígitos (some com movimento reduzido, que também atualiza o relógio só uma vez por segundo); pausado, os dígitos piscam de leve e aparecem **Reiniciar**, **Encerrar** e **Retomar**; ao fim há um som curto (Web Audio, só na aba que iniciou), o título da aba vira "Sessão concluída" e a tela mostra "Concluído · 25 min", **Nova sessão** e **Ver estatísticas**. O tempo restante é sempre calculado por **timestamps** (fim − agora): fica exato com a aba em segundo plano e a sessão **sobrevive a recarregamentos**. Sessões com mais de 1 minuto entram no histórico (usado nas Estatísticas).
 
-O **cadeado** sob o anel (visível só com o cronômetro parado) liga a trava para a próxima sessão; ele guarda a última escolha. Com a **trava** ligada e o cronômetro rodando ou pausado:
+À esquerda fica o painel **Dias de mais foco**: os 7 dias com mais tempo focado em todo o histórico (concluídas e interrompidas; a sessão conta no dia local em que **começou**; empate: o mais recente primeiro). Ele atualiza quando uma sessão termina e some enquanto a tela está travada.
 
-- só ficam na tela o anel com o tempo e **"Segurar para destravar"** (sem pausar, reiniciar, encerrar nem a tecla Espaço);
-- somem a barra lateral, o topo e os links; a navegação interna é bloqueada e qualquer rota digitada volta para `/foco`;
+A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a próxima sessão; ela guarda a última escolha. Com a **trava** ligada e o cronômetro rodando ou pausado:
+
+- só ficam na tela os dígitos e **"Segurar para destravar"** (sem pausar, reiniciar, encerrar nem a tecla Espaço);
+- somem a barra lateral, o topo, o painel e os links; a navegação interna é bloqueada e qualquer rota digitada volta para `/foco`;
 - o app pede **tela cheia** (se você sair com Esc, continua travado; **Esc nunca destrava**), mantém a tela ligada (**Wake Lock**, quando houver suporte) e mostra o aviso do navegador ao recarregar ou fechar a aba;
-- para destravar, **segure o botão por 3 segundos** (mouse, toque ou Enter/Espaço). Destravar **não encerra** a sessão.
+- para destravar, **segure o botão por 3 segundos** (mouse, toque ou Enter/Espaço); um anel em volta do cadeado enche. Destravar **não encerra** a sessão.
 
 **O que ela NÃO pode fazer.** É um travamento _do aplicativo_, para evitar distração acidental, **não uma medida de segurança**. Navegadores não permitem bloquear Alt+Tab, Ctrl+W, fechar a janela, trocar de aba/janela nem o sistema operacional; quem quiser sair sempre consegue. O Wake Lock e a tela cheia também dependem do navegador (e a tela cheia não pode ser reaberta depois de um Esc: a tela fica travada, mas em janela normal).
 

@@ -5,6 +5,21 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Alterado (04.1)
+
+- `/foco` redesenhado **sem o anel**: dígitos grandes e pesados (editáveis quando parado), fração de milésimos em cinza no baseline só enquanto roda (com movimento reduzido, os dígitos atualizam uma vez por segundo), botões em pílula por estado e, à esquerda, o painel **Dias de mais foco** (abaixo de 1100 px ele desce). Com a trava, só os dígitos e "Segurar para destravar" (agora com um anel de progresso em volta do cadeado).
+- Concluído: "Concluído · 25 min", "Nova sessão" e "Ver estatísticas".
+- Estatísticas: a seção **Análises** passa a ter 5 cartões (a Água ficou só em "Hoje"); "Metas" ocupa a última linha inteira.
+- Contraste AA nos textos do painel do foco; o nível mais baixo do mapa de calor ficou mais visível (`--ds-heat-min`); o nome da matéria no cartão "Preparação" quebra em até 2 linhas e mostra o nome completo no `title`.
+
+### Adicionado (04.1)
+
+- `topFocusDays` e formatadores do painel e da fração em `lib/focus`, com testes; `pnpm visual:focus` para o novo layout (fixture `focus`) e `contrast-audit.mjs`.
+
+### Removido (04.1)
+
+- Anel do cronômetro (`TimerRing`), `fracaoRestante`, tokens `--ds-timer-*` e `--ds-color-timer-*`, e `waterAnalysis` (média, dias com meta batida e mini barras de 14 dias), usados só por esses itens. Os dados de água continuam registrados e exportados.
+
 ### Adicionado (Prompt 04 — fase B: Estatísticas)
 
 - Página `/estatisticas` seguindo `docs/design/reference/stats-dashboard.png`: saudação com o nome, seção **Hoje** (horas de estudo da semana, preparação para a próxima prova, sequência, água com onda animada, metas do dia e agenda de hoje) e seção **Análises** (Semana | Mês | 90 dias) com seis cartões em SVG próprio.

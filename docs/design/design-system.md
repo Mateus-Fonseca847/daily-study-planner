@@ -1,4 +1,4 @@
-# Daily — Design System (v0.6)
+# Daily — Design System (v0.7)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -277,11 +277,13 @@ Alturas: linha 1 ≈ 288 px na imagem (≈ 20 rem no app); linha 2 ≈ 230 px (�
 ### 9.1 Implementação (v0.6) e “Análises”
 
 - **Página** (`features/stats`): saudação, seção “Hoje” (grid de 4 colunas a partir de 80 rem; 2 colunas abaixo) e seção “Análises”; rola na vertical, com conteúdo de até `--ds-container-stats`.
-- **Análises:** seis cartões `surface-glass` em 2 colunas (1 abaixo de 64 rem). Gráficos em **SVG próprio** (`features/stats/charts.tsx`): barras (trilha `chart-track-strong` = planejado, amarelo = realizado; linha de referência para a meta de água), barras horizontais na cor da matéria e mapa de calor de 12 semanas (opacidade do amarelo ∝ % de metas). Alturas por tokens (`h-chart`, `h-chart-sm`, `h-stat-bar`).
+- **Análises (v0.7: 5 cartões):** `surface-glass` em 2 colunas (1 abaixo de 80 rem); o cartão “Metas” ocupa as duas colunas da última linha, sem buraco. A água fica **só** em “Hoje”. Gráficos em **SVG próprio** (`features/stats/charts.tsx`): barras (trilha `chart-track-strong` = planejado, amarelo = realizado), barras horizontais na cor da matéria e mapa de calor de 12 semanas (opacidade do amarelo de `--ds-heat-min` a 1, ∝ % de metas). Alturas por tokens (`h-chart`, `h-stat-bar`).
 - **Acessibilidade dos gráficos:** barras têm tabela `sr-only` com legenda; o mapa de calor é `role="img"` com resumo; todos os cartões vazios mostram “Ainda não há dados neste período”.
 - **Água:** onda animada (`animate-wave`) com a altura proporcional à meta; `prefers-reduced-motion` desliga a animação e a transição.
 - **Agenda:** linha do tempo 06h–23h rolada até o horário atual, cartões que se escalonam quando se sobrepõem (`lib/stats/agenda.ts`), linha de “agora”.
-- **Diferenças restantes em relação à referência:** o rótulo da matéria no cartão “Preparação” é truncado em janelas estreitas; a referência não tem a coluna de origem das metas automáticas; os cartões flutuantes da agenda não têm avatares (não usamos imagens da referência); o fundo texturizado da moldura não é reproduzido.
+- **Preparação (v0.7):** o nome da matéria quebra em até 2 linhas (reticências depois) e o nome completo vai no `title`; o contador desce para a linha de baixo quando não cabe ao lado.
+- **Contraste (v0.7, `node apps/web/scripts/contrast-audit.mjs`):** texto medido contra o fundo renderizado (WCAG AA). Estatísticas: menor razão 4,71:1 (127 textos, nenhum abaixo de 4,5:1). Mapa de calor: nível mais baixo de 0,2 → `--ds-heat-min` = 0,4 de opacidade, o que sobe o contraste não textual contra o cartão de ≈ 1,76:1 para ≈ 3,2:1. As barras “planejado” (branco a 16 %) são decorativas: o valor também está em texto e na tabela oculta.
+- **Diferenças restantes em relação à referência:** a referência não tem a coluna de origem das metas automáticas; os cartões flutuantes da agenda não têm avatares (não usamos imagens da referência); o fundo texturizado da moldura não é reproduzido.
 - **Capturas:** `pnpm visual:stats` → `docs/design/screenshots/stats/` (página inteira e primeira dobra em 1920×1080, 1440×900 e 1280×720; lado a lado com a referência por região em 1920 e 1440).
 
 ## 10. Cronômetro do Modo Foco
@@ -335,3 +337,25 @@ Estados (v0.5):
 | Concluído                     | completo, verde        | “Concluído” + duração focada + nova sessão                                                                  | link discreto “Ver estatísticas” |
 
 Campo de tempo: `<input>` sem caixa nem borda (apenas sublinhado sutil de 1 px no hover e no foco, cursor amarelo); aceita só dígitos e “:”; `25` = 25 min, `25:30`, `1:30:00`, `90` = 1 h 30; Enter e sair confirmam, Esc cancela, ↑/↓ ±1 min (Shift ±5); mínimo 1 min, máximo 3 h (valores fora são ajustados com aviso `aria-live`; formato inválido volta ao valor anterior).
+
+### 10.2 Dígitos grandes e painel “Dias de mais foco” (v0.7) — antes/depois
+
+O **anel foi removido**. A composição (adaptada de uma referência de cronômetro com dígitos pesados, fração em cinza no baseline, pílulas e lista à esquerda; sem copiar cores, textos nem layout claro) tem duas colunas centralizadas na área útil: **painel à esquerda, relógio à direita**. Abaixo de 1100 px o painel desce para baixo dos botões. Valores **estimados**.
+
+| Item                 | Antes (v0.5)                                 | Depois (v0.7)                                                                          | Token                                                             |
+| -------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Tempo                | 72 px, peso 300, dentro de um anel de 22 rem | `clamp(5,5 rem, 8 vw, 10 rem)` (≈ 154 px em 1920, ≈ 102 px em 1280), peso 800, tabular | `--ds-text-focus`, `--ds-weight-extrabold`                        |
+| Fração (milésimos)   | —                                            | `clamp(1,5 rem, 2,6 vw, 3 rem)`, peso 500, `fg-muted`, no baseline; só rodando         | `--ds-text-focus-frac`, `--ds-color-focus-frac`                   |
+| Espaço da fração     | —                                            | sempre reservado (4 ch) para os dígitos não se mexerem                                 | `--ds-focus-frac-w`                                               |
+| Anel / alça          | anel de 22 rem, traço de 5 px                | **removido**                                                                           | (tokens `--ds-timer-*` e `--ds-color-timer-*` removidos)          |
+| Botões               | ícones dentro do anel                        | **pílulas** de 52 px com ícone + rótulo (amarela = principal; contorno = secundária)   | `--ds-focus-pill-h`, `--ds-focus-pill-px`                         |
+| Painel               | —                                            | cartão glass de 320 px; linhas de 56 px com raio de 16 px, alternadas com `hover`      | `--ds-focus-panel-w`, `--ds-focus-row-h`, `--ds-focus-row-radius` |
+| Texto secundário     | —                                            | posição e “N sessões” em `fg-soft` (contraste ≥ 4,5:1 sobre as linhas alternadas)      | `--ds-color-focus-sub`                                            |
+| Espaço entre colunas | —                                            | `clamp(2,5 rem, 6 vw, 6 rem)`                                                          | `--ds-focus-gap`                                                  |
+| Destravar            | botão com barra preenchendo                  | pílula com **anel de progresso** de 28 px em volta do cadeado, enchendo em 3 s         | `--ds-focus-hold-size`, `--ds-focus-hold-ring`                    |
+
+Estados: **parado** (dígitos editáveis; pílulas “Travar” — `aria-pressed` — e “Iniciar”), **rodando/pausado sem trava** (“Reiniciar”, “Encerrar”, “Pausar”/“Retomar”; o alternador “Travar” some), **com trava** (só os dígitos e “Segurar para destravar”; o painel some) e **concluído** (dígitos zerados, “Concluído · 25 min”, “Nova sessão” e “Ver estatísticas”; o painel reaparece atualizado). Pausado, os dígitos piscam (desligado com `prefers-reduced-motion`).
+
+Fração e dígitos: com movimento normal os dígitos **truncam** o segundo (24:59.200, não 25:00) e atualizam por `requestAnimationFrame`, só rodando e com a aba visível; com `prefers-reduced-motion` não há fração e os dígitos arredondam para cima e atualizam uma vez por segundo.
+
+Painel “Dias de mais foco”: lista semântica (`ol`) dos **7 dias com mais tempo focado** em todo o histórico (sessões concluídas e interrompidas, por `actualSec`). Uma sessão conta no **dia local em que começou** (uma sessão que cruza a meia-noite fica inteira no dia do início). Empate: o dia mais recente primeiro. A linha 1 tem o tempo em amarelo; hoje leva um ponto amarelo (`aria-label="hoje"`). Vazio: “Complete uma sessão para ver seus dias de maior foco.”.

@@ -118,7 +118,7 @@ Tudo em `apps/web/src/lib/stats` é função pura sobre o snapshot, com o “hoj
 - **Dia** = `yyyy-MM-dd` local; **semana** = segunda a domingo.
 - **Próxima prova** e **preparação** (`nextExam`, `examPrep`): conteúdos concluídos ÷ total; prova sem conteúdos mostra “Adicione conteúdos”.
 - **Horas** (`studyHoursByDay`): blocos de estudo planejados × concluídos por dia; **foco** (`focusSecondsByDay`): sessões por dia.
-- **Água** (`waterOn`, `waterAnalysis`): soma por dia contra `waterGoalMl`.
+- **Água** (`waterOn`): soma por dia contra `waterGoalMl` (usada em “Hoje” e na meta automática de água).
 - **Metas** (`goalStates`, `goalsSummary`): uma meta vale num dia se `createdAt ≤ dia` e (`archivedAt` ausente ou `> dia`); as automáticas (`auto-agua`, `auto-estudo`) são calculadas a partir de água e blocos.
 - **Sequência** (`computeStreaks`): dias seguidos com todas as metas **que existiam naquele dia** cumpridas, olhando no máximo `MAX_STREAK_LOOKBACK_DAYS` (365); o dia de hoje só quebra a sequência depois de encerrado.
 - **Períodos** (`analysis.ts`): semana = 7, mês = 30, 90 dias = 90 (em barras semanais); a variação compara com o período anterior de mesmo tamanho.
