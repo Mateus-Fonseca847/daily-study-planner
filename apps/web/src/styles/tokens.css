@@ -100,6 +100,24 @@
 
   /* Cronômetro do Modo Foco */
   /* Mapa de calor das metas: opacidade do amarelo no nível mais baixo (3:1 contra o cartão). */
+  /* Visões do calendário (Dia, Semana, Ano) — docs/design/design-system.md → “Visões do calendário” */
+  --ds-grid-hour-h: 4.5rem;
+  --ds-grid-label-w: 3.5rem;
+  --ds-week-min-w: 60rem;
+  --ds-week-head-h: 3.5rem;
+  --ds-day-panel-w: 20rem;
+  --ds-now-line-h: 0.125rem;
+  --ds-now-dot: 0.5rem;
+  --ds-color-now: var(--ds-color-accent);
+  --ds-habit-pill-h: 1.5rem;
+  --ds-habit-block-border: 0.125rem;
+  --ds-year-day: 1.5rem;
+  --ds-year-gap: 1.5rem;
+  --ds-year-exam-dot: 0.3125rem;
+  --ds-density-0: rgb(255 255 255 / 0.04);
+  --ds-density-1: color-mix(in srgb, var(--ds-color-accent) 22%, transparent);
+  --ds-density-2: color-mix(in srgb, var(--ds-color-accent) 50%, transparent);
+  --ds-density-3: color-mix(in srgb, var(--ds-color-accent) 85%, transparent);
   /* Heatmap de hábitos (docs/design/design-system.md → “Heatmap de hábitos”) */
   --ds-heat-cell-max: 1.125rem;
   --ds-heat-cell-min: 0.75rem;
