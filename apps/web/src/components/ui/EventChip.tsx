@@ -36,7 +36,7 @@ export function EventChip({
       title={title}
       aria-expanded={selected}
       className={cn(
-        'flex w-full flex-col rounded-sm border-l-stripe px-2 py-0.75 text-left transition-[filter] hover:brightness-125',
+        'flex w-full flex-col rounded-sm border-l-stripe px-2 py-chip-y text-left transition-[filter] hover:brightness-125',
         meta.chip,
         finished && 'opacity-done',
         selected && 'brightness-150',

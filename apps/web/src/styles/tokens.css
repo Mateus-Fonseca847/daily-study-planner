@@ -134,6 +134,7 @@
   --ds-controls-h: 4.25rem;
   --ds-weekday-h: 1.75rem;
   --ds-cell-min-h: 9rem;
+  --ds-chip-pad-y: 0.1875rem;
   --ds-page-pad-x: 1.5rem;
 
   /* Dimensões de componentes */
@@ -168,4 +169,15 @@
   --ds-swatch: 1.75rem;
   --ds-dot: 0.625rem;
   --ds-banner-gap: 0.75rem;
+}
+
+/*
+ * Telas altas (segunda tela em 1920×1080): há folga vertical, então os chips ganham
+ * respiro e a linha mínima sobe para acomodá-los (2 chips + “+N mais”, também em meses de 6 semanas).
+ */
+@media (min-height: 1000px) {
+  :root {
+    --ds-chip-pad-y: 0.25rem;
+    --ds-cell-min-h: 9.4rem;
+  }
 }
