@@ -1,4 +1,10 @@
-import { dataSnapshotSchema, studyEventSchema, type DataSnapshot } from '@daily/shared';
+import {
+  dataSnapshotSchema,
+  EVERY_DAY,
+  habitSchema,
+  studyEventSchema,
+  type DataSnapshot,
+} from '@daily/shared';
 import { dayKey, shiftDay } from '../lib/dates';
 import { VIEWS_NOW } from '../lib/fixture';
 import { statsSnapshot } from './stats-fixture';
@@ -54,5 +60,22 @@ export function viewsSnapshot(now: Date = VIEWS_NOW): DataSnapshot {
       ...(type === 'prova' ? { contents: [] } : {}),
     });
   });
-  return dataSnapshotSchema.parse({ ...base, events: [...base.events, ...events] });
+  // Um hábito manual sem horário (aparece na faixa “Hábitos” da Semana e pode ser marcado dali).
+  const meditation = habitSchema.parse({
+    id: 'fx-v-meditation',
+    name: 'Meditação',
+    icon: 'heart',
+    color: 'turquesa',
+    type: 'check',
+    unit: '',
+    source: 'manual',
+    rules: [{ since: shiftDay(today, -30), repeat: EVERY_DAY, target: null, time: null }],
+    createdAt: at(shiftDay(today, -30), 8),
+    order: base.habits.length,
+  });
+  return dataSnapshotSchema.parse({
+    ...base,
+    events: [...base.events, ...events],
+    habits: [...base.habits, meditation],
+  });
 }

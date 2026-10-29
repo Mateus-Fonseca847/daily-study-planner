@@ -13,7 +13,14 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(here, '..');
 const outDir = path.resolve(webRoot, '../../docs/design/screenshots/stats');
 const label = process.argv[2] ?? 'audit';
-const PAGES = ['/estatisticas?fixture=stats', '/foco?fixture=stats', '/habitos?fixture=habits'];
+const PAGES = [
+  '/estatisticas?fixture=stats',
+  '/foco?fixture=stats',
+  '/habitos?fixture=habits',
+  ...['dia', 'semana', 'mes', 'ano'].map(
+    (v) => `/calendario?visao=${v}&data=2026-10-29&fixture=views`,
+  ),
+];
 
 const lum = ([r, g, b]) => {
   const f = (v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
@@ -42,8 +49,11 @@ try {
     await page.waitForTimeout(600);
     // Mostra a página inteira para medir tudo de uma vez.
     const scroller = page.locator('main > div.overflow-y-auto');
-    const height = await scroller.evaluate((el) => el.scrollHeight);
-    await page.setViewportSize({ width: 1920, height: height + 90 });
+    // Páginas com rolagem interna (calendário) são medidas na janela, sem expandir.
+    if ((await scroller.count()) > 0) {
+      const height = await scroller.evaluate((el) => el.scrollHeight);
+      await page.setViewportSize({ width: 1920, height: height + 90 });
+    }
     await page.waitForTimeout(300);
 
     const items = await page.evaluate(() => {
@@ -58,6 +68,14 @@ try {
         if (!el || seen.has(el) || !node.textContent.trim()) continue;
         if (el.closest('.sr-only')) continue;
         seen.add(el);
+        // Texto coberto por outro elemento (ex.: rolado para trás do cabeçalho fixo) não é visível.
+        {
+          const r = document.createRange();
+          r.selectNodeContents(node);
+          const b = r.getBoundingClientRect();
+          const hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2);
+          if (!hit || !(el.contains(hit) || hit.contains(el))) continue;
+        }
         const range = document.createRange();
         range.selectNodeContents(node);
         const rect = range.getBoundingClientRect(); // só a área do texto, não a do elemento

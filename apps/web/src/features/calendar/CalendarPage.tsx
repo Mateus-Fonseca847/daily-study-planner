@@ -56,9 +56,15 @@ export function CalendarPage() {
   const go = useCallback(
     (next: { view?: CalendarView; date?: string }) => {
       setSelection(null);
-      setParams(buildCalendarSearch({ view: next.view ?? view, date: next.date ?? date }));
+      // Preserva os outros parâmetros da URL (ex.: `fixture` em desenvolvimento).
+      const merged = new URLSearchParams(params);
+      const wanted = new URLSearchParams(
+        buildCalendarSearch({ view: next.view ?? view, date: next.date ?? date }),
+      );
+      wanted.forEach((value, key) => merged.set(key, value));
+      setParams(merged);
     },
-    [setParams, view, date],
+    [setParams, params, view, date],
   );
   const step = useCallback(
     (direction: 1 | -1) => go({ date: shiftPeriod(view, date, direction) }),

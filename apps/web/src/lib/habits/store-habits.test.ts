@@ -9,6 +9,8 @@ import {
   duplicateHabitDraft,
   MAX_RETRO_DAYS,
   newHabit,
+  nextHabitValue,
+  stepFor,
   type HabitDraft,
 } from './edit';
 import { monthLabels, monthlySummary, formatLongDay, formatAmount } from './summary';
@@ -248,5 +250,27 @@ describe('resumos de texto', () => {
       ['2026-10', 2, 1],
       ['2026-11', 2, 1],
     ]);
+  });
+});
+
+describe('clique em hábitos manuais (faixa da Semana e blocos)', () => {
+  const check = habitSchema.parse({ ...newHabit(draft(), new Date(2026, 9, 1), 0), id: 'c' });
+  const qty = habitSchema.parse({
+    ...newHabit(draft({ type: 'quantidade', unit: 'min', target: 30 }), new Date(2026, 9, 1), 1),
+    id: 'q',
+  });
+
+  it('check alterna entre feito e não feito', () => {
+    expect(nextHabitValue(check, 0, 1)).toBe(1);
+    expect(nextHabitValue(check, 1, 1)).toBe(0);
+  });
+
+  it('quantidade soma um passo, trava na meta e zera no clique seguinte', () => {
+    expect(stepFor(30)).toBe(1);
+    expect(stepFor(100)).toBe(10);
+    expect(stepFor(2000)).toBe(250);
+    expect(nextHabitValue(qty, 0, 30)).toBe(1);
+    expect(nextHabitValue(qty, 29, 30)).toBe(30);
+    expect(nextHabitValue(qty, 30, 30)).toBe(0);
   });
 });

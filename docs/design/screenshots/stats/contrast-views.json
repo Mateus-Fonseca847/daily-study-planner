@@ -1,0 +1,132 @@
+{
+  "total": 1107,
+  "minRatioByPage": {
+    "/estatisticas": 4.71,
+    "/foco": 5.03,
+    "/habitos": 4.71,
+    "/calendario": 4.55
+  },
+  "lowest": [
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 334,
+        "y": 270,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 1141.484375,
+        "y": 404,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 1257.421875,
+        "y": 368,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 1488.28125,
+        "y": 728,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 1476.28125,
+        "y": 207,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 1715.140625,
+        "y": 440.1875,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 759.703125,
+        "y": 569.390625,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    },
+    {
+      "page": "/calendario",
+      "text": "Estudo",
+      "box": {
+        "x": 1476.28125,
+        "y": 569.390625,
+        "width": 32.90625,
+        "height": 12
+      },
+      "size": 10,
+      "color": "rgb(59, 130, 246)",
+      "ratio": 4.55,
+      "required": 4.5,
+      "pass": true
+    }
+  ],
+  "failing": []
+}

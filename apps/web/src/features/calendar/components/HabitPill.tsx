@@ -42,7 +42,7 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
         <Icon aria-hidden strokeWidth={1.5} className="habit-text size-icon-sm shrink-0" />
       )}
       <span className="truncate">{habit.name}</span>
-      {quantity && <span className="shrink-0 tabular-nums opacity-done">{quantity}</span>}
+      {quantity && <span className="shrink-0 tabular-nums">{quantity}</span>}
     </>
   );
 

@@ -117,7 +117,7 @@
   --ds-year-exam-dot: 0.3125rem;
   --ds-density-0: rgb(255 255 255 / 0.04);
   --ds-density-1: color-mix(in srgb, var(--ds-color-accent) 22%, transparent);
-  --ds-density-2: color-mix(in srgb, var(--ds-color-accent) 50%, transparent);
+  --ds-density-2: color-mix(in srgb, var(--ds-color-accent) 38%, transparent);
   --ds-density-3: color-mix(in srgb, var(--ds-color-accent) 85%, transparent);
   /* Heatmap de hábitos (docs/design/design-system.md → “Heatmap de hábitos”) */
   --ds-heat-cell-max: 1.125rem;
