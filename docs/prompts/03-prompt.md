@@ -1,10 +1,10 @@
 > **Esclarecimento anterior (do autor):**
 >
-> Houve um mal-entendido: a imagem `docs/design/reference/focus-dashboard.png.png` será a **página de Estatísticas**. Podemos tornar a página scrollável e adicionar as suas ideias abaixo também.
+> Houve um mal-entendido: a imagem `docs/design/reference/stats-dashboard.png` será a **página de Estatísticas**. Podemos tornar a página scrollável e adicionar as suas ideias abaixo também.
 >
 > O **Modo Foco** deve ser apenas um cronômetro redondo, com tempo ajustável, que permita ao usuário **travar (lockar) a tela do aplicativo** enquanto o cronômetro funciona.
 
-> **Nota de registro:** o prompt abaixo foi recebido **cortado no item B1** ("Sequência…"); os itens B2 em diante não chegaram. Nele, a imagem aparece como `stats-dashboard.png`; o arquivo real é `docs/design/reference/focus-dashboard.png.png`.
+> **Nota de registro:** o prompt abaixo foi recebido **cortado no item B1** ("Sequência…"); os itens B2 em diante não chegaram. Nele, a imagem aparece como `stats-dashboard.png`; o arquivo original se chamava `focus-dashboard.png.png` e foi renomeado para `stats-dashboard.png` no 03.1.
 
 ---
 

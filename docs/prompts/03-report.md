@@ -5,7 +5,7 @@ Trabalho direto na `main`, um push por etapa. **A Fase B (Estatísticas, tag v0.
 ## Contexto e ressalvas (importante)
 
 1. **O prompt chegou cortado** no item B1 (“Sequência… use só as metas que existiam naquele dia”). Faltam o resto de B1 e os itens B2 em diante. A Fase A estava completa e foi entregue; a Fase B espera o texto restante.
-2. **Nome da referência:** o prompt cita `stats-dashboard.png`; o arquivo real é `docs/design/reference/focus-dashboard.png.png` (o esclarecimento em `03-prompt.md` confirma que ele é a página de Estatísticas). Usei o nome real e não renomeei o arquivo.
+2. **Nome da referência:** o prompt citava `stats-dashboard.png` e o arquivo se chamava `focus-dashboard.png.png` (o esclarecimento em `03-prompt.md` confirma que é a página de Estatísticas). Na Fase A usei o nome real; **no 03.1 o arquivo foi renomeado para `docs/design/reference/stats-dashboard.png`** e as menções foram corrigidas.
 3. **Outro processo escreveu na mesma pasta** durante o trabalho: apareceram `lib/focus/focus-app-store.ts` (importava módulos inexistentes), capturas `foco-*`/`estatisticas-*` de uma versão anterior e uma troca de branch para `feat/stats-and-focus`. Com a sua autorização, removi os arquivos parciais, avancei a `main` por fast-forward para o commit já feito e segui na `main`. A branch `feat/stats-and-focus` continua existindo, no mesmo commit; não a apaguei.
 
 ## O que foi feito

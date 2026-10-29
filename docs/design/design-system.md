@@ -220,7 +220,7 @@ Capturas: `docs/design/screenshots/app/*-1440x900.png` e `*-1920x1080.png` (`pnp
 
 ## 9. Dashboard (Estatísticas)
 
-Fonte: `docs/design/reference/focus-dashboard.png.png` (1187×896; a página de **Estatísticas**, não o Modo Foco). Ignoramos a moldura do aparelho, o fundo texturizado, a barra de navegação, a marca, os logotipos, os avatares e os textos. **Todos os valores abaixo são estimados** (amostras de pixel da imagem e medição de bordas; escala ≈ 1,12 da imagem para o app, onde o conteúdo tem no máximo 72 rem).
+Fonte: `docs/design/reference/stats-dashboard.png` (1187×896; a página de **Estatísticas**, não o Modo Foco). Ignoramos a moldura do aparelho, o fundo texturizado, a barra de navegação, a marca, os logotipos, os avatares e os textos. **Todos os valores abaixo são estimados** (amostras de pixel da imagem e medição de bordas; escala ≈ 1,12 da imagem para o app, onde o conteúdo tem no máximo 72 rem).
 
 ### Adaptações obrigatórias
 
