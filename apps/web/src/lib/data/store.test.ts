@@ -87,7 +87,8 @@ describe('seletores da sidebar', () => {
       task('atrasada', { start: '2026-10-30T10:00:00', end: '2026-10-30T10:00:00' }),
       task('feita', { status: 'concluido' }),
     ];
-    expect(navCounts(events, now)).toEqual({ provas: 1, tarefas: 2 });
+    expect(navCounts(events, now)).toEqual({ provas: 1, tarefas: 2, habitos: 0 });
+    expect(navCounts(events, now, 3).habitos).toBe(3);
   });
 });
 

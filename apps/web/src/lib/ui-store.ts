@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import type { EventType, StudyEvent, Subject } from '@daily/shared';
+import type { EventType, Habit, StudyEvent, Subject } from '@daily/shared';
 
 export type ModalState =
   | null
   | { kind: 'event'; event?: StudyEvent; type?: EventType; date?: string }
   | { kind: 'subject'; subject?: Subject }
+  | { kind: 'habit'; habit?: Habit }
   | { kind: 'subject-delete'; subject: Subject };
 
 interface UiState {
@@ -24,3 +25,5 @@ export const openEventForm = (init: { event?: StudyEvent; type?: EventType; date
   useUi.getState().open({ kind: 'event', ...init });
 export const openSubjectForm = (subject?: Subject) =>
   useUi.getState().open({ kind: 'subject', ...(subject ? { subject } : {}) });
+export const openHabitForm = (habit?: Habit) =>
+  useUi.getState().open({ kind: 'habit', ...(habit ? { habit } : {}) });

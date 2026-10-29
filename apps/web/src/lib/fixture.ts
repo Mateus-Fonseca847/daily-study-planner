@@ -4,9 +4,9 @@ export const REFERENCE_NOW = new Date(2024, 10, 12, 9, 0);
 /** Data fixa das fixtures de Estatísticas e Modo Foco (terça-feira, 10/11/2026, 10h30). */
 export const STATS_NOW = new Date(2026, 10, 10, 10, 30);
 
-export type FixtureName = 'reference' | 'stats' | 'focus';
+export type FixtureName = 'reference' | 'stats' | 'focus' | 'habits';
 
-const FIXTURES: readonly string[] = ['reference', 'stats', 'focus'];
+const FIXTURES: readonly string[] = ['reference', 'stats', 'focus', 'habits'];
 
 /**
  * Fixtures de desenvolvimento (`?fixture=reference|stats|focus`), ignoradas em produção:

@@ -1,4 +1,5 @@
 import { useUi } from '../../lib/ui-store';
+import { HabitFormModal } from '../../features/habits/HabitFormModal';
 import { EventFormModal } from './EventFormModal';
 import { SubjectDeleteModal, SubjectFormModal } from './SubjectModals';
 
@@ -14,6 +15,8 @@ export function ModalHost() {
       );
     case 'subject':
       return <SubjectFormModal subject={modal.subject} onClose={close} />;
+    case 'habit':
+      return <HabitFormModal habit={modal.habit} onClose={close} />;
     case 'subject-delete':
       return <SubjectDeleteModal subject={modal.subject} onClose={close} />;
   }

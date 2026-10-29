@@ -9,11 +9,12 @@ import {
   LayoutGrid,
   Library,
   ListChecks,
+  Repeat,
   Settings,
   type LucideIcon,
 } from 'lucide-react';
 
-export type CounterKey = 'provas' | 'tarefas';
+export type CounterKey = 'provas' | 'tarefas' | 'habitos';
 
 export interface NavItem {
   to: string;
@@ -30,6 +31,7 @@ export const MENU_ITEMS: readonly NavItem[] = [
   { to: '/tarefas', label: 'Tarefas', icon: ListChecks, counter: 'tarefas' },
   { to: '/materias', label: 'Matérias', icon: Library },
   { to: '/blocos', label: 'Blocos de estudo', icon: LayoutGrid },
+  { to: '/habitos', label: 'Hábitos', icon: Repeat, counter: 'habitos' },
   { to: '/foco', label: 'Modo Foco', icon: Focus, badgeNew: true },
   { to: '/estatisticas', label: 'Estatísticas', icon: BarChart3 },
 ];

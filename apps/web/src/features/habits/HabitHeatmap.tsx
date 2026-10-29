@@ -11,6 +11,7 @@ import {
   type HabitContext,
 } from '../../lib/habits';
 import { formatAmount, formatLongDay, monthlySummary, stateText } from '../../lib/habits/summary';
+import { HABIT_COLOR_CLASS } from './habit-icons';
 import { HeatGrid, HeatLegend, type CellView } from './HeatGrid';
 
 interface HabitHeatmapProps {
@@ -42,7 +43,7 @@ export function HabitHeatmap({ habit, ctx, from, to, onDay }: HabitHeatmapProps)
       ),
     [habit, columns, from, to, ctx],
   );
-  const color = `habit-${habit.color}`;
+  const color = HABIT_COLOR_CLASS[habit.color];
 
   const cell = (date: string): CellView => {
     const state = dayState(habit, date, ctx);

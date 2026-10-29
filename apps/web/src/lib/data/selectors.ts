@@ -8,6 +8,8 @@ export const UPCOMING_EXAM_DAYS = 14;
 export interface NavCounts {
   provas: number;
   tarefas: number;
+  /** Hábitos agendados hoje e ainda não cumpridos. */
+  habitos: number;
 }
 
 /** Provas abertas que começam nos próximos 14 dias. */
@@ -21,6 +23,10 @@ export function upcomingExams(events: readonly StudyEvent[], now: Date): Exam[] 
 export const openTasks = (events: readonly StudyEvent[]): Task[] =>
   events.filter(isTask).filter(isOpen);
 
-export function navCounts(events: readonly StudyEvent[], now: Date): NavCounts {
-  return { provas: upcomingExams(events, now).length, tarefas: openTasks(events).length };
+export function navCounts(events: readonly StudyEvent[], now: Date, habitos = 0): NavCounts {
+  return {
+    provas: upcomingExams(events, now).length,
+    tarefas: openTasks(events).length,
+    habitos,
+  };
 }

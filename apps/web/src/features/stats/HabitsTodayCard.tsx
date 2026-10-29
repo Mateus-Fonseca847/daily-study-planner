@@ -5,7 +5,7 @@ import { cn } from '../../lib/cn';
 import { isDone, scheduledToday, type HabitContext } from '../../lib/habits';
 import { percentOf } from '../../lib/stats/format';
 import { HabitControl } from '../habits/HabitControl';
-import { HABIT_ICON_COMPONENT } from '../habits/habit-icons';
+import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../habits/habit-icons';
 import { StatCard } from './StatCard';
 
 interface HabitsTodayCardProps {
@@ -52,7 +52,7 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
                 key={habit.id}
                 className={cn(
                   'flex items-center gap-3 border-b-hair border-dashed py-3 last:border-b-0',
-                  `habit-${habit.color}`,
+                  HABIT_COLOR_CLASS[habit.color],
                 )}
               >
                 <span className="habit-bg-soft habit-text inline-flex size-goal-icon shrink-0 items-center justify-center rounded-full">

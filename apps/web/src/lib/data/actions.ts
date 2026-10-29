@@ -26,6 +26,11 @@ export function deleteSubjectWithUndo(id: string, resolution?: SubjectDeletion):
   );
 }
 
+export function deleteHabitWithUndo(id: string): void {
+  const habit = useData.getState().habits.find((h) => h.id === id);
+  withUndo(`Hábito “${habit?.name ?? ''}” excluído`, () => useData.getState().deleteHabit(id));
+}
+
 export function duplicateEventWithToast(id: string): void {
   const copy = useData.getState().duplicateEvent(id);
   if (copy) useToasts.getState().push({ message: `“${copy.title}” criado` });

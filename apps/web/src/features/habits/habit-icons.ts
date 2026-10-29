@@ -54,3 +54,14 @@ export const HABIT_COLOR_LABEL = {
   violeta: 'Violeta',
   turquesa: 'Turquesa',
 } as const;
+
+/** Classes completas (o Tailwind só gera o que aparece literalmente no código). */
+export const HABIT_COLOR_CLASS = {
+  amarelo: 'habit-amarelo',
+  azul: 'habit-azul',
+  verde: 'habit-verde',
+  laranja: 'habit-laranja',
+  rosa: 'habit-rosa',
+  violeta: 'habit-violeta',
+  turquesa: 'habit-turquesa',
+} as const;

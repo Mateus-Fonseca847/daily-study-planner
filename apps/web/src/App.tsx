@@ -5,6 +5,7 @@ import { MENU_ITEMS, SETTINGS_ITEMS } from './components/layout/nav';
 import { BlocksPage } from './features/blocks/BlocksPage';
 import { CalendarPage } from './features/calendar/CalendarPage';
 import { ExamsPage } from './features/exams/ExamsPage';
+import { HabitsPage } from './features/habits/HabitsPage';
 import { FocusPage } from './features/focus/FocusPage';
 import { StatsPage } from './features/stats/StatsPage';
 import { PreferencesPage } from './features/preferences/PreferencesPage';
@@ -21,6 +22,7 @@ const PAGES: Record<string, ReactNode> = {
   '/tarefas': <TasksPage />,
   '/materias': <SubjectsPage />,
   '/blocos': <BlocksPage />,
+  '/habitos': <HabitsPage />,
   '/foco': <FocusPage />,
   '/estatisticas': <StatsPage />,
   '/preferencias': <PreferencesPage />,

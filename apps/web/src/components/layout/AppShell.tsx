@@ -4,6 +4,8 @@ import { useData } from '../../lib/data/app-store';
 import { navCounts } from '../../lib/data/selectors';
 import { travado } from '../../lib/focus/session';
 import { appNow } from '../../lib/fixture';
+import { useHabitModel } from '../../features/habits/useHabitModel';
+import { pendingToday } from '../../lib/habits';
 import { ModalHost } from '../forms/ModalHost';
 import { ToastRegion } from '../ui/ToastRegion';
 import { FocusLockGuard, FocusRuntime } from './FocusRuntime';
@@ -17,7 +19,9 @@ export function AppShell() {
   const [subjectId, setSubjectId] = useState('all');
   const events = useData((s) => s.events);
   const locked = travado(useData((s) => s.focusActive));
-  const counts = useMemo(() => navCounts(events, appNow()), [events]);
+  const habitModel = useHabitModel();
+  const pendingHabits = pendingToday(habitModel.habits, habitModel.ctx).length;
+  const counts = useMemo(() => navCounts(events, appNow(), pendingHabits), [events, pendingHabits]);
 
   return (
     <ShellContext.Provider value={{ subjectId }}>
