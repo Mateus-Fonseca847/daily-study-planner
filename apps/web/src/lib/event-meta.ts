@@ -42,8 +42,18 @@ export const EVENT_TYPE_META: Record<EventType, EventTypeMeta> = {
   },
 };
 
+/** Nomes usados nos formulários (a “Tarefa” é o evento do tipo `entrega`). */
+export const EVENT_FORM_LABEL: Record<EventType, string> = {
+  prova: 'Prova',
+  estudo: 'Bloco de estudo',
+  entrega: 'Tarefa',
+  revisao: 'Revisão',
+  especial: 'Especial',
+};
+
 export const EVENT_STATUS_LABEL: Record<EventStatus, string> = {
-  agendada: 'Agendada',
+  pendente: 'Pendente',
   'em-andamento': 'Em andamento',
-  concluida: 'Concluída',
+  concluido: 'Concluído',
+  cancelado: 'Cancelado',
 };

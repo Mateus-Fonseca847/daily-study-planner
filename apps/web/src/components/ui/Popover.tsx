@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { useFocusScope } from '../../lib/use-focus-scope';
 
 interface PopoverProps {
   /** Elemento âncora (ex.: o chip clicado). */
@@ -11,8 +12,6 @@ interface PopoverProps {
 
 /** Distância mínima entre o popover e as bordas da janela / a âncora (px). */
 const GAP = 8;
-
-const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 interface Position {
   top: number;
@@ -38,6 +37,8 @@ export function Popover({ anchor, onClose, children, ...rest }: PopoverProps) {
     onCloseRef.current = onClose;
   }, [onClose]);
 
+  useFocusScope(panelRef, { onEscape: () => onCloseRef.current(), restoreTo: anchor });
+
   useLayoutEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -49,42 +50,13 @@ export function Popover({ anchor, onClose, children, ...rest }: PopoverProps) {
   }, [anchor, children]);
 
   useEffect(() => {
-    const panel = panelRef.current;
-    panel?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        onCloseRef.current();
-        return;
-      }
-      if (e.key !== 'Tab' || !panel) return;
-      // Prende o foco dentro do popover enquanto ele estiver aberto.
-      const items = [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)];
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (!first || !last) return;
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Node;
-      if (panel?.contains(target) || anchor.contains(target)) return;
+      if (panelRef.current?.contains(target) || anchor.contains(target)) return;
       onCloseRef.current();
     };
-
-    document.addEventListener('keydown', onKeyDown);
     document.addEventListener('pointerdown', onPointerDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('pointerdown', onPointerDown);
-      if (anchor.isConnected) anchor.focus();
-    };
+    return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [anchor]);
 
   return createPortal(
@@ -93,7 +65,7 @@ export function Popover({ anchor, onClose, children, ...rest }: PopoverProps) {
       role="dialog"
       aria-label={rest['aria-label']}
       style={{ top: position?.top ?? 0, left: position?.left ?? 0 }}
-      className={`fixed z-50 w-popover rounded-xl border-hair bg-raised p-4 shadow-popover ${
+      className={`fixed z-50 max-h-modal w-popover overflow-y-auto rounded-xl border-hair bg-raised p-4 shadow-popover ${
         position ? '' : 'opacity-0'
       }`}
     >

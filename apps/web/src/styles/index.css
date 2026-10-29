@@ -12,6 +12,15 @@
   --color-line-strong: var(--ds-color-border-strong);
   --color-hover: var(--ds-color-hover);
   --color-scrim: var(--ds-color-scrim);
+  --color-danger: var(--ds-color-danger);
+  --color-subject-vermelho: var(--ds-color-subject-vermelho);
+  --color-subject-laranja: var(--ds-color-subject-laranja);
+  --color-subject-amarelo: var(--ds-color-subject-amarelo);
+  --color-subject-verde: var(--ds-color-subject-verde);
+  --color-subject-turquesa: var(--ds-color-subject-turquesa);
+  --color-subject-azul: var(--ds-color-subject-azul);
+  --color-subject-violeta: var(--ds-color-subject-violeta);
+  --color-subject-rosa: var(--ds-color-subject-rosa);
   --color-accent: var(--ds-color-accent);
   --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
@@ -112,6 +121,15 @@
   --spacing-popover-label: var(--ds-popover-label-w);
   --spacing-course: var(--ds-course-select-w);
   --spacing-search: var(--ds-search-w);
+  --spacing-modal-h: var(--ds-modal-max-h);
+  --spacing-menu: var(--ds-menu-w);
+  --spacing-textarea: var(--ds-textarea-h);
+  --spacing-swatch: var(--ds-swatch);
+  --spacing-dot: var(--ds-dot);
+
+  --container-modal: var(--ds-modal-w);
+  --container-toast: var(--ds-toast-w);
+  --container-content: var(--ds-page-max-w);
 }
 
 /* Larguras de borda tokenizadas (o Tailwind não as expõe no tema). */
@@ -132,6 +150,9 @@
 }
 @utility border-l-stripe {
   border-left-width: var(--ds-border-accent-w);
+}
+@utility opacity-done {
+  opacity: var(--ds-opacity-done);
 }
 @utility opacity-dimmed {
   opacity: var(--ds-opacity-dimmed);
