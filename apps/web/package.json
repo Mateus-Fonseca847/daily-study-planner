@@ -14,7 +14,8 @@
     "visual:app": "node scripts/visual-capture-app.mjs",
     "visual:focus": "node scripts/visual-capture-focus.mjs",
     "visual:stats": "node scripts/visual-capture-stats.mjs",
-    "visual:habits": "node scripts/visual-capture-habits.mjs"
+    "visual:habits": "node scripts/visual-capture-habits.mjs",
+    "visual:views": "node scripts/visual-capture-views.mjs"
   },
   "dependencies": {
     "@daily/shared": "workspace:*",

@@ -57,7 +57,7 @@ export const hasEndTime = (type: EventType): boolean => type !== 'entrega';
 const timeRe = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 export function initialEventValues(
-  init: { event?: StudyEvent; type?: EventType; date?: string },
+  init: { event?: StudyEvent; type?: EventType; date?: string; time?: string },
   today: Date,
 ): EventFormValues {
   const { event } = init;
@@ -82,7 +82,11 @@ export function initialEventValues(
     };
   }
   const type = init.type ?? 'prova';
-  const [startTime, endTime] = DEFAULT_TIMES[type];
+  const [defaultStart, defaultEnd] = DEFAULT_TIMES[type];
+  // Criar a partir de um horário da grade: começa nele e dura 1 h (entregas não têm fim).
+  const startTime = init.time ?? defaultStart;
+  const endTime =
+    init.time === undefined ? defaultEnd : hasEndTime(type) ? suggestEnd(init.time) : init.time;
   return {
     type,
     title: '',

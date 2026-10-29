@@ -4,6 +4,7 @@ import { cn } from '../../lib/cn';
 import { useData } from '../../lib/data/app-store';
 import type { HabitContext } from '../../lib/habits';
 import { isDone, targetOn, valueOn } from '../../lib/habits';
+import { stepFor } from '../../lib/habits/edit';
 import { formatAmount } from '../../lib/habits/summary';
 
 const SOURCE_TEXT = {
@@ -11,9 +12,6 @@ const SOURCE_TEXT = {
   foco: 'Automático: tempo de foco',
   blocos: 'Automático: blocos de estudo',
 } as const;
-
-/** Passo do +/− nos hábitos de quantidade (cresce com a meta para não exigir cliques demais). */
-export const stepFor = (target: number): number => (target >= 1000 ? 250 : target >= 100 ? 10 : 1);
 
 interface HabitControlProps {
   habit: Habit;

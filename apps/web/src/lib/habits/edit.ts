@@ -145,3 +145,15 @@ export function canEditDay(habit: Habit, date: string, today: string): boolean {
   if (habit.source !== 'manual' || date > today) return false;
   return daysBetween(date, today) <= MAX_RETRO_DAYS;
 }
+
+/** Passo do +/− nos hábitos de quantidade (cresce com a meta para não exigir cliques demais). */
+export const stepFor = (target: number): number => (target >= 1000 ? 250 : target >= 100 ? 10 : 1);
+
+/**
+ * Próximo valor ao clicar num hábito manual: check alterna 0 ↔ 1; quantidade soma um passo e,
+ * cumprida a meta, o clique seguinte zera.
+ */
+export function nextHabitValue(habit: Habit, value: number, target: number): number {
+  if (habit.type === 'check') return value >= 1 ? 0 : 1;
+  return value >= target ? 0 : Math.min(target, value + stepFor(target));
+}

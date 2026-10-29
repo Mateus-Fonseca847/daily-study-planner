@@ -2,6 +2,7 @@ import { browserStorage } from '../browser-storage';
 import { fixtureName, isFixture } from '../fixture';
 import { referenceSnapshot } from '../../mocks/reference-fixture';
 import { runningLockedSession, statsSnapshot } from '../../mocks/stats-fixture';
+import { viewsSnapshot } from '../../mocks/views-fixture';
 import { LocalStorageRepository, MemoryStorage, WATCHED_KEYS } from './local-storage-repository';
 import { createDataStore } from './store';
 
@@ -9,7 +10,13 @@ function createRepository(): LocalStorageRepository {
   if (!isFixture) return new LocalStorageRepository(browserStorage());
   // As fixtures nunca tocam os dados reais do usuário: tudo em memória.
   const repo = new LocalStorageRepository(new MemoryStorage());
-  repo.replaceAll(fixtureName === 'reference' ? referenceSnapshot() : statsSnapshot());
+  repo.replaceAll(
+    fixtureName === 'reference'
+      ? referenceSnapshot()
+      : fixtureName === 'views'
+        ? viewsSnapshot()
+        : statsSnapshot(),
+  );
   if (fixtureName === 'focus') repo.focusActive.set(runningLockedSession(Date.now()));
   return repo;
 }

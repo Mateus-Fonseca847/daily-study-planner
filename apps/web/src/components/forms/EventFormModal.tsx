@@ -23,6 +23,7 @@ interface EventFormModalProps {
   event?: StudyEvent | undefined;
   type?: EventType | undefined;
   date?: string | undefined;
+  time?: string | undefined;
   onClose: () => void;
 }
 
@@ -32,13 +33,13 @@ const STATUS_OPTIONS = Object.entries(EVENT_STATUS_LABEL).map(([value, label]) =
   label,
 }));
 
-export function EventFormModal({ event, type, date, onClose }: EventFormModalProps) {
+export function EventFormModal({ event, type, date, time, onClose }: EventFormModalProps) {
   const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const subjects = useData((s) => s.subjects);
   const events = useData((s) => s.events);
   const [values, setValues] = useState<EventFormValues>(() =>
-    initialEventValues({ event, type, date }, appNow()),
+    initialEventValues({ event, type, date, time }, appNow()),
   );
   const [errors, setErrors] = useState<EventFormErrors>({});
 

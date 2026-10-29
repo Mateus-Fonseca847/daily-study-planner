@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { parseISO } from 'date-fns';
 import { useSearchParams } from 'react-router-dom';
 import { CalendarPlus, FileCheck2 } from 'lucide-react';
+import type { StudyEvent } from '@daily/shared';
 import { useShell } from '../../components/layout/shell-context';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -13,6 +14,9 @@ import { sampleSnapshot } from '../../mocks/events';
 import { CalendarControls } from './components/CalendarControls';
 import { EventPopover } from './components/EventPopover';
 import { MonthGrid } from './components/MonthGrid';
+import { DayView } from './components/DayView';
+import { WeekView } from './components/WeekView';
+import { YearView } from './components/YearView';
 import { useCalendarShortcuts } from './lib/use-calendar-shortcuts';
 import {
   buildCalendarSearch,
@@ -44,6 +48,8 @@ export function CalendarPage() {
   );
 
   const selected = events.find((e) => e.id === selection?.eventId);
+  const select = (event: StudyEvent, anchor: HTMLElement) =>
+    setSelection({ eventId: event.id, anchor });
   const closePopover = useCallback(() => setSelection(null), []);
 
   /** Cada mudança de visão ou de data é uma entrada do histórico (voltar funciona). */
@@ -54,7 +60,10 @@ export function CalendarPage() {
     },
     [setParams, view, date],
   );
-  const step = useCallback((direction: 1 | -1) => go({ date: shiftPeriod(view, date, direction) }), [go, view, date]);
+  const step = useCallback(
+    (direction: 1 | -1) => go({ date: shiftPeriod(view, date, direction) }),
+    [go, view, date],
+  );
   const goToday = useCallback(() => go({ date: todayKey }), [go, todayKey]);
   useCalendarShortcuts({ onStep: step, onToday: goToday, onView: (next) => go({ view: next }) });
 
@@ -86,19 +95,43 @@ export function CalendarPage() {
           </EmptyState>
         </div>
       )}
-      {view === 'mes' ? (
+      {view === 'mes' && (
         <MonthGrid
           month={month}
           events={events}
           today={today}
           selectedId={selected?.id ?? null}
-          onSelect={(event, anchor) => setSelection({ eventId: event.id, anchor })}
-          onCreate={(date) => openEventForm({ date })}
+          onSelect={select}
+          onCreate={(day) => openEventForm({ date: day })}
         />
-      ) : (
-        <div className="flex flex-1 items-center justify-center text-md text-muted">
-          Esta visão chega nos próximos passos.
-        </div>
+      )}
+      {view === 'semana' && (
+        <WeekView
+          date={date}
+          events={events}
+          selectedId={selected?.id ?? null}
+          onSelect={select}
+          onCreateAt={(day, time) => openEventForm({ type: 'estudo', date: day, time })}
+          onCreateDay={(day) => openEventForm({ date: day })}
+        />
+      )}
+      {view === 'dia' && (
+        <DayView
+          date={date}
+          events={events}
+          selectedId={selected?.id ?? null}
+          onSelect={select}
+          onCreateAt={(day, time) => openEventForm({ type: 'estudo', date: day, time })}
+        />
+      )}
+      {view === 'ano' && (
+        <YearView
+          date={date}
+          today={todayKey}
+          events={events}
+          onOpenDay={(day) => go({ view: 'dia', date: day })}
+          onOpenMonth={(day) => go({ view: 'mes', date: day })}
+        />
       )}
       {selected && selection && (
         <EventPopover event={selected} anchor={selection.anchor} onClose={closePopover} />

@@ -101,12 +101,14 @@ export function nowPct(nowMin: number, range: HourRange): number | null {
   return pct >= 0 && pct <= 100 ? pct : null;
 }
 
-export interface Placed extends Segment {
+export interface Placement {
   /** Coluna (0, 1, …) dentro do grupo de itens concorrentes. */
   column: number;
   /** Quantas colunas o grupo tem (largura de cada bloco = 1 / columns). */
   columns: number;
 }
+
+export type Placed<T extends Segment = Segment> = T & Placement;
 
 /**
  * Distribui itens concorrentes em colunas lado a lado, sem sobreposição e sem perder nenhum.
@@ -114,12 +116,12 @@ export interface Placed extends Segment {
  * um grupo novo recomeça em coluna única. Mesmo início: o mais longo primeiro. Usa o intervalo
  * visual (`startMin`–`endMin`, já com o mínimo aplicado).
  */
-export function layoutSobreposicoes(segments: readonly Segment[]): Placed[] {
+export function layoutSobreposicoes<T extends Segment>(segments: readonly T[]): Placed<T>[] {
   const sorted = [...segments].sort(
     (a, b) => a.startMin - b.startMin || b.endMin - a.endMin || a.id.localeCompare(b.id),
   );
-  const placed: Placed[] = [];
-  let group: Placed[] = [];
+  const placed: Placed<T>[] = [];
+  let group: Placed<T>[] = [];
   let groupEnd = -1;
 
   const flush = () => {

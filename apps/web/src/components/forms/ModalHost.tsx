@@ -11,7 +11,13 @@ export function ModalHost() {
   switch (modal.kind) {
     case 'event':
       return (
-        <EventFormModal event={modal.event} type={modal.type} date={modal.date} onClose={close} />
+        <EventFormModal
+          event={modal.event}
+          type={modal.type}
+          date={modal.date}
+          time={modal.time}
+          onClose={close}
+        />
       );
     case 'subject':
       return <SubjectFormModal subject={modal.subject} onClose={close} />;

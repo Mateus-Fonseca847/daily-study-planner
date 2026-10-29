@@ -106,6 +106,7 @@
   --ds-week-min-w: 60rem;
   --ds-week-head-h: 3.5rem;
   --ds-day-panel-w: 20rem;
+  --ds-day-grid-min-h: 36rem;
   --ds-now-line-h: 0.125rem;
   --ds-now-dot: 0.5rem;
   --ds-color-now: var(--ds-color-accent);

@@ -34,6 +34,7 @@ export function useCalendarShortcuts(handlers: CalendarShortcutHandlers): void {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return; // a própria visão (ex.: grade do Ano) já tratou a tecla
       if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.repeat) return;
       if (isTypingTarget(e.target)) return;
       // Menus e diálogos usam as setas para navegar dentro deles.
