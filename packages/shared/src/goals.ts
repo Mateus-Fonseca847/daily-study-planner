@@ -1,10 +1,7 @@
 import { z } from 'zod';
+import { localDateSchema, localDateTimeSchema } from './dates';
 
 const id = z.string().min(1);
-
-/** Data local `yyyy-MM-dd` (nunca UTC). */
-export const localDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida.');
-export const localDateTimeSchema = z.iso.datetime({ local: true });
 
 /** Conjunto pequeno de ícones lucide disponíveis para metas. */
 export const GOAL_ICONS = [

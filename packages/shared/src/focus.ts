@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { FOCUS_MAX_MINUTES, FOCUS_MIN_MINUTES } from './preferences';
-import { localDateTimeSchema } from './goals';
+import { localDateTimeSchema } from './dates';
 
 const id = z.string().min(1);
 const link = id.nullable().default(null);
