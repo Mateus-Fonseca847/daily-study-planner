@@ -16,4 +16,5 @@ export function createBackupFile(snapshot: DataSnapshot, now: Date): BackupFile 
 }
 
 /** Valida um arquivo escolhido para importação (zod + migração). Nunca lança. */
-export const readBackupFile = (text: string): ParseResult => parseEnvelope(text);
+export const readBackupFile = (text: string, now: Date = new Date()): ParseResult =>
+  parseEnvelope(text, now);

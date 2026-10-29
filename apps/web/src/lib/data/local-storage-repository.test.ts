@@ -7,7 +7,7 @@ import {
   STORAGE_KEY,
 } from './local-storage-repository';
 import { StorageWriteError } from './repository';
-import { block, exam, memoryRepo, snapshot } from './test-utils';
+import { block, exam, makeSnapshot, memoryRepo, snapshot } from './test-utils';
 
 describe('LocalStorageRepository — CRUD', () => {
   it('cria, lê, atualiza e exclui matérias', () => {
@@ -45,7 +45,7 @@ describe('LocalStorageRepository — CRUD', () => {
 
   it('replaceAll rejeita referências quebradas', () => {
     const { repo } = memoryRepo();
-    expect(() => repo.replaceAll({ subjects: [], events: [exam('e', 'fantasma')] })).toThrow();
+    expect(() => repo.replaceAll(makeSnapshot({ events: [exam('e', 'fantasma')] }))).toThrow();
     expect(repo.snapshot().events).toEqual([]);
   });
 });
@@ -55,8 +55,8 @@ describe('LocalStorageRepository — persistência e versão', () => {
     const { repo, storage } = memoryRepo();
     repo.replaceAll(snapshot());
     const saved = JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}');
-    expect(STORAGE_KEY).toBe('daily:v1');
-    expect(saved).toMatchObject({ app: 'daily', version: 1 });
+    expect(STORAGE_KEY).toBe('daily:v2');
+    expect(saved).toMatchObject({ app: 'daily', version: 2 });
 
     const reopened = new LocalStorageRepository(storage);
     expect(reopened.snapshot()).toEqual(snapshot());
@@ -105,7 +105,7 @@ describe('LocalStorageRepository — persistência e versão', () => {
     expect(second).toMatchObject({ status: 'pendente', subjectId: null, examId: null });
     expect(repo.subjects.list()[0]?.color).toBe('vermelho');
     // Regravado já na versão atual, com o original guardado como backup.
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(1);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(2);
     expect(JSON.parse(storage.getItem(BACKUP_KEY) ?? '{}').version).toBe(0);
   });
 
@@ -136,7 +136,8 @@ describe('LocalStorageRepository — dado corrompido', () => {
       const storage = new MemoryStorage();
       storage.setItem(STORAGE_KEY, raw);
       const repo = new LocalStorageRepository(storage);
-      expect(repo.snapshot()).toEqual({ subjects: [], events: [] });
+      expect(repo.snapshot().events).toEqual([]);
+      expect(repo.snapshot().goals).toHaveLength(4);
       expect(repo.issue).toMatchObject({ kind: 'corrupt', hasBackup: false });
       expect(storage.getItem(CORRUPT_KEY)).toBe(raw);
       expect(storage.getItem(STORAGE_KEY)).toBe(raw); // nada é sobrescrito até o usuário agir

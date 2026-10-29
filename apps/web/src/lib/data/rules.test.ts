@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { dataSnapshotSchema } from '@daily/shared';
 import { applySubjectDeletion, duplicateEventDraft, eventsOfSubject, removeEvents } from './rules';
-import { block, exam, snapshot, subject, task } from './test-utils';
+import { block, exam, makeSnapshot, snapshot, subject, task } from './test-utils';
 
 describe('applySubjectDeletion', () => {
   it('exclui direto uma matéria sem eventos, sem exigir resolução', () => {
-    const base = { subjects: [subject('a'), subject('b')], events: [] };
+    const base = makeSnapshot({ subjects: [subject('a'), subject('b')] });
     expect(applySubjectDeletion(base, 'a').subjects.map((s) => s.id)).toEqual(['b']);
   });
 
@@ -14,10 +14,10 @@ describe('applySubjectDeletion', () => {
   });
 
   it('“apagar eventos” remove os eventos e desvincula blocos de provas removidas', () => {
-    const base = {
+    const base = makeSnapshot({
       subjects: [subject('mat'), subject('fis')],
       events: [exam('e1', 'mat'), block('b1', 'fis', 'e1'), task('t1', { subjectId: 'mat' })],
-    };
+    });
     const result = applySubjectDeletion(base, 'mat', { kind: 'delete-events' });
     expect(result.subjects.map((s) => s.id)).toEqual(['fis']);
     expect(result.events.map((e) => e.id)).toEqual(['b1']);
@@ -63,5 +63,53 @@ describe('duplicateEventDraft', () => {
       ['n-2', false],
     ]);
     expect('id' in draft).toBe(false);
+  });
+});
+
+describe('sessões de foco vinculadas', () => {
+  const session = (patch: object) => ({
+    id: 's1',
+    startedAt: '2026-11-09T14:00:00',
+    plannedSec: 1500,
+    actualSec: 1500,
+    status: 'concluida' as const,
+    subjectId: null,
+    examId: null,
+    blockId: null,
+    ...patch,
+  });
+
+  it('excluir uma prova ou bloco desfaz o vínculo da sessão (nada fica pendurado)', () => {
+    const base = makeSnapshot({
+      ...snapshot(),
+      focusSessions: [session({ examId: 'e1', blockId: 'b1', subjectId: 'mat' })],
+    });
+    const result = removeEvents(base, new Set(['e1', 'b1']));
+    expect(result.focusSessions[0]).toMatchObject({
+      examId: null,
+      blockId: null,
+      subjectId: 'mat',
+    });
+    expect(dataSnapshotSchema.safeParse(result).success).toBe(true);
+  });
+
+  it('mover eventos leva as sessões para a nova matéria; apagar zera o vínculo', () => {
+    const base = makeSnapshot({
+      ...snapshot(),
+      focusSessions: [session({ subjectId: 'mat' })],
+    });
+    const moved = applySubjectDeletion(base, 'mat', { kind: 'move-events', toSubjectId: 'fis' });
+    expect(moved.focusSessions[0]?.subjectId).toBe('fis');
+    const deleted = applySubjectDeletion(base, 'mat', { kind: 'delete-events' });
+    expect(deleted.focusSessions[0]?.subjectId).toBeNull();
+    expect(dataSnapshotSchema.safeParse(deleted).success).toBe(true);
+  });
+
+  it('excluir matéria sem eventos também desfaz o vínculo da sessão', () => {
+    const base = makeSnapshot({
+      subjects: [subject('a')],
+      focusSessions: [session({ subjectId: 'a' })],
+    });
+    expect(applySubjectDeletion(base, 'a').focusSessions[0]?.subjectId).toBeNull();
   });
 });

@@ -101,7 +101,7 @@ export function SubjectDeleteModal({
 }) {
   const subjects = useData((s) => s.subjects);
   const events = useData((s) => s.events);
-  const owned = eventsOfSubject({ subjects, events }, subject.id);
+  const owned = eventsOfSubject({ events }, subject.id);
   const others = subjects.filter((s) => s.id !== subject.id);
   const [choice, setChoice] = useState<Choice>(others.length > 0 ? 'move' : 'delete');
   const [target, setTarget] = useState(others[0]?.id ?? '');

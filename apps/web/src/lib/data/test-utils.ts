@@ -1,4 +1,11 @@
-import type { DataSnapshot, Exam, StudyBlock, Subject, Task } from '@daily/shared';
+import {
+  createInitialSnapshot,
+  type DataSnapshot,
+  type Exam,
+  type StudyBlock,
+  type Subject,
+  type Task,
+} from '@daily/shared';
 import { LocalStorageRepository, MemoryStorage } from './local-storage-repository';
 
 export const subject = (id: string, name = id): Subject => ({ id, name, color: 'azul' });
@@ -51,17 +58,26 @@ export const task = (id: string, overrides: Partial<Task> = {}): Task => ({
   ...overrides,
 });
 
-export const snapshot = (): DataSnapshot => ({
-  subjects: [subject('mat', 'Matemática'), subject('fis', 'Física')],
-  events: [exam('e1', 'mat'), block('b1', 'mat', 'e1'), task('t1', { subjectId: 'fis' })],
+export const FIXED_NOW = new Date('2026-11-01T12:00:00');
+
+/** Estado inicial determinístico (metas criadas em `FIXED_NOW`) com os dados informados. */
+export const makeSnapshot = (patch: Partial<DataSnapshot> = {}): DataSnapshot => ({
+  ...createInitialSnapshot('2026-11-01T12:00:00'),
+  ...patch,
 });
+
+export const snapshot = (): DataSnapshot =>
+  makeSnapshot({
+    subjects: [subject('mat', 'Matemática'), subject('fis', 'Física')],
+    events: [exam('e1', 'mat'), block('b1', 'mat', 'e1'), task('t1', { subjectId: 'fis' })],
+  });
 
 /** Repositório sobre memória com ids previsíveis (`id-1`, `id-2`…). */
 export function memoryRepo(storage = new MemoryStorage()) {
   let n = 0;
   const repo = new LocalStorageRepository(storage, {
     newId: () => `id-${++n}`,
-    now: () => new Date('2026-11-01T12:00:00Z'),
+    now: () => FIXED_NOW,
   });
   return { repo, storage };
 }

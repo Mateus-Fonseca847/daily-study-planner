@@ -1,23 +1,8 @@
+import { browserStorage } from '../browser-storage';
 import { isReferenceFixture } from '../fixture';
 import { referenceSnapshot } from '../../mocks/reference-fixture';
-import {
-  LocalStorageRepository,
-  MemoryStorage,
-  type StorageLike,
-} from './local-storage-repository';
+import { LocalStorageRepository, MemoryStorage, WATCHED_KEYS } from './local-storage-repository';
 import { createDataStore } from './store';
-
-/** `localStorage` pode lançar (modo privado, bloqueio de cookies): cai para memória. */
-function browserStorage(): StorageLike {
-  try {
-    const probe = '__daily_probe__';
-    window.localStorage.setItem(probe, probe);
-    window.localStorage.removeItem(probe);
-    return window.localStorage;
-  } catch {
-    return new MemoryStorage();
-  }
-}
 
 function createRepository(): LocalStorageRepository {
   if (!isReferenceFixture) return new LocalStorageRepository(browserStorage());
@@ -29,3 +14,14 @@ function createRepository(): LocalStorageRepository {
 
 /** Store singleton do app. Componentes usam `useData(selector)`. */
 export const useData = createDataStore(createRepository());
+
+/**
+ * Sincroniza abas/janelas: o evento `storage` só dispara nas OUTRAS abas, então recarregar
+ * aqui reflete o que outra janela gravou. Limitação: última escrita vence (sem mesclagem).
+ */
+if (!isReferenceFixture && typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    // `key === null` = o storage foi limpo.
+    if (event.key === null || WATCHED_KEYS.includes(event.key)) useData.getState().reload();
+  });
+}

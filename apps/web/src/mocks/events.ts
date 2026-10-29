@@ -8,6 +8,7 @@ import {
   startOfMonth,
 } from 'date-fns';
 import {
+  createInitialSnapshot,
   studyEventSchema,
   type DataSnapshot,
   type EventType,
@@ -288,5 +289,9 @@ export function buildEvents(month: Date, now: Date = new Date()): StudyEvent[] {
 
 /** Dados de exemplo (botão “Carregar dados de exemplo”). */
 export function sampleSnapshot(now: Date = new Date()): DataSnapshot {
-  return { subjects: [...SUBJECTS], events: buildEvents(now, now) };
+  return {
+    ...createInitialSnapshot(toLocalIso(now)),
+    subjects: [...SUBJECTS],
+    events: buildEvents(now, now),
+  };
 }

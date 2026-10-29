@@ -1,14 +1,20 @@
 import { create } from 'zustand';
 import {
   isExam,
+  type ActiveFocus,
   type DataSnapshot,
   type EventStatus,
+  type FocusSession,
+  type Goal,
+  type GoalLog,
+  type Preferences,
   type StudyEvent,
   type Subject,
+  type WaterLog,
 } from '@daily/shared';
 import {
-  duplicateEventDraft,
   applySubjectDeletion,
+  duplicateEventDraft,
   removeEvents,
   type SubjectDeletion,
 } from './rules';
@@ -17,6 +23,13 @@ import { StorageWriteError, type DataRepository, type Draft, type LoadIssue } fr
 export interface DataState {
   subjects: Subject[];
   events: StudyEvent[];
+  preferences: Preferences;
+  goals: Goal[];
+  goalLogs: GoalLog[];
+  waterLogs: WaterLog[];
+  focusSessions: FocusSession[];
+  /** Sessão de foco em andamento (fora do snapshot/backup). */
+  focusActive: ActiveFocus | null;
   issue: LoadIssue | null;
   /** Mensagem quando a última gravação falhou (os dados seguem na memória). */
   saveError: string | null;
@@ -34,7 +47,13 @@ export interface DataActions {
   setEventStatus(id: string, status: EventStatus): void;
   toggleContent(eventId: string, contentId: string): void;
   addContent(eventId: string, title: string): void;
+  updatePreferences(patch: Partial<Preferences>): void;
+  /** Idempotente pelo `id` (duas abas podem finalizar a mesma sessão). */
+  addFocusSession(session: FocusSession): void;
+  setFocusActive(active: ActiveFocus | null): void;
   replaceAll(snapshot: DataSnapshot): void;
+  /** Relê o armazenamento (outra aba/janela gravou). */
+  reload(): void;
   restoreBackup(): boolean;
   startFresh(): void;
   clearSaveError(): void;
@@ -48,8 +67,18 @@ export function createDataStore(
   newId: () => string = () => crypto.randomUUID(),
 ) {
   return create<DataStore>()((set) => {
-    const sync = (): void =>
-      set({ subjects: repo.subjects.list(), events: repo.events.list(), issue: repo.issue });
+    const read = (): Omit<DataState, 'saveError'> => ({
+      subjects: repo.subjects.list(),
+      events: repo.events.list(),
+      preferences: repo.preferences.get(),
+      goals: repo.goals.list(),
+      goalLogs: repo.goalLogs.list(),
+      waterLogs: repo.waterLogs.list(),
+      focusSessions: repo.focusSessions.list(),
+      focusActive: repo.focusActive.get(),
+      issue: repo.issue,
+    });
+    const sync = (): void => set(read());
 
     /** Executa uma mutação; falha de gravação vira aviso, não exceção. */
     const run = <T>(mutation: () => T): T | undefined => {
@@ -71,9 +100,7 @@ export function createDataStore(
     const eventById = (id: string) => repo.events.get(id);
 
     return {
-      subjects: repo.subjects.list(),
-      events: repo.events.list(),
-      issue: repo.issue,
+      ...read(),
       saveError: null,
 
       snapshot: () => repo.snapshot(),
@@ -116,7 +143,14 @@ export function createDataStore(
             ],
           });
         }),
+      updatePreferences: (patch) => void run(() => repo.preferences.update(patch)),
+      addFocusSession: (session) => void run(() => repo.focusSessions.upsert(session)),
+      setFocusActive: (active) => void run(() => repo.focusActive.set(active)),
       replaceAll: (snapshot) => void run(() => repo.replaceAll(snapshot)),
+      reload: () => {
+        repo.reload();
+        sync();
+      },
       restoreBackup: () => run(() => repo.restoreBackup()) ?? false,
       startFresh: () => void run(() => repo.startFresh()),
       clearSaveError: () => set({ saveError: null }),

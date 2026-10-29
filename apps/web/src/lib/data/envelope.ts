@@ -1,11 +1,14 @@
 import {
   dataSnapshotSchema,
+  DEFAULT_PREFERENCES,
+  defaultGoals,
   SUBJECT_COLORS,
   type DataSnapshot,
   type EventStatus,
 } from '@daily/shared';
+import { toLocalIso } from '../dates';
 
-export const DATA_VERSION = 1;
+export const DATA_VERSION = 2;
 export const APP_ID = 'daily';
 
 export type ParseResult =
@@ -48,8 +51,29 @@ function migrateV0(data: unknown): unknown {
   };
 }
 
+/** v1 → v2: preferências, metas padrão e coleções novas (água, registros de meta, sessões de foco). */
+function migrateV1(data: unknown, ctx: MigrationContext): unknown {
+  if (!isObj(data)) return data;
+  return {
+    ...data,
+    preferences: { ...DEFAULT_PREFERENCES },
+    goals: defaultGoals(toLocalIso(ctx.now)),
+    goalLogs: [],
+    waterLogs: [],
+    focusSessions: [],
+  };
+}
+
+interface MigrationContext {
+  /** Relógio injetável: data de criação das metas padrão. */
+  now: Date;
+}
+
 /** Migrações indexadas pela versão de origem (n → n + 1). */
-const MIGRATIONS: Record<number, (data: unknown) => unknown> = { 0: migrateV0 };
+const MIGRATIONS: Record<number, (data: unknown, ctx: MigrationContext) => unknown> = {
+  0: (data) => migrateV0(data),
+  1: migrateV1,
+};
 
 function describeIssue(error: { issues: { path: PropertyKey[]; message: string }[] }): string {
   const issue = error.issues[0];
@@ -59,7 +83,7 @@ function describeIssue(error: { issues: { path: PropertyKey[]; message: string }
 }
 
 /** Lê e valida um JSON salvo/exportado, migrando versões antigas. Nunca lança. */
-export function parseEnvelope(raw: string): ParseResult {
+export function parseEnvelope(raw: string, now: Date = new Date()): ParseResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
@@ -78,7 +102,7 @@ export function parseEnvelope(raw: string): ParseResult {
   }
 
   let data = parsed.data;
-  for (let v = version; v < DATA_VERSION; v += 1) data = MIGRATIONS[v]?.(data) ?? data;
+  for (let v = version; v < DATA_VERSION; v += 1) data = MIGRATIONS[v]?.(data, { now }) ?? data;
 
   const result = dataSnapshotSchema.safeParse(data);
   if (!result.success) return { ok: false, error: describeIssue(result.error) };

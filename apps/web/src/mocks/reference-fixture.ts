@@ -1,10 +1,12 @@
 import { addMinutes, setHours, setMinutes } from 'date-fns';
 import {
+  createInitialSnapshot,
   studyEventSchema,
   type DataSnapshot,
   type EventType,
   type StudyEvent,
 } from '@daily/shared';
+import { REFERENCE_NOW } from '../lib/fixture';
 import { toLocalIso } from '../lib/dates';
 import { SUBJECTS } from './subjects';
 
@@ -85,6 +87,7 @@ export function referenceEvents(): StudyEvent[] {
 }
 
 export const referenceSnapshot = (): DataSnapshot => ({
+  ...createInitialSnapshot(toLocalIso(REFERENCE_NOW)),
   subjects: [...SUBJECTS],
   events: referenceEvents(),
 });
