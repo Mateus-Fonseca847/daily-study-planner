@@ -3,7 +3,8 @@ import { openEventForm, openSubjectForm } from '../../lib/ui-store';
 import { Button } from '../ui/Button';
 import { Menu, type MenuItem } from '../ui/Menu';
 
-const ITEMS: readonly MenuItem[] = [
+/** Itens do menu “Criar” (também usados pelo botão + da agenda). */
+export const CREATE_ITEMS: readonly MenuItem[] = [
   { label: 'Prova', icon: FileCheck2, onSelect: () => openEventForm({ type: 'prova' }) },
   { label: 'Tarefa', icon: ListChecks, onSelect: () => openEventForm({ type: 'entrega' }) },
   { label: 'Bloco de estudo', icon: BookOpen, onSelect: () => openEventForm({ type: 'estudo' }) },
@@ -15,7 +16,7 @@ export function CreateMenu({ collapsed }: { collapsed: boolean }) {
   return (
     <Menu
       label="Criar"
-      items={ITEMS}
+      items={CREATE_ITEMS}
       trigger={(props) =>
         collapsed ? (
           <Button

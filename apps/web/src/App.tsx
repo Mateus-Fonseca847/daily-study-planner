@@ -6,6 +6,7 @@ import { BlocksPage } from './features/blocks/BlocksPage';
 import { CalendarPage } from './features/calendar/CalendarPage';
 import { ExamsPage } from './features/exams/ExamsPage';
 import { FocusPage } from './features/focus/FocusPage';
+import { StatsPage } from './features/stats/StatsPage';
 import { PreferencesPage } from './features/preferences/PreferencesPage';
 import { SubjectsPage } from './features/subjects/SubjectsPage';
 import { TasksPage } from './features/tasks/TasksPage';
@@ -21,6 +22,7 @@ const PAGES: Record<string, ReactNode> = {
   '/materias': <SubjectsPage />,
   '/blocos': <BlocksPage />,
   '/foco': <FocusPage />,
+  '/estatisticas': <StatsPage />,
   '/preferencias': <PreferencesPage />,
 };
 

@@ -15,6 +15,7 @@
   --color-water: var(--ds-color-water);
   --color-water-deep: var(--ds-color-water-deep);
   --color-water-wave: var(--ds-color-water-wave);
+  --color-water-button: var(--ds-color-water-button);
   --color-chart-track: var(--ds-color-chart-track);
   --color-chart-track-strong: var(--ds-color-chart-track-strong);
   --color-timer-track: var(--ds-color-timer-track);
@@ -145,6 +146,23 @@
   --spacing-search: var(--ds-search-w);
   --spacing-card: var(--ds-card-pad);
   --spacing-card-gap: var(--ds-card-gap);
+  --spacing-stats-row: var(--ds-stats-row1-h);
+  --spacing-stats-pill: var(--ds-stats-pill-h);
+  --spacing-ring: var(--ds-ring-size);
+  --spacing-bar-w: var(--ds-bar-w);
+  --spacing-bar-h: var(--ds-bar-h);
+  --spacing-stat-bar: var(--ds-stat-bar-h);
+  --spacing-goal-icon: var(--ds-goal-icon);
+  --spacing-goal-check: var(--ds-goal-check);
+  --spacing-fab: var(--ds-fab);
+  --spacing-wave: var(--ds-wave-h);
+  --spacing-agenda: var(--ds-agenda-h);
+  --spacing-hour: var(--ds-agenda-hour-h);
+  --spacing-agenda-label: var(--ds-agenda-label-w);
+  --spacing-agenda-card-w: var(--ds-agenda-card-w);
+  --spacing-agenda-card-h: var(--ds-agenda-card-h);
+  --spacing-chart: var(--ds-chart-h);
+  --spacing-chart-sm: var(--ds-chart-h-sm);
   --spacing-timer: var(--ds-timer-size);
   --spacing-timer-input: var(--ds-timer-input-w);
   --spacing-timer-knob: var(--ds-timer-knob);
@@ -157,6 +175,7 @@
   --container-modal: var(--ds-modal-w);
   --container-toast: var(--ds-toast-w);
   --container-content: var(--ds-page-max-w);
+  --container-stats: var(--ds-stats-max-w);
 }
 
 /* Larguras de borda tokenizadas (o Tailwind não as expõe no tema). */
@@ -190,6 +209,52 @@
 /* Traço do anel do cronômetro (unidades do viewBox; ver tokens.css). */
 @utility stroke-timer {
   stroke-width: var(--ds-timer-stroke);
+}
+/* Grid 4×2 do dashboard (≥ 1280 px); 2 colunas abaixo disso. */
+@utility grid-stats {
+  display: grid;
+  gap: var(--ds-card-gap);
+  grid-template-columns: var(--ds-stats-cols);
+  grid-template-rows: var(--ds-stats-row1-h) auto;
+  @media (width < 80rem) {
+    grid-template-columns: var(--ds-stats-cols-md);
+    grid-template-rows: none;
+  }
+}
+@utility grid-analysis {
+  display: grid;
+  gap: var(--ds-card-gap);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (width < 80rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Hachurado dos blocos planejados. */
+@utility bg-hatch {
+  background-image: var(--ds-hatch-planned);
+}
+/* Gradiente da água. */
+@utility bg-water {
+  background-image: var(--ds-water-gradient);
+}
+/* Traço do anel de progresso dos cartões (unidades do viewBox). */
+@utility stroke-ring {
+  stroke-width: var(--ds-ring-stroke);
+}
+/* Onda da água: a camada tem o dobro da largura e desliza metade, em laço. */
+@utility wave-layer {
+  width: 200%;
+}
+@theme {
+  --animate-wave: wave var(--ds-wave-duration) linear infinite;
+  @keyframes wave {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 @utility opacity-done {
   opacity: var(--ds-opacity-done);

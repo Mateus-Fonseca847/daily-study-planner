@@ -21,13 +21,15 @@ interface MenuProps {
   trigger: (props: TriggerProps) => ReactNode;
   /** Alinha o painel à borda direita do gatilho (padrão: esquerda). */
   align?: 'start' | 'end';
+  /** Abre o painel abaixo (padrão) ou acima do gatilho. */
+  placement?: 'below' | 'above';
 }
 
 /**
  * Menu suspenso (role="menu"): setas, Home/End, Esc, Tab e clique fora.
  * O painel fica ao lado do gatilho no DOM (sem portal), então vale dentro de popovers.
  */
-export function Menu({ items, label, trigger, align = 'start' }: MenuProps) {
+export function Menu({ items, label, trigger, align = 'start', placement = 'below' }: MenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
@@ -91,9 +93,9 @@ export function Menu({ items, label, trigger, align = 'start' }: MenuProps) {
           id={panelId}
           role="menu"
           aria-label={label}
-          className={`absolute top-full z-50 mt-1 w-menu rounded-lg border-hair bg-raised p-1 shadow-popover ${
-            align === 'end' ? 'right-0' : 'left-0'
-          }`}
+          className={`absolute z-50 w-menu rounded-lg border-hair bg-raised p-1 shadow-popover ${
+            placement === 'above' ? 'bottom-full mb-1' : 'top-full mt-1'
+          } ${align === 'end' ? 'right-0' : 'left-0'}`}
         >
           {items.map(({ label: itemLabel, icon: Icon, onSelect }) => (
             <li key={itemLabel} role="none">

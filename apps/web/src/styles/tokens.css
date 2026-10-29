@@ -80,6 +80,7 @@
     color-mix(in srgb, var(--ds-color-water) 85%, transparent),
     var(--ds-color-water-deep)
   );
+  --ds-color-water-button: rgb(255 255 255 / 0.2);
   --ds-color-chart-track: rgb(255 255 255 / 0.1);
   --ds-color-chart-track-strong: rgb(255 255 255 / 0.16);
   --ds-hatch-planned: repeating-linear-gradient(
@@ -213,6 +214,31 @@
   --ds-swatch: 1.75rem;
   --ds-dot: 0.625rem;
   --ds-banner-gap: 0.75rem;
+
+  /* Dashboard de Estatísticas */
+  --ds-stats-max-w: 72rem;
+  --ds-stats-cols: 1.5fr 1.5fr 1fr 2fr;
+  --ds-stats-cols-md: repeat(2, minmax(0, 1fr));
+  --ds-stats-row1-h: 20rem;
+  --ds-stats-pill-h: 4.5rem;
+  --ds-ring-size: 9.5rem;
+  --ds-ring-stroke: 9;
+  --ds-bar-w: 1.25rem;
+  --ds-bar-h: 6.5rem;
+  --ds-stat-bar-h: 0.75rem;
+  --ds-goal-icon: 2.5rem;
+  --ds-goal-check: 1.5rem;
+  --ds-fab: 3rem;
+  --ds-wave-h: 1rem;
+  --ds-wave-duration: 7s;
+  --ds-agenda-h: 12.5rem;
+  --ds-agenda-hour-h: 3rem;
+  --ds-agenda-label-w: 4.5rem;
+  --ds-agenda-stagger: 3.5rem;
+  --ds-agenda-card-w: 17rem;
+  --ds-agenda-card-h: 3.5rem;
+  --ds-chart-h: 8rem;
+  --ds-chart-h-sm: 4rem;
   --ds-card-pad: 1.5rem;
   --ds-card-gap: 1rem;
   --ds-timer-size: 22rem;
