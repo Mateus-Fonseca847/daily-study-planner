@@ -2,7 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { startOfMonth } from 'date-fns';
 import type { StudyEvent } from '@daily/shared';
 import { useShell } from '../../components/layout/shell-context';
-import { buildEvents } from '../../mocks/events';
+import { appNow } from '../../lib/fixture';
+import { eventsFor } from '../../mocks';
 import { CalendarControls, type CalendarView } from './components/CalendarControls';
 import { EventPopover } from './components/EventPopover';
 import { MonthGrid } from './components/MonthGrid';
@@ -19,7 +20,7 @@ const VIEW_LABEL: Record<Exclude<CalendarView, 'mes'>, string> = {
 
 export function CalendarPage() {
   const { subjectId } = useShell();
-  const today = useMemo(() => new Date(), []);
+  const today = useMemo(() => appNow(), []);
   const [month, setMonth] = useState(() => startOfMonth(today));
   const [view, setView] = useState<CalendarView>('mes');
   const [selection, setSelection] = useState<Selection | null>(null);
@@ -28,7 +29,7 @@ export function CalendarPage() {
 
   const events = useMemo(
     () =>
-      buildEvents(month, today)
+      eventsFor(month, today)
         .filter((e) => !deletedIds.has(e.id) && (subjectId === 'all' || e.subjectId === subjectId))
         .map((e) => ({
           ...e,

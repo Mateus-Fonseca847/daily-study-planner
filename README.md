@@ -11,8 +11,7 @@ Provas com contagem regressiva, conteúdos como mini tarefas, blocos de estudo e
 ![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![pnpm](https://img.shields.io/badge/pnpm-monorepo-F69220?style=flat-square&logo=pnpm&logoColor=white)
 
-<!-- Substitua pelo print real quando tirar o screenshot em 1440x900 -->
-<!-- ![Daily — calendário mensal](docs/design/screenshots/calendar.png) -->
+![Daily — calendário mensal](docs/design/screenshots/calendar.png)
 
 [Demo online](#) · [Documentação](docs/) · [Roadmap](#roadmap) · [Changelog](CHANGELOG.md)
 
@@ -36,13 +35,13 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 O projeto está em desenvolvimento, organizado em marcos.
 
-| Marco | Escopo | Status |
-|---|---|---|
+| Marco                  | Escopo                                                        | Status    |
+| ---------------------- | ------------------------------------------------------------- | --------- |
 | **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados | Concluído |
-| **1. Base** | Login, CRUD de tarefas, matérias, back-end e deploy | Planejado |
-| **2. Estudos** | Provas com contagem regressiva, conteúdos, blocos de estudo | Planejado |
-| **3. Segunda tela** | Modo Foco, notificações, lembretes, PWA instalável | Planejado |
-| **4. Acabamento** | Documentação final, GIFs, post no LinkedIn | Planejado |
+| **1. Base**            | Login, CRUD de tarefas, matérias, back-end e deploy           | Planejado |
+| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo   | Planejado |
+| **3. Segunda tela**    | Modo Foco, notificações, lembretes, PWA instalável            | Planejado |
+| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                    | Planejado |
 
 ## Funcionalidades
 
@@ -71,16 +70,16 @@ O projeto está em desenvolvimento, organizado em marcos.
 
 ## Stack
 
-| Camada | Tecnologia |
-|---|---|
-| Front-end | React, TypeScript, Vite, Tailwind CSS, React Router |
-| Ícones e fonte | lucide-react, Inter (`@fontsource`) |
-| Datas | date-fns (locale `pt-BR`) |
-| Tipos e validação | Zod, compartilhados em `packages/shared` |
-| Testes | Vitest |
-| Qualidade | ESLint, Prettier, TypeScript `strict` |
-| Gerenciador | pnpm workspaces |
-| CI | GitHub Actions |
+| Camada            | Tecnologia                                                       |
+| ----------------- | ---------------------------------------------------------------- |
+| Front-end         | React, TypeScript, Vite, Tailwind CSS, React Router              |
+| Ícones e fonte    | lucide-react, Inter (`@fontsource`)                              |
+| Datas             | date-fns (locale `pt-BR`)                                        |
+| Tipos e validação | Zod, compartilhados em `packages/shared`                         |
+| Testes            | Vitest (unidade) e Playwright (e2e de fumaça e capturas visuais) |
+| Qualidade         | ESLint, Prettier, TypeScript `strict`                            |
+| Gerenciador       | pnpm workspaces                                                  |
+| CI                | GitHub Actions                                                   |
 
 **Planejado para o Marco 1:** Node.js com Fastify, PostgreSQL com Prisma, deploy com Vercel (front), Render ou Railway (API) e Neon ou Supabase (banco).
 
@@ -105,13 +104,15 @@ O app sobe em **http://localhost:5173**. Viewport recomendado: 1440×900, com co
 
 ### Scripts
 
-| Comando | O que faz |
-|---|---|
-| `pnpm dev` | Servidor de desenvolvimento |
-| `pnpm build` | Build de produção |
-| `pnpm lint` | ESLint em todo o monorepo |
-| `pnpm typecheck` | Checagem de tipos |
-| `pnpm test` | Testes com Vitest |
+| Comando               | O que faz                                                                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm dev`            | Servidor de desenvolvimento                                                                                                    |
+| `pnpm build`          | Build de produção                                                                                                              |
+| `pnpm lint`           | ESLint em todo o monorepo                                                                                                      |
+| `pnpm typecheck`      | Checagem de tipos                                                                                                              |
+| `pnpm test`           | Testes com Vitest                                                                                                              |
+| `pnpm e2e`            | Teste e2e de fumaça com Playwright (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`)              |
+| `pnpm visual:capture` | Screenshots (1440×900 em 1x e 2x, 1280×720, 1280×800) e comparações lado a lado com a referência em `docs/design/screenshots/` |
 
 ## Estrutura do repositório
 
@@ -168,13 +169,13 @@ Cada ciclo fica registrado em [`docs/prompts/`](docs/prompts/) (`NN-prompt.md` e
 
 ## Decisões técnicas
 
-| Decisão | Motivo |
-|---|---|
-| Monorepo com pnpm | Compartilhar tipos e schemas entre front e API |
-| TypeScript 5.9 fixado | O `typescript-eslint` ainda não suporta o TS 7 |
+| Decisão                      | Motivo                                            |
+| ---------------------------- | ------------------------------------------------- |
+| Monorepo com pnpm            | Compartilhar tipos e schemas entre front e API    |
+| TypeScript 5.9 fixado        | O `typescript-eslint` ainda não suporta o TS 7    |
 | Mocks relativos à data atual | O calendário nunca aparece vazio, em qualquer mês |
-| Tokens CSS obrigatórios | Fidelidade visual e manutenção em um único lugar |
-| PWA em vez de app nativo | Um código só para "app de PC" e versão online |
+| Tokens CSS obrigatórios      | Fidelidade visual e manutenção em um único lugar  |
+| PWA em vez de app nativo     | Um código só para "app de PC" e versão online     |
 
 Decisões maiores serão registradas em `docs/adr/`.
 
@@ -183,11 +184,11 @@ Decisões maiores serão registradas em `docs/adr/`.
 - Os dados são mockados e o estado é local: checklist e exclusões somem ao recarregar
 - "+ Nova Prova", busca, notificações e o menu do popover são apenas visuais
 - Visões Semana e Ano são placeholders
-- O botão "Hoje" fica ao lado do segmentado, e não dentro dele como na referência
-- Os chips têm 2 linhas (a referência tem 3), para caber 2 chips mais o "+N mais"
+- Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
+- Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas
 - Ainda não há manifest nem service worker (PWA)
-- A comparação visual com a referência foi feita a olho, sem diff de pixels
-- A largura de 1280px ainda não foi testada
+- A comparação com a referência é lado a lado, a olho (sem diff de pixels automatizado)
+- A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`)
 
 ## Roadmap
 
@@ -205,7 +206,7 @@ Este é um projeto pessoal de portfólio, mas sugestões são bem-vindas via iss
 
 1. Faça um fork e crie uma branch (`feat/minha-ideia`)
 2. Use [Conventional Commits](https://www.conventionalcommits.org/pt-br/) (`feat:`, `fix:`, `docs:`, `chore:`)
-3. Garanta que `pnpm lint`, `pnpm typecheck`, `pnpm test` e `pnpm build` passam
+3. Garanta que `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build` e `pnpm e2e` passam
 4. Não escreva valores visuais fora de `tokens.css`
 
 ## Licença

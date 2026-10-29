@@ -17,7 +17,7 @@ export function Select({ options, className, ...rest }: SelectProps) {
   return (
     <div className={cn('relative inline-flex', className)}>
       <select
-        className="h-control w-full appearance-none rounded-md border-hair bg-surface pr-9 pl-3 text-md font-medium text-fg"
+        className="h-select w-full appearance-none rounded-md border-hair bg-surface pr-8 pl-3 text-md text-fg"
         {...rest}
       >
         {options.map((o) => (
@@ -29,7 +29,7 @@ export function Select({ options, className, ...rest }: SelectProps) {
       <ChevronDown
         aria-hidden
         strokeWidth={1.5}
-        className="pointer-events-none absolute top-1/2 right-3 size-icon -translate-y-1/2 text-muted"
+        className="pointer-events-none absolute top-1/2 right-2.5 size-icon -translate-y-1/2 text-muted"
       />
     </div>
   );

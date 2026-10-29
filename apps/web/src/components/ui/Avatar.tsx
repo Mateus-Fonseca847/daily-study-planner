@@ -12,7 +12,7 @@ export function Avatar({ name, size = 'sm' }: AvatarProps) {
     <span
       aria-hidden
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-full bg-raised font-semibold text-fg',
+        'inline-flex shrink-0 items-center justify-center rounded-full font-semibold text-fg',
         SIZES[size],
       )}
     >

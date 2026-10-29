@@ -35,6 +35,8 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm e2e          # Playwright (1ª vez: pnpm --filter @daily/web exec playwright install chromium)
+pnpm visual:capture  # screenshots + comparação com a referência em docs/design/screenshots/
 pnpm format       # prettier --write
 ```
 
@@ -43,6 +45,10 @@ pnpm format       # prettier --write
 A cada prompt de trabalho, salve o prompt em `docs/prompts/NN-prompt.md` e gere o relatório
 `docs/prompts/NN-report.md` (o que foi feito, decisões, valores estimados, diferenças restantes,
 como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é sequencial (01, 02…).
+
+## Fixture visual
+
+`/calendario?fixture=reference` (só em `pnpm dev`) carrega novembro/2024 com densidade da referência e data fixa; é usada por `visual:capture` e pelo e2e.
 
 ## Referências
 

@@ -6,12 +6,13 @@ import { EVENT_TYPE_META } from '../../lib/event-meta';
 interface EventChipProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'title'> {
   eventType: EventType;
   title: string;
-  /** Horário já formatado, ex.: “09:30”. */
+  /** Intervalo já formatado, ex.: “09:30 – 10:30”. */
   time: string;
   selected?: boolean;
   ref?: Ref<HTMLButtonElement>;
 }
 
+/** Chip de 3 linhas: tipo (minúsculo, colorido), título e horário. */
 export function EventChip({
   eventType,
   title,
@@ -28,21 +29,22 @@ export function EventChip({
       ref={ref}
       type="button"
       aria-label={`${meta.label}: ${title}, ${time}`}
+      title={title}
       aria-expanded={selected}
       className={cn(
-        'flex w-full flex-col gap-0.5 rounded-sm border-l-stripe px-2 py-1 text-left transition-[filter] hover:brightness-125',
+        'flex w-full flex-col rounded-sm border-l-stripe px-2 py-0.75 text-left transition-[filter] hover:brightness-125',
         meta.chip,
         selected && 'brightness-150',
         className,
       )}
       {...rest}
     >
-      <span className="flex items-center gap-1 text-2xs font-medium">
-        <Icon aria-hidden strokeWidth={1.5} className={cn('size-icon-sm', meta.text)} />
-        <span className={cn('truncate', meta.text)}>{meta.label}</span>
-        <span className="ml-auto font-regular text-muted">{time}</span>
+      <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', meta.text)}>
+        <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
+        <span className="truncate">{meta.label}</span>
       </span>
       <span className="truncate text-sm font-semibold text-fg">{title}</span>
+      <span className="truncate text-2xs text-muted">{time}</span>
     </button>
   );
 }

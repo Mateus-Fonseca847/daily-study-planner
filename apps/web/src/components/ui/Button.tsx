@@ -1,18 +1,20 @@
 import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
 
-type Variant = 'primary' | 'secondary' | 'pill' | 'icon';
+type Variant = 'primary' | 'secondary' | 'pill' | 'icon' | 'tile';
 type IconSize = 'xs' | 'sm' | 'md';
 
 const BASE =
-  'inline-flex shrink-0 items-center justify-center gap-2 font-medium text-md transition-colors disabled:opacity-50';
+  'inline-flex shrink-0 items-center justify-center gap-2 font-medium transition-colors disabled:opacity-50';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'h-control rounded-full bg-accent px-4 text-accent-fg hover:brightness-95',
+  primary:
+    'h-control rounded-full bg-accent px-5 text-nav font-semibold text-accent-fg hover:brightness-95',
   secondary:
-    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-fg hover:bg-hover',
-  pill: 'h-create w-full rounded-full bg-pill px-4 text-pill-fg hover:brightness-95',
-  icon: 'rounded-full border-hair border-line bg-transparent text-fg hover:bg-hover',
+    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-base text-fg hover:bg-hover',
+  pill: 'h-create w-create-btn rounded-full bg-pill px-4 text-nav font-semibold text-pill-fg hover:brightness-95',
+  icon: 'rounded-full bg-surface text-fg hover:brightness-125',
+  tile: 'rounded-md bg-hover text-soft hover:text-fg',
 };
 
 const ICON_SIZES: Record<IconSize, string> = {
@@ -24,9 +26,13 @@ const ICON_SIZES: Record<IconSize, string> = {
 type CommonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'>;
 
 type ButtonProps =
-  | (CommonProps & { variant?: Exclude<Variant, 'icon'>; size?: never; 'aria-label'?: string })
+  | (CommonProps & {
+      variant?: Exclude<Variant, 'icon' | 'tile'>;
+      size?: never;
+      'aria-label'?: string;
+    })
   /** Botões só com ícone exigem rótulo acessível. */
-  | (CommonProps & { variant: 'icon'; size?: IconSize; 'aria-label': string });
+  | (CommonProps & { variant: 'icon' | 'tile'; size?: IconSize; 'aria-label': string });
 
 export function Button({
   variant = 'primary',
@@ -35,7 +41,7 @@ export function Button({
   type = 'button',
   ...dom
 }: ButtonProps) {
-  const iconSize = variant === 'icon' ? ICON_SIZES[size] : undefined;
+  const iconSize = variant === 'icon' || variant === 'tile' ? ICON_SIZES[size] : undefined;
   return (
     <button type={type} className={cn(BASE, VARIANTS[variant], iconSize, className)} {...dom} />
   );

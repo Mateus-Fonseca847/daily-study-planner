@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { StudyEvent } from '@daily/shared';
 import { cn } from '../../../lib/cn';
 import { EventChip } from '../../../components/ui/EventChip';
-import { eventTime } from '../lib/format';
+import { eventTimeRange } from '../lib/format';
 import type { GridDay } from '../lib/month-grid';
 
 /** Chips visíveis por dia antes de virar “+N mais”. */
@@ -25,15 +25,15 @@ export function DayCell({ day, events, isToday, selectedId, onSelect }: DayCellP
     <div
       role="gridcell"
       aria-current={isToday ? 'date' : undefined}
-      className="flex min-w-0 flex-col gap-1 overflow-y-auto border-r-hair border-b-hair p-2"
+      className="flex min-w-0 flex-col gap-0.5 overflow-y-auto border-r-hair border-b-hair py-1.5 pr-3 pl-1.5"
     >
       <span
         className={cn(
-          'inline-flex h-today min-w-today items-center justify-center self-start rounded-full text-sm font-medium',
-          isToday ? 'bg-accent px-1 text-accent-fg' : day.inMonth ? 'text-muted' : 'text-subtle',
+          'inline-flex h-today min-w-today items-center justify-center self-start rounded-full text-xs font-bold',
+          isToday ? 'bg-accent px-1 text-accent-fg' : day.inMonth ? 'text-soft' : 'text-subtle',
         )}
       >
-        {day.date.getDate()}
+        {String(day.date.getDate()).padStart(2, '0')}
       </span>
       <div className={cn('flex flex-col gap-1', !day.inMonth && 'opacity-dimmed')}>
         {visible.map((event) => (
@@ -41,7 +41,7 @@ export function DayCell({ day, events, isToday, selectedId, onSelect }: DayCellP
             key={event.id}
             eventType={event.type}
             title={event.title}
-            time={eventTime(event)}
+            time={eventTimeRange(event)}
             selected={selectedId === event.id}
             onClick={(e) => onSelect(event, e.currentTarget)}
           />
