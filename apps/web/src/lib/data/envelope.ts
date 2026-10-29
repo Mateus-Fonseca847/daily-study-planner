@@ -1,0 +1,94 @@
+import {
+  dataSnapshotSchema,
+  SUBJECT_COLORS,
+  type DataSnapshot,
+  type EventStatus,
+} from '@daily/shared';
+
+export const DATA_VERSION = 1;
+export const APP_ID = 'daily';
+
+export type ParseResult =
+  { ok: true; snapshot: DataSnapshot; migratedFrom: number | null } | { ok: false; error: string };
+
+type Obj = Record<string, unknown>;
+const isObj = (value: unknown): value is Obj =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/** v0 → v1: matérias ganham cor, status ganha novo vocabulário, conteúdos ganham `order`. */
+const LEGACY_STATUS: Record<string, EventStatus> = {
+  agendada: 'pendente',
+  concluida: 'concluido',
+  'em-andamento': 'em-andamento',
+};
+
+function migrateV0(data: unknown): unknown {
+  if (!isObj(data)) return data;
+  const subjects = Array.isArray(data.subjects) ? data.subjects : [];
+  const events = Array.isArray(data.events) ? data.events : [];
+  return {
+    subjects: subjects.map((s, i) => ({
+      ...(isObj(s) ? s : {}),
+      color: SUBJECT_COLORS[i % SUBJECT_COLORS.length],
+    })),
+    events: events.map((e) => {
+      const event = isObj(e) ? e : {};
+      const contents = Array.isArray(event.contents) ? event.contents : [];
+      return {
+        ...event,
+        status: LEGACY_STATUS[String(event.status)] ?? event.status,
+        subjectId: event.subjectId ?? null,
+        notes: event.notes ?? '',
+        ...(event.type === 'prova'
+          ? { contents: contents.map((c, order) => ({ ...(isObj(c) ? c : {}), order })) }
+          : {}),
+        ...(event.type === 'estudo' ? { examId: event.examId ?? null } : {}),
+      };
+    }),
+  };
+}
+
+/** Migrações indexadas pela versão de origem (n → n + 1). */
+const MIGRATIONS: Record<number, (data: unknown) => unknown> = { 0: migrateV0 };
+
+function describeIssue(error: { issues: { path: PropertyKey[]; message: string }[] }): string {
+  const issue = error.issues[0];
+  if (!issue) return 'Dados inválidos.';
+  const path = issue.path.map(String).join('.');
+  return path ? `${issue.message} (${path})` : issue.message;
+}
+
+/** Lê e valida um JSON salvo/exportado, migrando versões antigas. Nunca lança. */
+export function parseEnvelope(raw: string): ParseResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { ok: false, error: 'O arquivo não é um JSON válido.' };
+  }
+  if (!isObj(parsed) || typeof parsed.version !== 'number' || !('data' in parsed)) {
+    return { ok: false, error: 'O arquivo não parece ser um backup do Daily.' };
+  }
+  if (parsed.app !== undefined && parsed.app !== APP_ID) {
+    return { ok: false, error: 'O arquivo foi criado por outro aplicativo.' };
+  }
+  const version = parsed.version;
+  if (!Number.isInteger(version) || version < 0 || version > DATA_VERSION) {
+    return { ok: false, error: `Versão de dados não suportada (${String(version)}).` };
+  }
+
+  let data = parsed.data;
+  for (let v = version; v < DATA_VERSION; v += 1) data = MIGRATIONS[v]?.(data) ?? data;
+
+  const result = dataSnapshotSchema.safeParse(data);
+  if (!result.success) return { ok: false, error: describeIssue(result.error) };
+  return { ok: true, snapshot: result.data, migratedFrom: version < DATA_VERSION ? version : null };
+}
+
+export function serializeEnvelope(snapshot: DataSnapshot, now: Date): string {
+  return JSON.stringify(
+    { app: APP_ID, version: DATA_VERSION, savedAt: now.toISOString(), data: snapshot },
+    null,
+    2,
+  );
+}

@@ -7,7 +7,14 @@ import {
   setMinutes,
   startOfMonth,
 } from 'date-fns';
-import { studyEventSchema, type EventType, type StudyEvent } from '@daily/shared';
+import {
+  studyEventSchema,
+  type DataSnapshot,
+  type EventType,
+  type StudyEvent,
+} from '@daily/shared';
+import { toLocalIso } from '../lib/dates';
+import { SUBJECTS } from './subjects';
 
 interface Template {
   day: number;
@@ -235,12 +242,10 @@ const TEMPLATES: readonly Template[] = [
   },
 ];
 
-const LOCAL_ISO = "yyyy-MM-dd'T'HH:mm:ss";
-
 function statusAt(start: Date, end: Date, now: Date): StudyEvent['status'] {
-  if (end < now) return 'concluida';
+  if (end < now) return 'concluido';
   if (start <= now) return 'em-andamento';
-  return 'agendada';
+  return 'pendente';
 }
 
 function buildMonth(month: Date, now: Date): StudyEvent[] {
@@ -259,18 +264,29 @@ function buildMonth(month: Date, now: Date): StudyEvent[] {
       type: t.type,
       status: statusAt(start, end, now),
       subjectId: t.subjectId,
-      start: format(start, LOCAL_ISO),
-      end: format(end, LOCAL_ISO),
-      contents: (t.contents ?? []).map((title, i) => ({
-        id: `${key}-${index}-c${i}`,
-        title,
-        done: past || i < (t.doneCount ?? 0),
-      })),
+      start: toLocalIso(start),
+      end: toLocalIso(end),
+      notes: '',
+      ...(t.type === 'prova'
+        ? {
+            contents: (t.contents ?? []).map((title, i) => ({
+              id: `${key}-${index}-c${i}`,
+              title,
+              done: past || i < (t.doneCount ?? 0),
+              order: i,
+            })),
+          }
+        : {}),
     });
   });
 }
 
-/** Eventos do mês informado e dos vizinhos (o grid exibe dias de outros meses). */
+/** Eventos do mês informado e dos vizinhos, com datas relativas a `now`. */
 export function buildEvents(month: Date, now: Date = new Date()): StudyEvent[] {
   return [-1, 0, 1].flatMap((offset) => buildMonth(addMonths(month, offset), now));
+}
+
+/** Dados de exemplo (botão “Carregar dados de exemplo”). */
+export function sampleSnapshot(now: Date = new Date()): DataSnapshot {
+  return { subjects: [...SUBJECTS], events: buildEvents(now, now) };
 }
