@@ -1,0 +1,158 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Mapeia os tokens (--ds-*) no tema do Tailwind. Nada fora deste mapa vira utilitário. */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-bg: var(--ds-color-bg);
+  --color-surface: var(--ds-color-surface);
+  --color-raised: var(--ds-color-surface-raised);
+  --color-line: var(--ds-color-border);
+  --color-line-strong: var(--ds-color-border-strong);
+  --color-hover: var(--ds-color-hover);
+  --color-scrim: var(--ds-color-scrim);
+  --color-accent: var(--ds-color-accent);
+  --color-accent-fg: var(--ds-color-accent-fg);
+  --color-badge: var(--ds-color-badge);
+  --color-badge-fg: var(--ds-color-badge-fg);
+  --color-fg: var(--ds-color-fg);
+  --color-muted: var(--ds-color-fg-muted);
+  --color-subtle: var(--ds-color-fg-subtle);
+  --color-pill: var(--ds-color-white-pill);
+  --color-pill-fg: var(--ds-color-white-pill-fg);
+  --color-prova: var(--ds-color-event-prova);
+  --color-estudo: var(--ds-color-event-estudo);
+  --color-entrega: var(--ds-color-event-entrega);
+  --color-revisao: var(--ds-color-event-revisao);
+  --color-especial: var(--ds-color-event-especial);
+  --color-prova-soft: var(--ds-color-event-prova-soft);
+  --color-estudo-soft: var(--ds-color-event-estudo-soft);
+  --color-entrega-soft: var(--ds-color-event-entrega-soft);
+  --color-revisao-soft: var(--ds-color-event-revisao-soft);
+  --color-especial-soft: var(--ds-color-event-especial-soft);
+
+  --font-sans: var(--ds-font-sans);
+
+  --text-*: initial;
+  --text-2xs: var(--ds-text-2xs);
+  --text-2xs--line-height: var(--ds-text-2xs-lh);
+  --text-xs: var(--ds-text-xs);
+  --text-xs--line-height: var(--ds-text-xs-lh);
+  --text-sm: var(--ds-text-sm);
+  --text-sm--line-height: var(--ds-text-sm-lh);
+  --text-base: var(--ds-text-base);
+  --text-base--line-height: var(--ds-text-base-lh);
+  --text-md: var(--ds-text-md);
+  --text-md--line-height: var(--ds-text-md-lh);
+  --text-lg: var(--ds-text-lg);
+  --text-lg--line-height: var(--ds-text-lg-lh);
+  --text-logo: var(--ds-text-logo);
+  --text-logo--line-height: var(--ds-text-logo-lh);
+  --text-xl: var(--ds-text-xl);
+  --text-xl--line-height: var(--ds-text-xl-lh);
+
+  --font-weight-*: initial;
+  --font-weight-regular: var(--ds-weight-regular);
+  --font-weight-medium: var(--ds-weight-medium);
+  --font-weight-semibold: var(--ds-weight-semibold);
+  --font-weight-bold: var(--ds-weight-bold);
+
+  --tracking-*: initial;
+  --tracking-caps: var(--ds-tracking-caps);
+  --tracking-label: var(--ds-tracking-label);
+  --tracking-tight: var(--ds-tracking-tight);
+  --tracking-tighter: var(--ds-tracking-tighter);
+
+  --radius-*: initial;
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--ds-radius-lg);
+  --radius-xl: var(--ds-radius-xl);
+  --radius-full: var(--ds-radius-full);
+
+  --shadow-*: initial;
+  --shadow-popover: var(--ds-shadow-popover);
+
+  --spacing: var(--ds-space-unit);
+  --spacing-sidebar: var(--ds-sidebar-w);
+  --spacing-sidebar-collapsed: var(--ds-sidebar-w-collapsed);
+  --spacing-sidebar-header: var(--ds-sidebar-header-h);
+  --spacing-topbar: var(--ds-topbar-h);
+  --spacing-controls: var(--ds-controls-h);
+  --spacing-weekday: var(--ds-weekday-h);
+  --spacing-cell: var(--ds-cell-min-h);
+  --spacing-page: var(--ds-page-pad-x);
+  --spacing-control: var(--ds-control-h);
+  --spacing-control-sm: var(--ds-control-h-sm);
+  --spacing-create: var(--ds-create-h);
+  --spacing-item: var(--ds-item-h);
+  --spacing-icon: var(--ds-icon);
+  --spacing-icon-sm: var(--ds-icon-sm);
+  --spacing-badge: var(--ds-badge-h);
+  --spacing-avatar-sm: var(--ds-avatar-sm);
+  --spacing-avatar-md: var(--ds-avatar-md);
+  --spacing-today: var(--ds-today-size);
+  --spacing-progress: var(--ds-progress-h);
+  --spacing-checkbox: var(--ds-checkbox);
+  --spacing-select-month: var(--ds-select-month-w);
+  --spacing-select-year: var(--ds-select-year-w);
+  --spacing-popover: var(--ds-popover-w);
+  --spacing-popover-label: var(--ds-popover-label-w);
+  --spacing-course: var(--ds-course-select-w);
+  --spacing-search: var(--ds-search-w);
+}
+
+/* Larguras de borda tokenizadas (o Tailwind não as expõe no tema). */
+@utility border-hair {
+  border-width: var(--ds-border-w);
+}
+@utility border-b-hair {
+  border-bottom-width: var(--ds-border-w);
+}
+@utility border-r-hair {
+  border-right-width: var(--ds-border-w);
+}
+@utility border-l-hair {
+  border-left-width: var(--ds-border-w);
+}
+@utility border-t-hair {
+  border-top-width: var(--ds-border-w);
+}
+@utility border-l-stripe {
+  border-left-width: var(--ds-border-accent-w);
+}
+@utility opacity-dimmed {
+  opacity: var(--ds-opacity-dimmed);
+}
+@utility w-bar {
+  width: var(--ds-border-bar-w);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background: var(--ds-color-bg);
+    color: var(--ds-color-fg);
+    font-family: var(--ds-font-sans);
+    font-size: var(--ds-text-base);
+    line-height: var(--ds-text-base-lh);
+    -webkit-font-smoothing: antialiased;
+  }
+  *,
+  ::before,
+  ::after {
+    border-color: var(--ds-color-border);
+  }
+  :focus-visible {
+    outline: var(--ds-focus-w) solid var(--ds-color-accent);
+    outline-offset: var(--ds-focus-offset);
+  }
+  button {
+    cursor: pointer;
+  }
+}
