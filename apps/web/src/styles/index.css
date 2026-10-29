@@ -12,6 +12,15 @@
   --color-line-strong: var(--ds-color-border-strong);
   --color-hover: var(--ds-color-hover);
   --color-scrim: var(--ds-color-scrim);
+  --color-water: var(--ds-color-water);
+  --color-water-deep: var(--ds-color-water-deep);
+  --color-water-wave: var(--ds-color-water-wave);
+  --color-chart-track: var(--ds-color-chart-track);
+  --color-chart-track-strong: var(--ds-color-chart-track-strong);
+  --color-timer-track: var(--ds-color-timer-track);
+  --color-timer-progress: var(--ds-color-timer-progress);
+  --color-timer-paused: var(--ds-color-timer-paused);
+  --color-timer-done: var(--ds-color-timer-done);
   --color-danger: var(--ds-color-danger);
   --color-subject-vermelho: var(--ds-color-subject-vermelho);
   --color-subject-laranja: var(--ds-color-subject-laranja);
@@ -64,10 +73,19 @@
   --text-lg--line-height: var(--ds-text-lg-lh);
   --text-logo: var(--ds-text-logo);
   --text-logo--line-height: var(--ds-text-logo-lh);
+  --text-display: var(--ds-text-display);
+  --text-display--line-height: var(--ds-text-display-lh);
+  --text-card-title: var(--ds-text-card-title);
+  --text-card-title--line-height: var(--ds-text-card-title-lh);
+  --text-stat: var(--ds-text-stat);
+  --text-stat--line-height: var(--ds-text-stat-lh);
+  --text-timer: var(--ds-text-timer);
+  --text-timer--line-height: var(--ds-text-timer-lh);
   --text-xl: var(--ds-text-xl);
   --text-xl--line-height: var(--ds-text-xl-lh);
 
   --font-weight-*: initial;
+  --font-weight-light: var(--ds-weight-light);
   --font-weight-regular: var(--ds-weight-regular);
   --font-weight-medium: var(--ds-weight-medium);
   --font-weight-semibold: var(--ds-weight-semibold);
@@ -84,6 +102,8 @@
   --radius-md: var(--ds-radius-md);
   --radius-lg: var(--ds-radius-lg);
   --radius-xl: var(--ds-radius-xl);
+  --radius-card: var(--ds-radius-card);
+  --radius-card-sm: var(--ds-radius-card-sm);
   --radius-full: var(--ds-radius-full);
 
   --shadow-*: initial;
@@ -122,6 +142,10 @@
   --spacing-popover-label: var(--ds-popover-label-w);
   --spacing-course: var(--ds-course-select-w);
   --spacing-search: var(--ds-search-w);
+  --spacing-card: var(--ds-card-pad);
+  --spacing-card-gap: var(--ds-card-gap);
+  --spacing-timer: var(--ds-timer-size);
+  --spacing-timer-knob: var(--ds-timer-knob);
   --spacing-modal-h: var(--ds-modal-max-h);
   --spacing-menu: var(--ds-menu-w);
   --spacing-textarea: var(--ds-textarea-h);
@@ -151,6 +175,20 @@
 }
 @utility border-l-stripe {
   border-left-width: var(--ds-border-accent-w);
+}
+/* Superfície “glass” dos cartões do dashboard. */
+@utility surface-glass {
+  background: var(--ds-glass-bg);
+  border: var(--ds-border-w) solid var(--ds-color-border);
+  box-shadow: var(--ds-glass-highlight);
+}
+@utility glow-accent {
+  background-image: var(--ds-glow-accent);
+}
+/* Traço do anel do cronômetro (independe da escala do SVG). */
+@utility stroke-timer {
+  stroke-width: var(--ds-timer-stroke);
+  vector-effect: non-scaling-stroke;
 }
 @utility opacity-done {
   opacity: var(--ds-opacity-done);

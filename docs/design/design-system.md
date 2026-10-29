@@ -1,4 +1,4 @@
-# Daily — Design System (v0.3)
+# Daily — Design System (v0.4)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
@@ -217,3 +217,80 @@ Com `min-height: 1000px` (`@media` em `tokens.css`): `--ds-chip-pad-y` sobe de 3
 Regra: o chip só cresce até o ponto em que **2 chips + “+N mais” ainda cabem numa linha de mês de 6 semanas** (a pior hipótese em 1080 px). Em meses de 5 semanas sobra ~30 px abaixo dos chips; aceitável, e o grid continua ocupando toda a altura.
 
 Capturas: `docs/design/screenshots/app/*-1440x900.png` e `*-1920x1080.png` (`pnpm visual:app`).
+
+## 9. Dashboard (Estatísticas)
+
+Fonte: `docs/design/reference/focus-dashboard.png.png` (1187×896; a página de **Estatísticas**, não o Modo Foco). Ignoramos a moldura do aparelho, o fundo texturizado, a barra de navegação, a marca, os logotipos, os avatares e os textos. **Todos os valores abaixo são estimados** (amostras de pixel da imagem e medição de bordas; escala ≈ 1,12 da imagem para o app, onde o conteúdo tem no máximo 72 rem).
+
+### Adaptações obrigatórias
+
+- O destaque é o **amarelo do Daily** (`--ds-color-accent`), nunca o verde-limão da referência (`#D1F85C`).
+- A água usa **índigo/roxo** (tokens novos `--ds-color-water*`), no lugar do azul-arroxeado da referência.
+- Sem marca, logotipos, avatares ou textos da referência; conteúdo 100 % do domínio de estudos.
+
+### Superfícies
+
+| Item                      | Valor estimado                                                                                                        | Token                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Página                    | `#131313` (igual ao app); a referência usa `#171717` com cartões `#2A2A2A`                                            | `--ds-color-bg`                         |
+| Cartão “glass”            | gradiente diagonal (145°) de branco 7 % → 2,5 %, borda 1 px branca a 8 %, realce interno de 1 px no topo (branco 6 %) | `--ds-glass-bg`, `--ds-glass-highlight` |
+| Raio do cartão grande     | 32 px (referência ≈ 30 px na imagem)                                                                                  | `--ds-radius-card`                      |
+| Raio de itens flutuantes  | 20 px (cartões da agenda, pílulas)                                                                                    | `--ds-radius-card-sm`                   |
+| Padding do cartão         | 24 px                                                                                                                 | `--ds-card-pad`                         |
+| Espaço entre cartões      | 16 px (referência ≈ 13 px)                                                                                            | `--ds-card-gap`                         |
+| Brilho do cartão de metas | gradiente radial no canto inferior direito, amarelo a 28 % → transparente (60 %)                                      | `--ds-glow-accent`                      |
+
+### Proporções do grid (4 colunas × 2 linhas)
+
+| Cartão                 | Colunas | Linhas | Largura na referência | Fração       |
+| ---------------------- | ------- | ------ | --------------------- | ------------ |
+| Semana (barras)        | 1       | 1      | 248 px                | `1.5fr`      |
+| Anel (preparação/foco) | 2       | 1      | 248 px                | `1.5fr`      |
+| Água                   | 3       | 1      | 161 px                | `1fr`        |
+| Metas do dia           | 4       | 1–2    | 336 px                | `2fr`        |
+| Agenda                 | 1–3     | 2      | 683 px                | `4fr` (soma) |
+
+Alturas: linha 1 ≈ 288 px na imagem (≈ 20 rem no app); linha 2 ≈ 230 px (≈ 14,5 rem). O cartão de metas atravessa as duas linhas (≈ 530 px na imagem). Abaixo de 1100 px de largura o grid vira 2 colunas e, abaixo de 700 px, 1 coluna.
+
+### Tipografia
+
+| Papel                                   | Estimado                         | Token                  |
+| --------------------------------------- | -------------------------------- | ---------------------- |
+| Saudação (“Olá, Nome”)                  | 36 px, peso 400, nome em amarelo | `--ds-text-display`    |
+| Título do cartão                        | 20 px, peso 400                  | `--ds-text-card-title` |
+| Número grande (8h, 10 km, 40 %)         | 30 px, peso 400, `tabular-nums`  | `--ds-text-stat`       |
+| Rótulo pequeno (Total, Meta, Concluído) | 14 px, `muted`                   | `--ds-text-md`         |
+| Rótulos de eixo (Seg, Ter…)             | 11 px                            | `--ds-text-xs`         |
+
+### Componentes do dashboard
+
+- **Barras da semana:** 7 barras verticais em pílula (≈ 20 px de largura, ≈ 110 px de altura, vão ≈ 8 px). Trilha `--ds-color-chart-track`; o **planejado** é um hachurado índigo (`--ds-hatch-planned`) e o **concluído** é preenchido de baixo para cima em amarelo; o dia atual tem a trilha clara (`--ds-color-chart-track-strong`) e o rótulo em pílula.
+- **Anel:** diâmetro ≈ 136 px (≈ 150 px no app), espessura ≈ 18 px (≈ 13 % do diâmetro), extremidades arredondadas, trilha `--ds-color-chart-track`, arco amarelo; valor no centro.
+- **Cartão de água:** metade de cima na superfície do cartão, metade de baixo em gradiente índigo (`--ds-water-gradient`), com **onda** (path SVG) de transição em tom mais claro; valor grande (ex.: `0,7 L`) e botão circular “+” (branco a 20 %, ≈ 32 px) no canto inferior.
+- **Metas do dia:** linhas de ≈ 63 px com ícone em círculo de 40 px (superfície clara), título, círculo de verificação de 24 px (amarelo com visto escuro quando cumprida, vazio escuro quando não); metas cumpridas ficam esmaecidas e riscadas; separadores tracejados; barra de progresso de 12 px (trilha clara, preenchimento amarelo) e “Concluído NN %”.
+- **Agenda:** chips de data e de mês em pílula (`surface`), botão de calendário circular; horários à esquerda com linhas tracejadas; **cartões flutuantes** escuros (`--ds-radius-card-sm`, sombra `--ds-shadow-popover`) sobrepostos e deslocados; botão de ação circular amarelo de 48 px com brilho.
+
+### Tokens previstos (definidos em `tokens.css`)
+
+`--ds-radius-card`, `--ds-radius-card-sm`, `--ds-card-pad`, `--ds-card-gap`, `--ds-glass-bg`, `--ds-glass-highlight`, `--ds-glow-accent`, `--ds-color-water`, `--ds-color-water-deep`, `--ds-color-water-wave`, `--ds-water-gradient`, `--ds-color-chart-track`, `--ds-color-chart-track-strong`, `--ds-hatch-planned`, `--ds-text-display`, `--ds-text-card-title`, `--ds-text-stat`.
+
+## 10. Cronômetro do Modo Foco
+
+Especificação visual **estimada** no mesmo sistema (a referência não tem cronômetro). Rota `/foco`: página limpa, só o anel, os dígitos e os controles, centralizados.
+
+| Item                      | Valor                                                                                                                                                                                           | Token                                  |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Anel                      | diâmetro 320 px (20 rem), traço de 14 px com pontas arredondadas; a trilha é o círculo inteiro                                                                                                  | `--ds-timer-size`, `--ds-timer-stroke` |
+| Cor da trilha             | branco a 10 %                                                                                                                                                                                   | `--ds-color-timer-track`               |
+| Cor do progresso          | amarelo do Daily (rodando)                                                                                                                                                                      | `--ds-color-timer-progress`            |
+| Pausado                   | arco em cinza claro (`fg-soft`) e dígitos em `soft`                                                                                                                                             | `--ds-color-timer-paused`              |
+| Concluído                 | arco cheio em verde (cor de “revisão”)                                                                                                                                                          | `--ds-color-timer-done`                |
+| Dígitos                   | 72 px (4,5 rem), peso 300, `tabular-nums`, altura de linha 1, `mm:ss` (ou `h:mm:ss`)                                                                                                            | `--ds-text-timer`                      |
+| Botão/“puxador” do ajuste | círculo de 24 px na posição do ângulo escolhido, só no estado ocioso                                                                                                                            | `--ds-timer-knob`                      |
+| Faixa de ajuste           | 1 a 180 min; o anel inteiro = 180 min; 1 min por passo                                                                                                                                          | constantes em `lib/focus`              |
+| Progresso rodando         | o arco **diminui** do cheio até zero                                                                                                                                                            | —                                      |
+| Estados                   | **ocioso** (arco = duração/180 + puxador), **rodando** (amarelo), **pausado** (cinza), **concluído** (verde, tela de resumo), **travado** (selo “Tela travada”, controles de navegação ocultos) | —                                      |
+| Movimento                 | transições do arco desligadas com `prefers-reduced-motion`                                                                                                                                      | —                                      |
+| Hold-to-unlock            | botão `outline` com anel de progresso que preenche em 3 s                                                                                                                                       | `HOLD_TO_UNLOCK_MS`                    |
+
+Acessibilidade do anel: `role="slider"` (`aria-valuemin=1`, `aria-valuemax=180`, `aria-valuenow`, `aria-valuetext` “25 minutos”), teclado (setas ±1, PageUp/PageDown ±5, Home/End), arraste por ponteiro (mouse e toque). Os dígitos têm `role="timer"` e não são anunciados a cada segundo (sem `aria-live`).
