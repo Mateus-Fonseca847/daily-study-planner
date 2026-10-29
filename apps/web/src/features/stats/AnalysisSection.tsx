@@ -10,11 +10,10 @@ import {
   hoursAnalysis,
   hoursBySubject,
   periodRange,
-  waterAnalysis,
   type Period,
 } from '../../lib/stats/analysis';
 import { computeStreaks, upcomingPreps } from '../../lib/stats/derive';
-import { formatDays, formatHours, formatLiters, formatVariation } from '../../lib/stats/format';
+import { formatDays, formatHours, formatVariation } from '../../lib/stats/format';
 import { BarChart, EMPTY_CHART_TEXT, Heatmap, HorizontalBars } from './charts';
 import { StatCard } from './StatCard';
 import type { StatsModel } from './useStatsModel';
@@ -42,11 +41,11 @@ function Headline({ value, detail }: { value: string; detail: string }) {
   );
 }
 
-/** Seção “Análises”: seis cartões com gráficos em SVG próprio e alternativa textual. */
+/** Seção “Análises”: cinco cartões com gráficos em SVG próprio e alternativa textual. */
 export function AnalysisSection({ now, today, index }: StatsModel) {
   const [period, setPeriod] = useState<Period>('semana');
   const subjects = useData((s) => s.subjects);
-  const { events, focusSessions, preferences } = index.data;
+  const { events, focusSessions } = index.data;
 
   const hours = useMemo(() => hoursAnalysis(events, period, today), [events, period, today]);
   const focus = useMemo(
@@ -60,11 +59,9 @@ export function AnalysisSection({ now, today, index }: StatsModel) {
   );
   const heat = useMemo(() => goalsHeatmap(index, today), [index, today]);
   const streaks = useMemo(() => computeStreaks(index, today), [index, today]);
-  const water = useMemo(() => waterAnalysis(index, period, today), [index, period, today]);
 
   const heatDays = heat.flat().filter((c) => c.percent !== null);
   const heatFull = heatDays.filter((c) => c.percent === 100).length;
-  const waterHasData = water.recent.some((d) => d.ml > 0) || water.averageMl > 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -164,7 +161,7 @@ export function AnalysisSection({ now, today, index }: StatsModel) {
           )}
         </StatCard>
 
-        <StatCard title="Metas">
+        <StatCard title="Metas" className="xl:col-span-2">
           {heatDays.length === 0 ? (
             <Empty />
           ) : (
@@ -181,36 +178,6 @@ export function AnalysisSection({ now, today, index }: StatsModel) {
               </div>
               <p className="mt-2 text-xs text-muted">
                 Últimas 12 semanas · quanto mais amarelo, mais metas cumpridas no dia.
-              </p>
-            </>
-          )}
-        </StatCard>
-
-        <StatCard title="Água">
-          {!waterHasData ? (
-            <Empty />
-          ) : (
-            <>
-              <Headline
-                value={formatLiters(water.averageMl)}
-                detail={`por dia · meta batida em ${water.daysMet} de ${water.totalDays} dias`}
-              />
-              <div className="mt-4">
-                <BarChart
-                  small
-                  items={water.recent.map((d) => ({
-                    label: d.label,
-                    fullLabel: d.day,
-                    value: d.ml,
-                  }))}
-                  reference={preferences.waterGoalMl}
-                  format={formatLiters}
-                  caption={`Água nos últimos 14 dias (meta de ${formatLiters(preferences.waterGoalMl)} por dia)`}
-                  valueHeader="Água"
-                />
-              </div>
-              <p className="mt-2 text-xs text-muted">
-                Últimos 14 dias · a linha marca a meta de {formatLiters(preferences.waterGoalMl)}.
               </p>
             </>
           )}

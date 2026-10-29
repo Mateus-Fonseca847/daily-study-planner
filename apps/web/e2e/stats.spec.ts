@@ -22,10 +22,12 @@ test.describe('Estatísticas', () => {
       'Preparação das próximas provas',
       'Horas por matéria',
       'Metas',
-      'Água',
+      'Água', // só na seção Hoje
     ]) {
       await expect(page.getByRole('heading', { name: title, exact: true }).first()).toBeVisible();
     }
+    // A seção Análises tem 5 cartões (a água fica só em “Hoje”).
+    await expect(page.getByRole('heading', { name: 'Água', exact: true })).toHaveCount(1);
     await expect(page.getByText('8 dias').first()).toBeVisible();
     await expect(page.getByText('3/5 conteúdos').first()).toBeVisible();
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,7 L de 2 L/);

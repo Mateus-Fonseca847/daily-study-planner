@@ -7,7 +7,6 @@ import {
   studyHoursByDay,
   sumBy,
   variation,
-  waterOn,
   type StatsIndex,
   type Variation,
 } from './derive';
@@ -19,7 +18,6 @@ export const PERIOD_DAYS: Record<Period, number> = { semana: 7, mes: 30, '90d': 
 /** No período de 90 dias os gráficos agrupam por semana. */
 export const WEEK_BUCKET_DAYS = 7;
 export const HEATMAP_WEEKS = 12;
-export const WATER_RECENT_DAYS = 14;
 
 const WEEKDAY_SHORT = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'] as const;
 
@@ -196,29 +194,6 @@ export function goalsHeatmap(index: StatsIndex, today: string): HeatCell[][] {
       return { day, percent: summary.total === 0 ? null : summary.percent };
     }),
   );
-}
-
-export interface WaterAnalysis {
-  averageMl: number;
-  daysMet: number;
-  totalDays: number;
-  recent: { day: string; label: string; ml: number }[];
-}
-
-/** Média diária e dias com a meta batida no período, e as barras dos últimos 14 dias. */
-export function waterAnalysis(index: StatsIndex, period: Period, today: string): WaterAnalysis {
-  const { days } = periodRange(period, today);
-  const goal = index.data.preferences.waterGoalMl;
-  const totals = days.map((day) => waterOn(index, day));
-  const recentDays = Array.from({ length: WATER_RECENT_DAYS }, (_, i) =>
-    shiftDay(today, i - (WATER_RECENT_DAYS - 1)),
-  );
-  return {
-    averageMl: Math.round(sumBy(totals, (ml) => ml) / days.length),
-    daysMet: totals.filter((ml) => ml >= goal).length,
-    totalDays: days.length,
-    recent: recentDays.map((day) => ({ day, label: day.slice(8), ml: waterOn(index, day) })),
-  };
 }
 
 /** Dias fechados (todas as metas cumpridas) no período — usado só em textos de resumo. */

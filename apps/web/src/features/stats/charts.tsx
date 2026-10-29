@@ -1,4 +1,3 @@
-import { cn } from '../../lib/cn';
 import type { HeatCell, SeriesItem, SubjectHours } from '../../lib/stats/analysis';
 import type { SUBJECT_COLOR_CLASS } from '../../components/ui/SubjectDot';
 
@@ -31,22 +30,11 @@ interface BarChartProps {
   caption: string;
   valueHeader: string;
   plannedHeader?: string;
-  /** Linha de referência (ex.: meta de água), na mesma unidade dos valores. */
-  reference?: number;
-  small?: boolean;
 }
 
 /** Barras em SVG próprio: `planned` (quando existe) é a trilha; `value` é o preenchimento amarelo. */
-export function BarChart({
-  items,
-  format,
-  caption,
-  valueHeader,
-  plannedHeader,
-  reference,
-  small,
-}: BarChartProps) {
-  const max = Math.max(1, reference ?? 0, ...items.map((i) => Math.max(i.planned ?? 0, i.value)));
+export function BarChart({ items, format, caption, valueHeader, plannedHeader }: BarChartProps) {
+  const max = Math.max(1, ...items.map((i) => Math.max(i.planned ?? 0, i.value)));
   const height = (value: number) =>
     value <= 0 ? 0 : Math.max(MIN_BAR_HEIGHT, (value / max) * 100);
   const step = items.length > MAX_LABELS * 2 ? Math.ceil(items.length / MAX_LABELS) : 1;
@@ -57,7 +45,7 @@ export function BarChart({
         viewBox={`0 0 ${items.length * SLOT} 100`}
         preserveAspectRatio="none"
         aria-hidden
-        className={cn('w-full', small ? 'h-chart-sm' : 'h-chart')}
+        className="h-chart w-full"
       >
         {items.map((item, i) => {
           const planned = height(item.planned ?? 0);
@@ -84,15 +72,6 @@ export function BarChart({
             </g>
           );
         })}
-        {reference !== undefined && (
-          <rect
-            x={0}
-            y={100 - height(reference)}
-            width={items.length * SLOT}
-            height={0.8}
-            className="fill-muted"
-          />
-        )}
       </svg>
       <div
         aria-hidden

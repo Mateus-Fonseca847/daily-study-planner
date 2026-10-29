@@ -19,7 +19,6 @@ import {
   hoursBySubject,
   bucketsFor,
   periodRange,
-  waterAnalysis,
 } from './analysis';
 import {
   buildIndex,
@@ -516,20 +515,6 @@ describe('análises', () => {
     expect(flat.find((c) => c.day === TODAY)?.percent).toBe(100);
     expect(flat.find((c) => c.day === '2026-11-11')?.percent).toBeNull(); // futuro
     expect(map[11]?.[0]?.day).toBe('2026-11-09'); // última coluna começa na segunda da semana atual
-  });
-
-  it('água: média diária, dias com a meta batida e os últimos 14 dias', () => {
-    const logs = [water('2026-11-10', 2000), water('2026-11-09', 1000), water('2026-11-08', 2500)];
-    const result = waterAnalysis(buildIndex(make({ waterLogs: logs })), 'semana', TODAY);
-    expect(result.daysMet).toBe(2);
-    expect(result.averageMl).toBe(Math.round(5500 / 7));
-    expect(result.recent).toHaveLength(14);
-    expect(result.recent.at(-1)).toMatchObject({ day: TODAY, ml: 2000 });
-    expect(waterAnalysis(buildIndex(make()), '90d', TODAY)).toMatchObject({
-      averageMl: 0,
-      daysMet: 0,
-      totalDays: 90,
-    });
   });
 });
 
