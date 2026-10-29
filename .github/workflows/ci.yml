@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check:
@@ -20,5 +25,22 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
-      - run: pnpm --filter @daily/web exec playwright install --with-deps chromium
+
+      # O navegador do Playwright fica em cache (a chave segue o lockfile, que fixa a versão).
+      - name: Cache do navegador do Playwright
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+      - name: Instalar Chromium (com dependências do sistema)
+        run: pnpm --filter @daily/web exec playwright install --with-deps chromium
       - run: pnpm e2e
+
+      - name: Anexar relatório do Playwright em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: apps/web/test-results
+          if-no-files-found: ignore
