@@ -1,6 +1,7 @@
 /**
- * Captura os estados do Modo Foco (ocioso, editando, rodando, pausado, travado, concluído)
- * em 1920×1080 e 1280×720, com relógio fixo. Uso: `pnpm visual:focus`.
+ * Captura os estados do Modo Foco com a fixture `?fixture=focus` (histórico de sessões populando o
+ * painel “Dias de mais foco” e uma sessão travada já rodando): travado, rodando, pausado, parado,
+ * editando o tempo e concluído, em 1920×1080 e 1280×720. Uso: `pnpm visual:focus`.
  */
 import { createServer } from 'vite';
 import { chromium } from '@playwright/test';
@@ -12,7 +13,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(here, '..');
 const outDir = path.resolve(webRoot, '../../docs/design/screenshots/focus');
 const PORT = 5193;
-const NOW = new Date('2026-11-10T10:00:00');
+const NOW = new Date('2026-11-10T10:30:00');
 const VIEWPORTS = [
   { width: 1920, height: 1080 },
   { width: 1280, height: 720 },
@@ -44,26 +45,39 @@ try {
     };
     const field = page.getByRole('textbox', { name: 'Duração da sessão' });
 
-    await page.goto(`http://localhost:${PORT}/foco`);
-    await shot('1-ocioso');
+    await page.goto(`http://localhost:${PORT}/foco?fixture=focus`);
+    await page.getByRole('button', { name: /Segurar para destravar/ }).waitFor();
+    await shot('5-travado');
+
+    // Segura o botão por 3 s: destrava e a sessão segue rodando.
+    const hold = page.getByRole('button', { name: /Segurar para destravar/ });
+    const box = await hold.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.clock.runFor(1500);
+    await shot('5b-travado-segurando');
+    await page.clock.runFor(2000);
+    await page.mouse.up();
+    await page.getByRole('button', { name: 'Pausar' }).waitFor();
+    await shot('3-rodando');
+
+    await page.getByRole('button', { name: 'Pausar' }).click();
+    await shot('4-pausado');
+    await page.getByRole('button', { name: 'Reiniciar' }).click();
+    await field.waitFor();
+    await shot('1-parado');
+
     await field.click();
     await field.fill('45:30');
     await shot('2-editando');
     await field.press('Enter');
 
+    await field.click();
+    await field.fill('1');
+    await field.press('Enter');
     await page.getByRole('button', { name: 'Iniciar', exact: true }).click();
-    await page.clock.fastForward(12 * 60_000);
-    await shot('3-rodando');
-    await page.getByRole('button', { name: 'Pausar' }).click();
-    await shot('4-pausado');
-    await page.getByRole('button', { name: 'Reiniciar' }).click();
-
-    await page.getByRole('button', { name: 'Travar tela ao iniciar' }).click();
-    await page.getByRole('button', { name: 'Iniciar', exact: true }).click();
-    await page.clock.fastForward(5 * 60_000);
-    await shot('5-travado');
-
-    await page.clock.fastForward(60 * 60_000);
+    await page.clock.runFor(61_000);
+    await page.getByText(/^Concluído · /).waitFor();
     await shot('6-concluido');
     await context.close();
   }

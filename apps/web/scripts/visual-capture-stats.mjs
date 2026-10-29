@@ -51,7 +51,7 @@ async function sideBySide(page, region, mineBuffer, mineH, tag) {
   const [x, y, w, h] = region.ref;
   const refEl = `<div style="width:${w}px;height:${h}px;background:url(data:image/png;base64,${refB64}) no-repeat;background-size:${REF_SIZE.w}px ${REF_SIZE.h}px;background-position:${-x}px ${-y}px;border-radius:24px"></div>`;
   const mine = `<img height="${mineH}" src="data:image/png;base64,${mineBuffer.toString('base64')}" />`;
-  await page.setViewportSize({ width: 1500, height: 200 });
+  await page.setViewportSize({ width: 1500, height: 700 });
   await page.setContent(
     `<body style="margin:0;padding:16px;background:#111;display:flex;gap:24px;align-items:flex-start;width:max-content">${figure('Referência', refEl)}${figure(`Daily (${tag})`, mine)}</body>`,
   );
