@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { buildEvents } from '../../mocks/events';
+import { appNow } from '../../lib/fixture';
+import { eventsFor } from '../../mocks';
 import { navCounts } from '../../mocks/counts';
 import { ShellContext } from './shell-context';
 import { Sidebar } from './Sidebar';
@@ -10,8 +11,8 @@ export function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
   const [subjectId, setSubjectId] = useState('all');
   const counts = useMemo(() => {
-    const now = new Date();
-    return navCounts(buildEvents(now, now), now);
+    const now = appNow();
+    return navCounts(eventsFor(now, now), now);
   }, []);
 
   return (
