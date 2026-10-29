@@ -4,7 +4,7 @@ Organizador de estudos (PWA) para estudantes, pensado para ficar aberto o dia to
 tela do PC. Projeto de portfólio: TypeScript estrito, código limpo, documentação e testes bem
 escolhidos. Idioma da UI: **pt-BR**. Viewport-alvo: desktop 1440×900 (aceitável a partir de 1280 px).
 
-Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v1`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
+Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v2`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
 
 ## Stack
 
@@ -52,6 +52,7 @@ como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é seque
 - UI → `useData` (Zustand, `lib/data/app-store.ts`) → `DataRepository` → `LocalStorageRepository`. **Componentes nunca acessam `localStorage`.**
 - Regras de domínio ficam em funções puras (`lib/data/rules.ts`, `selectors.ts`, `task-filters.ts`, `countdown.ts`), com teste.
 - Mudou o formato salvo? Suba `DATA_VERSION`, escreva a migração em `envelope.ts` e atualize o histórico em `docs/data-model.md`.
+- Modo Foco: lógica pura em `lib/focus` (`session.ts` = máquina de estados por timestamps, `hold.ts`, `dial.ts`, `format.ts`, `link.ts`); efeitos em `controller.ts`; a sessão ativa fica numa chave própria (`daily:v2:focus`), fora do backup. O relógio é injetável: as funções recebem `nowMs`.
 - Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
 
 ## Fixture visual

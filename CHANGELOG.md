@@ -5,6 +5,21 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Adicionado (Prompt 03 — fase A: Modo Foco)
+
+- **Modo Foco** (`/foco`): cronômetro circular (1–180 min) com anel arrastável (`role="slider"`), teclado, botões ±5 e atalhos; tempo restante por timestamps; pausar/retomar/reiniciar/encerrar; vínculo opcional com matéria, prova ou bloco de hoje (com "Marcar bloco como concluído"); som de fim (Web Audio), título da aba e resumo.
+- **Travar tela:** esconde a navegação, bloqueia rotas (`useBlocker`), pede tela cheia, mantém a tela ligada (Wake Lock), avisa antes de recarregar e destrava segurando 3 s. Esc nunca destrava; destravar não encerra a sessão.
+- Sessão ativa persistida (sobrevive a recarregar) e histórico de sessões de foco.
+- Dados `daily:v2`: preferências, metas (4 padrão), registros de meta e de água, sessões de foco; migração v1 → v2 com backup prévio; importação de arquivos v1 e v2.
+- Sincronização entre abas pelo evento `storage` (última escrita vence).
+- Preferências: nome, meta de água, copo, duração padrão do foco e "Travar por padrão".
+- Especificação visual do dashboard de Estatísticas e do cronômetro, e novos tokens (cartão, glass, glow, água, gráficos, cronômetro) em `design-system.md` v0.4.
+
+### Alterado
+
+- O roteador passou a ser de dados (`createBrowserRouter`), exigido pelo bloqueador de navegação.
+- A chave do `localStorage` passou de `daily:v1` para `daily:v2`.
+
 ### Adicionado (Prompt 02 — provas e persistência)
 
 - Dados persistidos no navegador (`localStorage`, chave `daily:v1`) atrás de uma interface

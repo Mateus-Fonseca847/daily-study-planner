@@ -1,5 +1,7 @@
 # Modelo de dados
 
+> **v2 (Prompt 03):** o snapshot ganhou `preferences`, `goals`, `goalLogs`, `waterLogs` e `focusSessions` (seção “Entidades da versão 2”, no fim). O restante deste documento continua valendo.
+
 Definido com zod em `packages/shared/src` (fonte de verdade dos tipos). Hoje os dados vivem no
 navegador; os mesmos schemas serão usados pela API.
 
@@ -53,8 +55,8 @@ Regras (em `apps/web/src/lib/data/rules.ts`):
 | Chave              | Conteúdo                                                                  |
 | ------------------ | ------------------------------------------------------------------------- |
 | `daily:v1`         | Envelope `{ app: "daily", version, savedAt, data: { subjects, events } }` |
-| `daily:v1:backup`  | Último estado **válido** anterior à gravação mais recente                 |
-| `daily:v1:corrupt` | Cópia do dado ilegível, guardada para recuperação manual                  |
+| `daily:v2:backup`  | Último estado **válido** anterior à gravação mais recente                 |
+| `daily:v2:corrupt` | Cópia do dado ilegível, guardada para recuperação manual                  |
 
 A chave leva a versão do formato; o campo `version` do envelope dispara as migrações
 (`MIGRATIONS[n]` converte n → n+1). Arquivos exportados têm o mesmo formato do envelope.
@@ -84,3 +86,31 @@ componentes ──▶ useData (Zustand) ──▶ DataRepository ──▶ Local
                      │                     ▲ interface            (adaptador)         (localStorage | memória)
                      └─ regras puras (rules.ts, selectors.ts, task-filters.ts, countdown.ts)
 ```
+
+## Entidades da versão 2
+
+| Entidade (`packages/shared`)    | Campos                                                                                                                                                         | Observações                                                                                                |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `Preferences` (uma)             | `name` (≤ 40), `waterGoalMl` (250–10 000, padrão 2000), `cupMl` (50–1000, padrão 250), `focusDurationMin` (1–180, padrão 25), `lockByDefault` (padrão `false`) | Nomes do prompt: nome, metaÁguaMl, copoMl, duraçãoFocoMin, travarPorPadrão                                 |
+| `Goal` (Meta)                   | `id`, `title`, `icon` (10 ícones lucide), `kind` (`manual` \| `auto-agua` \| `auto-estudo`), `order`, `createdAt`, `archivedAt?`                               | Metas padrão no primeiro acesso: Dormir 7h, Beber 2 L de água, Exercício, Cumprir blocos de estudo de hoje |
+| `GoalLog` (RegistroMeta)        | `id` (= `goalId:data`), `goalId`, `date` (`yyyy-MM-dd` local), `done`                                                                                          | O `id` determinístico permite `upsert` idempotente                                                         |
+| `WaterLog` (RegistroÁgua)       | `id`, `date`, `ml`, `time` (`HH:mm`)                                                                                                                           |                                                                                                            |
+| `FocusSession` (SessãoFoco)     | `id`, `startedAt`, `plannedSec`, `actualSec`, `status` (`concluida` \| `interrompida`), `subjectId?`, `examId?`, `blockId?`                                    | Entra no backup. Excluir a matéria/prova/bloco vinculado zera o vínculo                                    |
+| `ActiveFocus` (SessãoFocoAtiva) | `id`, `status` (`ocioso` \| `rodando` \| `pausado`), `durationSec`, `startedAtMs`, `endsAtMs` (rodando), `remainingMs` (pausado), `locked`, `link`, `tabId`    | **Fora do snapshot e do backup**: chave `daily:v2:focus`. No máximo uma. Só persiste rodando/pausada       |
+
+Integridade (`dataSnapshotSchema`): ids únicos em todas as coleções; `GoalLog.goalId` e os vínculos das sessões precisam existir (matéria, prova **do tipo prova**, bloco **do tipo estudo**).
+
+### Migração v1 → v2
+
+1. Primeiro acesso a `daily:v2` vazio, mas com `daily:v1` presente: o v1 é copiado para `daily:v1:pre-v2` (backup **antes** de migrar) e permanece intacto.
+2. O envelope passa pelas migrações (`1 → 2`): preserva matérias e eventos e cria `preferences` padrão, as 4 metas padrão (`createdAt` = agora, relógio injetável) e coleções vazias.
+3. O resultado é validado com zod e gravado em `daily:v2`.
+4. Arquivos de backup v1 também são aceitos na importação (mesma migração, sem tocar nos dados atuais até a confirmação).
+
+| Versão | Mudança                                                                                                           |
+| ------ | ----------------------------------------------------------------------------------------------------------------- |
+| 2      | `preferences`, `goals`, `goalLogs`, `waterLogs`, `focusSessions`; chave `daily:v2`; sessão ativa em chave própria |
+
+### Sincronização entre abas
+
+O evento `storage` (disparado só nas **outras** abas) chama `reload()` no store. **Limitação:** última escrita vence; não há mesclagem de edições simultâneas. Duas abas que finalizam a mesma sessão de foco gravam um único registro (`upsert` pelo `id`).

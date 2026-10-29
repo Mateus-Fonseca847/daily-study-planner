@@ -61,14 +61,16 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] Páginas **Provas** (contagem regressiva), **Tarefas** (filtros e criação rápida), **Matérias** (cores) e **Blocos de estudo** (semana)
 - [x] Estados do evento: pendente, em andamento, concluído e cancelado
 - [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
-- [x] Exportar e importar dados em JSON (validado, com confirmação)
+- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 e v2)
+- [x] **Modo Foco** (`/foco`): cronômetro circular de 1 a 180 min, vínculo com matéria/prova/bloco, histórico de sessões e **travamento do app** (veja abaixo)
+- [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
+- [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
 
 ### Em planejamento
 
 - [ ] Autenticação (e-mail/senha ou Google)
 - [ ] Sincronização com back-end
 - [ ] Visões Semana e Ano
-- [ ] Modo Foco para segunda tela
 - [ ] Notificações e lembretes periódicos
 - [ ] PWA instalável (manifest e service worker)
 - [ ] Estatísticas de estudo
@@ -186,6 +188,23 @@ Cada ciclo fica registrado em [`docs/prompts/`](docs/prompts/) (`NN-prompt.md` e
 
 Decisões maiores serão registradas em `docs/adr/`.
 
+## Modo Foco e travamento
+
+O **Modo Foco** (`/foco`) é um cronômetro circular: arraste o anel, use as setas do teclado (1 min), os botões −5/+5 ou os atalhos 15/25/45/60/90 min. O tempo restante é sempre calculado por **timestamps** (fim − agora), então a contagem continua exata com a aba em segundo plano, e a sessão **sobrevive a recarregamentos** (rodando, continua; pausada, mantém o restante; se o fim passou enquanto a página estava fechada, vira "concluída"). No fim há um som curto (Web Audio, só na aba que iniciou), o título da aba muda para "Sessão concluída" e aparece um resumo; sessões com mais de 1 minuto entram no histórico.
+
+**O que a trava ("Travar tela") faz**, enquanto o cronômetro roda ou está pausado:
+
+- esconde a barra lateral, o topo e os links; a navegação interna é bloqueada e qualquer rota digitada na URL volta para `/foco`;
+- pede **tela cheia** (se você sair com Esc, o app continua travado e mostra "Voltar à tela cheia"; **Esc nunca destrava**);
+- mantém a tela ligada (**Screen Wake Lock**, quando o navegador suporta);
+- mostra o aviso padrão do navegador ao recarregar ou fechar a aba;
+- só o Espaço (pausar/retomar) continua como atalho;
+- para destravar, **segure o botão por 3 segundos** (mouse, toque ou Enter/Espaço). Destravar **não encerra** a sessão.
+
+**O que ela NÃO pode fazer.** É um travamento _do aplicativo_, para evitar distração acidental, **não uma medida de segurança**. Navegadores não permitem bloquear Alt+Tab, Ctrl+W, fechar a janela, trocar de aba/janela nem o sistema operacional; quem quiser sair sempre consegue. O Wake Lock e a tela cheia também dependem do navegador.
+
+**Ideia futura:** instalar o Daily como PWA e abri-lo em **janela própria** (modo standalone/kiosk), o que reduz as distrações da barra de abas e dá mais controle sobre a tela cheia.
+
 ## Dados e privacidade
 
 - Seus dados (matérias, provas, tarefas, blocos de estudo e conteúdos) ficam **somente no seu navegador**, no `localStorage` deste site. Nada é enviado a servidores, não há conta nem rastreamento.
@@ -197,9 +216,10 @@ Decisões maiores serão registradas em `docs/adr/`.
 
 - **Testado apenas no Chromium** (Playwright e uso manual); Firefox e Safari não foram verificados, e os campos nativos de data e hora variam entre navegadores
 - Os dados vivem **só neste navegador** (sem conta nem sincronização): limpar os dados do site apaga tudo. Use Preferências → Exportar para guardar uma cópia
+- Com várias abas abertas, **a última escrita vence** (o evento `storage` recarrega a aba que não gravou; não há mesclagem de edições simultâneas)
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
-- Busca, notificações e o botão "Modo Foco" da topbar ainda são apenas visuais
-- Visões Semana e Ano são placeholders; Estatísticas, Modo Foco, Atalhos, FAQ e Convidar amigos são páginas placeholder
+- Busca e notificações ainda são apenas visuais
+- Visões Semana e Ano são placeholders; Estatísticas, Atalhos, FAQ e Convidar amigos são páginas placeholder
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas
