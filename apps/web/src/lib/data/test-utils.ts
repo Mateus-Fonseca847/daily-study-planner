@@ -60,9 +60,9 @@ export const task = (id: string, overrides: Partial<Task> = {}): Task => ({
 
 export const FIXED_NOW = new Date('2026-11-01T12:00:00');
 
-/** Estado inicial determinístico (metas criadas em `FIXED_NOW`) com os dados informados. */
+/** Estado inicial determinístico com os dados informados. */
 export const makeSnapshot = (patch: Partial<DataSnapshot> = {}): DataSnapshot => ({
-  ...createInitialSnapshot('2026-11-01T12:00:00'),
+  ...createInitialSnapshot(),
   ...patch,
 });
 

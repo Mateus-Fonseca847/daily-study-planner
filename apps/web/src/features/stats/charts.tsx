@@ -1,5 +1,4 @@
-import type { CSSProperties } from 'react';
-import type { HeatCell, SeriesItem, SubjectHours } from '../../lib/stats/analysis';
+import type { SeriesItem, SubjectHours } from '../../lib/stats/analysis';
 import type { SUBJECT_COLOR_CLASS } from '../../components/ui/SubjectDot';
 
 /** Larguras do gráfico em unidades do `viewBox` (cada barra ocupa 10). */
@@ -140,48 +139,5 @@ export function HorizontalBars({ rows, format, caption }: HorizontalBarsProps) {
         </li>
       ))}
     </ul>
-  );
-}
-
-interface HeatmapProps {
-  /** Colunas = semanas (segunda a domingo). */
-  weeks: readonly (readonly HeatCell[])[];
-  caption: string;
-}
-
-const CELL = 10;
-const CELL_GAP = 2;
-
-/** Mapa de calor das metas: quanto mais amarelo, maior a % cumprida no dia. */
-export function Heatmap({ weeks, caption }: HeatmapProps) {
-  const width = weeks.length * (CELL + CELL_GAP) - CELL_GAP;
-  const height = 7 * (CELL + CELL_GAP) - CELL_GAP;
-  return (
-    <svg
-      role="img"
-      aria-label={caption}
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="xMinYMid meet"
-      className="h-chart w-full"
-    >
-      {weeks.map((week, w) =>
-        week.map((cell, d) => (
-          <rect
-            key={cell.day}
-            x={w * (CELL + CELL_GAP)}
-            y={d * (CELL + CELL_GAP)}
-            width={CELL}
-            height={CELL}
-            rx={2}
-            className={cell.percent === null ? 'fill-chart-track' : 'fill-accent heat-cell'}
-            style={
-              cell.percent === null
-                ? undefined
-                : ({ '--heat': cell.percent / 100 } as CSSProperties)
-            }
-          />
-        )),
-      )}
-    </svg>
   );
 }

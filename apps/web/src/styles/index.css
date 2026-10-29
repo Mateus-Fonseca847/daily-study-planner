@@ -169,6 +169,8 @@
   --spacing-chart: var(--ds-chart-h);
   --spacing-heat-gap: var(--ds-heat-gap);
   --spacing-heat-cell-max: var(--ds-heat-cell-max);
+  --spacing-heat-cell-min: var(--ds-heat-cell-min);
+  --spacing-heat-legend: var(--ds-heat-legend-size);
   --spacing-heat-label: var(--ds-heat-label-w);
   --spacing-focus-gap: var(--ds-focus-gap);
   --spacing-focus-panel: var(--ds-focus-panel-w);
@@ -293,6 +295,11 @@
 }
 @utility heat-lvl-4 {
   background-color: color-mix(in srgb, var(--habit) var(--ds-heat-mix-4), var(--ds-color-heat-0));
+}
+/* Hoje: contorno de 1 px na cor do texto. */
+@utility heat-today {
+  outline: var(--ds-border-w) solid var(--ds-color-fg);
+  outline-offset: 0;
 }
 @utility heat-off {
   background-color: var(--ds-color-heat-off);

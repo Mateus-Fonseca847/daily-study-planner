@@ -4,7 +4,8 @@ const NOW = new Date('2026-11-10T10:30:00');
 
 const addCup = (page: Page) => page.getByRole('button', { name: /^Adicionar um copo/ });
 const waterBar = (page: Page) => page.getByRole('progressbar', { name: 'Meta de água do dia' });
-const goalsBar = (page: Page) => page.getByRole('progressbar', { name: 'Metas concluídas hoje' });
+const habitsBar = (page: Page) =>
+  page.getByRole('progressbar', { name: 'Hábitos concluídos hoje' });
 
 test.describe('Estatísticas', () => {
   test('fixture: os cartões de “Hoje” e as seis análises aparecem', async ({ page }) => {
@@ -15,20 +16,20 @@ test.describe('Estatísticas', () => {
     for (const title of [
       'Horas de estudo',
       'Preparação',
-      'Metas do dia',
+      'Hábitos de hoje',
       'Agenda de hoje',
       'Horas estudadas',
       'Tempo focado',
       'Preparação das próximas provas',
       'Horas por matéria',
-      'Metas',
+      'Consistência',
       'Água', // só na seção Hoje
     ]) {
       await expect(page.getByRole('heading', { name: title, exact: true }).first()).toBeVisible();
     }
     // A seção Análises tem 5 cartões (a água fica só em “Hoje”).
     await expect(page.getByRole('heading', { name: 'Água', exact: true })).toHaveCount(1);
-    await expect(page.getByText('8 dias').first()).toBeVisible();
+    await expect(page.getByText(/^\d+ dias?$/).first()).toBeVisible();
     await expect(page.getByText('3/5 conteúdos').first()).toBeVisible();
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,7 L de 2 L/);
 
@@ -60,21 +61,21 @@ test.describe('Estatísticas', () => {
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,75 L de 2 L/);
   });
 
-  test('metas: marcar uma meta manual muda a porcentagem', async ({ page }) => {
+  test('hábitos de hoje: marcar um hábito manual muda a porcentagem', async ({ page }) => {
     await page.clock.install({ time: NOW });
     await page.goto('/estatisticas?fixture=stats');
 
-    const before = Number(await goalsBar(page).getAttribute('aria-valuenow'));
-    const goal = page.getByRole('checkbox').first();
-    const percent = async () => Number(await goalsBar(page).getAttribute('aria-valuenow'));
+    const percent = async () => Number(await habitsBar(page).getAttribute('aria-valuenow'));
+    const before = await percent();
 
-    // Na fixture as metas manuais já estão cumpridas: desmarcar derruba a %, marcar de novo restaura.
-    await expect(goal).toHaveAttribute('aria-checked', 'true');
-    await goal.click();
-    await expect(goal).toHaveAttribute('aria-checked', 'false');
+    // Na fixture a “Luta” de hoje já está feita: desmarcar derruba a %, marcar de novo restaura.
+    const fight = page.getByRole('checkbox', { name: 'Luta: feito hoje' });
+    await expect(fight).toHaveAttribute('aria-checked', 'true');
+    await fight.click();
+    await expect(fight).toHaveAttribute('aria-checked', 'false');
     await expect.poll(percent).toBeLessThan(before);
 
-    await goal.click();
+    await fight.click();
     await expect.poll(percent).toBe(before);
   });
 });

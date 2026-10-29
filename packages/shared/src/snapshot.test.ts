@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { activeFocusSchema } from './focus';
-import { goalSchema } from './goals';
+import { goalSchema } from './legacy-goals';
 import { DEFAULT_PREFERENCES, preferencesSchema } from './preferences';
 import { createInitialSnapshot, dataSnapshotSchema } from './snapshot';
 
 const CREATED = '2026-11-10T09:00:00';
-const base = createInitialSnapshot(CREATED);
+const base = createInitialSnapshot();
 const event = {
   id: 'e1',
   type: 'prova',
@@ -34,7 +34,11 @@ describe('dataSnapshotSchema', () => {
   it('rejeita registros e sessões que apontam para algo inexistente', () => {
     const bad = (patch: object) => dataSnapshotSchema.safeParse({ ...base, ...patch }).success;
     expect(
-      bad({ goalLogs: [{ id: 'x:2026-11-10', goalId: 'x', date: '2026-11-10', done: true }] }),
+      bad({
+        habitLogs: [
+          { id: 'x:2026-11-10', habitId: 'x', date: '2026-11-10', value: 1, updatedAt: CREATED },
+        ],
+      }),
     ).toBe(false);
     const session = {
       id: 's',
@@ -47,15 +51,11 @@ describe('dataSnapshotSchema', () => {
     expect(bad({ focusSessions: [session] })).toBe(true);
   });
 
-  it('o estado inicial traz preferências e as 4 metas padrão', () => {
+  it('o estado inicial traz as preferências padrão e nenhum hábito', () => {
     expect(dataSnapshotSchema.safeParse(base).success).toBe(true);
     expect(base.preferences).toEqual(DEFAULT_PREFERENCES);
-    expect(base.goals.map((g) => [g.title, g.kind])).toEqual([
-      ['Dormir 7h', 'manual'],
-      ['Beber 2 L de água', 'auto-agua'],
-      ['Exercício', 'manual'],
-      ['Cumprir blocos de estudo de hoje', 'auto-estudo'],
-    ]);
+    expect(base.habits).toEqual([]);
+    expect(base.habitLogs).toEqual([]);
   });
 });
 
@@ -78,7 +78,7 @@ describe('preferências, metas e sessão ativa', () => {
     expect(messages).toContain('O copo deve ter pelo menos 50 ml.');
   });
 
-  it('só aceita ícones do conjunto de metas', () => {
+  it('o schema legado de metas (v2) segue válido para migrar arquivos antigos', () => {
     const goal = {
       id: 'g',
       title: 'X',

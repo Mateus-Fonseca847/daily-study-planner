@@ -1,13 +1,15 @@
 import {
   createInitialSnapshot,
   dataSnapshotSchema,
-  defaultGoals,
-  goalLogId,
+  EVERY_DAY,
+  habitLogId,
+  habitSchema,
   studyEventSchema,
   type ActiveFocus,
   type DataSnapshot,
   type FocusSession,
-  type GoalLog,
+  type Habit,
+  type HabitLog,
   type StudyEvent,
   type WaterLog,
 } from '@daily/shared';
@@ -30,8 +32,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const at = (day: string, hour: number, minute = 0) => `${day}T${pad(hour)}:${pad(minute)}:00`;
 
 /** Quantos dias de histórico a fixture gera antes de “hoje”. */
-const HISTORY_DAYS = 100;
-/** Dias recentes em que todas as metas foram cumpridas (sequência atual). */
+const HISTORY_DAYS = 150;
+/** Dias recentes em que todos os hábitos agendados foram cumpridos (sequência atual). */
 const CURRENT_STREAK_DAYS = 6;
 /** Uma sequência antiga e mais longa (melhor sequência): de `OLD_RUN_START` a `OLD_RUN_START − 8`. */
 const OLD_RUN_START = 30;
@@ -41,7 +43,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
   const today = dayKey(now);
   const random = rng(42);
   const events: StudyEvent[] = [];
-  const goalLogs: GoalLog[] = [];
+  const habitLogs: HabitLog[] = [];
   const waterLogs: WaterLog[] = [];
   const focusSessions: FocusSession[] = [];
   let uid = 0;
@@ -130,7 +132,72 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
   });
 
   // ── Histórico (HISTORY_DAYS dias): blocos, água, metas manuais e sessões de foco ──
-  const manualGoals = ['goal-sleep', 'goal-exercise'];
+  const since = shiftDay(today, -HISTORY_DAYS - 5);
+  const rule = (
+    repeat: Habit['rules'][number]['repeat'],
+    target: number | null,
+    time: string | null,
+    duration = 60,
+  ) => ({
+    since,
+    repeat,
+    target,
+    time: time === null ? null : { start: time, durationMin: duration },
+  });
+  const habits: Habit[] = [
+    {
+      id: 'fx-gym',
+      name: 'Musculação',
+      icon: 'dumbbell',
+      color: 'laranja',
+      type: 'check',
+      unit: '',
+      source: 'manual',
+      rules: [rule({ kind: 'dias-da-semana', days: [1, 3, 5] }, null, '07:00')],
+    },
+    {
+      id: 'fx-water',
+      name: 'Hidratação',
+      icon: 'droplets',
+      color: 'azul',
+      type: 'quantidade',
+      unit: 'ml',
+      source: 'agua',
+      rules: [rule(EVERY_DAY, 2000, null)],
+    },
+    {
+      id: 'fx-fight',
+      name: 'Luta',
+      icon: 'swords',
+      color: 'violeta',
+      type: 'check',
+      unit: '',
+      source: 'manual',
+      rules: [rule({ kind: 'dias-da-semana', days: [2, 4] }, null, '19:00', 90)],
+    },
+    {
+      id: 'fx-study',
+      name: 'Estudo',
+      icon: 'book-open',
+      color: 'verde',
+      type: 'quantidade',
+      unit: 'min',
+      source: 'foco',
+      rules: [rule({ kind: 'dias-da-semana', days: [1, 2, 3, 4, 5] }, 60, null)],
+    },
+  ].map((h, order) =>
+    habitSchema.parse({ ...h, createdAt: at(since, 8), archivedAt: null, endsOn: null, order }),
+  );
+  const logHabit = (habitId: string, day: string, value = 1) =>
+    habitLogs.push({
+      id: habitLogId(habitId, day),
+      habitId,
+      date: day,
+      value,
+      updatedAt: at(day, 21),
+    });
+  const gymDays = new Set([1, 3, 5]);
+  const fightDays = new Set([2, 4]);
   for (let back = 1; back <= HISTORY_DAYS; back += 1) {
     const day = shiftDay(today, -back);
     const forcedFull =
@@ -176,18 +243,17 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
       hour = Math.min(22, hour + 2);
     }
 
-    // Metas manuais.
-    for (const goalId of manualGoals) {
-      const done = goodDay || random() < 0.35;
-      goalLogs.push({ id: goalLogId(goalId, day), goalId, date: day, done });
-    }
+    // Hábitos manuais (só nos dias agendados; dia bom cumpre tudo, os outros falham com frequência).
+    const weekday = new Date(`${day}T00:00:00`).getDay();
+    if (gymDays.has(weekday) && (goodDay || random() < 0.5)) logHabit('fx-gym', day);
+    if (fightDays.has(weekday) && (goodDay || random() < 0.6)) logHabit('fx-fight', day);
 
     // Sessões de foco.
-    if (random() < 0.75) {
-      const sessions = 1 + Math.floor(random() * 2);
+    if (forcedFull || random() < 0.75) {
+      const sessions = forcedFull ? 2 : 1 + Math.floor(random() * 2);
       for (let s = 0; s < sessions; s += 1) {
-        const planned = (random() < 0.5 ? 25 : 50) * 60;
-        const finished = random() < 0.8;
+        const planned = (forcedFull ? 50 : random() < 0.5 ? 25 : 50) * 60;
+        const finished = forcedFull || random() < 0.8;
         focusSessions.push({
           id: id('fx-f'),
           startedAt: at(day, 9 + s * 5, Math.floor(random() * 4) * 15),
@@ -202,15 +268,13 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     }
   }
 
-  // ── Hoje: 700 ml de água e 2 metas manuais concluídas ──
+  // ── Hoje: 700 ml de água, 25 min de foco e a luta já feita ──
   waterLogs.push(
     { id: 'fx-w-today-1', date: today, ml: 250, time: '07:40' },
     { id: 'fx-w-today-2', date: today, ml: 250, time: '09:15' },
     { id: 'fx-w-today-3', date: today, ml: 200, time: '10:05' },
   );
-  for (const goalId of manualGoals) {
-    goalLogs.push({ id: goalLogId(goalId, today), goalId, date: today, done: true });
-  }
+  logHabit('fx-fight', today);
   focusSessions.push({
     id: 'fx-f-today',
     startedAt: at(today, 8, 30),
@@ -222,14 +286,14 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     blockId: null,
   });
 
-  const base = createInitialSnapshot(at(shiftDay(today, -HISTORY_DAYS - 5), 8));
+  const base = createInitialSnapshot();
   return dataSnapshotSchema.parse({
     ...base,
     preferences: { ...base.preferences, name: 'Ana' },
     subjects: [...SUBJECTS],
     events,
-    goals: defaultGoals(at(shiftDay(today, -HISTORY_DAYS - 5), 8)),
-    goalLogs,
+    habits,
+    habitLogs,
     waterLogs,
     focusSessions,
   });

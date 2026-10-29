@@ -1,14 +1,25 @@
 import {
   dataSnapshotSchema,
+  DEFAULT_HABIT_ICON,
   DEFAULT_PREFERENCES,
   defaultGoals,
+  EVERY_DAY,
+  goalLogSchema,
+  goalSchema,
+  HABIT_COLORS,
+  HABIT_ICONS,
   SUBJECT_COLORS,
   type DataSnapshot,
   type EventStatus,
+  type Goal,
+  type Habit,
+  type HabitLog,
+  type HabitIcon,
 } from '@daily/shared';
+import { z } from 'zod';
 import { toLocalIso } from '../dates';
 
-export const DATA_VERSION = 2;
+export const DATA_VERSION = 3;
 export const APP_ID = 'daily';
 
 export type ParseResult =
@@ -64,6 +75,59 @@ function migrateV1(data: unknown, ctx: MigrationContext): unknown {
   };
 }
 
+/**
+ * v2 → v3: as metas viram hábitos (mesmo id, para os registros continuarem apontando) e os
+ * registros de meta viram registros de hábito (1 = concluída, 0 = não). Idempotente: só roda
+ * sobre dados v2, e o resultado já é v3.
+ */
+function migrateV2(data: unknown): unknown {
+  if (!isObj(data)) return data;
+  const { goals, goalLogs, ...rest } = data;
+  const parsedGoals = z.array(goalSchema).safeParse(goals ?? []);
+  const parsedLogs = z.array(goalLogSchema).safeParse(goalLogs ?? []);
+  // Dado ilegível segue adiante como veio: a validação final acusa e o fluxo de corrupção assume.
+  if (!parsedGoals.success || !parsedLogs.success) return data;
+
+  const waterGoalMl = isObj(rest.preferences) ? rest.preferences.waterGoalMl : undefined;
+  const habits = parsedGoals.data.map((goal, i) => goalToHabit(goal, i, waterGoalMl));
+  const habitLogs: HabitLog[] = parsedLogs.data.map((log) => ({
+    id: log.id,
+    habitId: log.goalId,
+    date: log.date,
+    value: log.done ? 1 : 0,
+    updatedAt: `${log.date}T00:00:00`,
+  }));
+  return { ...rest, habits, habitLogs };
+}
+
+function goalToHabit(goal: Goal, index: number, waterGoalMl: unknown): Habit {
+  const icon: HabitIcon = (HABIT_ICONS as readonly string[]).includes(goal.icon)
+    ? (goal.icon as HabitIcon)
+    : DEFAULT_HABIT_ICON;
+  const auto = goal.kind === 'auto-agua';
+  return {
+    id: goal.id,
+    name: goal.title,
+    icon,
+    color: HABIT_COLORS[index % HABIT_COLORS.length] ?? 'amarelo',
+    type: auto ? 'quantidade' : 'check',
+    unit: auto ? 'ml' : '',
+    source: goal.kind === 'auto-agua' ? 'agua' : goal.kind === 'auto-estudo' ? 'blocos' : 'manual',
+    rules: [
+      {
+        since: goal.createdAt.slice(0, 10),
+        repeat: EVERY_DAY,
+        target: auto ? (typeof waterGoalMl === 'number' ? waterGoalMl : 2000) : null,
+        time: null,
+      },
+    ],
+    createdAt: goal.createdAt,
+    archivedAt: goal.archivedAt,
+    endsOn: null,
+    order: goal.order,
+  };
+}
+
 interface MigrationContext {
   /** Relógio injetável: data de criação das metas padrão. */
   now: Date;
@@ -73,6 +137,7 @@ interface MigrationContext {
 const MIGRATIONS: Record<number, (data: unknown, ctx: MigrationContext) => unknown> = {
   0: (data) => migrateV0(data),
   1: migrateV1,
+  2: migrateV2,
 };
 
 function describeIssue(error: { issues: { path: PropertyKey[]; message: string }[] }): string {

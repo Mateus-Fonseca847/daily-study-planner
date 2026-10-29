@@ -1,20 +1,22 @@
 import { useMemo, useState } from 'react';
 import { parseISO } from 'date-fns';
+import { shiftDay } from '../../lib/dates';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { useData } from '../../lib/data/app-store';
 import { formatCountdown } from '../../lib/data/countdown';
 import {
   focusAnalysis,
-  goalsHeatmap,
   hoursAnalysis,
   hoursBySubject,
   periodRange,
   type Period,
 } from '../../lib/stats/analysis';
-import { computeStreaks, upcomingPreps } from '../../lib/stats/derive';
+import { aggregateMatrix, generalRate, generalStreaks, weekStart } from '../../lib/habits';
+import { upcomingPreps } from '../../lib/stats/derive';
 import { formatDays, formatHours, formatVariation } from '../../lib/stats/format';
-import { BarChart, EMPTY_CHART_TEXT, Heatmap, HorizontalBars } from './charts';
+import { BarChart, EMPTY_CHART_TEXT, HorizontalBars } from './charts';
+import { AggregateHeatmap } from '../habits/HabitHeatmap';
 import { StatCard } from './StatCard';
 import type { StatsModel } from './useStatsModel';
 
@@ -30,6 +32,11 @@ const PERIOD_TEXT: Record<Period, string> = {
   '90d': 'nos últimos 90 dias',
 };
 
+/** Semanas do heatmap de consistência. */
+const CONSISTENCY_WEEKS = 52;
+
+const formatRate = (percent: number | null): string => (percent === null ? '—' : `${percent}%`);
+
 const Empty = () => <p className="mt-6 text-md text-muted">{EMPTY_CHART_TEXT}</p>;
 
 function Headline({ value, detail }: { value: string; detail: string }) {
@@ -42,7 +49,7 @@ function Headline({ value, detail }: { value: string; detail: string }) {
 }
 
 /** Seção “Análises”: cinco cartões com gráficos em SVG próprio e alternativa textual. */
-export function AnalysisSection({ now, today, index }: StatsModel) {
+export function AnalysisSection({ now, today, index, habits, habitCtx }: StatsModel) {
   const [period, setPeriod] = useState<Period>('semana');
   const subjects = useData((s) => s.subjects);
   const { events, focusSessions } = index.data;
@@ -57,11 +64,18 @@ export function AnalysisSection({ now, today, index }: StatsModel) {
     () => hoursBySubject(events, subjects, periodRange(period, today).days),
     [events, subjects, period, today],
   );
-  const heat = useMemo(() => goalsHeatmap(index, today), [index, today]);
-  const streaks = useMemo(() => computeStreaks(index, today), [index, today]);
-
-  const heatDays = heat.flat().filter((c) => c.percent !== null);
-  const heatFull = heatDays.filter((c) => c.percent === 100).length;
+  const active = useMemo(() => habits.filter((h) => h.archivedAt === null), [habits]);
+  const streaks = useMemo(() => generalStreaks(active, habitCtx), [active, habitCtx]);
+  const from = useMemo(() => shiftDay(weekStart(today), -7 * (CONSISTENCY_WEEKS - 1)), [today]);
+  const hasHeat = useMemo(
+    () =>
+      aggregateMatrix(active, from, today, habitCtx)
+        .flat()
+        .some((c) => c.percent !== null),
+    [active, from, today, habitCtx],
+  );
+  const rate30 = generalRate(active, habitCtx, 30);
+  const rate90 = generalRate(active, habitCtx, 90);
 
   return (
     <div className="flex flex-col gap-4">
@@ -161,23 +175,22 @@ export function AnalysisSection({ now, today, index }: StatsModel) {
           )}
         </StatCard>
 
-        <StatCard title="Metas" className="xl:col-span-2">
-          {heatDays.length === 0 ? (
-            <Empty />
+        <StatCard title="Consistência" className="xl:col-span-2">
+          {!hasHeat ? (
+            <p className="mt-6 text-md text-muted">
+              Crie hábitos para acompanhar sua consistência ao longo das semanas.
+            </p>
           ) : (
             <>
               <Headline
                 value={formatDays(streaks.current)}
-                detail={`de sequência · melhor: ${formatDays(streaks.best)}`}
+                detail={`de sequência · melhor: ${formatDays(streaks.best)} · taxa de 30 dias: ${formatRate(rate30)} · 90 dias: ${formatRate(rate90)}`}
               />
               <div className="mt-4">
-                <Heatmap
-                  weeks={heat}
-                  caption={`Mapa das metas nas últimas 12 semanas: ${heatFull} de ${heatDays.length} dias com todas as metas cumpridas. Sequência atual ${formatDays(streaks.current)}; melhor ${formatDays(streaks.best)}.`}
-                />
+                <AggregateHeatmap habits={active} ctx={habitCtx} from={from} to={today} />
               </div>
               <p className="mt-2 text-xs text-muted">
-                Últimas 12 semanas · quanto mais amarelo, mais metas cumpridas no dia.
+                Últimas 52 semanas · cada dia mostra a % dos hábitos agendados que foram cumpridos.
               </p>
             </>
           )}

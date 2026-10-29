@@ -10,7 +10,7 @@ const topDays = (page: Page) => page.getByRole('region', { name: 'Dias de mais f
 const sidebarCreate = (page: Page) => page.getByRole('button', { name: 'Criar', exact: true });
 const savedSessions = (page: Page) =>
   page.evaluate(() => {
-    const raw = localStorage.getItem('daily:v2');
+    const raw = localStorage.getItem('daily:v3');
     return raw ? JSON.parse(raw).data.focusSessions : [];
   });
 

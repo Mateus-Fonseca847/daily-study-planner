@@ -3,8 +3,8 @@ import {
   createInitialSnapshot,
   dataSnapshotSchema,
   focusSessionSchema,
-  goalLogSchema,
-  goalSchema,
+  habitLogSchema,
+  habitSchema,
   preferencesSchema,
   studyEventSchema,
   subjectSchema,
@@ -12,14 +12,13 @@ import {
   type ActiveFocus,
   type DataSnapshot,
   type FocusSession,
-  type Goal,
-  type GoalLog,
+  type Habit,
+  type HabitLog,
   type Preferences,
   type StudyEvent,
   type Subject,
   type WaterLog,
 } from '@daily/shared';
-import { toLocalIso } from '../dates';
 import { parseEnvelope, serializeEnvelope } from './envelope';
 import {
   NotFoundError,
@@ -37,15 +36,18 @@ export interface StorageLike {
   removeItem(key: string): void;
 }
 
-export const STORAGE_KEY = 'daily:v2';
-/** Chave do formato anterior (v1): lida uma vez na migração e nunca mais alterada. */
+export const STORAGE_KEY = 'daily:v3';
+/** Chaves dos formatos anteriores: lidas uma vez na migração e nunca mais alteradas. */
+export const LEGACY_V2_KEY = 'daily:v2';
 export const LEGACY_KEY = 'daily:v1';
-/** Cópia do dado v1 feita ANTES de migrar para o v2. */
+/** Cópia do dado v1 feita ANTES de migrar. */
 export const PRE_MIGRATION_KEY = `${LEGACY_KEY}:pre-v2`;
+/** Cópia do dado v2 feita ANTES de migrar para o v3. */
+export const PRE_V3_KEY = `${LEGACY_V2_KEY}:pre-v3`;
 export const BACKUP_KEY = `${STORAGE_KEY}:backup`;
 export const CORRUPT_KEY = `${STORAGE_KEY}:corrupt`;
-/** Sessão de foco ativa (fora do snapshot e do backup). */
-export const FOCUS_KEY = `${STORAGE_KEY}:focus`;
+/** Sessão de foco ativa (fora do snapshot e do backup; chave histórica, não mudou na v3). */
+export const FOCUS_KEY = `${LEGACY_V2_KEY}:focus`;
 
 /** Chaves cujo valor muda o que a UI mostra (usadas pelo evento `storage`). */
 export const WATCHED_KEYS: readonly string[] = [STORAGE_KEY, FOCUS_KEY];
@@ -103,15 +105,15 @@ class Collection<T extends { id: string }> implements EntityRepository<T> {
 
 export interface LocalStorageOptions {
   newId?: () => string;
-  /** Relógio injetável (data de criação das metas padrão, `savedAt`). */
+  /** Relógio injetável (`savedAt` e datas das migrações). */
   now?: () => Date;
 }
 
 export class LocalStorageRepository implements DataRepository {
   readonly subjects: EntityRepository<Subject>;
   readonly events: EntityRepository<StudyEvent>;
-  readonly goals: EntityRepository<Goal>;
-  readonly goalLogs: EntityRepository<GoalLog>;
+  readonly habits: EntityRepository<Habit>;
+  readonly habitLogs: EntityRepository<HabitLog>;
   readonly waterLogs: EntityRepository<WaterLog>;
   readonly focusSessions: EntityRepository<FocusSession>;
   readonly preferences: DataRepository['preferences'];
@@ -127,11 +129,11 @@ export class LocalStorageRepository implements DataRepository {
   ) {
     const newId = options.newId ?? (() => crypto.randomUUID());
     this.now = options.now ?? (() => new Date());
-    this.state = createInitialSnapshot(toLocalIso(this.now()));
+    this.state = createInitialSnapshot();
     this.load();
 
     const collection = <T extends { id: string }>(
-      key: 'subjects' | 'events' | 'goals' | 'goalLogs' | 'waterLogs' | 'focusSessions',
+      key: 'subjects' | 'events' | 'habits' | 'habitLogs' | 'waterLogs' | 'focusSessions',
       schema: Parser<T>,
     ) =>
       new Collection<T>(
@@ -142,8 +144,8 @@ export class LocalStorageRepository implements DataRepository {
       );
     this.subjects = collection<Subject>('subjects', subjectSchema);
     this.events = collection<StudyEvent>('events', studyEventSchema);
-    this.goals = collection<Goal>('goals', goalSchema);
-    this.goalLogs = collection<GoalLog>('goalLogs', goalLogSchema);
+    this.habits = collection<Habit>('habits', habitSchema);
+    this.habitLogs = collection<HabitLog>('habitLogs', habitLogSchema);
     this.waterLogs = collection<WaterLog>('waterLogs', waterLogSchema);
     this.focusSessions = collection<FocusSession>('focusSessions', focusSessionSchema);
 
@@ -178,7 +180,7 @@ export class LocalStorageRepository implements DataRepository {
 
   reload(): void {
     this.issue = null;
-    this.state = createInitialSnapshot(toLocalIso(this.now()));
+    this.state = createInitialSnapshot();
     this.load();
   }
 
@@ -208,18 +210,20 @@ export class LocalStorageRepository implements DataRepository {
 
   private load(): void {
     const current = this.storage.getItem(STORAGE_KEY);
-    if (current !== null) return this.loadRaw(current, false);
-    const legacy = this.storage.getItem(LEGACY_KEY);
-    if (legacy !== null) return this.loadRaw(legacy, true);
+    if (current !== null) return this.loadRaw(current, null);
+    const v2 = this.storage.getItem(LEGACY_V2_KEY);
+    if (v2 !== null) return this.loadRaw(v2, PRE_V3_KEY);
+    const v1 = this.storage.getItem(LEGACY_KEY);
+    if (v1 !== null) return this.loadRaw(v1, PRE_MIGRATION_KEY);
   }
 
-  private loadRaw(raw: string, fromLegacy: boolean): void {
+  /** `preKey` ≠ null: o dado vem de uma chave antiga e o original é guardado ANTES de migrar. */
+  private loadRaw(raw: string, preKey: string | null): void {
     const result = parseEnvelope(raw, this.now());
     if (result.ok) {
       this.state = result.snapshot;
-      if (fromLegacy) {
-        // Migração v1 → v2: guarda o original ANTES de gravar no formato novo.
-        this.writeSafely(PRE_MIGRATION_KEY, raw);
+      if (preKey !== null) {
+        this.writeSafely(preKey, raw);
         this.persist();
       } else if (result.migratedFrom !== null) {
         this.persist(); // dado salvo em versão antiga: regrava migrado (o original vira backup)

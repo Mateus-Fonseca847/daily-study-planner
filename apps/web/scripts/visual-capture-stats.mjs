@@ -27,7 +27,7 @@ const REGIONS = [
   { name: 'horas', ref: [82, 276, 248, 287], card: 'Horas de estudo' },
   { name: 'preparacao', ref: [343, 276, 249, 287], card: 'Preparação' },
   { name: 'sequencia-agua', ref: [604, 276, 161, 287], card: 'Água', withStreak: true },
-  { name: 'metas', ref: [778, 276, 336, 529], card: 'Metas do dia' },
+  { name: 'habitos', ref: [778, 276, 336, 529], card: 'Hábitos de hoje' },
   { name: 'agenda', ref: [82, 576, 683, 229], card: 'Agenda de hoje' },
 ];
 

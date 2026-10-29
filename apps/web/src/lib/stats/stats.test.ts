@@ -1,34 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
-  defaultGoals,
-  goalLogId,
   DEFAULT_PREFERENCES,
-  type Goal,
-  type GoalLog,
   type FocusSession,
   type StudyEvent,
   type WaterLog,
 } from '@daily/shared';
 import { createDataStore } from '../data/store';
-import { LocalStorageRepository } from '../data/local-storage-repository';
 import { block, exam, memoryRepo, subject } from '../data/test-utils';
-import {
-  focusAnalysis,
-  goalsHeatmap,
-  hoursAnalysis,
-  hoursBySubject,
-  bucketsFor,
-  periodRange,
-} from './analysis';
+import { focusAnalysis, hoursAnalysis, hoursBySubject, bucketsFor, periodRange } from './analysis';
 import {
   buildIndex,
-  computeStreaks,
   examPrep,
   focusSecondsByDay,
-  goalsSummary,
-  goalStates,
-  isGoalActiveOn,
-  MAX_STREAK_LOOKBACK_DAYS,
   nextExam,
   studyHoursByDay,
   upcomingPreps,
@@ -42,13 +25,11 @@ import { formatDays, formatHours, formatLiters, formatVariation, percentOf } fro
 
 const TODAY = '2026-11-10'; // terça-feira
 const NOW = new Date(2026, 10, 10, 10, 30);
-const CREATED = '2026-01-01T08:00:00';
 
-const goals = (): Goal[] => defaultGoals(CREATED);
 const make = (patch: Partial<StatsData> = {}): StatsData => ({
   events: [],
-  goals: goals(),
-  goalLogs: [],
+  habits: [],
+  habitLogs: [],
   waterLogs: [],
   focusSessions: [],
   preferences: { ...DEFAULT_PREFERENCES },
@@ -73,12 +54,6 @@ const water = (date: string, ml: number, id = `${date}-${ml}`): WaterLog => ({
   ml,
   time: '08:00',
 });
-const log = (goalId: string, date: string, done = true): GoalLog => ({
-  id: goalLogId(goalId, date),
-  goalId,
-  date,
-  done,
-});
 const session = (
   day: string,
   sec: number,
@@ -94,8 +69,6 @@ const session = (
   blockId: null,
 });
 /** Cumpre as 2 metas manuais num dia. */
-const manualDone = (day: string): GoalLog[] => [log('goal-sleep', day), log('goal-exercise', day)];
-
 describe('formatação', () => {
   it('litros em pt-BR, sem zeros sobrando', () => {
     expect(formatLiters(0)).toBe('0 L');
@@ -189,179 +162,6 @@ describe('água', () => {
     expect(waterPercent(700, 2000)).toBe(35);
     expect(waterPercent(3000, 2000)).toBe(100);
     expect(waterPercent(500, 0)).toBe(0);
-  });
-});
-
-describe('metas do dia', () => {
-  it('automática de água: cumpre ao atingir a meta (o valor vem das preferências)', () => {
-    const states = (ml: number, goalMl = 2000) =>
-      goalStates(
-        buildIndex(
-          make({
-            waterLogs: [water(TODAY, ml)],
-            preferences: { ...DEFAULT_PREFERENCES, waterGoalMl: goalMl },
-          }),
-        ),
-        TODAY,
-      ).find((s) => s.goal.kind === 'auto-agua');
-    expect(states(1999)?.done).toBe(false);
-    expect(states(2000)?.done).toBe(true);
-    expect(states(1500, 1500)?.done).toBe(true);
-  });
-
-  it('automática de estudo: some sem blocos hoje; cumpre só com todos concluídos; cancelados não contam', () => {
-    const study = (events: StudyEvent[]) =>
-      goalStates(buildIndex(make({ events })), TODAY).find((s) => s.goal.kind === 'auto-estudo');
-    expect(study([])?.hidden).toBe(true);
-    expect(study([ev('x', { status: 'cancelado' })])?.hidden).toBe(true);
-    expect(study([ev('x', { status: 'concluido' }), ev('y', {})])).toMatchObject({
-      hidden: false,
-      done: false,
-    });
-    expect(
-      study([
-        ev('x', { status: 'concluido' }),
-        ev('y', { status: 'concluido' }),
-        ev('z', { status: 'cancelado' }),
-      ]),
-    ).toMatchObject({ hidden: false, done: true });
-    // Revisão e blocos de outro dia não contam.
-    expect(
-      study([
-        ev('r', { type: 'revisao' }),
-        ev('o', { start: '2026-11-11T10:00:00', end: '2026-11-11T11:00:00' }),
-      ])?.hidden,
-    ).toBe(true);
-  });
-
-  it('% de metas: ignora as ocultas e conta as manuais pelos registros', () => {
-    const none = goalsSummary(buildIndex(make()), TODAY);
-    expect(none).toMatchObject({ done: 0, total: 3, percent: 0 }); // 4 metas − estudo oculto
-
-    const two = goalsSummary(buildIndex(make({ goalLogs: manualDone(TODAY) })), TODAY);
-    expect(two).toMatchObject({ done: 2, total: 3, percent: 67 });
-
-    const withBlocks = goalsSummary(
-      buildIndex(make({ goalLogs: manualDone(TODAY), events: [ev('x', {})] })),
-      TODAY,
-    );
-    expect(withBlocks).toMatchObject({ done: 2, total: 4, percent: 50 });
-
-    const undone = goalsSummary(
-      buildIndex(make({ goalLogs: [log('goal-sleep', TODAY, false)] })),
-      TODAY,
-    );
-    expect(undone.done).toBe(0);
-  });
-
-  it('uma meta vale do dia da criação até o dia anterior ao arquivamento', () => {
-    const goal = {
-      ...goals()[0],
-      createdAt: '2026-11-05T09:00:00',
-      archivedAt: '2026-11-08T20:00:00',
-    } as Goal;
-    expect(isGoalActiveOn(goal, '2026-11-04')).toBe(false);
-    expect(isGoalActiveOn(goal, '2026-11-05')).toBe(true);
-    expect(isGoalActiveOn(goal, '2026-11-07')).toBe(true);
-    expect(isGoalActiveOn(goal, '2026-11-08')).toBe(false);
-    expect(isGoalActiveOn({ ...goal, archivedAt: null }, '2030-01-01')).toBe(true);
-  });
-});
-
-describe('sequência', () => {
-  /** Dias fechados: metas manuais cumpridas, 2000 ml e (sem blocos) o estudo oculto. */
-  const closedDays = (days: string[]) => ({
-    goalLogs: days.flatMap(manualDone),
-    waterLogs: days.map((d) => water(d, 2000)),
-  });
-  const streak = (patch: Partial<StatsData>, today = TODAY) =>
-    computeStreaks(buildIndex(make(patch)), today);
-
-  it('sem nenhum dia fechado: 0', () => {
-    expect(streak({})).toEqual({ current: 0, best: 0 });
-  });
-
-  it('conta até hoje quando hoje fechou', () => {
-    expect(streak(closedDays(['2026-11-08', '2026-11-09', TODAY])).current).toBe(3);
-  });
-
-  it('se hoje ainda não fechou, conta até ontem (hoje não quebra a sequência)', () => {
-    expect(streak(closedDays(['2026-11-07', '2026-11-08', '2026-11-09'])).current).toBe(3);
-  });
-
-  it('um dia sem fechar no meio quebra a sequência; a melhor continua', () => {
-    const days = [
-      '2026-11-01',
-      '2026-11-02',
-      '2026-11-03',
-      '2026-11-04',
-      '2026-11-06',
-      '2026-11-07',
-    ];
-    expect(streak(closedDays(days))).toEqual({ current: 0, best: 4 }); // 8 e 9 abertos → atual 0
-    expect(streak(closedDays([...days, '2026-11-08', '2026-11-09']))).toEqual({
-      current: 4,
-      best: 4,
-    });
-  });
-
-  it('virada de dia: a mesma história vista de amanhã perde a sequência de hoje', () => {
-    const data = closedDays(['2026-11-09', TODAY]);
-    expect(streak(data, TODAY).current).toBe(2);
-    expect(streak(data, '2026-11-11').current).toBe(2); // amanhã ainda aberto: conta até hoje
-    expect(streak(data, '2026-11-12').current).toBe(0); // depois de um dia inteiro sem fechar
-  });
-
-  it('um dia só de blocos pendentes não fecha (estudo automático não cumprido)', () => {
-    const data = {
-      ...closedDays(['2026-11-09']),
-      events: [ev('p', { start: '2026-11-09T10:00:00', end: '2026-11-09T11:00:00' })],
-    };
-    expect(streak(data).current).toBe(0);
-  });
-
-  it('metas arquivadas: dias passados usam só as metas que existiam, e a meta nova só vale depois', () => {
-    // “Exercício” foi arquivado em 05/11; até 04/11 ele exigia registro, depois não.
-    const allGoals = goals().map((g) =>
-      g.id === 'goal-exercise' ? { ...g, archivedAt: '2026-11-05T12:00:00' } : g,
-    );
-    const sleepOnly = ['2026-11-05', '2026-11-06', '2026-11-07', '2026-11-08', '2026-11-09'].map(
-      (d) => log('goal-sleep', d),
-    );
-    const withExercise = ['2026-11-03', '2026-11-04'].flatMap(manualDone);
-    const data = {
-      goals: allGoals,
-      goalLogs: [...sleepOnly, ...withExercise],
-      waterLogs: [
-        '2026-11-03',
-        '2026-11-04',
-        '2026-11-05',
-        '2026-11-06',
-        '2026-11-07',
-        '2026-11-08',
-        '2026-11-09',
-      ].map((d) => water(d, 2000)),
-    };
-    expect(streak(data).current).toBe(7); // 03/11 → 09/11 atravessando o arquivamento
-    // Sem a regra, 05–09 falhariam por falta de “Exercício”.
-    expect(streak({ ...data, goals: goals() }).current).toBe(0);
-  });
-
-  it('dias anteriores à criação das metas não fecham (não há o que cumprir)', () => {
-    const young = goals().map((g) => ({ ...g, createdAt: '2026-11-09T08:00:00' }));
-    const data = { goals: young, ...closedDays(['2026-11-08', '2026-11-09']) };
-    expect(streak(data).current).toBe(1); // 08/11 é anterior às metas
-  });
-
-  it('respeita o limite de busca (constante nomeada)', () => {
-    expect(MAX_STREAK_LOOKBACK_DAYS).toBe(365);
-    const old = goals().map((g) => ({ ...g, createdAt: '2020-01-01T00:00:00' }));
-    const days = Array.from({ length: 400 }, (_, i) =>
-      new Date(Date.UTC(2026, 10, 10) - i * 86_400_000).toISOString().slice(0, 10),
-    );
-    const result = streak({ goals: old, ...closedDays(days) });
-    expect(result.current).toBe(MAX_STREAK_LOOKBACK_DAYS + 1); // hoje + 365 dias para trás
-    expect(result.best).toBe(MAX_STREAK_LOOKBACK_DAYS + 1);
   });
 });
 
@@ -503,22 +303,9 @@ describe('análises', () => {
       ['fis', 30],
     ]);
   });
-
-  it('mapa de calor: 12 semanas × 7 dias, futuro e dias sem metas ficam vazios', () => {
-    const index = buildIndex(
-      make({ goalLogs: manualDone(TODAY), waterLogs: [water(TODAY, 2000)] }),
-    );
-    const map = goalsHeatmap(index, TODAY);
-    expect(map).toHaveLength(12);
-    expect(map.every((week) => week.length === 7)).toBe(true);
-    const flat = map.flat();
-    expect(flat.find((c) => c.day === TODAY)?.percent).toBe(100);
-    expect(flat.find((c) => c.day === '2026-11-11')?.percent).toBeNull(); // futuro
-    expect(map[11]?.[0]?.day).toBe('2026-11-09'); // última coluna começa na segunda da semana atual
-  });
 });
 
-describe('ações de água e metas no store', () => {
+describe('ações de água no store', () => {
   const setup = () => {
     const { repo, storage } = memoryRepo();
     return { store: createDataStore(repo), storage };
@@ -538,45 +325,5 @@ describe('ações de água e metas no store', () => {
 
     store.getState().removeWater(log1?.id ?? '');
     expect(store.getState().waterLogs).toHaveLength(1);
-  });
-
-  it('marca e desmarca metas manuais (um registro por meta e dia)', () => {
-    const { store } = setup();
-    store.getState().setGoalDone('goal-sleep', TODAY, true);
-    store.getState().setGoalDone('goal-sleep', TODAY, true);
-    expect(store.getState().goalLogs).toEqual([log('goal-sleep', TODAY, true)]);
-    store.getState().setGoalDone('goal-sleep', TODAY, false);
-    expect(store.getState().goalLogs).toEqual([log('goal-sleep', TODAY, false)]);
-  });
-
-  it('cria, renomeia, reordena e arquiva metas, e persiste', () => {
-    const { store, storage } = setup();
-    const created = store
-      .getState()
-      .createGoal(today, { title: 'Ler 20 páginas', icon: 'book-open' });
-    expect(created).toMatchObject({
-      kind: 'manual',
-      order: 4,
-      createdAt: '2026-11-10T09:05:00',
-      archivedAt: null,
-    });
-
-    store.getState().updateGoal(created?.id ?? '', { title: 'Ler 30 páginas' });
-    const ids = store.getState().goals.map((g) => g.id);
-    store.getState().reorderGoals([...ids].reverse());
-    expect(store.getState().goals.map((g) => g.order)).toEqual([4, 3, 2, 1, 0]);
-    store.getState().archiveGoal('goal-exercise', today);
-
-    const reopened = createDataStore(new LocalStorageRepository(storage));
-    const goalsAfter = reopened.getState().goals;
-    expect(goalsAfter.find((g) => g.id === created?.id)?.title).toBe('Ler 30 páginas');
-    expect(goalsAfter.find((g) => g.id === 'goal-exercise')?.archivedAt).toBe(
-      '2026-11-10T09:05:00',
-    );
-  });
-
-  it('rejeita título vazio ao criar meta', () => {
-    const { store } = setup();
-    expect(() => store.getState().createGoal(today, { title: '   ', icon: 'target' })).toThrow();
   });
 });

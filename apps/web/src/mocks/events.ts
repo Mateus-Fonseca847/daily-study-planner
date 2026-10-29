@@ -290,7 +290,7 @@ export function buildEvents(month: Date, now: Date = new Date()): StudyEvent[] {
 /** Dados de exemplo (botão “Carregar dados de exemplo”). */
 export function sampleSnapshot(now: Date = new Date()): DataSnapshot {
   return {
-    ...createInitialSnapshot(toLocalIso(now)),
+    ...createInitialSnapshot(),
     subjects: [...SUBJECTS],
     events: buildEvents(now, now),
   };

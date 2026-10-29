@@ -2,8 +2,8 @@ import type {
   ActiveFocus,
   DataSnapshot,
   FocusSession,
-  Goal,
-  GoalLog,
+  Habit,
+  HabitLog,
   Preferences,
   StudyEvent,
   Subject,
@@ -32,8 +32,8 @@ export type LoadIssue = { kind: 'corrupt'; message: string; hasBackup: boolean }
 export interface DataRepository {
   readonly subjects: EntityRepository<Subject>;
   readonly events: EntityRepository<StudyEvent>;
-  readonly goals: EntityRepository<Goal>;
-  readonly goalLogs: EntityRepository<GoalLog>;
+  readonly habits: EntityRepository<Habit>;
+  readonly habitLogs: EntityRepository<HabitLog>;
   readonly waterLogs: EntityRepository<WaterLog>;
   readonly focusSessions: EntityRepository<FocusSession>;
   readonly preferences: {

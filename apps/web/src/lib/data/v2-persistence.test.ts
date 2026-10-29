@@ -36,7 +36,7 @@ const active: ActiveFocus = {
 };
 
 describe('primeiro acesso', () => {
-  it('abre com preferências e as 4 metas padrão (criadas no relógio injetado)', () => {
+  it('abre com as preferências padrão e sem hábitos', () => {
     const { repo } = memoryRepo();
     const s = repo.snapshot();
     expect(s.preferences).toEqual({
@@ -46,14 +46,13 @@ describe('primeiro acesso', () => {
       focusDurationSec: 1500,
       lockByDefault: false,
     });
-    expect(s.goals).toHaveLength(4);
-    expect(s.goals.every((g) => g.createdAt === '2026-11-01T12:00:00')).toBe(true);
-    expect(s.goals.map((g) => g.kind)).toEqual(['manual', 'auto-agua', 'manual', 'auto-estudo']);
+    expect(s.habits).toEqual([]);
+    expect(s.habitLogs).toEqual([]);
   });
 });
 
-describe('migração v1 → v2', () => {
-  it('preserva tudo, cria preferências e metas e guarda o v1 original antes de migrar', () => {
+describe('migração v1 → v3', () => {
+  it('preserva tudo, cria preferências e hábitos e guarda o v1 original antes de migrar', () => {
     const storage = new MemoryStorage();
     storage.setItem(LEGACY_KEY, v1Raw);
     const repo = new LocalStorageRepository(storage, { now: () => FIXED_NOW });
@@ -61,15 +60,15 @@ describe('migração v1 → v2', () => {
     expect(repo.issue).toBeNull();
     expect(repo.subjects.list().map((s) => s.name)).toEqual(['Matemática']);
     expect(repo.events.list().map((e) => e.id)).toEqual(['e1']);
-    expect(repo.snapshot().goals).toHaveLength(4);
+    expect(repo.snapshot().habits).toHaveLength(4); // as 4 metas padrão do v2 viraram hábitos
     expect(repo.snapshot().preferences.focusDurationSec).toBe(1500);
 
     expect(storage.getItem(PRE_MIGRATION_KEY)).toBe(v1Raw); // backup feito antes de migrar
     expect(storage.getItem(LEGACY_KEY)).toBe(v1Raw); // o v1 nunca é alterado
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(2);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(3);
   });
 
-  it('só migra uma vez: com a chave v2 presente, o v1 é ignorado', () => {
+  it('só migra uma vez: com a chave atual presente, o v1 é ignorado', () => {
     const { repo: first, storage } = memoryRepo();
     first.subjects.create({ name: 'Nova', color: 'rosa' });
     storage.setItem(LEGACY_KEY, v1Raw);
@@ -86,21 +85,29 @@ describe('migração v1 → v2', () => {
   });
 });
 
-describe('importar/exportar com v1 e v2', () => {
-  it('aceita um arquivo v1 e o devolve já no formato v2', () => {
+describe('importar/exportar com v1, v2 e v3', () => {
+  it('aceita um arquivo v1 e o devolve já no formato v3', () => {
     const result = readBackupFile(v1Raw, FIXED_NOW);
     expect(result.ok && result.migratedFrom).toBe(1);
-    expect(result.ok && result.snapshot.goals).toHaveLength(4);
+    expect(result.ok && result.snapshot.habits).toHaveLength(4);
     expect(result.ok && result.snapshot.events).toHaveLength(1);
   });
 
-  it('aceita v2 e valida com zod (meta inexistente é rejeitada)', () => {
+  it('aceita v3 e valida com zod (hábito inexistente é rejeitado)', () => {
     const file = createBackupFile(snapshot(), FIXED_NOW);
-    expect(JSON.parse(file.content).version).toBe(2);
+    expect(JSON.parse(file.content).version).toBe(3);
     expect(readBackupFile(file.content).ok).toBe(true);
 
     const broken = JSON.parse(file.content);
-    broken.data.goalLogs = [{ id: 'x:2026-11-01', goalId: 'x', date: '2026-11-01', done: true }];
+    broken.data.habitLogs = [
+      {
+        id: 'x:2026-11-01',
+        habitId: 'x',
+        date: '2026-11-01',
+        value: 1,
+        updatedAt: '2026-11-01T09:00:00',
+      },
+    ];
     expect(readBackupFile(JSON.stringify(broken)).ok).toBe(false);
   });
 
@@ -197,7 +204,7 @@ describe('sincronização entre abas', () => {
     expect(storeA.getState().focusActive).toEqual(active);
   });
 
-  it('o store expõe preferências, metas e sessões', () => {
+  it('o store expõe preferências, hábitos e sessões', () => {
     const { repo } = memoryRepo();
     repo.replaceAll(makeSnapshot({ subjects: [subject('mat')] }));
     const store = createDataStore(repo);
@@ -205,6 +212,6 @@ describe('sincronização entre abas', () => {
     store.getState().setFocusActive(active);
     expect(store.getState().preferences.name).toBe('Leo');
     expect(store.getState().focusActive?.id).toBe('a1');
-    expect(store.getState().goals).toHaveLength(4);
+    expect(store.getState().habits).toEqual([]);
   });
 });

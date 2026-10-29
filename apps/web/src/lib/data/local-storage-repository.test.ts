@@ -55,8 +55,8 @@ describe('LocalStorageRepository — persistência e versão', () => {
     const { repo, storage } = memoryRepo();
     repo.replaceAll(snapshot());
     const saved = JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}');
-    expect(STORAGE_KEY).toBe('daily:v2');
-    expect(saved).toMatchObject({ app: 'daily', version: 2 });
+    expect(STORAGE_KEY).toBe('daily:v3');
+    expect(saved).toMatchObject({ app: 'daily', version: 3 });
 
     const reopened = new LocalStorageRepository(storage);
     expect(reopened.snapshot()).toEqual(snapshot());
@@ -105,7 +105,7 @@ describe('LocalStorageRepository — persistência e versão', () => {
     expect(second).toMatchObject({ status: 'pendente', subjectId: null, examId: null });
     expect(repo.subjects.list()[0]?.color).toBe('vermelho');
     // Regravado já na versão atual, com o original guardado como backup.
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(2);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(3);
     expect(JSON.parse(storage.getItem(BACKUP_KEY) ?? '{}').version).toBe(0);
   });
 
@@ -137,7 +137,7 @@ describe('LocalStorageRepository — dado corrompido', () => {
       storage.setItem(STORAGE_KEY, raw);
       const repo = new LocalStorageRepository(storage);
       expect(repo.snapshot().events).toEqual([]);
-      expect(repo.snapshot().goals).toHaveLength(4);
+      expect(repo.snapshot().habits).toEqual([]);
       expect(repo.issue).toMatchObject({ kind: 'corrupt', hasBackup: false });
       expect(storage.getItem(CORRUPT_KEY)).toBe(raw);
       expect(storage.getItem(STORAGE_KEY)).toBe(raw); // nada é sobrescrito até o usuário agir

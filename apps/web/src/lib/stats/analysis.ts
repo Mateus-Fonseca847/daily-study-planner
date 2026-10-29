@@ -1,15 +1,6 @@
 import type { FocusSession, StudyEvent, Subject } from '@daily/shared';
 import { minutesBetween, parseDayKey, shiftDay } from '../dates';
-import {
-  focusSecondsByDay,
-  goalsSummary,
-  isDayClosed,
-  studyHoursByDay,
-  sumBy,
-  variation,
-  type StatsIndex,
-  type Variation,
-} from './derive';
+import { focusSecondsByDay, studyHoursByDay, sumBy, variation, type Variation } from './derive';
 
 /** Janela da seção “Análises”. */
 export type Period = 'semana' | 'mes' | '90d';
@@ -17,7 +8,6 @@ export type Period = 'semana' | 'mes' | '90d';
 export const PERIOD_DAYS: Record<Period, number> = { semana: 7, mes: 30, '90d': 90 };
 /** No período de 90 dias os gráficos agrupam por semana. */
 export const WEEK_BUCKET_DAYS = 7;
-export const HEATMAP_WEEKS = 12;
 
 const WEEKDAY_SHORT = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'] as const;
 
@@ -174,28 +164,3 @@ export function hoursBySubject(
     .filter((row) => row.minutes > 0)
     .sort((a, b) => b.minutes - a.minutes);
 }
-
-export interface HeatCell {
-  day: string;
-  /** % de metas cumpridas (null = sem metas ativas ou dia futuro). */
-  percent: number | null;
-}
-
-/** Mapa de calor: `HEATMAP_WEEKS` semanas (colunas, segunda a domingo) terminando na semana atual. */
-export function goalsHeatmap(index: StatsIndex, today: string): HeatCell[][] {
-  const weekday = parseDayKey(today).getDay();
-  const thisMonday = shiftDay(today, -((weekday + 6) % 7));
-  const firstMonday = shiftDay(thisMonday, -7 * (HEATMAP_WEEKS - 1));
-  return Array.from({ length: HEATMAP_WEEKS }, (_, week) =>
-    Array.from({ length: 7 }, (_, d) => {
-      const day = shiftDay(firstMonday, week * 7 + d);
-      if (day > today) return { day, percent: null };
-      const summary = goalsSummary(index, day);
-      return { day, percent: summary.total === 0 ? null : summary.percent };
-    }),
-  );
-}
-
-/** Dias fechados (todas as metas cumpridas) no período — usado só em textos de resumo. */
-export const closedDaysIn = (index: StatsIndex, days: readonly string[]): number =>
-  days.filter((day) => isDayClosed(goalsSummary(index, day))).length;

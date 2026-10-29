@@ -3,6 +3,11 @@ import { localDateSchema, localDateTimeSchema } from './dates';
 
 const id = z.string().min(1);
 
+/**
+ * Metas (formato da versão 2). Os hábitos as substituíram na versão 3; estes schemas ficam só para
+ * migrar e importar arquivos antigos.
+ */
+
 /** Conjunto pequeno de ícones lucide disponíveis para metas. */
 export const GOAL_ICONS = [
   'moon',
@@ -46,19 +51,10 @@ export const goalLogSchema = z.object({
   done: z.boolean(),
 });
 
-export const waterLogSchema = z.object({
-  id,
-  date: localDateSchema,
-  ml: z.number().int().min(1).max(5000),
-  /** Horário local `HH:mm`. */
-  time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Horário inválido.'),
-});
-
 export type GoalIcon = z.infer<typeof goalIconSchema>;
 export type GoalKind = z.infer<typeof goalKindSchema>;
 export type Goal = z.infer<typeof goalSchema>;
 export type GoalLog = z.infer<typeof goalLogSchema>;
-export type WaterLog = z.infer<typeof waterLogSchema>;
 
 export const goalLogId = (goalId: string, date: string): string => `${goalId}:${date}`;
 

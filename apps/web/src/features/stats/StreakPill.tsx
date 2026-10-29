@@ -1,7 +1,7 @@
 import { Flame } from 'lucide-react';
 import { formatDays } from '../../lib/stats/format';
 
-/** Pílula amarela com a sequência de dias seguidos com todas as metas cumpridas. */
+/** Pílula amarela com a sequência de dias seguidos com todos os hábitos agendados cumpridos. */
 export function StreakPill({ current, best }: { current: number; best: number }) {
   return (
     <div

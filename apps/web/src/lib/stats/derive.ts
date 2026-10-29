@@ -2,8 +2,8 @@ import {
   isExam,
   type Exam,
   type FocusSession,
-  type Goal,
-  type GoalLog,
+  type Habit,
+  type HabitLog,
   type Preferences,
   type StudyBlock,
   type StudyEvent,
@@ -12,13 +12,10 @@ import {
 import { minutesBetween, parseDayKey, shiftDay, toLocalIso } from '../dates';
 import { percentOf } from './format';
 
-/** Quantos dias para trás a busca de sequência olha (limite do cálculo). */
-export const MAX_STREAK_LOOKBACK_DAYS = 365;
-
 export interface StatsData {
   events: readonly StudyEvent[];
-  goals: readonly Goal[];
-  goalLogs: readonly GoalLog[];
+  habits: readonly Habit[];
+  habitLogs: readonly HabitLog[];
   waterLogs: readonly WaterLog[];
   focusSessions: readonly FocusSession[];
   preferences: Preferences;
@@ -31,8 +28,6 @@ export interface StatsIndex {
   water: Map<string, number>;
   /** Blocos de estudo (não cancelados) por dia. */
   blocks: Map<string, StudyBlock[]>;
-  /** `goalId:data` → concluída. */
-  logs: Map<string, boolean>;
 }
 
 export function buildIndex(data: StatsData): StatsIndex {
@@ -46,8 +41,7 @@ export function buildIndex(data: StatsData): StatsIndex {
     blocks.set(key, [...(blocks.get(key) ?? []), event]);
   }
 
-  const logs = new Map(data.goalLogs.map((log) => [log.id, log.done]));
-  return { data, water, blocks, logs };
+  return { data, water, blocks };
 }
 
 /* ───────────── Semana ───────────── */
@@ -107,86 +101,6 @@ export const waterOn = (index: StatsIndex, day: string): number => index.water.g
 
 /** % da meta de água (limitado a 100). */
 export const waterPercent = (ml: number, goalMl: number): number => percentOf(ml, goalMl);
-
-/* ───────────── Metas ───────────── */
-
-/** Uma meta vale no dia `day` se já existia e ainda não tinha sido arquivada. */
-export function isGoalActiveOn(goal: Goal, day: string): boolean {
-  if (goal.createdAt.slice(0, 10) > day) return false;
-  return goal.archivedAt === null || day < goal.archivedAt.slice(0, 10);
-}
-
-export interface GoalState {
-  goal: Goal;
-  done: boolean;
-  /** `auto-estudo` sem blocos no dia: some da lista e não conta. */
-  hidden: boolean;
-}
-
-export function goalStates(index: StatsIndex, day: string): GoalState[] {
-  const { goals, preferences } = index.data;
-  return goals
-    .filter((goal) => isGoalActiveOn(goal, day))
-    .sort((a, b) => a.order - b.order)
-    .map((goal) => {
-      if (goal.kind === 'auto-agua') {
-        return { goal, done: waterOn(index, day) >= preferences.waterGoalMl, hidden: false };
-      }
-      if (goal.kind === 'auto-estudo') {
-        const blocks = index.blocks.get(day) ?? [];
-        return {
-          goal,
-          done: blocks.length > 0 && blocks.every((b) => b.status === 'concluido'),
-          hidden: blocks.length === 0,
-        };
-      }
-      return { goal, done: index.logs.get(`${goal.id}:${day}`) === true, hidden: false };
-    });
-}
-
-export interface GoalsSummary {
-  visible: GoalState[];
-  done: number;
-  total: number;
-  percent: number;
-}
-
-export function goalsSummary(index: StatsIndex, day: string): GoalsSummary {
-  const visible = goalStates(index, day).filter((state) => !state.hidden);
-  const done = visible.filter((state) => state.done).length;
-  return { visible, done, total: visible.length, percent: percentOf(done, visible.length) };
-}
-
-/** O dia “fechou”: há metas visíveis e todas foram cumpridas. */
-export const isDayClosed = (summary: GoalsSummary): boolean =>
-  summary.total > 0 && summary.done === summary.total;
-
-export interface Streaks {
-  current: number;
-  best: number;
-}
-
-/**
- * Sequência de dias seguidos com todas as metas ativas cumpridas (cada dia usa só as metas que
- * existiam nele). A atual conta até hoje — ou até ontem, se hoje ainda não fechou. A melhor é o
- * maior trecho dentro de `MAX_STREAK_LOOKBACK_DAYS`.
- */
-export function computeStreaks(index: StatsIndex, today: string): Streaks {
-  const closed = Array.from({ length: MAX_STREAK_LOOKBACK_DAYS + 1 }, (_, back) =>
-    isDayClosed(goalsSummary(index, shiftDay(today, -back))),
-  ); // closed[0] = hoje, closed[1] = ontem…
-
-  let current = 0;
-  for (let back = closed[0] ? 0 : 1; back < closed.length && closed[back]; back += 1) current += 1;
-
-  let best = 0;
-  let run = 0;
-  for (let back = closed.length - 1; back >= 0; back -= 1) {
-    run = closed[back] ? run + 1 : 0;
-    best = Math.max(best, run);
-  }
-  return { current, best: Math.max(best, current) };
-}
 
 /* ───────────── Provas ───────────── */
 

@@ -1,21 +1,29 @@
 import { format } from 'date-fns';
 import { create } from 'zustand';
 import {
-  goalLogId,
+  habitLogId,
   isExam,
   type ActiveFocus,
   type DataSnapshot,
   type EventStatus,
   type FocusSession,
-  type Goal,
-  type GoalIcon,
-  type GoalLog,
+  type Habit,
+  type HabitLog,
   type Preferences,
   type StudyEvent,
   type Subject,
   type WaterLog,
 } from '@daily/shared';
 import { dayKey, toLocalIso } from '../dates';
+import {
+  applyHabitEdit,
+  canEditDay,
+  duplicateHabitDraft,
+  newHabit,
+  removeHabit,
+  type HabitDraft,
+  type HabitEdit,
+} from '../habits/edit';
 import {
   applySubjectDeletion,
   duplicateEventDraft,
@@ -28,8 +36,8 @@ export interface DataState {
   subjects: Subject[];
   events: StudyEvent[];
   preferences: Preferences;
-  goals: Goal[];
-  goalLogs: GoalLog[];
+  habits: Habit[];
+  habitLogs: HabitLog[];
   waterLogs: WaterLog[];
   focusSessions: FocusSession[];
   /** Sessão de foco em andamento (fora do snapshot/backup). */
@@ -55,13 +63,21 @@ export interface DataActions {
   /** Soma um copo (tamanho das preferências) ao dia de `now`. */
   addWater(now: Date): WaterLog | undefined;
   removeWater(id: string): void;
-  /** Marca/desmarca uma meta manual num dia (`yyyy-MM-dd`). */
-  setGoalDone(goalId: string, date: string, done: boolean): void;
-  createGoal(now: Date, draft: { title: string; icon: GoalIcon }): Goal | undefined;
-  updateGoal(id: string, patch: { title?: string; icon?: GoalIcon }): void;
-  /** Define a ordem das metas pela lista de ids. */
-  reorderGoals(ids: readonly string[]): void;
-  archiveGoal(id: string, now: Date): void;
+  createHabit(draft: HabitDraft, now: Date): Habit | undefined;
+  /** Edita o hábito; repetição, meta e horário viram uma nova regra a partir de hoje. */
+  updateHabit(id: string, edit: HabitEdit, now: Date): void;
+  duplicateHabit(id: string, now: Date): Habit | undefined;
+  archiveHabit(id: string, now: Date): void;
+  restoreHabit(id: string): void;
+  /** Remove o hábito e os registros dele (o “Desfazer” restaura tudo pelo snapshot). */
+  deleteHabit(id: string): void;
+  /** Define a ordem pelos ids. */
+  reorderHabits(ids: readonly string[]): void;
+  /**
+   * Registra o valor de um hábito manual num dia (check: 0 ou 1). Só dias passados ou hoje, nos
+   * últimos 366 dias. Devolve `false` quando o registro é bloqueado.
+   */
+  setHabitValue(id: string, date: string, value: number, now: Date): boolean;
   /** Idempotente pelo `id` (duas abas podem finalizar a mesma sessão). */
   addFocusSession(session: FocusSession): void;
   setFocusActive(active: ActiveFocus | null): void;
@@ -85,8 +101,8 @@ export function createDataStore(
       subjects: repo.subjects.list(),
       events: repo.events.list(),
       preferences: repo.preferences.get(),
-      goals: repo.goals.list(),
-      goalLogs: repo.goalLogs.list(),
+      habits: repo.habits.list(),
+      habitLogs: repo.habitLogs.list(),
       waterLogs: repo.waterLogs.list(),
       focusSessions: repo.focusSessions.list(),
       focusActive: repo.focusActive.get(),
@@ -167,24 +183,45 @@ export function createDataStore(
           }),
         ),
       removeWater: (id) => void run(() => repo.waterLogs.delete(id)),
-      setGoalDone: (goalId, date, done) =>
-        void run(() => repo.goalLogs.upsert({ id: goalLogId(goalId, date), goalId, date, done })),
-      createGoal: (now, draft) =>
+      createHabit: (draft, now) =>
         run(() =>
-          repo.goals.create({
-            title: draft.title,
-            icon: draft.icon,
-            kind: 'manual',
-            order: Math.max(-1, ...repo.goals.list().map((g) => g.order)) + 1,
-            createdAt: toLocalIso(now),
-            archivedAt: null,
-          }),
+          repo.habits.create(
+            newHabit(draft, now, Math.max(-1, ...repo.habits.list().map((h) => h.order)) + 1),
+          ),
         ),
-      updateGoal: (id, patch) => void run(() => repo.goals.update(id, patch)),
-      reorderGoals: (ids) =>
-        void run(() => ids.forEach((id, order) => repo.goals.update(id, { order }))),
-      archiveGoal: (id, now) =>
-        void run(() => repo.goals.update(id, { archivedAt: toLocalIso(now) })),
+      updateHabit: (id, edit, now) =>
+        void run(() => {
+          const habit = repo.habits.get(id);
+          if (habit) repo.habits.update(id, applyHabitEdit(habit, edit, dayKey(now)));
+        }),
+      duplicateHabit: (id, now) =>
+        run(() => {
+          const habit = repo.habits.get(id);
+          if (!habit) return undefined;
+          const order = Math.max(-1, ...repo.habits.list().map((h) => h.order)) + 1;
+          return repo.habits.create(
+            duplicateHabitDraft(habit, dayKey(now), toLocalIso(now), order),
+          );
+        }),
+      archiveHabit: (id, now) =>
+        void run(() => repo.habits.update(id, { archivedAt: toLocalIso(now) })),
+      restoreHabit: (id) => void run(() => repo.habits.update(id, { archivedAt: null })),
+      deleteHabit: (id) => void run(() => repo.replaceAll(removeHabit(repo.snapshot(), id))),
+      reorderHabits: (ids) =>
+        void run(() => ids.forEach((id, order) => repo.habits.update(id, { order }))),
+      setHabitValue: (id, date, value, now) =>
+        run(() => {
+          const habit = repo.habits.get(id);
+          if (!habit || !canEditDay(habit, date, dayKey(now))) return false;
+          repo.habitLogs.upsert({
+            id: habitLogId(id, date),
+            habitId: id,
+            date,
+            value: Math.max(0, value),
+            updatedAt: toLocalIso(now),
+          });
+          return true;
+        }) ?? false,
       addFocusSession: (session) => void run(() => repo.focusSessions.upsert(session)),
       setFocusActive: (active) => void run(() => repo.focusActive.set(active)),
       replaceAll: (snapshot) => void run(() => repo.replaceAll(snapshot)),

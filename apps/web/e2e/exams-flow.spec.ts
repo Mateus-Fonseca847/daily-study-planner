@@ -62,7 +62,7 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
 test('dado corrompido no armazenamento não quebra o app', async ({ page }) => {
   await page.addInitScript(() => {
     if (!sessionStorage.getItem('seeded')) {
-      localStorage.setItem('daily:v2', '{isto não é json');
+      localStorage.setItem('daily:v3', '{isto não é json');
       sessionStorage.setItem('seeded', '1');
     }
   });

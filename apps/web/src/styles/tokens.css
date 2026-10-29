@@ -102,6 +102,8 @@
   /* Mapa de calor das metas: opacidade do amarelo no nível mais baixo (3:1 contra o cartão). */
   /* Heatmap de hábitos (docs/design/design-system.md → “Heatmap de hábitos”) */
   --ds-heat-cell-max: 1.125rem;
+  --ds-heat-cell-min: 0.75rem;
+  --ds-heat-legend-size: 0.75rem;
   --ds-heat-gap: 0.1875rem;
   --ds-heat-radius: 0.1875rem;
   --ds-heat-label-w: 2rem;

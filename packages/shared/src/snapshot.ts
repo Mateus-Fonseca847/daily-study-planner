@@ -1,18 +1,19 @@
 import { z } from 'zod';
 import { isExam, studyEventSchema } from './event';
 import { focusSessionSchema } from './focus';
-import { defaultGoals, goalLogSchema, goalSchema, waterLogSchema } from './goals';
+import { habitLogSchema, habitSchema } from './habits';
 import { DEFAULT_PREFERENCES, preferencesSchema } from './preferences';
 import { subjectSchema } from './subject';
+import { waterLogSchema } from './water';
 
-/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 2. */
+/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 3. */
 export const dataSnapshotSchema = z
   .object({
     subjects: z.array(subjectSchema),
     events: z.array(studyEventSchema),
     preferences: preferencesSchema,
-    goals: z.array(goalSchema),
-    goalLogs: z.array(goalLogSchema),
+    habits: z.array(habitSchema),
+    habitLogs: z.array(habitLogSchema),
     waterLogs: z.array(waterLogSchema),
     focusSessions: z.array(focusSessionSchema),
   })
@@ -25,13 +26,13 @@ export const dataSnapshotSchema = z
     const eventIds = ids(snapshot.events);
     const examIds = new Set(snapshot.events.filter(isExam).map((e) => e.id));
     const blockIds = new Set(snapshot.events.filter((e) => e.type === 'estudo').map((e) => e.id));
-    const goalIds = ids(snapshot.goals);
+    const habitIds = ids(snapshot.habits);
 
     const collections: [string, readonly { id: string }[], Set<string>, string][] = [
       ['subjects', snapshot.subjects, subjectIds, 'matérias'],
       ['events', snapshot.events, eventIds, 'eventos'],
-      ['goals', snapshot.goals, goalIds, 'metas'],
-      ['goalLogs', snapshot.goalLogs, ids(snapshot.goalLogs), 'registros de meta'],
+      ['habits', snapshot.habits, habitIds, 'hábitos'],
+      ['habitLogs', snapshot.habitLogs, ids(snapshot.habitLogs), 'registros de hábito'],
       ['waterLogs', snapshot.waterLogs, ids(snapshot.waterLogs), 'registros de água'],
       ['focusSessions', snapshot.focusSessions, ids(snapshot.focusSessions), 'sessões de foco'],
     ];
@@ -51,9 +52,9 @@ export const dataSnapshotSchema = z
         ]);
       }
     });
-    snapshot.goalLogs.forEach((log, index) => {
-      if (!goalIds.has(log.goalId)) {
-        issue('O registro aponta para uma meta que não existe.', ['goalLogs', index, 'goalId']);
+    snapshot.habitLogs.forEach((log, index) => {
+      if (!habitIds.has(log.habitId)) {
+        issue('O registro aponta para um hábito que não existe.', ['habitLogs', index, 'habitId']);
       }
     });
     snapshot.focusSessions.forEach((session, index) => {
@@ -76,14 +77,14 @@ export const dataSnapshotSchema = z
 
 export type DataSnapshot = z.infer<typeof dataSnapshotSchema>;
 
-/** Estado do primeiro acesso: sem matérias nem eventos, com preferências e metas padrão. */
-export function createInitialSnapshot(createdAt: string): DataSnapshot {
+/** Estado do primeiro acesso: sem matérias, eventos nem hábitos, com as preferências padrão. */
+export function createInitialSnapshot(): DataSnapshot {
   return {
     subjects: [],
     events: [],
     preferences: { ...DEFAULT_PREFERENCES },
-    goals: defaultGoals(createdAt),
-    goalLogs: [],
+    habits: [],
+    habitLogs: [],
     waterLogs: [],
     focusSessions: [],
   };
