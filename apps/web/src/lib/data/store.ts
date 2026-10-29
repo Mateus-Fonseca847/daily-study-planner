@@ -1,17 +1,21 @@
+import { format } from 'date-fns';
 import { create } from 'zustand';
 import {
+  goalLogId,
   isExam,
   type ActiveFocus,
   type DataSnapshot,
   type EventStatus,
   type FocusSession,
   type Goal,
+  type GoalIcon,
   type GoalLog,
   type Preferences,
   type StudyEvent,
   type Subject,
   type WaterLog,
 } from '@daily/shared';
+import { dayKey, toLocalIso } from '../dates';
 import {
   applySubjectDeletion,
   duplicateEventDraft,
@@ -48,6 +52,16 @@ export interface DataActions {
   toggleContent(eventId: string, contentId: string): void;
   addContent(eventId: string, title: string): void;
   updatePreferences(patch: Partial<Preferences>): void;
+  /** Soma um copo (tamanho das preferências) ao dia de `now`. */
+  addWater(now: Date): WaterLog | undefined;
+  removeWater(id: string): void;
+  /** Marca/desmarca uma meta manual num dia (`yyyy-MM-dd`). */
+  setGoalDone(goalId: string, date: string, done: boolean): void;
+  createGoal(now: Date, draft: { title: string; icon: GoalIcon }): Goal | undefined;
+  updateGoal(id: string, patch: { title?: string; icon?: GoalIcon }): void;
+  /** Define a ordem das metas pela lista de ids. */
+  reorderGoals(ids: readonly string[]): void;
+  archiveGoal(id: string, now: Date): void;
   /** Idempotente pelo `id` (duas abas podem finalizar a mesma sessão). */
   addFocusSession(session: FocusSession): void;
   setFocusActive(active: ActiveFocus | null): void;
@@ -144,6 +158,33 @@ export function createDataStore(
           });
         }),
       updatePreferences: (patch) => void run(() => repo.preferences.update(patch)),
+      addWater: (now) =>
+        run(() =>
+          repo.waterLogs.create({
+            date: dayKey(now),
+            ml: repo.preferences.get().cupMl,
+            time: format(now, 'HH:mm'),
+          }),
+        ),
+      removeWater: (id) => void run(() => repo.waterLogs.delete(id)),
+      setGoalDone: (goalId, date, done) =>
+        void run(() => repo.goalLogs.upsert({ id: goalLogId(goalId, date), goalId, date, done })),
+      createGoal: (now, draft) =>
+        run(() =>
+          repo.goals.create({
+            title: draft.title,
+            icon: draft.icon,
+            kind: 'manual',
+            order: Math.max(-1, ...repo.goals.list().map((g) => g.order)) + 1,
+            createdAt: toLocalIso(now),
+            archivedAt: null,
+          }),
+        ),
+      updateGoal: (id, patch) => void run(() => repo.goals.update(id, patch)),
+      reorderGoals: (ids) =>
+        void run(() => ids.forEach((id, order) => repo.goals.update(id, { order }))),
+      archiveGoal: (id, now) =>
+        void run(() => repo.goals.update(id, { archivedAt: toLocalIso(now) })),
       addFocusSession: (session) => void run(() => repo.focusSessions.upsert(session)),
       setFocusActive: (active) => void run(() => repo.focusActive.set(active)),
       replaceAll: (snapshot) => void run(() => repo.replaceAll(snapshot)),
