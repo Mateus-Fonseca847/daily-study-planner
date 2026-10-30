@@ -1,6 +1,6 @@
 # Relatório 07 — PWA, deploy e material de divulgação
 
-> Em andamento: este relatório é completado a cada fase. Estado atual: **Fase A concluída (v0.7.0)**; Fases B e C pendentes.
+> Em andamento: este relatório é completado a cada fase. Estado atual: **Fase A concluída (v0.7.0)** e **Fase B concluída**; Fase C aguarda a URL de produção.
 
 ## Fase A — PWA e persistência (v0.7.0)
 
@@ -43,3 +43,28 @@ O Lighthouse 13 **não tem mais a categoria PWA**; a instalabilidade foi verific
 
 - Os alertas `target-size` e `label-content-name-mismatch` do Lighthouse.
 - Teste manual da instalação em janela própria (Chrome/Edge) e do toast de atualização com uma versão nova real; os testes automáticos cobrem a regra e o registro, não o ciclo "publicar outra versão e atualizar".
+
+## Fase B — Configuração de deploy (Vercel)
+
+### O que foi feito
+
+- **`apps/web/vercel.json`:** rewrite de qualquer rota sem extensão para `/index.html` (arquivos estáticos, `/assets` e `/icons` não são capturados; `/assets/x.js` inexistente dá 404); `Cache-Control: public, max-age=31536000, immutable` em `/assets/*`; `max-age=0, must-revalidate` em `/sw.js`, `/index.html`, `/manifest.webmanifest` e nas rotas do app; `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva (tela cheia e wake lock continuam permitidos), `X-Frame-Options: DENY` e CSP.
+- **CSP mínima, sem `unsafe-inline` nem `unsafe-eval`:** `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`. A primeira versão do teste achou uma violação real: o zod 4 chama `Function('')` na criação dos schemas. Correção: `z.config({ jitless: true })` em `src/lib/zod-config.ts`, importado antes de tudo em `main.tsx`. Estilos por atributo (React) não precisaram de `unsafe-inline`.
+- **Validação com as regras reais:** `scripts/serve-dist.mjs` serve o build aplicando `vercel.json` (aproximação do roteador da Vercel); o projeto "pwa" do Playwright passou a usá-lo. `e2e/pwa/headers.spec.ts`: cabeçalhos de cache e segurança, rewrites e 404 de asset inexistente; percorre as 9 rotas e o Modo Foco (iniciar, tela cheia, wake lock, Web Audio) sem nenhum `securitypolicyviolation` nem erro de console, com o service worker registrado.
+- **Build sem variáveis de ambiente:** `pnpm build` (raiz) e `pnpm --filter @daily/web build` produzem `apps/web/dist` (o segundo foi rodado com ambiente limpo). O nome do filtro é `@daily/web`, não `web`.
+- **`docs/deploy.md`:** passo a passo (importar o repositório, Root Directory `apps/web`, _Include source files outside of the Root Directory_ ativado, framework Vite, build `pnpm build`, saída `dist`), prévias, domínio próprio, o risco "main = produção" e a alternativa com branches e prévias. O documento avisa que a interface da Vercel pode ter mudado: não consegui conferir a documentação online nesta sessão.
+
+### Limites
+
+- `serve-dist.mjs` aproxima o roteador da Vercel; o comportamento real só se confirma depois do primeiro deploy (Fase C).
+- O deploy e a ligação do repositório à Vercel são feitos pelo autor na interface da Vercel.
+
+### Resultado dos comandos (Fase B)
+
+| Comando          | Resultado                                          |
+| ---------------- | -------------------------------------------------- |
+| `pnpm lint`      | sem erros                                          |
+| `pnpm typecheck` | sem erros                                          |
+| `pnpm test`      | 261 testes em `apps/web` + 11 em `packages/shared` |
+| `pnpm build`     | ok                                                 |
+| `pnpm e2e`       | 48 testes passando (projetos "app" e "pwa")        |
