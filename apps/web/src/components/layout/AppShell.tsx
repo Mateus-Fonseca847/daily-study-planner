@@ -7,6 +7,7 @@ import { appNow } from '../../lib/fixture';
 import { useHabitModel } from '../../features/habits/useHabitModel';
 import { pendingToday } from '../../lib/habits';
 import { usePersistOnFirstData, useUpdateOffer } from '../../lib/pwa/use-pwa';
+import { ConflictDialog } from '../../features/account/ConflictDialog';
 import { ModalHost } from '../forms/ModalHost';
 import { ToastRegion } from '../ui/ToastRegion';
 import { FocusLockGuard, FocusRuntime } from './FocusRuntime';
@@ -41,6 +42,7 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+      <ConflictDialog />
       <ModalHost />
       <ToastRegion />
     </ShellContext.Provider>

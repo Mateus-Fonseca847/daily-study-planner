@@ -1,6 +1,7 @@
 import { Bell, Focus, Search } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/cn';
+import { AccountMenu } from '../../features/account/AccountMenu';
 import { Button } from '../ui/Button';
 import { OfflineBadge } from './OfflineBadge';
 import { SubjectSelect } from './SubjectSelect';
@@ -33,6 +34,7 @@ export function Topbar({ subjectId, onSubjectChange }: TopbarProps) {
           Modo Foco
           <Focus aria-hidden strokeWidth={1.5} className="size-icon" />
         </Button>
+        <AccountMenu />
       </div>
     </header>
   );
