@@ -159,6 +159,18 @@ Tudo em `apps/web/src/lib/stats` é função pura sobre o snapshot, com o “hoj
 - **Hábitos**: ver “Derivados dos hábitos” (sequência, taxa e consistência); as Estatísticas só consomem `lib/habits`.
 - **Períodos** (`analysis.ts`): semana = 7, mês = 30, 90 dias = 90 (em barras semanais); a variação compara com o período anterior de mesmo tamanho.
 
+### Sincronização com a nuvem (opcional, Supabase)
+
+Local-first: o `localStorage` continua sendo a fonte usada pela UI; a nuvem é uma cópia por usuário. Código em `apps/web/src/lib/sync` e `lib/cloud`.
+
+- **Tabela** `public.user_data(user_id pk → auth.users, data jsonb, version int, revision bigint, created_at, updated_at)`. RLS: `select/insert/update` só da própria linha, sem `delete` (a exclusão é a RPC `delete_my_account()`, que apaga o usuário e, em cascata, a linha). `revision` é incrementada **no servidor** por trigger; `data` tem checks de formato (objeto JSON) e tamanho (≤ 2 MB).
+- **Concorrência otimista:** o envio é `UPDATE … WHERE revision = <última conhecida>`; zero linhas = outro dispositivo gravou antes.
+- **Estado local de sync** (`daily:sync:<userId>` = `{ revision, hash }`): o último ponto em que dispositivo e nuvem eram iguais. `reconcile()` (puro, testado) decide: `push` (só o local mudou), `pull` (só a nuvem mudou ou local virgem no primeiro login), `adopt` (iguais), `conflict` (os dois mudaram — o usuário escolhe; antes de substituir o local, uma cópia vai para `daily:v3:pre-sync`).
+- Comparação por SHA-256 do JSON **canônico** (chaves ordenadas), porque o `jsonb` do Postgres reordena chaves.
+- **Segurança de formato:** a nuvem com `version` maior que `DATA_VERSION`, ou com dados que não passam no schema, nunca é sobrescrita (o app pede atualização/mostra erro).
+- A sessão de foco ativa (`daily:v2:focus`) **não** é sincronizada.
+- Mudou o formato salvo? Além de `DATA_VERSION` e da migração, lembre que dispositivos antigos passam a ver a nuvem como "mais nova".
+
 ### Sincronização entre abas
 
 O evento `storage` (disparado só nas **outras** abas) chama `reload()` no store. **Limitação:** última escrita vence; não há mesclagem de edições simultâneas. Duas abas que finalizam a mesma sessão de foco gravam um único registro (`upsert` pelo `id`).

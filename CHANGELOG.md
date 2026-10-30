@@ -4,6 +4,16 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado
+
+- **Conta opcional com Google e sincronização na nuvem (Supabase):** tela `/entrar` (primeira visita) com "Entrar com Google" ou "Continuar sem conta" (modo visitante, sem mudar nada do uso atual), menu da conta na topbar, seção "Conta e sincronização" em Preferências (sincronizar agora, sair, excluir conta) e página pública `/privacidade`.
+- Camada local-first em `lib/sync`: decisão pura de reconciliação, concorrência otimista por `revision`, diálogo de conflito (nuvem × dispositivo) com cópia de segurança, reenvio ao voltar a conexão. Ao sair da conta os dados do dispositivo são removidos.
+- Banco: tabela `user_data` com RLS e RPC `delete_my_account()`.
+
+### Alterado
+
+- CSP: `connect-src` passa a aceitar o domínio do Supabase. Sem `VITE_SUPABASE_*` o app segue 100% local.
+
 ## [1.0.1] — 2026-10-30
 
 Só o conteúdo do repositório mudou; o app publicado é o mesmo da 1.0.0.
