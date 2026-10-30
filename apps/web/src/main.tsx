@@ -1,3 +1,4 @@
+import './lib/zod-config'; // antes de qualquer schema ser criado
 import '@fontsource-variable/inter';
 import './styles/index.css';
 import { StrictMode } from 'react';

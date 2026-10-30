@@ -1,7 +1,10 @@
 import { defineConfig } from '@playwright/test';
 
 const PORT = 5198;
-/** O projeto “pwa” roda contra `vite build` + `vite preview` (o service worker não existe no dev). */
+/**
+ * O projeto “pwa” roda contra `vite build` servido com as regras de `vercel.json` (rewrites e
+ * cabeçalhos, inclusive a CSP); o service worker não existe no dev.
+ */
 const PWA_PORT = 5199;
 
 const shared = {
@@ -36,7 +39,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: `pnpm exec vite build --outDir dist-pwa && pnpm exec vite preview --outDir dist-pwa --port ${PWA_PORT} --strictPort`,
+      command: `pnpm exec vite build --outDir dist-pwa && node scripts/serve-dist.mjs dist-pwa ${PWA_PORT}`,
       url: `http://localhost:${PWA_PORT}`,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
