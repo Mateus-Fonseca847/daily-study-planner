@@ -4,16 +4,35 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+## [1.0.1] — 2026-10-30
+
+Só o conteúdo do repositório mudou; o app publicado é o mesmo da 1.0.0.
+
+### Removido (v1.0.1)
+
+- Do repositório: os prompts e relatórios de processo, o material de divulgação e as capturas de tela e de comparação (ficam só no disco do autor, fora do Git), e as imagens de referência de terceiros. O histórico do Git continua guardando tudo.
+- Os scripts de captura (`visual:capture`, `visual:app`, `visual:focus`, `visual:stats`, `visual:habits`, `visual:views`, `visual:layout` e `media:capture`), que só serviam a esse material.
+
+### Adicionado (v1.0.1)
+
+- `docs/images/`: as nove imagens usadas no README, em WebP (1600 px), no lugar de ~29 MB de capturas.
+- `pnpm check:links`: verifica os links relativos dos arquivos `.md` versionados (o destino precisa estar no Git).
+
+### Alterado (v1.0.1)
+
+- README, CLAUDE.md, design system, modelo de dados e arquitetura sem links para arquivos removidos; a seção sobre desenvolvimento assistido por IA descreve o processo sem apontar para os prompts.
+- A auditoria de contraste (`contrast-audit.mjs`) grava em `apps/web/.reports/` (ignorada pelo Git).
+- Rótulos "Prompt NN" do CHANGELOG viraram as versões correspondentes.
+
 ## [1.0.0] — 2026-10-30
 
-Primeira versão publicada: [dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Reúne tudo o que está abaixo (v0.5.1 a v0.7.0 e os prompts 04 a 06) mais o material de divulgação.
+Primeira versão publicada: [dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Reúne tudo o que está abaixo (v0.4.0 a v0.7.0) mais o material de divulgação.
 
 ### Adicionado (v1.0.0, deploy, divulgação e acabamento)
 
 - **Deploy na Vercel** com `apps/web/vercel.json` (rewrite SPA, cache imutável em `/assets`, revalidação do service worker e do `index.html`, cabeçalhos de segurança e CSP sem `unsafe-inline` nem `unsafe-eval`) e o guia `docs/deploy.md`. O zod roda sem JIT para não exigir `unsafe-eval`.
 - `pnpm verify:prod`: verifica o app publicado (rotas, rota direta recarregada, manifest, service worker, offline, imagem Open Graph e console sem erros).
-- `pnpm media:capture`: telas (1920×1080), imagens sociais (GitHub 1280×640, Open Graph 1200×630, posts 1080×1350 e 1200×627) e três vídeos curtos (WebM) em `docs/media/`, a partir das fixtures de desenvolvimento; a imagem da Semana vira `og.png`.
-- README final (imagem de topo, badges, demo, telas, instalação como app, dados e privacidade), `docs/architecture.md` (diagrama Mermaid e decisões), `CONTRIBUTING.md`, modelos de issue, `docs/portfolio/` (post do LinkedIn, currículo e checklist de publicação), milestones e issues no GitHub.
+- README final (imagem de topo, badges, demo, telas, instalação como app, dados e privacidade), `docs/architecture.md` (diagrama Mermaid e decisões), `CONTRIBUTING.md`, modelos de issue, material de divulgação (post do LinkedIn, currículo e checklist de publicação), milestones e issues no GitHub.
 
 ### Alterado (v1.0.0)
 
@@ -36,58 +55,58 @@ Primeira versão publicada: [dailystudyplanner.vercel.app](https://dailystudypla
 
 - Em `/habitos` o **documento** rolava (1460 px numa janela de 1080) e aparecia uma faixa do fundo do body embaixo, como se o conteúdo fosse cortado. Causa: a tabela `sr-only` do heatmap (e a de `stats/charts.tsx`) é `position: absolute` sem ancestral posicionado e `<table>` ignora `height` e `overflow`, então estendia a rolagem da viewport. As tabelas agora ficam dentro de um `<div className="sr-only">` que recorta de verdade.
 - Altura numa única camada: `--ds-viewport-h` (`100vh`, com `100dvh` onde houver suporte) em html, body e #root, com `overflow: hidden`, `overscroll-behavior: none` e o mesmo fundo do app. O AppShell é `relative overflow-hidden`, a sidebar vai até o fim da janela (os menus rolam por dentro em janelas baixas, com "Configurações" ancorada ao fundo) e só a área de conteúdo rola.
-- Teste e2e `layout.spec.ts` (todas as rotas, de 1920×1080 a 1280×500 e equivalentes de zoom 67 % e 150 %), `pnpm visual:layout` e capturas antes e depois em `docs/design/screenshots/layout/`.
+- Teste e2e `layout.spec.ts` (todas as rotas, de 1920×1080 a 1280×500 e equivalentes de zoom 67 % e 150 %) e capturas antes e depois.
 
-### Adicionado (Prompt 06 — visões do calendário)
+### Adicionado (v0.6.0 — visões do calendário)
 
 - O calendário tem **Dia | Semana | Mês | Ano**. A visão e a data ficam na URL (`/calendario?visao=semana&data=2026-10-29`; valores inválidos caem em Mês + hoje) e o botão voltar do navegador as respeita. O botão "Hoje" saiu do segmentado e virou uma pílula ao lado das setas (`‹ ›  Hoje  título do período`); as setas andam por dia, semana, mês ou ano.
 - **Grade de horas** (`TimeGrid`) para Dia e Semana: 06h–24h expandida quando há eventos fora dela, blocos posicionados por **porcentagem** do intervalo, duração visual mínima de 30 min, corte na meia-noite, linha de "agora" e rolagem inicial na hora atual (ou 07h). Eventos simultâneos ficam lado a lado (`layoutSobreposicoes`). Blocos mostram 3, 2 ou 1 linha conforme a altura, com tooltip. Clicar num espaço vazio abre o formulário já com data e horário (arredondado para 30 min).
 - **Semana:** faixa "Hábitos" fixa com pílulas dos hábitos sem horário (marca hábito manual de hoje e dos dias passados; quantidade mostra valor/meta; automáticos são só leitura) e blocos tracejados para hábitos com horário. **Dia ("Hoje"):** grade larga e painel com "Hábitos do dia", "Próxima prova" e "Tarefas do dia". **Ano:** 12 mini-meses com densidade de eventos (0, 1, 2, 3+), marcador de prova, hoje com contorno e navegação por teclado; o dia abre a visão Dia e o nome do mês, a visão Mês.
 - Atalhos `←` `→` (período), `T` (hoje) e `D` `S` `M` `A` (visão), desativados em campos de texto, com modal aberto e com o app travado; `aria-keyshortcuts` e dica no tooltip.
-- Fixture `?fixture=views`, `pnpm visual:views`, tokens e a seção "Visões do calendário" no design system.
+- Fixture `?fixture=views`, tokens e a seção "Visões do calendário" no design system.
 
-### Alterado (Prompt 06)
+### Alterado (v0.6.0)
 
 - A auditoria de contraste passou a cobrir o calendário; corrigidos o texto "valor/meta" das pílulas e o nível 2 da densidade do Ano.
 
-### Adicionado (Prompt 05 — hábitos recorrentes)
+### Adicionado (v0.5.0 — hábitos recorrentes)
 
 - Página `/habitos` e item "Hábitos" na sidebar (contador de pendentes hoje; oculto em zero, como o de Tarefas): um cartão por hábito, com ícone e cor, resumo da repetição, sequência, melhor sequência, taxa de 90 dias, controle de hoje, menu (Editar, Duplicar, Arquivar, Excluir com "Desfazer") e o **heatmap de contribuições** (semanas em colunas, rótulos de mês e dia, legenda, hoje com contorno, teclado e `aria-label` por dia, tooltip, tabela oculta por mês, rolagem horizontal abaixo de 1100 px).
 - Hábitos com repetição por dias da semana ou a cada N dias, horário opcional, tipo check ou quantidade, fontes automáticas (água, foco, blocos de estudo) e **regras versionadas**: editar repetição, meta ou horário vale a partir de hoje e o histórico não muda.
 - Modal Novo/Editar hábito (validação em pt-BR), popover do dia (corrige dias passados de hábitos manuais, até 366 dias), 4 sugestões no estado vazio e seção "Arquivados".
-- `lib/habits` (agendamento, valor, estado e nível do dia, sequências, taxa, matriz do heatmap e agregados) e `lib/habits/repeat.ts` (repetição reaproveitável), com testes; fixture `?fixture=habits`, `pnpm visual:habits` e seção "Heatmap de hábitos" no design system.
+- `lib/habits` (agendamento, valor, estado e nível do dia, sequências, taxa, matriz do heatmap e agregados) e `lib/habits/repeat.ts` (repetição reaproveitável), com testes; fixture `?fixture=habits` e seção "Heatmap de hábitos" no design system.
 - Formato de dados **v3** (`daily:v3`, backup do v2 em `daily:v2:pre-v3`); importação de arquivos v1, v2 e v3.
 
-### Alterado (Prompt 05)
+### Alterado (v0.5.0)
 
 - As **metas** viraram hábitos (migração automática, sem perda de registros). Estatísticas: "Metas do dia" → **Hábitos de hoje** (o lápis leva a `/habitos`), "Metas" nas Análises → **Consistência** (heatmap das últimas 52 semanas, sequência geral, melhor e taxas de 30 e 90 dias) e a pílula de sequência usa a sequência geral.
 - `/foco`: a fração dos milésimos fica ao lado dos dígitos em posição absoluta (os dígitos ficam centralizados com as pílulas); o botão "Modo Foco" da topbar ganha estado ativo em `/foco`.
 
-### Removido (Prompt 05)
+### Removido (v0.5.0)
 
 - Cartão, modal e funções de Metas (`goalStates`, `computeStreaks`…), o mapa de calor antigo e o token `--ds-heat-min`; os schemas de metas ficam só em `legacy-goals.ts` para migrar e importar arquivos v2.
 
-### Alterado (04.1)
+### Alterado (v0.4.1)
 
 - `/foco` redesenhado **sem o anel**: dígitos grandes e pesados (editáveis quando parado), fração de milésimos em cinza no baseline só enquanto roda (com movimento reduzido, os dígitos atualizam uma vez por segundo), botões em pílula por estado e, à esquerda, o painel **Dias de mais foco** (abaixo de 1100 px ele desce). Com a trava, só os dígitos e "Segurar para destravar" (agora com um anel de progresso em volta do cadeado).
 - Concluído: "Concluído · 25 min", "Nova sessão" e "Ver estatísticas".
 - Estatísticas: a seção **Análises** passa a ter 5 cartões (a Água ficou só em "Hoje"); "Metas" ocupa a última linha inteira.
 - Contraste AA nos textos do painel do foco; o nível mais baixo do mapa de calor ficou mais visível (`--ds-heat-min`); o nome da matéria no cartão "Preparação" quebra em até 2 linhas e mostra o nome completo no `title`.
 
-### Adicionado (04.1)
+### Adicionado (v0.4.1)
 
-- `topFocusDays` e formatadores do painel e da fração em `lib/focus`, com testes; `pnpm visual:focus` para o novo layout (fixture `focus`) e `contrast-audit.mjs`.
+- `topFocusDays` e formatadores do painel e da fração em `lib/focus`, com testes; `contrast-audit.mjs`.
 
-### Removido (04.1)
+### Removido (v0.4.1)
 
 - Anel do cronômetro (`TimerRing`), `fracaoRestante`, tokens `--ds-timer-*` e `--ds-color-timer-*`, e `waterAnalysis` (média, dias com meta batida e mini barras de 14 dias), usados só por esses itens. Os dados de água continuam registrados e exportados.
 
-### Adicionado (Prompt 04 — fase B: Estatísticas)
+### Adicionado (v0.4.0 — fase B: Estatísticas)
 
-- Página `/estatisticas` seguindo `docs/design/reference/stats-dashboard.png`: saudação com o nome, seção **Hoje** (horas de estudo da semana, preparação para a próxima prova, sequência, água com onda animada, metas do dia e agenda de hoje) e seção **Análises** (Semana | Mês | 90 dias) com seis cartões em SVG próprio.
+- Página `/estatisticas` inspirada num mockup de terceiros: saudação com o nome, seção **Hoje** (horas de estudo da semana, preparação para a próxima prova, sequência, água com onda animada, metas do dia e agenda de hoje) e seção **Análises** (Semana | Mês | 90 dias) com seis cartões em SVG próprio.
 - Ações de dados: água (adicionar copo com "Desfazer"), metas (marcar, criar, renomear, reordenar, arquivar) e preferências de nome, meta de água e copo.
 - Funções puras de estatística em `lib/stats` (preparação, horas, foco, água, metas, sequência atual e melhor, variação entre períodos) com testes.
-- Fixtures de desenvolvimento `?fixture=stats` e `?fixture=focus`; testes e2e de estatísticas; `pnpm visual:stats`.
+- Fixtures de desenvolvimento `?fixture=stats` e `?fixture=focus`; testes e2e de estatísticas.
 
 ### Alterado (03.1 — Modo Foco minimalista)
 
@@ -100,7 +119,7 @@ Primeira versão publicada: [dailystudyplanner.vercel.app](https://dailystudypla
 
 - Botões −5/+5, atalhos 15–90, alça e arrastar do anel, seletor "Estudando" e "Marcar bloco como concluído" (os campos de vínculo continuam no modelo), textos auxiliares, o campo "duração padrão" em Preferências e o botão "Voltar à tela cheia" da tela travada.
 
-### Adicionado (Prompt 03 — fase A: Modo Foco)
+### Adicionado (v0.3.0 — fase A: Modo Foco)
 
 - **Modo Foco** (`/foco`): cronômetro circular (1–180 min) com anel arrastável (`role="slider"`), teclado, botões ±5 e atalhos; tempo restante por timestamps; pausar/retomar/reiniciar/encerrar; vínculo opcional com matéria, prova ou bloco de hoje (com "Marcar bloco como concluído"); som de fim (Web Audio), título da aba e resumo.
 - **Travar tela:** esconde a navegação, bloqueia rotas (`useBlocker`), pede tela cheia, mantém a tela ligada (Wake Lock), avisa antes de recarregar e destrava segurando 3 s. Esc nunca destrava; destravar não encerra a sessão.
@@ -115,7 +134,7 @@ Primeira versão publicada: [dailystudyplanner.vercel.app](https://dailystudypla
 - O roteador passou a ser de dados (`createBrowserRouter`), exigido pelo bloqueador de navegação.
 - A chave do `localStorage` passou de `daily:v1` para `daily:v2`.
 
-### Adicionado (Prompt 02 — provas e persistência)
+### Adicionado (v0.2.0 — provas e persistência)
 
 - Dados persistidos no navegador (`localStorage`, chave `daily:v1`) atrás de uma interface
   `Repository`, com validação zod, migração por versão, backup automático e recuperação de dado

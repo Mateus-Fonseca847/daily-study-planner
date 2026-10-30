@@ -36,12 +36,9 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm e2e          # Playwright (1ª vez: pnpm --filter @daily/web exec playwright install chromium)
-pnpm visual:capture  # screenshots + comparação com a referência em docs/design/screenshots/
-pnpm visual:stats    # capturas da página de Estatísticas (docs/design/screenshots/stats/)
-pnpm visual:habits   # capturas de /habitos, modal, popover e Estatísticas (docs/design/screenshots/habits/)
-pnpm visual:views    # capturas das visões do calendário (docs/design/screenshots/views/)
-pnpm visual:layout   # capturas de todas as rotas em 4 alturas (docs/design/screenshots/layout/)
 pnpm icons           # regenera os ícones do PWA (apps/web/public/icons/)
+pnpm verify:prod     # verifica o app publicado (rotas, manifest, service worker, offline)
+pnpm check:links     # confere os links relativos dos .md versionados
 pnpm format       # prettier --write
 ```
 
@@ -50,6 +47,8 @@ pnpm format       # prettier --write
 A cada prompt de trabalho, salve o prompt em `docs/prompts/NN-prompt.md` e gere o relatório
 `docs/prompts/NN-report.md` (o que foi feito, decisões, valores estimados, diferenças restantes,
 como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é sequencial (01, 02…).
+A pasta `docs/prompts/` (e `docs/portfolio/`, `docs/media/`) **não é versionada**: fica só no disco,
+listada no `.gitignore`, porque é material de processo e de divulgação, não do produto.
 
 ## Dados
 
@@ -64,9 +63,9 @@ como rodar, resultado de lint/typecheck/test/build e pendências). `NN` é seque
 
 ## Fixture visual
 
-`/calendario?fixture=reference` (só em `pnpm dev`) carrega novembro/2024 com densidade da referência e data fixa, em memória (não toca nos dados reais); é usada por `visual:capture` e pelo e2e de fumaça.
+`/calendario?fixture=reference` (só em `pnpm dev`) carrega novembro/2024 com densidade da referência e data fixa, em memória (não toca nos dados reais); é usada pelo e2e de fumaça.
 
 ## Referências
 
-- Design: `docs/design/design-system.md` (fonte de verdade) e `docs/design/reference/calendar.png`
+- Design: `docs/design/design-system.md` (fonte de verdade). As imagens de referência (mockups de terceiros) não fazem parte do repositório.
 - Notas de ambiente: o TypeScript está fixado em 5.9 porque o typescript-eslint ainda não suporta o TS 7.

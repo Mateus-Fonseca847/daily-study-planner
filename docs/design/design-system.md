@@ -1,12 +1,12 @@
 # Daily — Design System (v0.9)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
-Referência: `docs/design/reference/calendar.png` (808×609 px, mockup com moldura de dispositivo).
+Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
 
 ## Como a referência foi medida
 
 - A tela útil da referência vai de x≈23 a x≈790 (**767 px**) e de y≈22 a ≈597. Ela equivale a **1440 px** de largura, logo **escala ≈ 1,877** (referência → app). A altura equivalente seria ~1080 px; o app-alvo tem 900 px, então **alturas** de linhas do grid e dos chips são comprimidas (ver “Decisões de altura”).
-- Cores foram amostradas com PIL (pixels da imagem); dimensões, por medição de linhas/bordas e por comparação lado a lado gerada por `pnpm visual:capture` (`docs/design/screenshots/compare/`).
+- Cores foram amostradas com PIL (pixels da imagem); dimensões, por medição de linhas/bordas e por comparação lado a lado com capturas do app (material de trabalho, fora do repositório).
 - Legenda: **ajustado** = revisado e comparado com a referência (v0.2); **estimado** = valor da v0.1 não contradito pela comparação.
 
 Tema: **somente escuro** (a referência não tem tema claro).
@@ -115,7 +115,7 @@ Eventos: prova, estudo, entrega, revisão, especial. “Matéria” substitui �
 - Chips ~44 px em vez de ~56 px (ver acima); chips da referência aparecem “esmaecidos” em parte dos dias — aqui só os dias de outros meses são esmaecidos.
 - O seletor de matéria mantém a seta (é um `<select>` funcional).
 
-## 7. Componentes do Prompt 02 (formulários, menus, avisos e estados)
+## 7. Componentes da v0.2 (formulários, menus, avisos e estados)
 
 Todos usam apenas utilitários derivados de tokens; nenhum valor visual literal.
 
@@ -189,7 +189,7 @@ O estado nunca depende só da cor/opacidade: o status aparece por extenso no pop
 
 Paleta fixa de 8 cores (`--ds-color-subject-vermelho … rosa`); aparece como ponto de `--ds-dot` (10 px) nas listas e como seletor de `--ds-swatch` (28 px) no formulário (`role="radiogroup"`, cada cor com `aria-label` e `aria-checked`).
 
-### Tokens adicionados no Prompt 02 e 02.1
+### Tokens adicionados na v0.2 (0.2.0 e 0.2.1)
 
 | Token                     | Valor                      | Uso                                      |
 | ------------------------- | -------------------------- | ---------------------------------------- |
@@ -216,11 +216,11 @@ Com `min-height: 1000px` (`@media` em `tokens.css`): `--ds-chip-pad-y` sobe de 3
 
 Regra: o chip só cresce até o ponto em que **2 chips + “+N mais” ainda cabem numa linha de mês de 6 semanas** (a pior hipótese em 1080 px). Em meses de 5 semanas sobra ~30 px abaixo dos chips; aceitável, e o grid continua ocupando toda a altura.
 
-Capturas: `docs/design/screenshots/app/*-1440x900.png` e `*-1920x1080.png` (`pnpm visual:app`).
+Capturas das telas: veja o [README](../../README.md).
 
 ## 9. Dashboard (Estatísticas)
 
-Fonte: `docs/design/reference/stats-dashboard.png` (1187×896; a página de **Estatísticas**, não o Modo Foco). Ignoramos a moldura do aparelho, o fundo texturizado, a barra de navegação, a marca, os logotipos, os avatares e os textos. **Todos os valores abaixo são estimados** (amostras de pixel da imagem e medição de bordas; escala ≈ 1,12 da imagem para o app, onde o conteúdo tem no máximo 72 rem).
+Fonte: mockup de terceiros de um painel de estatísticas, não incluído no repositório (1187×896; a página de **Estatísticas**, não o Modo Foco). Ignoramos a moldura do aparelho, o fundo texturizado, a barra de navegação, a marca, os logotipos, os avatares e os textos. **Todos os valores abaixo são estimados** (amostras de pixel da imagem e medição de bordas; escala ≈ 1,12 da imagem para o app, onde o conteúdo tem no máximo 72 rem).
 
 ### Adaptações obrigatórias
 
@@ -284,7 +284,7 @@ Alturas: linha 1 ≈ 288 px na imagem (≈ 20 rem no app); linha 2 ≈ 230 px (�
 - **Preparação (v0.7):** o nome da matéria quebra em até 2 linhas (reticências depois) e o nome completo vai no `title`; o contador desce para a linha de baixo quando não cabe ao lado.
 - **Contraste (v0.7, `node apps/web/scripts/contrast-audit.mjs`):** texto medido contra o fundo renderizado (WCAG AA). Estatísticas: menor razão 4,71:1 (127 textos, nenhum abaixo de 4,5:1). Mapa de calor: nível mais baixo de 0,2 → `--ds-heat-min` = 0,4 de opacidade, o que sobe o contraste não textual contra o cartão de ≈ 1,76:1 para ≈ 3,2:1. As barras “planejado” (branco a 16 %) são decorativas: o valor também está em texto e na tabela oculta.
 - **Diferenças restantes em relação à referência:** a referência não tem a coluna de origem das metas automáticas; os cartões flutuantes da agenda não têm avatares (não usamos imagens da referência); o fundo texturizado da moldura não é reproduzido.
-- **Capturas:** `pnpm visual:stats` → `docs/design/screenshots/stats/` (página inteira e primeira dobra em 1920×1080, 1440×900 e 1280×720; lado a lado com a referência por região em 1920 e 1440).
+- **Capturas:** veja a tela de Estatísticas no [README](../../README.md).
 
 ## 10. Cronômetro do Modo Foco
 
@@ -376,7 +376,7 @@ Composição inspirada no gráfico de contribuições do GitHub (só a estrutura
 
 - **Componente:** `features/habits/HeatGrid.tsx` (grade genérica) com `HabitHeatmap` (um hábito) e `AggregateHeatmap` (consistência na cor do Daily, 52 semanas). `role="grid"` com `role="row"` por dia da semana (7 linhas), foco móvel (← → andam uma semana, ↑ ↓ um dia, Enter abre o dia), tooltip no hover e no foco, resumo mensal em tabela `sr-only`.
 - **Largura:** as colunas usam `minmax(--ds-heat-cell-min, 1fr)` e o contêiner tem `max-width` = rótulos + semanas × (`--ds-heat-cell-max` + vão); abaixo disso a grade rola na horizontal, começando na semana mais recente.
-- **Contraste (`node apps/web/scripts/contrast-audit.mjs habits`):** 254 textos medidos em `/estatisticas`, `/foco` e `/habitos` (rótulos de mês e dia, legenda, controles); menor razão 4,71:1, nenhum abaixo de 4,5:1 (`docs/design/screenshots/stats/contrast-habits.json`). As células são gráficos: o nível 0 (`heat-0`, branco a 12 %) é decorativo e a informação nunca depende só da cor (cada dia tem `aria-label`, tooltip e a tabela oculta).
+- **Contraste (`node apps/web/scripts/contrast-audit.mjs habits`):** 254 textos medidos em `/estatisticas`, `/foco` e `/habitos` (rótulos de mês e dia, legenda, controles); menor razão 4,71:1, nenhum abaixo de 4,5:1 (relatório gerado localmente em `apps/web/.reports/`). As células são gráficos: o nível 0 (`heat-0`, branco a 12 %) é decorativo e a informação nunca depende só da cor (cada dia tem `aria-label`, tooltip e a tabela oculta).
 - **Cores dos hábitos:** a classe `habit-<cor>` define `--habit`; ícones usam `habit-bg-soft habit-text`. Mapa literal em `HABIT_COLOR_CLASS` (o Tailwind só gera classes escritas por extenso).
 - **Estatísticas:** "Hábitos de hoje" substitui "Metas do dia"; "Consistência" ocupa a última linha inteira das Análises.
 
@@ -400,9 +400,8 @@ O calendário tem quatro visões: **Dia | Semana | Mês | Ano**. O botão “Hoj
 - **Simultâneos:** itens que se encadeiam por sobreposição formam um grupo e dividem as colunas dele; fora do grupo voltam à largura inteira. Hábitos com horário entram no mesmo layout dos eventos.
 - **Faixa de hábitos:** uma pílula por linha, na largura da coluna, com “valor/meta” sem unidade (a unidade vai no `aria-label` e no tooltip).
 - **Barra de controles:** o segmentado usa a variante `compact` (sem largura mínima) para o título do período caber em 1280 px.
-- **Contraste (`node apps/web/scripts/contrast-audit.mjs views`):** 1.107 textos medidos nas 4 visões e nas outras páginas; antes dos ajustes, o texto “valor/meta” das pílulas ficava em 2,9–3,6:1 e os números do nível 2 do Ano em 4,2:1; depois, menor razão **4,55:1** e nenhum abaixo de 4,5:1 (`docs/design/screenshots/stats/contrast-views.json`). O nível 2 de densidade passou de 50 % para 38 % do amarelo.
+- **Contraste (`node apps/web/scripts/contrast-audit.mjs views`):** 1.107 textos medidos nas 4 visões e nas outras páginas; antes dos ajustes, o texto “valor/meta” das pílulas ficava em 2,9–3,6:1 e os números do nível 2 do Ano em 4,2:1; depois, menor razão **4,55:1** e nenhum abaixo de 4,5:1 (relatório gerado localmente em `apps/web/.reports/`). O nível 2 de densidade passou de 50 % para 38 % do amarelo.
 - **Fixture `views`:** quinta-feira 29/10/2026, 10h30; semana densa (três simultâneos, encadeados, prova, evento que cruza a meia-noite, evento às 05h e dias vazios) e um hábito manual sem horário (“Meditação”).
-
 
 ## 13. Layout do AppShell (v0.9.1)
 

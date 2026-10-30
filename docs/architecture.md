@@ -64,7 +64,7 @@ flowchart TB
 | Classes do Tailwind sempre literais                      | O Tailwind só gera o que aparece por extenso no código; cores e densidades usam mapas literais ou variáveis CSS.                                             |
 | Visão e data do calendário na URL                        | Recarregar, voltar e compartilhar preservam o estado.                                                                                                        |
 | Grade de horas em porcentagem do intervalo               | O layout acompanha a altura disponível; `layoutSobreposicoes` distribui simultâneos em colunas.                                                              |
-| Altura numa camada só (`--ds-viewport-h`)                | O AppShell preenche a janela e é o único que rola; o documento nunca rola (ver relatório 05.1).                                                              |
+| Altura numa camada só (`--ds-viewport-h`)                | O AppShell preenche a janela e é o único que rola; o documento nunca rola (corrigido na v0.5.1).                                                             |
 | PWA com `registerType: 'prompt'`                         | O usuário decide quando atualizar, e a oferta some enquanto há sessão de foco rodando, pausada ou travada.                                                   |
 | CSP sem `unsafe-inline` e sem `unsafe-eval`              | Superfície mínima; o JIT do zod é desligado porque usa `new Function`.                                                                                       |
 | Fixtures só em desenvolvimento                           | `import.meta.env.DEV` vira `false` no build e remove as fixtures do bundle de produção.                                                                      |
@@ -73,7 +73,7 @@ flowchart TB
 
 - **Unidade (Vitest):** domínio, repositório, migrações, layout do calendário, política de atualização.
 - **e2e (Playwright):** fluxos por feature e o projeto "pwa", que roda o build de produção com as regras de `vercel.json` (manifest, service worker, offline, CSP, fixtures sem efeito).
-- **Visual:** scripts `pnpm visual:*` e `pnpm media:capture` geram capturas reproduzíveis.
+- **Layout:** `e2e/layout.spec.ts` confere, em todas as rotas e em seis tamanhos de janela, que o AppShell preenche a viewport e que o documento nunca rola.
 - **CI:** lint, tipos, testes, build e e2e a cada push (`.github/workflows/ci.yml`).
 
 ## Deploy

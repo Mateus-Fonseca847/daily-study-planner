@@ -12,7 +12,7 @@ import {
 import { createDataStore } from './store';
 import { exam, FIXED_NOW, makeSnapshot, memoryRepo, snapshot, subject } from './test-utils';
 
-/** Um arquivo/estado salvo no formato v1 (anterior ao Prompt 03). */
+/** Um arquivo/estado salvo no formato v1 (anterior à v0.3.0). */
 const v1Raw = JSON.stringify({
   app: 'daily',
   version: 1,

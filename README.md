@@ -1,6 +1,6 @@
 <div align="center">
 
-![Daily: visão semanal do calendário](docs/media/social/calendario-semana-github-1280x640.png)
+![Daily: visão semanal do calendário](docs/images/hero.webp)
 
 # Daily
 
@@ -32,7 +32,7 @@ O **Daily** nasceu de uma necessidade pessoal: ter um painel que fique aberto o 
 - **Modo Foco**, uma visão em tela cheia para a segunda tela, com o que importa agora
 - **Gratuito e hospedável**, sem dependência de serviços pagos
 
-O projeto também é um estudo de engenharia de software: monorepo, TypeScript estrito, design system baseado em tokens, testes e documentação versionada, incluindo o histórico dos prompts usados no desenvolvimento assistido por IA.
+O projeto também é um estudo de engenharia de software: monorepo, TypeScript estrito, design system baseado em tokens, testes e documentação versionada.
 
 ## Status
 
@@ -48,14 +48,12 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 
 ## Telas
 
-|                                                                                                                                                          |                                                                                                                                                       |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Calendário (Mês)**: provas, estudos e entregas, com popover de evento e filtro por matéria.<br>![Mês](docs/media/screens/calendario-mes-1920x1080.png) | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/media/screens/calendario-semana-1920x1080.png)      |
-| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/media/screens/calendario-dia-1920x1080.png)                               | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/media/screens/calendario-ano-1920x1080.png)                             |
-| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/media/screens/habitos-1920x1080.png)                             | **Estatísticas**: horas, preparação para provas, água, hábitos e dias de mais foco.<br>![Estatísticas](docs/media/screens/estatisticas-1920x1080.png) |
-| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/media/screens/foco-rodando-1920x1080.png)                           | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/media/screens/foco-travado-1920x1080.png)                            |
-
-Vídeos curtos (WebM e MP4) em [`docs/media/videos/`](docs/media/videos/): [Modo Foco](docs/media/videos/modo-foco.mp4), [criar um hábito e marcar hoje](docs/media/videos/habito-heatmap.mp4) e [Dia → Semana → Mês → Ano](docs/media/videos/visoes-calendario.mp4).
+|                                                                                                                                          |                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Calendário (Mês)**: provas, estudos e entregas, com popover de evento e filtro por matéria.<br>![Mês](docs/images/calendario-mes.webp) | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)      |
+| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                               | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                             |
+| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                             | **Estatísticas**: horas, preparação para provas, água, hábitos e dias de mais foco.<br>![Estatísticas](docs/images/estatisticas.webp) |
+| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                              | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                       |
 
 ## Funcionalidades
 
@@ -141,18 +139,18 @@ O app sobe em **http://localhost:5173**. Viewport recomendado: 1440×900, com co
 
 ### Scripts
 
-| Comando               | O que faz                                                                                                                                 |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`            | Servidor de desenvolvimento                                                                                                               |
-| `pnpm build`          | Build de produção                                                                                                                         |
-| `pnpm lint`           | ESLint em todo o monorepo                                                                                                                 |
-| `pnpm typecheck`      | Checagem de tipos                                                                                                                         |
-| `pnpm test`           | Testes com Vitest                                                                                                                         |
-| `pnpm e2e`            | Testes e2e com Playwright (app em dev e build de produção) (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`) |
-| `pnpm media:capture`  | Gera telas, imagens sociais e vídeos em `docs/media/` (fixtures de desenvolvimento)                                                       |
-| `pnpm verify:prod`    | Verifica o app publicado (rotas, manifest, service worker, offline e console)                                                             |
-| `pnpm icons`          | Regenera os ícones do PWA a partir do SVG                                                                                                 |
-| `pnpm visual:capture` | Screenshots (1440×900 em 1x e 2x, 1280×720, 1280×800) e comparações lado a lado com a referência em `docs/design/screenshots/`            |
+| Comando                                    | O que faz                                                                                                                                 |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                                 | Servidor de desenvolvimento                                                                                                               |
+| `pnpm build`                               | Build de produção                                                                                                                         |
+| `pnpm lint`                                | ESLint em todo o monorepo                                                                                                                 |
+| `pnpm typecheck`                           | Checagem de tipos                                                                                                                         |
+| `pnpm test`                                | Testes com Vitest                                                                                                                         |
+| `pnpm e2e`                                 | Testes e2e com Playwright (app em dev e build de produção) (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`) |
+| `pnpm verify:prod`                         | Verifica o app publicado (rotas, manifest, service worker, offline e console)                                                             |
+| `pnpm check:links`                         | Confere os links relativos dos arquivos `.md` versionados                                                                                 |
+| `node apps/web/scripts/contrast-audit.mjs` | Mede o contraste (WCAG AA) do texto renderizado nas telas principais; grava em `apps/web/.reports/`                                       |
+| `pnpm icons`                               | Regenera os ícones do PWA a partir do SVG                                                                                                 |
 
 ## Estrutura do repositório
 
@@ -175,9 +173,9 @@ daily-study-planner/
 │   └── shared/                 # tipos e schemas Zod
 ├── docs/
 │   ├── design/
-│   │   ├── reference/          # imagem de referência visual
 │   │   └── design-system.md    # tokens, tipografia e componentes
-│   └── prompts/                # prompts e relatórios de cada etapa
+│   ├── images/                 # imagens usadas neste README
+│   ├── architecture.md, data-model.md, deploy.md
 ├── CLAUDE.md                   # contexto do projeto para o Claude Code
 ├── CHANGELOG.md
 └── README.md
@@ -210,13 +208,7 @@ A especificação completa, incluindo quais valores são estimados, está em [`d
 
 ## Desenvolvimento assistido por IA
 
-Este projeto é construído em ciclos com o [Claude Code](https://www.anthropic.com/claude-code):
-
-1. Um prompt detalhado é escrito para cada etapa
-2. O Claude Code implementa e entrega um relatório
-3. Eu testo, comparo com a referência e aprovo ou peço ajustes
-
-Cada ciclo fica registrado em [`docs/prompts/`](docs/prompts/) (`NN-prompt.md` e `NN-report.md`). O arquivo [`CLAUDE.md`](CLAUDE.md) mantém as convenções do projeto entre as sessões.
+Este projeto é construído em ciclos com o [Claude Code](https://www.anthropic.com/claude-code): cada etapa começa com um prompt detalhado, o Claude Code implementa e entrega um relatório do que fez, e eu testo, reviso e aprovo ou peço ajustes. Os prompts e os relatórios são material de trabalho e ficam fora deste repositório; o que fica é o resultado: código, testes, CI e a documentação do produto. O arquivo [`CLAUDE.md`](CLAUDE.md) guarda as convenções do projeto entre as sessões.
 
 ## Decisões técnicas
 
@@ -270,11 +262,10 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - Hábitos: os registros ficam só neste navegador; correções retroativas só para hábitos manuais e até 366 dias atrás; a regra de repetição ainda não vale para eventos do calendário (recorrência de eventos fica para depois); mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
 - Estatísticas: a água é registrada só neste navegador; as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
-- Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
+- Os chips têm ~44 px em vez dos ~56 px do design de referência: ele equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas
 - PWA testado no Chromium (Chrome e Edge); a instalação em Safari e Firefox segue o fluxo manual de cada navegador
 - Criar evento clicando na grade é uma ação de mouse; por teclado use o botão do dia na Semana ou "Nova Prova"
-- A comparação com a referência é lado a lado, a olho (sem diff de pixels automatizado)
 - A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`) e usa dados em memória, sem tocar nos seus dados
 
 ## Roadmap

@@ -1,8 +1,8 @@
 # Modelo de dados
 
-> **v3 (Prompt 05):** as metas viraram **hábitos** (`habits`, `habitLogs`; seção “Entidades da versão 3”, no fim), a chave passou a `daily:v3` e `goals`/`goalLogs` saíram do snapshot (os schemas ficam em `legacy-goals.ts` só para migrar e importar).
+> **v3 (v0.5.0):** as metas viraram **hábitos** (`habits`, `habitLogs`; seção “Entidades da versão 3”, no fim), a chave passou a `daily:v3` e `goals`/`goalLogs` saíram do snapshot (os schemas ficam em `legacy-goals.ts` só para migrar e importar).
 >
-> **v2 (Prompt 03):** o snapshot ganhou `preferences`, `goals`, `goalLogs`, `waterLogs` e `focusSessions` (seção “Entidades da versão 2”, no fim). O restante deste documento continua valendo.
+> **v2 (v0.3.0):** o snapshot ganhou `preferences`, `goals`, `goalLogs`, `waterLogs` e `focusSessions` (seção “Entidades da versão 2”, no fim). O restante deste documento continua valendo.
 
 Definido com zod em `packages/shared/src` (fonte de verdade dos tipos). Hoje os dados vivem no
 navegador; os mesmos schemas serão usados pela API.
@@ -70,7 +70,7 @@ A chave leva a versão do formato; o campo `version` do envelope dispara as migr
 
 | Versão | Mudança                                                                                                                        |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| 0      | (Protótipo do Prompt 01, nunca gravado em disco.) Matérias sem cor; status `agendada`/`concluida`; conteúdos sem `order`.      |
+| 0      | (Protótipo da v0.1, nunca gravado em disco.) Matérias sem cor; status `agendada`/`concluida`; conteúdos sem `order`.           |
 | 1      | Matérias com `color`; status `pendente/em-andamento/concluido/cancelado`; `notes`; conteúdos com `order`; blocos com `examId`. |
 
 ### Fluxo de carregamento
