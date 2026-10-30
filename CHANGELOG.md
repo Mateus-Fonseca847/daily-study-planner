@@ -1,9 +1,23 @@
 # Changelog
 
-Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). O projeto ainda não
-tem versões publicadas.
+Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). As versões estão marcadas como tags no Git.
 
 ## [Não lançado]
+
+## [1.0.0] — 2026-10-30
+
+Primeira versão publicada: [dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Reúne tudo o que está abaixo (v0.5.1 a v0.7.0 e os prompts 04 a 06) mais o material de divulgação.
+
+### Adicionado (v1.0.0, deploy, divulgação e acabamento)
+
+- **Deploy na Vercel** com `apps/web/vercel.json` (rewrite SPA, cache imutável em `/assets`, revalidação do service worker e do `index.html`, cabeçalhos de segurança e CSP sem `unsafe-inline` nem `unsafe-eval`) e o guia `docs/deploy.md`. O zod roda sem JIT para não exigir `unsafe-eval`.
+- `pnpm verify:prod`: verifica o app publicado (rotas, rota direta recarregada, manifest, service worker, offline, imagem Open Graph e console sem erros).
+- `pnpm media:capture`: telas (1920×1080), imagens sociais (GitHub 1280×640, Open Graph 1200×630, posts 1080×1350 e 1200×627) e três vídeos curtos (WebM) em `docs/media/`, a partir das fixtures de desenvolvimento; a imagem da Semana vira `og.png`.
+- README final (imagem de topo, badges, demo, telas, instalação como app, dados e privacidade), `docs/architecture.md` (diagrama Mermaid e decisões), `CONTRIBUTING.md`, modelos de issue, `docs/portfolio/` (post do LinkedIn, currículo e checklist de publicação), milestones e issues no GitHub.
+
+### Alterado (v1.0.0)
+
+- A URL pública entra nas metas Open Graph e Twitter (`SITE_URL`).
 
 ### Adicionado (v0.7.0, PWA e persistência)
 
