@@ -1,0 +1,27 @@
+name: Bug
+description: Algo não funciona como esperado
+labels: [bug]
+body:
+  - type: textarea
+    id: o-que
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o problema e o que você esperava.
+    validations:
+      required: true
+  - type: textarea
+    id: passos
+    attributes:
+      label: Como reproduzir
+      placeholder: 1. Abra /habitos, 2. Clique em ...
+    validations:
+      required: true
+  - type: input
+    id: ambiente
+    attributes:
+      label: Navegador e tamanho da janela
+      placeholder: Chrome 130, 1440x900, app instalado ou aba
+  - type: textarea
+    id: extra
+    attributes:
+      label: Capturas ou erros do console

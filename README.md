@@ -1,25 +1,28 @@
 <div align="center">
 
+![Daily: visão semanal do calendário](docs/media/social/calendario-semana-github-1280x640.png)
+
 # Daily
 
 **Organizador de estudos para estudantes, feito para ficar aberto na segunda tela.**
 
-Provas com contagem regressiva, conteúdos como mini tarefas, blocos de estudo e um calendário claro, escuro e sempre à vista.
+Calendário em quatro visões, provas com contagem regressiva, hábitos com heatmap, Modo Foco e estatísticas. Instala como app, funciona offline e guarda tudo no seu navegador.
 
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-F5E94B?style=flat-square&labelColor=0B0B0C)
+[![CI](https://github.com/Mateus-Fonseca847/daily-study-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/Mateus-Fonseca847/daily-study-planner/actions/workflows/ci.yml)
+[![Versão](https://img.shields.io/github/v/tag/Mateus-Fonseca847/daily-study-planner?label=vers%C3%A3o&style=flat-square&labelColor=0B0B0C&color=F5E94B)](CHANGELOG.md)
+[![Licença MIT](https://img.shields.io/github/license/Mateus-Fonseca847/daily-study-planner?style=flat-square&labelColor=0B0B0C&color=F5E94B)](LICENSE)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react&logoColor=black)
-![pnpm](https://img.shields.io/badge/pnpm-monorepo-F69220?style=flat-square&logo=pnpm&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 
-![Daily — calendário mensal](docs/design/screenshots/calendar.png)
+### [▶ Abrir a demo: https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app)
 
-[Demo online](#) · [Documentação](docs/) · [Roadmap](#roadmap) · [Changelog](CHANGELOG.md)
+[Documentação](docs/) · [Arquitetura](docs/architecture.md) · [Roadmap](#roadmap) · [Changelog](CHANGELOG.md)
 
 </div>
 
 ---
 
-## Sobre o projeto
+## O que é
 
 O **Daily** nasceu de uma necessidade pessoal: ter um painel que fique aberto o dia inteiro na segunda tela, lembrando constantemente das obrigações acadêmicas. Em vez de mais um to-do genérico, ele é pensado para a rotina de quem estuda:
 
@@ -33,15 +36,26 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 ## Status
 
-O projeto está em desenvolvimento, organizado em marcos.
+A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Os dados ficam só no navegador; back-end, login e sincronização são o próximo marco.
 
-| Marco                  | Escopo                                                                              | Status       |
-| ---------------------- | ----------------------------------------------------------------------------------- | ------------ |
-| **0. Fundação visual** | Monorepo, design system, calendário mensal com dados mockados                       | Concluído    |
-| **1. Base**            | Dados locais, CRUD, páginas (feito); login, back-end e deploy                       | Em andamento |
-| **2. Estudos**         | Provas com contagem regressiva, conteúdos, blocos de estudo                         | Em andamento |
-| **3. Segunda tela**    | Modo Foco, Estatísticas e Hábitos (feitos); notificações, lembretes, PWA instalável | Em andamento |
-| **4. Acabamento**      | Documentação final, GIFs, post no LinkedIn                                          | Planejado    |
+| Marco                  | Escopo                                                                 | Status    |
+| ---------------------- | ---------------------------------------------------------------------- | --------- |
+| **0. Fundação visual** | Monorepo, design system, calendário mensal                             | Concluído |
+| **1. Dados locais**    | `localStorage` versionado, CRUD, páginas, backup                       | Concluído |
+| **2. Estudos**         | Provas, conteúdos, blocos de estudo, hábitos, Estatísticas e Modo Foco | Concluído |
+| **3. App**             | Visões do calendário, PWA instalável e offline, deploy                 | Concluído |
+| **4. Nuvem**           | Back-end, login, sincronização e notificações                          | Planejado |
+
+## Telas
+
+|                                                                                                                                                          |                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Calendário (Mês)**: provas, estudos e entregas, com popover de evento e filtro por matéria.<br>![Mês](docs/media/screens/calendario-mes-1920x1080.png) | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/media/screens/calendario-semana-1920x1080.png)      |
+| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/media/screens/calendario-dia-1920x1080.png)                               | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/media/screens/calendario-ano-1920x1080.png)                             |
+| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/media/screens/habitos-1920x1080.png)                             | **Estatísticas**: horas, preparação para provas, água, hábitos e dias de mais foco.<br>![Estatísticas](docs/media/screens/estatisticas-1920x1080.png) |
+| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/media/screens/foco-rodando-1920x1080.png)                           | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/media/screens/foco-travado-1920x1080.png)                            |
+
+Vídeos curtos (WebM) em [`docs/media/videos/`](docs/media/videos/): [Modo Foco](docs/media/videos/modo-foco.webm), [criar um hábito e marcar hoje](docs/media/videos/habito-heatmap.webm) e [Dia → Semana → Mês → Ano](docs/media/videos/visoes-calendario.webm).
 
 ## Funcionalidades
 
@@ -68,28 +82,43 @@ O projeto está em desenvolvimento, organizado em marcos.
 - [x] **Hábitos recorrentes** (`/habitos`): dias da semana ou a cada N dias, horário opcional, tipo check ou quantidade, fontes automáticas (água, foco, blocos de estudo), **calendário de contribuições** por hábito (estilo GitHub), sequência, melhor sequência e taxa; as antigas metas migram para hábitos
 - [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, hábitos de hoje e agenda) e “Análises” (semana, mês ou 90 dias) com cinco gráficos em SVG próprio e o heatmap de consistência dos hábitos
 
+- [x] **PWA**: instala como app (janela própria, atalhos para Modo Foco, Hábitos e Estatísticas), funciona offline em todas as rotas e só oferece atualização quando não há sessão de foco em andamento
+- [x] Armazenamento persistente solicitado ao navegador, com situação e espaço usado em Preferências, e indicador "Offline" na topbar
+
 ### Em planejamento
 
-- [ ] Autenticação (e-mail/senha ou Google)
-- [ ] Sincronização com back-end
+- [ ] Autenticação, back-end e sincronização
 - [ ] Notificações e lembretes periódicos
-- [ ] PWA instalável (manifest e service worker)
-- [ ] Atalhos de teclado
+- [ ] Recorrência de eventos, arrastar e redimensionar na grade, eventos de vários dias
+- [ ] Página de atalhos de teclado
+
+O detalhamento está nas [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues) e nos [milestones](https://github.com/Mateus-Fonseca847/daily-study-planner/milestones).
+
+## Instalar como app
+
+1. Abra [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app) no **Chrome** ou no **Edge**.
+2. Clique no ícone de instalar na barra de endereço (ou em **Instalar app** na sidebar do Daily, ou no menu ⋮ → _Instalar Daily_).
+3. O Daily abre numa **janela própria**, sem barra de abas, e ganha um atalho no menu Iniciar.
+4. Para **fixar na barra de tarefas** (Windows): com o app aberto, clique com o botão direito no ícone dele na barra → _Fixar na barra de tarefas_.
+5. Clique com o botão direito no ícone do app para os atalhos **Modo Foco**, **Hábitos** e **Estatísticas**.
+
+No Safari use _Compartilhar → Adicionar à Tela de Início_; no Firefox o Daily funciona normalmente na aba, sem a instalação. Depois do primeiro acesso o app abre **sem internet**.
 
 ## Stack
 
-| Camada            | Tecnologia                                                       |
-| ----------------- | ---------------------------------------------------------------- |
-| Front-end         | React, TypeScript, Vite, Tailwind CSS, React Router              |
-| Ícones e fonte    | lucide-react, Inter (`@fontsource`)                              |
-| Datas             | date-fns (locale `pt-BR`)                                        |
-| Tipos e validação | Zod, compartilhados em `packages/shared`                         |
-| Testes            | Vitest (unidade) e Playwright (e2e de fumaça e capturas visuais) |
-| Qualidade         | ESLint, Prettier, TypeScript `strict`                            |
-| Gerenciador       | pnpm workspaces                                                  |
-| CI                | GitHub Actions                                                   |
+| Camada            | Tecnologia                                                                       |
+| ----------------- | -------------------------------------------------------------------------------- |
+| Front-end         | React, TypeScript, Vite, Tailwind CSS, React Router                              |
+| Ícones e fonte    | lucide-react, Inter (`@fontsource`)                                              |
+| Datas             | date-fns (locale `pt-BR`)                                                        |
+| Tipos e validação | Zod, compartilhados em `packages/shared`                                         |
+| Testes            | Vitest (unidade) e Playwright (e2e, inclusive contra o build com service worker) |
+| PWA               | vite-plugin-pwa (Workbox)                                                        |
+| Qualidade         | ESLint, Prettier, TypeScript `strict`                                            |
+| Gerenciador       | pnpm workspaces                                                                  |
+| CI                | GitHub Actions                                                                   |
 
-**Planejado para o Marco 1:** Node.js com Fastify, PostgreSQL com Prisma, deploy com Vercel (front), Render ou Railway (API) e Neon ou Supabase (banco).
+**Hospedagem:** Vercel (front-end estático; cabeçalhos e CSP em `apps/web/vercel.json`, veja [`docs/deploy.md`](docs/deploy.md)). **Planejado:** Node.js com Fastify, PostgreSQL com Prisma, API no Render ou Railway e banco no Neon ou Supabase.
 
 ## Como rodar
 
@@ -102,7 +131,7 @@ O projeto está em desenvolvimento, organizado em marcos.
 ### Instalação
 
 ```bash
-git clone https://github.com/<seu-usuario>/daily-study-planner.git
+git clone https://github.com/Mateus-Fonseca847/daily-study-planner.git
 cd daily-study-planner
 pnpm install
 pnpm dev
@@ -112,15 +141,18 @@ O app sobe em **http://localhost:5173**. Viewport recomendado: 1440×900, com co
 
 ### Scripts
 
-| Comando               | O que faz                                                                                                                      |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm dev`            | Servidor de desenvolvimento                                                                                                    |
-| `pnpm build`          | Build de produção                                                                                                              |
-| `pnpm lint`           | ESLint em todo o monorepo                                                                                                      |
-| `pnpm typecheck`      | Checagem de tipos                                                                                                              |
-| `pnpm test`           | Testes com Vitest                                                                                                              |
-| `pnpm e2e`            | Teste e2e de fumaça com Playwright (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`)              |
-| `pnpm visual:capture` | Screenshots (1440×900 em 1x e 2x, 1280×720, 1280×800) e comparações lado a lado com a referência em `docs/design/screenshots/` |
+| Comando               | O que faz                                                                                                                                 |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`            | Servidor de desenvolvimento                                                                                                               |
+| `pnpm build`          | Build de produção                                                                                                                         |
+| `pnpm lint`           | ESLint em todo o monorepo                                                                                                                 |
+| `pnpm typecheck`      | Checagem de tipos                                                                                                                         |
+| `pnpm test`           | Testes com Vitest                                                                                                                         |
+| `pnpm e2e`            | Testes e2e com Playwright (app em dev e build de produção) (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`) |
+| `pnpm media:capture`  | Gera telas, imagens sociais e vídeos em `docs/media/` (fixtures de desenvolvimento)                                                       |
+| `pnpm verify:prod`    | Verifica o app publicado (rotas, manifest, service worker, offline e console)                                                             |
+| `pnpm icons`          | Regenera os ícones do PWA a partir do SVG                                                                                                 |
+| `pnpm visual:capture` | Screenshots (1440×900 em 1x e 2x, 1280×720, 1280×800) e comparações lado a lado com a referência em `docs/design/screenshots/`            |
 
 ## Estrutura do repositório
 
@@ -150,6 +182,17 @@ daily-study-planner/
 ├── CHANGELOG.md
 └── README.md
 ```
+
+## Arquitetura
+
+```text
+UI (React) → useData (Zustand) → DataRepository → LocalStorageRepository → localStorage
+                                       ↑
+                     funções puras de domínio (hábitos, foco, calendário, estatísticas)
+PWA: service worker (Workbox) pré-cacheia o app shell; a UI só conversa com o store.
+```
+
+Camadas, decisões e o diagrama completo em [`docs/architecture.md`](docs/architecture.md). O formato dos dados e a migração entre versões estão em [`docs/data-model.md`](docs/data-model.md).
 
 ## Design system
 
@@ -183,10 +226,10 @@ Cada ciclo fica registrado em [`docs/prompts/`](docs/prompts/) (`NN-prompt.md` e
 | TypeScript 5.9 fixado        | O `typescript-eslint` ainda não suporta o TS 7                                                                               |
 | Mocks relativos à data atual | O calendário nunca aparece vazio, em qualquer mês                                                                            |
 | Tokens CSS obrigatórios      | Fidelidade visual e manutenção em um único lugar                                                                             |
-| PWA em vez de app nativo     | Um código só para "app de PC" e versão online                                                                                |
+| PWA em vez de app nativo     | Um código só para "app de PC" e versão online; funciona offline e instala em janela própria                                  |
 | `Repository` + Zustand       | A UI não conhece o `localStorage`; trocar por uma API é trocar o adaptador (veja [`docs/data-model.md`](docs/data-model.md)) |
 
-Decisões maiores serão registradas em `docs/adr/`.
+Mais decisões (CSP sem `unsafe-eval`, atualização do service worker que respeita o Modo Foco, hábitos com regras versionadas) em [`docs/architecture.md`](docs/architecture.md).
 
 ## Modo Foco e travamento
 
@@ -207,6 +250,9 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 
 ## Dados e privacidade
 
+- Os dados ficam no **navegador de cada endereço**: `http://localhost:5173` e o endereço publicado têm armazenamentos separados. Para levar o que você criou em `localhost` para o app publicado, use **Preferências → Exportar dados (JSON)** em um e **Importar dados (JSON)** no outro.
+- Não há analytics, rastreamento nem requisições a terceiros (a política de segurança do site só aceita recursos do próprio domínio).
+
 - Seus dados (matérias, provas, tarefas, blocos de estudo, conteúdos e hábitos) ficam **somente no seu navegador**, no `localStorage` deste site. Nada é enviado a servidores, não há conta nem rastreamento.
 - Por isso, **limpar os dados do site, trocar de navegador ou de computador faz os dados "sumirem"**. Para guardar uma cópia, use **Preferências → Exportar dados (JSON)**; para restaurar ou levar a outro lugar, **Importar dados (JSON)**.
 - O Daily mantém automaticamente uma cópia do último estado válido e, se o dado salvo ficar corrompido, avisa e oferece restaurá-la (detalhes em [`docs/data-model.md`](docs/data-model.md)).
@@ -226,23 +272,25 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px da referência: ela equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas
-- Ainda não há manifest nem service worker (PWA)
+- PWA testado no Chromium (Chrome e Edge); a instalação em Safari e Firefox segue o fluxo manual de cada navegador
+- Criar evento clicando na grade é uma ação de mouse; por teclado use o botão do dia na Semana ou "Nova Prova"
 - A comparação com a referência é lado a lado, a olho (sem diff de pixels automatizado)
 - A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`) e usa dados em memória, sem tocar nos seus dados
 
 ## Roadmap
 
 - [x] **Marco 0:** monorepo, design system e calendário mensal
-- [ ] **Marco 1:** autenticação, API, banco de dados e deploy (CRUD local já feito)
-- [x] **Marco 2 (parte local):** provas com contagem regressiva, conteúdos e blocos de estudo
-- [ ] **Marco 3:** Modo Foco, notificações e PWA instalável
-- [ ] **Marco 4:** acabamento, documentação final e divulgação
+- [x] **Marco 1:** dados locais versionados, CRUD, backup e páginas
+- [x] **Marco 2:** provas, conteúdos, blocos de estudo, hábitos, Estatísticas e Modo Foco
+- [x] **Marco 3:** visões Dia, Semana e Ano, PWA instalável e offline, deploy na Vercel
+- [ ] **Marco 4 (nuvem):** back-end com login e sincronização, notificações
+- [ ] **Depois:** recorrência de eventos, arrastar e redimensionar, eventos de vários dias, testes em Firefox e Safari, teste visual automatizado
 
-O acompanhamento detalhado fica nas [issues](../../issues) e [milestones](../../milestones) do repositório.
+O acompanhamento detalhado fica nas [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues) e nos [milestones](https://github.com/Mateus-Fonseca847/daily-study-planner/milestones). Histórico de versões no [CHANGELOG](CHANGELOG.md).
 
 ## Contribuindo
 
-Este é um projeto pessoal de portfólio, mas sugestões são bem-vindas via issues. Se for abrir um pull request:
+Este é um projeto pessoal de portfólio, mas sugestões são bem-vindas via [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues/new/choose) (veja o [guia de contribuição](CONTRIBUTING.md)). Se for abrir um pull request:
 
 1. Faça um fork e crie uma branch (`feat/minha-ideia`)
 2. Use [Conventional Commits](https://www.conventionalcommits.org/pt-br/) (`feat:`, `fix:`, `docs:`, `chore:`)
@@ -251,10 +299,10 @@ Este é um projeto pessoal de portfólio, mas sugestões são bem-vindas via iss
 
 ## Licença
 
-Distribuído sob a licença MIT. Veja o arquivo `LICENSE`.
+Distribuído sob a licença MIT. Veja o arquivo [`LICENSE`](LICENSE).
 
 ## Autor
 
-Feito por **<seu nome>**.
+Feito por **[PREENCHER: seu nome]** ([@Mateus-Fonseca847](https://github.com/Mateus-Fonseca847)).
 
-[LinkedIn](https://www.linkedin.com/in/<seu-perfil>) · [GitHub](https://github.com/<seu-usuario>)
+[GitHub](https://github.com/Mateus-Fonseca847) · LinkedIn: [PREENCHER: link do perfil]
