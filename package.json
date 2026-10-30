@@ -21,7 +21,8 @@
     "visual:focus": "pnpm --filter @daily/web visual:focus",
     "visual:stats": "pnpm --filter @daily/web visual:stats",
     "visual:habits": "pnpm --filter @daily/web visual:habits",
-    "visual:views": "pnpm --filter @daily/web visual:views"
+    "visual:views": "pnpm --filter @daily/web visual:views",
+    "visual:layout": "pnpm --filter @daily/web visual:layout"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -65,25 +65,27 @@ export function HabitHeatmap({ habit, ctx, from, to, onDay }: HabitHeatmapProps)
         caption={`Calendário de ${habit.name}`}
         initialDate={to < ctx.today ? to : ctx.today}
         summary={
-          <table className="sr-only">
-            <caption>{`Resumo mensal de ${habit.name}`}</caption>
-            <thead>
-              <tr>
-                <th>Mês</th>
-                <th>Dias agendados</th>
-                <th>Dias cumpridos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {summary.map((row) => (
-                <tr key={row.month}>
-                  <td>{row.label}</td>
-                  <td>{row.scheduled}</td>
-                  <td>{row.done}</td>
+          <div className="sr-only">
+            <table>
+              <caption>{`Resumo mensal de ${habit.name}`}</caption>
+              <thead>
+                <tr>
+                  <th>Mês</th>
+                  <th>Dias agendados</th>
+                  <th>Dias cumpridos</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {summary.map((row) => (
+                  <tr key={row.month}>
+                    <td>{row.label}</td>
+                    <td>{row.scheduled}</td>
+                    <td>{row.done}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         }
       />
       <HeatLegend colorClass={color} />

@@ -84,25 +84,27 @@ export function BarChart({ items, format, caption, valueHeader, plannedHeader }:
           </span>
         ))}
       </div>
-      <table className="sr-only">
-        <caption>{caption}</caption>
-        <thead>
-          <tr>
-            <th>Período</th>
-            {plannedHeader && <th>{plannedHeader}</th>}
-            <th>{valueHeader}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.fullLabel}>
-              <td>{item.fullLabel}</td>
-              {plannedHeader && <td>{format(item.planned ?? 0)}</td>}
-              <td>{format(item.value)}</td>
+      <div className="sr-only">
+        <table>
+          <caption>{caption}</caption>
+          <thead>
+            <tr>
+              <th>Período</th>
+              {plannedHeader && <th>{plannedHeader}</th>}
+              <th>{valueHeader}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.fullLabel}>
+                <td>{item.fullLabel}</td>
+                {plannedHeader && <td>{format(item.planned ?? 0)}</td>}
+                <td>{format(item.value)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

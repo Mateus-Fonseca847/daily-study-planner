@@ -27,12 +27,12 @@ export function AppShell() {
     <ShellContext.Provider value={{ subjectId }}>
       <FocusRuntime />
       <FocusLockGuard locked={locked} />
-      <div className="flex h-full min-w-0 bg-bg">
+      <div className="relative flex h-full min-w-0 overflow-hidden bg-bg">
         {/* Travado: sem barra lateral, sem topo e sem links — só a página do Modo Foco. */}
         {!locked && (
           <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((v) => !v)} counts={counts} />
         )}
-        <main className="flex min-w-0 flex-1 flex-col">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           {!locked && <Topbar subjectId={subjectId} onSubjectChange={setSubjectId} />}
           <StorageNotices />
           <Outlet />

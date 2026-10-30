@@ -50,7 +50,7 @@ export function Sidebar({ collapsed, onToggle, counts }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'flex shrink-0 flex-col border-r-hair bg-bg transition-[width]',
+        'flex h-full min-h-0 shrink-0 flex-col border-r-hair bg-bg transition-[width]',
         collapsed ? 'w-sidebar-collapsed' : 'w-sidebar',
       )}
     >

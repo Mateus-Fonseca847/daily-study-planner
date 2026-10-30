@@ -217,6 +217,8 @@
   --ds-focus-offset: 2px;
 
   /* Dimensões de layout */
+  /* Altura da janela: 100vh com 100dvh quando o navegador suporta (ver o @supports abaixo). */
+  --ds-viewport-h: 100vh;
   --ds-sidebar-w: 15.5rem;
   --ds-sidebar-inset: 0.875rem;
   --ds-sidebar-w-collapsed: 4.5rem;
@@ -301,6 +303,12 @@
  * Telas altas (segunda tela em 1920×1080): há folga vertical, então os chips ganham
  * respiro e a linha mínima sobe para acomodá-los (2 chips + “+N mais”, também em meses de 6 semanas).
  */
+@supports (height: 100dvh) {
+  :root {
+    --ds-viewport-h: 100dvh;
+  }
+}
+
 @media (min-height: 1000px) {
   :root {
     --ds-chip-pad-y: 0.25rem;

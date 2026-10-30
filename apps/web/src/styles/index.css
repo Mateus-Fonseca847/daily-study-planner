@@ -401,10 +401,14 @@
 }
 
 @layer base {
+  /* Uma única camada de altura: a janela. O AppShell é quem rola (ver `AppShell.tsx`). */
   html,
   body,
   #root {
-    height: 100%;
+    height: var(--ds-viewport-h);
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: var(--ds-color-bg);
   }
   body {
     background: var(--ds-color-bg);
