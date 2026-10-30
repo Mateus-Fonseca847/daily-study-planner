@@ -38,7 +38,7 @@ export function DayCell({ day, events, isToday, selectedId, onSelect, onCreate }
     >
       <button
         type="button"
-        aria-label={`Criar evento em ${dayLabel}`}
+        aria-label={`${dayLabel}: criar evento`}
         onClick={() => onCreate(day.key)}
         className={cn(
           'inline-flex h-today min-w-today items-center justify-center self-start rounded-full text-xs font-bold',

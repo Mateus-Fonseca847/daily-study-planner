@@ -39,7 +39,7 @@ function ColumnHeader({
 }) {
   const day = parseDayKey(date);
   const isToday = date === today;
-  const label = format(day, "EEEE, d 'de' MMMM", { locale: ptBR });
+  const label = format(day, "d 'de' MMMM, EEEE", { locale: ptBR });
   return (
     <div className="flex flex-col items-center gap-0.5">
       <span className="text-xs font-bold uppercase tracking-label text-fg">
@@ -47,7 +47,7 @@ function ColumnHeader({
       </span>
       <button
         type="button"
-        aria-label={`Criar evento em ${label}`}
+        aria-label={`${label}: criar evento`}
         aria-current={isToday ? 'date' : undefined}
         onClick={() => onCreateDay(date)}
         className={cn(
