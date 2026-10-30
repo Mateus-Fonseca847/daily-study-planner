@@ -6,6 +6,7 @@ import { travado } from '../../lib/focus/session';
 import { appNow } from '../../lib/fixture';
 import { useHabitModel } from '../../features/habits/useHabitModel';
 import { pendingToday } from '../../lib/habits';
+import { usePersistOnFirstData, useUpdateOffer } from '../../lib/pwa/use-pwa';
 import { ModalHost } from '../forms/ModalHost';
 import { ToastRegion } from '../ui/ToastRegion';
 import { FocusLockGuard, FocusRuntime } from './FocusRuntime';
@@ -19,6 +20,8 @@ export function AppShell() {
   const [subjectId, setSubjectId] = useState('all');
   const events = useData((s) => s.events);
   const locked = travado(useData((s) => s.focusActive));
+  useUpdateOffer();
+  usePersistOnFirstData();
   const habitModel = useHabitModel();
   const pendingHabits = pendingToday(habitModel.habits, habitModel.ctx).length;
   const counts = useMemo(() => navCounts(events, appNow(), pendingHabits), [events, pendingHabits]);

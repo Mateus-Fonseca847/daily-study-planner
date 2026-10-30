@@ -16,7 +16,8 @@
     "visual:stats": "node scripts/visual-capture-stats.mjs",
     "visual:habits": "node scripts/visual-capture-habits.mjs",
     "visual:views": "node scripts/visual-capture-views.mjs",
-    "visual:layout": "node scripts/visual-capture-layout.mjs"
+    "visual:layout": "node scripts/visual-capture-layout.mjs",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@daily/shared": "workspace:*",
@@ -39,6 +40,8 @@
     "tailwindcss": "^4.3.3",
     "typescript": "~5.9.3",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.5",
+    "workbox-window": "^7.4.1"
   }
 }

@@ -7,7 +7,8 @@ import { LocalStorageRepository, MemoryStorage, WATCHED_KEYS } from './local-sto
 import { createDataStore } from './store';
 
 function createRepository(): LocalStorageRepository {
-  if (!isFixture) return new LocalStorageRepository(browserStorage());
+  // `import.meta.env.DEV` é trocado por `false` no build: as fixtures saem do bundle de produção.
+  if (!import.meta.env.DEV || !isFixture) return new LocalStorageRepository(browserStorage());
   // As fixtures nunca tocam os dados reais do usuário: tudo em memória.
   const repo = new LocalStorageRepository(new MemoryStorage());
   repo.replaceAll(
