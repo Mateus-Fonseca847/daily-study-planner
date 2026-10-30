@@ -4,6 +4,7 @@ import { cn } from '../../lib/cn';
 import { Button } from '../ui/Button';
 import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem } from './nav';
 import { CreateMenu } from './CreateMenu';
+import { InstallButton } from './InstallButton';
 import { SidebarItem } from './SidebarItem';
 
 interface SidebarProps {
@@ -88,6 +89,10 @@ export function Sidebar({ collapsed, onToggle, counts }: SidebarProps) {
           collapsed={collapsed}
           counts={counts}
         />
+      </div>
+
+      <div className="empty:hidden px-inset pb-4">
+        <InstallButton collapsed={collapsed} className="w-full" />
       </div>
     </aside>
   );
