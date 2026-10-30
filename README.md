@@ -55,7 +55,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 | **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/media/screens/habitos-1920x1080.png)                             | **Estatísticas**: horas, preparação para provas, água, hábitos e dias de mais foco.<br>![Estatísticas](docs/media/screens/estatisticas-1920x1080.png) |
 | **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/media/screens/foco-rodando-1920x1080.png)                           | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/media/screens/foco-travado-1920x1080.png)                            |
 
-Vídeos curtos (WebM) em [`docs/media/videos/`](docs/media/videos/): [Modo Foco](docs/media/videos/modo-foco.webm), [criar um hábito e marcar hoje](docs/media/videos/habito-heatmap.webm) e [Dia → Semana → Mês → Ano](docs/media/videos/visoes-calendario.webm).
+Vídeos curtos (WebM e MP4) em [`docs/media/videos/`](docs/media/videos/): [Modo Foco](docs/media/videos/modo-foco.mp4), [criar um hábito e marcar hoje](docs/media/videos/habito-heatmap.mp4) e [Dia → Semana → Mês → Ano](docs/media/videos/visoes-calendario.mp4).
 
 ## Funcionalidades
 
@@ -303,6 +303,6 @@ Distribuído sob a licença MIT. Veja o arquivo [`LICENSE`](LICENSE).
 
 ## Autor
 
-Feito por **[PREENCHER: seu nome]** ([@Mateus-Fonseca847](https://github.com/Mateus-Fonseca847)).
+Feito por Mateus de Souza Fonseca ([@Mateus-Fonseca847](https://github.com/Mateus-Fonseca847)).
 
 [GitHub](https://github.com/Mateus-Fonseca847) · LinkedIn: [PREENCHER: link do perfil]
