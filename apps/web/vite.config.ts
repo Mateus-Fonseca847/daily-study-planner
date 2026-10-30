@@ -5,9 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 /**
  * URL pública do app, usada nas metas Open Graph e Twitter (que exigem endereço absoluto).
- * Vazia = caminhos relativos. Preenchida depois do deploy; `SITE_URL` no ambiente tem precedência.
+ * Endereço de produção na Vercel; `SITE_URL` no ambiente tem precedência (vazio = caminhos relativos).
  */
-const SITE_URL = (process.env.SITE_URL ?? '').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL ?? 'https://dailystudyplanner.vercel.app').replace(/\/$/, '');
 
 /** Mesmo valor de `--ds-color-bg` em `tokens.css` (o manifest não lê CSS). */
 const BG_COLOR = '#131313';

@@ -17,7 +17,9 @@
     "visual:habits": "node scripts/visual-capture-habits.mjs",
     "visual:views": "node scripts/visual-capture-views.mjs",
     "visual:layout": "node scripts/visual-capture-layout.mjs",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "media:capture": "node scripts/media-capture.mjs",
+    "verify:prod": "node scripts/verify-production.mjs"
   },
   "dependencies": {
     "@daily/shared": "workspace:*",
