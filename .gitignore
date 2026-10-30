@@ -9,3 +9,11 @@ coverage
 .claude/settings.local.json
 dist-pwa
 .lh
+
+# Material de processo e de divulgação: fica só no disco do autor (não é parte do produto).
+docs/prompts/
+docs/portfolio/
+docs/media/
+
+# Relatórios gerados por scripts (ex.: auditoria de contraste).
+.reports/

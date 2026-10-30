@@ -15,15 +15,8 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "visual:capture": "pnpm --filter @daily/web visual:capture",
     "e2e": "pnpm --filter @daily/web e2e",
-    "visual:app": "pnpm --filter @daily/web visual:app",
-    "visual:focus": "pnpm --filter @daily/web visual:focus",
-    "visual:stats": "pnpm --filter @daily/web visual:stats",
-    "visual:habits": "pnpm --filter @daily/web visual:habits",
-    "visual:views": "pnpm --filter @daily/web visual:views",
-    "visual:layout": "pnpm --filter @daily/web visual:layout",
-    "media:capture": "pnpm --filter @daily/web media:capture"
+    "check:links": "node scripts/check-links.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

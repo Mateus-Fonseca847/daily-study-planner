@@ -9,16 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json && tsc -p e2e/tsconfig.json",
     "test": "vitest run",
-    "visual:capture": "node scripts/visual-capture.mjs",
     "e2e": "playwright test",
-    "visual:app": "node scripts/visual-capture-app.mjs",
-    "visual:focus": "node scripts/visual-capture-focus.mjs",
-    "visual:stats": "node scripts/visual-capture-stats.mjs",
-    "visual:habits": "node scripts/visual-capture-habits.mjs",
-    "visual:views": "node scripts/visual-capture-views.mjs",
-    "visual:layout": "node scripts/visual-capture-layout.mjs",
     "icons": "node scripts/generate-icons.mjs",
-    "media:capture": "node scripts/media-capture.mjs",
     "verify:prod": "node scripts/verify-production.mjs"
   },
   "dependencies": {

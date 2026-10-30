@@ -1,7 +1,7 @@
 /**
  * Auditoria de contraste (WCAG AA) do texto da página de Estatísticas e do Modo Foco: para cada
  * elemento com texto, lê a cor e o tamanho, e mede o fundo REAL renderizado (texto escondido +
- * captura do pixel). Uso: `node scripts/contrast-audit.mjs [rotulo]` → docs/design/screenshots/stats/contrast-<rotulo>.json
+ * captura do pixel). Uso: `node scripts/contrast-audit.mjs [rotulo]` → apps/web/.reports/contrast-<rotulo>.json (pasta ignorada pelo Git)
  */
 import { createServer } from 'vite';
 import { chromium } from '@playwright/test';
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(here, '..');
-const outDir = path.resolve(webRoot, '../../docs/design/screenshots/stats');
+const outDir = path.resolve(webRoot, '.reports');
 const label = process.argv[2] ?? 'audit';
 const PAGES = [
   '/estatisticas?fixture=stats',
