@@ -402,3 +402,10 @@ O calendário tem quatro visões: **Dia | Semana | Mês | Ano**. O botão “Hoj
 - **Barra de controles:** o segmentado usa a variante `compact` (sem largura mínima) para o título do período caber em 1280 px.
 - **Contraste (`node apps/web/scripts/contrast-audit.mjs views`):** 1.107 textos medidos nas 4 visões e nas outras páginas; antes dos ajustes, o texto “valor/meta” das pílulas ficava em 2,9–3,6:1 e os números do nível 2 do Ano em 4,2:1; depois, menor razão **4,55:1** e nenhum abaixo de 4,5:1 (`docs/design/screenshots/stats/contrast-views.json`). O nível 2 de densidade passou de 50 % para 38 % do amarelo.
 - **Fixture `views`:** quinta-feira 29/10/2026, 10h30; semana densa (três simultâneos, encadeados, prova, evento que cruza a meia-noite, evento às 05h e dias vazios) e um hábito manual sem horário (“Meditação”).
+
+
+## 13. Layout do AppShell (v0.9.1)
+
+- **Altura numa camada só:** `html`, `body` e `#root` usam `height: var(--ds-viewport-h)` (`100vh`, trocado por `100dvh` onde houver suporte), `overflow: hidden`, `overscroll-behavior: none` e o fundo `--ds-color-bg`. O documento nunca rola.
+- **AppShell:** `relative overflow-hidden`; a sidebar vai de cima até o fim da janela (cabeçalho e "Criar" fixos, menus com rolagem interna e "Configurações" ancorada ao fundo) e a topbar fica fixa. Só a área de conteúdo de cada página rola.
+- **Texto só para leitor de tela:** nunca aplique `sr-only` direto a uma `<table>` (ela ignora `height` e `overflow`); embrulhe num `<div className="sr-only">`.

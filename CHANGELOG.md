@@ -5,6 +5,12 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Corrigido (v0.5.1, AppShell na altura da janela)
+
+- Em `/habitos` o **documento** rolava (1460 px numa janela de 1080) e aparecia uma faixa do fundo do body embaixo, como se o conteúdo fosse cortado. Causa: a tabela `sr-only` do heatmap (e a de `stats/charts.tsx`) é `position: absolute` sem ancestral posicionado e `<table>` ignora `height` e `overflow`, então estendia a rolagem da viewport. As tabelas agora ficam dentro de um `<div className="sr-only">` que recorta de verdade.
+- Altura numa única camada: `--ds-viewport-h` (`100vh`, com `100dvh` onde houver suporte) em html, body e #root, com `overflow: hidden`, `overscroll-behavior: none` e o mesmo fundo do app. O AppShell é `relative overflow-hidden`, a sidebar vai até o fim da janela (os menus rolam por dentro em janelas baixas, com "Configurações" ancorada ao fundo) e só a área de conteúdo rola.
+- Teste e2e `layout.spec.ts` (todas as rotas, de 1920×1080 a 1280×500 e equivalentes de zoom 67 % e 150 %), `pnpm visual:layout` e capturas antes e depois em `docs/design/screenshots/layout/`.
+
 ### Adicionado (Prompt 06 — visões do calendário)
 
 - O calendário tem **Dia | Semana | Mês | Ano**. A visão e a data ficam na URL (`/calendario?visao=semana&data=2026-10-29`; valores inválidos caem em Mês + hoje) e o botão voltar do navegador as respeita. O botão "Hoje" saiu do segmentado e virou uma pílula ao lado das setas (`‹ ›  Hoje  título do período`); as setas andam por dia, semana, mês ou ano.

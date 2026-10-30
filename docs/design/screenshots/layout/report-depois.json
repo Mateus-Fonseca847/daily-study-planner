@@ -1,0 +1,258 @@
+[
+  {
+    "route": "calendario",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "foco",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1920x1080",
+    "tag": "depois",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "calendario",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "foco",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1440x900",
+    "tag": "depois",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "calendario",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "foco",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1280x720",
+    "tag": "depois",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "calendario",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "foco",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1280x500",
+    "tag": "depois",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  }
+]

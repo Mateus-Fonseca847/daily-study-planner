@@ -40,6 +40,7 @@ pnpm visual:capture  # screenshots + comparação com a referência em docs/desi
 pnpm visual:stats    # capturas da página de Estatísticas (docs/design/screenshots/stats/)
 pnpm visual:habits   # capturas de /habitos, modal, popover e Estatísticas (docs/design/screenshots/habits/)
 pnpm visual:views    # capturas das visões do calendário (docs/design/screenshots/views/)
+pnpm visual:layout   # capturas de todas as rotas em 4 alturas (docs/design/screenshots/layout/)
 pnpm format       # prettier --write
 ```
 

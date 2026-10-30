@@ -1,0 +1,258 @@
+[
+  {
+    "route": "calendario",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1460,
+    "innerHeight": 1080,
+    "scrollY": 380
+  },
+  {
+    "route": "foco",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1920x1080",
+    "tag": "antes",
+    "scrollHeight": 1080,
+    "innerHeight": 1080,
+    "scrollY": 0
+  },
+  {
+    "route": "calendario",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 1460,
+    "innerHeight": 900,
+    "scrollY": 560
+  },
+  {
+    "route": "foco",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1440x900",
+    "tag": "antes",
+    "scrollHeight": 900,
+    "innerHeight": 900,
+    "scrollY": 0
+  },
+  {
+    "route": "calendario",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 1460,
+    "innerHeight": 720,
+    "scrollY": 740
+  },
+  {
+    "route": "foco",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1280x720",
+    "tag": "antes",
+    "scrollHeight": 720,
+    "innerHeight": 720,
+    "scrollY": 0
+  },
+  {
+    "route": "calendario",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "provas",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "tarefas",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "materias",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "blocos",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "habitos",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 1460,
+    "innerHeight": 500,
+    "scrollY": 960
+  },
+  {
+    "route": "foco",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  },
+  {
+    "route": "estatisticas",
+    "viewport": "1280x500",
+    "tag": "antes",
+    "scrollHeight": 500,
+    "innerHeight": 500,
+    "scrollY": 0
+  }
+]
