@@ -14,7 +14,10 @@ const check = (name, ok, detail = '') => {
 };
 
 const browser = await chromium.launch();
-const context = await browser.newContext({ locale: 'pt-BR', viewport: { width: 1440, height: 900 } });
+const context = await browser.newContext({
+  locale: 'pt-BR',
+  viewport: { width: 1440, height: 900 },
+});
 const page = await context.newPage();
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 page.on('pageerror', (e) => errors.push(e.message));
@@ -32,7 +35,11 @@ try {
 
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');
   const manifest = await (await context.request.get(new URL(href, base).href)).json();
-  check('manifest com ícones e atalhos', manifest.icons?.length >= 3 && manifest.shortcuts?.length === 3, manifest.name);
+  check(
+    'manifest com ícones e atalhos',
+    manifest.icons?.length >= 3 && manifest.shortcuts?.length === 3,
+    manifest.name,
+  );
 
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.reload();
@@ -46,7 +53,11 @@ try {
 
   const og = await page.locator('meta[property="og:image"]').getAttribute('content');
   const ogRes = await context.request.get(new URL(og, base).href);
-  check('imagem Open Graph responde', ogRes.ok() && /image\/png/.test(ogRes.headers()['content-type'] ?? ''), og);
+  check(
+    'imagem Open Graph responde',
+    ogRes.ok() && /image\/png/.test(ogRes.headers()['content-type'] ?? ''),
+    og,
+  );
 
   check('console sem erros', errors.length === 0, errors.join(' | '));
 } finally {

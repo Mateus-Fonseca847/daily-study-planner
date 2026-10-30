@@ -8,7 +8,7 @@
  */
 import { createServer } from 'vite';
 import { chromium } from '@playwright/test';
-import { copyFileSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, renameSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,11 +24,41 @@ const STATS_NOW = new Date('2026-11-10T10:30:00');
 
 /** [slug, título, legenda, url, data fixa, ação opcional antes da captura] */
 const SCREENS = [
-  ['calendario-mes', 'Calendário', 'Provas, estudos e entregas num só lugar', '/calendario?fixture=views&visao=mes&data=2026-10-29', VIEWS_NOW],
-  ['calendario-semana', 'Visão semanal', 'Grade de horas com eventos simultâneos e faixa de hábitos', '/calendario?fixture=views&visao=semana&data=2026-10-29', VIEWS_NOW],
-  ['calendario-dia', 'Visão do dia', 'Hábitos, próxima prova e tarefas ao lado da agenda', '/calendario?fixture=views&visao=dia&data=2026-10-29', VIEWS_NOW],
-  ['calendario-ano', 'Visão anual', 'Doze meses e a densidade de eventos de cada dia', '/calendario?fixture=views&visao=ano&data=2026-10-29', VIEWS_NOW],
-  ['habitos', 'Hábitos', 'Heatmap de contribuições para cada hábito', '/habitos?fixture=habits', STATS_NOW],
+  [
+    'calendario-mes',
+    'Calendário',
+    'Provas, estudos e entregas num só lugar',
+    '/calendario?fixture=views&visao=mes&data=2026-10-29',
+    VIEWS_NOW,
+  ],
+  [
+    'calendario-semana',
+    'Visão semanal',
+    'Grade de horas com eventos simultâneos e faixa de hábitos',
+    '/calendario?fixture=views&visao=semana&data=2026-10-29',
+    VIEWS_NOW,
+  ],
+  [
+    'calendario-dia',
+    'Visão do dia',
+    'Hábitos, próxima prova e tarefas ao lado da agenda',
+    '/calendario?fixture=views&visao=dia&data=2026-10-29',
+    VIEWS_NOW,
+  ],
+  [
+    'calendario-ano',
+    'Visão anual',
+    'Doze meses e a densidade de eventos de cada dia',
+    '/calendario?fixture=views&visao=ano&data=2026-10-29',
+    VIEWS_NOW,
+  ],
+  [
+    'habitos',
+    'Hábitos',
+    'Heatmap de contribuições para cada hábito',
+    '/habitos?fixture=habits',
+    STATS_NOW,
+  ],
   [
     'foco-rodando',
     'Modo Foco',
@@ -44,8 +74,20 @@ const SCREENS = [
       await page.waitForTimeout(700);
     },
   ],
-  ['foco-travado', 'Foco travado', 'Sem distrações: só o tempo e “Segurar para destravar”', '/foco?fixture=focus', STATS_NOW],
-  ['estatisticas', 'Estatísticas', 'Horas, preparação, água, hábitos e dias de mais foco', '/estatisticas?fixture=stats', STATS_NOW],
+  [
+    'foco-travado',
+    'Foco travado',
+    'Sem distrações: só o tempo e “Segurar para destravar”',
+    '/foco?fixture=focus',
+    STATS_NOW,
+  ],
+  [
+    'estatisticas',
+    'Estatísticas',
+    'Horas, preparação, água, hábitos e dias de mais foco',
+    '/estatisticas?fixture=stats',
+    STATS_NOW,
+  ],
 ];
 
 const FORMATS = [
@@ -55,8 +97,13 @@ const FORMATS = [
   ['post-1080x1350', 1080, 1350, 'card'],
 ];
 
-for (const dir of ['screens', 'social', 'videos']) mkdirSync(path.join(mediaDir, dir), { recursive: true });
-const server = await createServer({ root: webRoot, logLevel: 'error', server: { port: PORT, strictPort: true } });
+for (const dir of ['screens', 'social', 'videos'])
+  mkdirSync(path.join(mediaDir, dir), { recursive: true });
+const server = await createServer({
+  root: webRoot,
+  logLevel: 'error',
+  server: { port: PORT, strictPort: true },
+});
 await server.listen();
 const browser = await chromium.launch();
 
@@ -83,7 +130,11 @@ async function compose(page, file, mode, width, height, title, caption) {
 
 try {
   // 1) Telas e imagens sociais.
-  const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, locale: 'pt-BR', timezoneId: 'America/Sao_Paulo' });
+  const context = await browser.newContext({
+    viewport: { width: 1920, height: 1080 },
+    locale: 'pt-BR',
+    timezoneId: 'America/Sao_Paulo',
+  });
   const page = await context.newPage();
   const composer = await (await browser.newContext()).newPage();
   for (const [slug, title, caption, url, now, action] of SCREENS) {
@@ -100,14 +151,22 @@ try {
     }
     console.log('ok', slug);
   }
-  copyFileSync(path.join(mediaDir, 'social', 'calendario-semana-og-1200x630.png'), path.resolve(webRoot, 'public/og.png'));
+  copyFileSync(
+    path.join(mediaDir, 'social', 'calendario-semana-og-1200x630.png'),
+    path.resolve(webRoot, 'public/og.png'),
+  );
   await context.close();
 
   // 2) Vídeos curtos (≤ 15 s), 1280×720.
   const size = { width: 1280, height: 720 };
   async function record(name, now, run) {
     const tmp = path.join(mediaDir, 'videos', `_${name}`);
-    const ctx = await browser.newContext({ viewport: size, recordVideo: { dir: tmp, size }, locale: 'pt-BR', timezoneId: 'America/Sao_Paulo' });
+    const ctx = await browser.newContext({
+      viewport: size,
+      recordVideo: { dir: tmp, size },
+      locale: 'pt-BR',
+      timezoneId: 'America/Sao_Paulo',
+    });
     const p = await ctx.newPage();
     p.on('dialog', (d) => void d.accept());
     await p.clock.install({ time: now });
