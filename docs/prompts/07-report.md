@@ -84,7 +84,7 @@ O Lighthouse 13 **não tem mais a categoria PWA**; a instalabilidade foi verific
 
 - `screens/<tela>-1920x1080.png` para: `calendario-mes`, `calendario-semana`, `calendario-dia`, `calendario-ano`, `habitos`, `foco-rodando`, `foco-travado`, `estatisticas`.
 - `social/<tela>-<formato>.png` para cada uma das 8 telas: `github-1280x640` (imagem social do GitHub), `og-1200x630`, `post-1200x627` (recortes "cover" a partir de 1920×1080) e `post-1080x1350` (cartão com título, legenda e a captura recortada). A imagem da Semana, em 1200×630, vira `apps/web/public/og.png`.
-- `videos/modo-foco.webm` (digitar o tempo, travar, iniciar e "Segurar para destravar"), `videos/habito-heatmap.webm` (criar um hábito e marcar hoje) e `videos/visoes-calendario.webm` (Dia → Semana → Mês → Ano), 1280×720, cerca de 8 a 12 s cada. **Não há `ffmpeg` nesta máquina**, então ficaram em WebM; conversão para MP4 (o LinkedIn aceita melhor):
+- `videos/modo-foco.webm` (digitar o tempo, travar, iniciar e "Segurar para destravar"), `videos/habito-heatmap.webm` (criar um hábito e marcar hoje) e `videos/visoes-calendario.webm` (Dia → Semana → Mês → Ano), 1280×720, cerca de 8 a 12 s cada. Gerados em WebM e convertidos para MP4 com o `ffmpeg` (instalado pelo `winget`; durações medidas: 10,6 s, 8,2 s e 8,5 s). Comando:
 
 ```bash
 ffmpeg -i docs/media/videos/modo-foco.webm -c:v libx264 -pix_fmt yuv420p -movflags +faststart docs/media/videos/modo-foco.mp4
@@ -120,7 +120,7 @@ ffmpeg -i docs/media/videos/modo-foco.webm -c:v libx264 -pix_fmt yuv420p -movfla
 ## Pendências
 
 - Preencher `[PREENCHER]` em `README.md` (nome e LinkedIn), `docs/portfolio/linkedin-post.md` e `docs/portfolio/curriculo.md`.
-- Enviar a imagem social do repositório (Settings → Social preview) e converter os vídeos para MP4 antes de postar.
+- Enviar a imagem social do repositório (Settings → Social preview) (os vídeos já estão em MP4).
 - Alertas do Lighthouse (`target-size`, `label-content-name-mismatch`, `valid-source-maps`) e o ciclo real de atualização do service worker (publicar uma versão nova e aceitar a oferta) só foram verificados por regra e teste, não manualmente.
 - Testes em Firefox e Safari (issue aberta).
 
