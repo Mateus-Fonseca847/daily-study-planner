@@ -5,6 +5,19 @@ tem versões publicadas.
 
 ## [Não lançado]
 
+### Adicionado (v0.7.0, PWA e persistência)
+
+- **App instalável e offline** (`vite-plugin-pwa`, Workbox): manifest com ícones (incluindo maskable), atalhos (Modo Foco, Hábitos, Estatísticas) e `start_url` `/calendario`; pré-cache de todo o app shell, links diretos a qualquer rota funcionam sem rede. O service worker só existe no build e no preview, nunca no `pnpm dev`.
+- Atualização por oferta ("Nova versão disponível · Atualizar", também em Preferências), sem recarregar sozinho e **nunca durante uma sessão de foco** (rodando, pausada ou travada).
+- Botão "Instalar app" (sidebar e Preferências), instruções para navegadores sem `beforeinstallprompt`, armazenamento persistente (pedido na primeira criação de dados e ao instalar; situação e espaço usado em Preferências) e indicador "Offline" na topbar.
+- Ícones gerados de um SVG versionado (`pnpm icons`), favicons, metadados Open Graph e Twitter, `robots.txt`.
+- Projeto Playwright "pwa" (build + preview) no CI: manifest, service worker, offline, fixtures sem efeito e console sem erros.
+
+### Alterado (v0.7.0)
+
+- As fixtures de desenvolvimento (`?fixture=`) deixam de ir para o bundle de produção.
+- O nome acessível dos botões "criar evento" começa pela data visível (`1 de outubro: criar evento`).
+
 ### Corrigido (v0.5.1, AppShell na altura da janela)
 
 - Em `/habitos` o **documento** rolava (1460 px numa janela de 1080) e aparecia uma faixa do fundo do body embaixo, como se o conteúdo fosse cortado. Causa: a tabela `sr-only` do heatmap (e a de `stats/charts.tsx`) é `position: absolute` sem ancestral posicionado e `<table>` ignora `height` e `overflow`, então estendia a rolagem da viewport. As tabelas agora ficam dentro de um `<div className="sr-only">` que recorta de verdade.
