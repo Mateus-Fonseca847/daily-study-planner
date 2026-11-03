@@ -182,6 +182,7 @@
   --spacing-grid-hour: var(--ds-grid-hour-h);
   --spacing-grid-label: var(--ds-grid-label-w);
   --spacing-week-min: var(--ds-week-min-w);
+  --spacing-week-col-min: var(--ds-week-col-min-w);
   --spacing-week-head: var(--ds-week-head-h);
   --spacing-day-panel: var(--ds-day-panel-w);
   --spacing-now-line: var(--ds-now-line-h);
@@ -247,6 +248,22 @@
       var(--ds-bottom-bar-h) + var(--ds-fab-size) + var(--ds-bar-gap) * 2 + var(--ds-safe-bottom)
     );
   }
+}
+
+/* Botão + flutuante do celular: no canto, acima da barra inferior e da área segura. */
+@utility fab-slot {
+  right: calc(var(--ds-page-pad-x) + var(--ds-safe-right));
+  bottom: calc(var(--ds-bottom-bar-h) + var(--ds-bar-gap) + var(--ds-safe-bottom));
+}
+
+/* Semana em tela estreita: a grade tem largura de rótulo + 7 colunas mínimas (rola na horizontal, ~3 dias por tela). */
+@utility week-min-narrow {
+  min-width: calc(var(--ds-grid-label-w) + 7 * var(--ds-week-col-min-w));
+}
+
+/* Sem o menu "copiar/pré-visualizar" do toque longo (usado para criar evento na grade). */
+@utility no-callout {
+  -webkit-touch-callout: none;
 }
 
 /* Variantes de dispositivo (mesmas consultas de lib/responsive/breakpoints.ts: MEDIA). */
@@ -342,12 +359,12 @@
 @utility habit-bg-soft {
   background-color: color-mix(in srgb, var(--habit) 18%, transparent);
 }
-/* Visão Ano: 4×3 a partir de 1600 px, 3×4 a partir de 1100 px e 2×6 abaixo. */
+/* Visão Ano: 4×3 a partir de 1600 px, 3×4 a partir do tablet (768 px) e 2×6 no celular. */
 @utility year-grid {
   display: grid;
   gap: var(--ds-year-gap);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  @media (width >= 68.75rem) {
+  @media (width >= 48rem) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   @media (width >= 100rem) {

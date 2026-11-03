@@ -104,6 +104,7 @@
   --ds-grid-hour-h: 4.5rem;
   --ds-grid-label-w: 3.5rem;
   --ds-week-min-w: 60rem;
+  --ds-week-col-min-w: 7rem;
   --ds-week-head-h: 3.5rem;
   --ds-day-panel-w: 20rem;
   --ds-day-grid-min-h: 36rem;
@@ -328,6 +329,14 @@
 @supports (height: 100dvh) {
   :root {
     --ds-viewport-h: 100dvh;
+  }
+}
+
+/* Paisagem de celular: topbar e barra inferior mais finas. */
+@media (height <= 31.25rem) and (pointer: coarse) {
+  :root {
+    --ds-bottom-bar-h: var(--ds-bar-h-short);
+    --ds-topbar-h-compact: var(--ds-bar-h-short);
   }
 }
 
