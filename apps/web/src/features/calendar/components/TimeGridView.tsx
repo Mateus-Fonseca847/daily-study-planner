@@ -25,6 +25,8 @@ interface TimeGridViewProps {
   /** Criar evento num dia e horário (`yyyy-MM-dd`, `HH:mm`) ou só num dia (cabeçalho). */
   onCreateAt: (date: string, time: string) => void;
   onCreateDay: (date: string) => void;
+  /** Deslizar na horizontal (só na visão Dia, no celular). */
+  onSwipe?: (direction: 'left' | 'right') => void;
 }
 
 /** Dia da semana e número do dia no cabeçalho da coluna; o número cria um evento naquele dia. */
@@ -70,6 +72,7 @@ export function TimeGridView({
   onSelect,
   onCreateAt,
   onCreateDay,
+  onSwipe,
 }: TimeGridViewProps) {
   const { now, today, habits, ctx } = useHabitModel();
   const setHabitValue = useData((s) => s.setHabitValue);
@@ -95,7 +98,8 @@ export function TimeGridView({
       today={today}
       nowMin={nowMin}
       ariaLabel={week ? 'Calendário semanal' : 'Calendário do dia'}
-      minWidthClass={week ? 'min-w-week-min' : ''}
+      minWidthClass={week ? 'min-w-week-min max-lg:week-min-narrow' : ''}
+      {...(onSwipe ? { onSwipe } : {})}
       {...(week
         ? {
             renderHeader: (date: string) => (

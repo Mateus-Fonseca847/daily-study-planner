@@ -24,6 +24,10 @@ describe('swipeDirection', () => {
     expect(swipeDirection({ dx: -12, dy: 0, dtMs: 10 })).toBeNull();
   });
 
+  it('gesto longo demais é segurar, não deslizar', () => {
+    expect(swipeDirection({ dx: -200, dy: 0, dtMs: 900 })).toBeNull();
+  });
+
   it('gesto mais vertical que horizontal é rolagem', () => {
     expect(swipeDirection({ dx: -80, dy: 70, dtMs: 200 })).toBeNull();
     expect(swipeDirection({ dx: -80, dy: 120, dtMs: 200 })).toBeNull();

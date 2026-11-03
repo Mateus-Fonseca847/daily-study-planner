@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { StudyEvent } from '@daily/shared';
 import { cn } from '../../../lib/cn';
+import { usePhone } from '../../../lib/responsive/use-media';
 import { parseDayKey, shiftDay } from '../../../lib/dates';
 import { formatLongDay } from '../../../lib/habits/summary';
 import {
@@ -42,6 +43,8 @@ interface MiniMonthViewProps {
   onActive: (date: string) => void;
   onOpenDay: (date: string) => void;
   onOpenMonth: (date: string) => void;
+  /** Celular: tocar num dia abre o Mês em vez do Dia. */
+  phone: boolean;
 }
 
 function MiniMonthView({
@@ -52,18 +55,19 @@ function MiniMonthView({
   onActive,
   onOpenDay,
   onOpenMonth,
+  phone,
 }: MiniMonthViewProps) {
   const first = month.days[0] ?? '';
   const name = capitalize(format(parseDayKey(first), 'MMMM', { locale: ptBR }));
   return (
     <section aria-label={name} className="min-w-0">
-      <h3 className="mb-2">
+      <h3 className="mb-2 coarse:mb-0">
         <button
           type="button"
           aria-label={`Abrir ${name} na visão Mês`}
           title={`Abrir ${name} na visão Mês`}
           onClick={() => onOpenMonth(first)}
-          className="rounded-sm text-md font-semibold tracking-tight hover:text-accent"
+          className="rounded-sm text-md font-semibold tracking-tight hover:text-accent coarse:inline-flex coarse:min-h-touch coarse:items-center"
         >
           {name}
         </button>
@@ -91,7 +95,8 @@ function MiniMonthView({
               aria-current={day === today ? 'date' : undefined}
               tabIndex={day === activeDay ? 0 : -1}
               onFocus={() => onActive(day)}
-              onClick={() => onOpenDay(day)}
+              data-touch="dense"
+              onClick={() => (phone ? onOpenMonth(day) : onOpenDay(day))}
               className={cn(
                 'relative mx-auto inline-flex size-year-day items-center justify-center rounded-sm text-2xs tabular-nums hover:brightness-125',
                 DENSITY_CLASS[density?.level ?? 0],
@@ -119,6 +124,7 @@ export function YearView({ date, today, events, onOpenDay, onOpenMonth }: YearVi
   const months = useMemo(() => grade12Meses(year), [year]);
   const densities = useMemo(() => densidadePorDia(events, year), [events, year]);
   const [active, setActive] = useState(today.startsWith(String(year)) ? today : `${year}-01-01`);
+  const phone = usePhone();
   const rootRef = useRef<HTMLDivElement>(null);
   const activeDay = active.startsWith(String(year)) ? active : `${year}-01-01`;
 
@@ -159,6 +165,7 @@ export function YearView({ date, today, events, onOpenDay, onOpenMonth }: YearVi
             onActive={setActive}
             onOpenDay={onOpenDay}
             onOpenMonth={onOpenMonth}
+            phone={phone}
           />
         ))}
       </div>

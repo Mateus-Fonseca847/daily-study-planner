@@ -11,6 +11,8 @@ export const SWIPE_MIN_VELOCITY = 0.5;
 export const SWIPE_FLICK_MIN_DISTANCE_PX = 24;
 /** Quanto a direção precisa dominar o eixo vertical (evita conflitar com a rolagem). */
 export const SWIPE_DOMINANCE = 1.6;
+/** Duração máxima (ms) de um deslize; mais longo que isso é segurar, não deslizar. */
+export const SWIPE_MAX_MS = 600;
 /** Distância (px) em que o gesto ainda pode virar rolagem e não deve ser tratado. */
 export const GESTURE_SLOP_PX = 10;
 
@@ -30,6 +32,7 @@ interface Delta {
 export function swipeDirection({ dx, dy, dtMs }: Delta): SwipeDirection {
   const ax = Math.abs(dx);
   const ay = Math.abs(dy);
+  if (dtMs > SWIPE_MAX_MS) return null;
   if (ax < SWIPE_FLICK_MIN_DISTANCE_PX) return null;
   if (ax < ay * SWIPE_DOMINANCE) return null;
   const velocity = ax / Math.max(dtMs, 1);

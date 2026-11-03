@@ -1,6 +1,10 @@
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { getYear, setMonth, setYear } from 'date-fns';
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
+import { useBreakpoint } from '../../../lib/responsive/use-media';
+import { PeriodPickerSheet } from './PeriodPickerSheet';
 import { SegmentedControl } from '../../../components/ui/SegmentedControl';
 import { Select } from '../../../components/ui/Select';
 import { dayKey, parseDayKey } from '../../../lib/dates';
@@ -63,9 +67,60 @@ export function CalendarControls({
     label: String(first + i),
   }));
   const [prevLabel, nextLabel] = STEP_LABEL[view];
+  const layout = useBreakpoint();
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  if (layout === 'phone') {
+    return (
+      <div className="flex shrink-0 flex-col gap-2 border-b-hair px-4 py-2">
+        <SegmentedControl
+          aria-label="Visualização do calendário"
+          options={VIEW_OPTIONS}
+          block
+          value={view}
+          onChange={onViewChange}
+        />
+        <div className="flex items-center gap-1">
+          <Button variant="icon" size="md" aria-label={prevLabel} onClick={() => onStep(-1)}>
+            <ChevronLeft aria-hidden strokeWidth={1.5} className="size-icon" />
+          </Button>
+          <Button variant="icon" size="md" aria-label={nextLabel} onClick={() => onStep(1)}>
+            <ChevronRight aria-hidden strokeWidth={1.5} className="size-icon" />
+          </Button>
+          <Button variant="secondary" onClick={onToday}>
+            Hoje
+          </Button>
+          <h2 aria-live="polite" className="min-w-0 flex-1 text-title font-semibold tracking-tight">
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              aria-label={`${periodTitle(view, date)}: escolher ${view === 'ano' ? 'ano' : 'mês e ano'}`}
+              onClick={() => setPickerOpen(true)}
+              className="flex h-touch w-full items-center justify-end gap-1 truncate rounded-md pl-2 text-right"
+            >
+              <span className="truncate">{periodTitle(view, date)}</span>
+              <ChevronDown
+                aria-hidden
+                strokeWidth={1.5}
+                className="size-icon-sm shrink-0 text-muted"
+              />
+            </button>
+          </h2>
+        </div>
+        {pickerOpen && (
+          <PeriodPickerSheet
+            view={view}
+            date={date}
+            onPick={onDateChange}
+            onClose={() => setPickerOpen(false)}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-controls shrink-0 items-center justify-between gap-4 border-b-hair px-page">
+    <div className="flex h-controls shrink-0 items-center justify-between gap-4 border-b-hair px-page max-lg:h-auto max-lg:flex-wrap max-lg:py-2">
       <div className="flex min-w-0 items-center gap-3">
         <SegmentedControl
           aria-label="Visualização do calendário"
