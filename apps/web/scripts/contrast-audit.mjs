@@ -12,7 +12,22 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(here, '..');
 const outDir = path.resolve(webRoot, '.reports');
+process.env.VITE_SUPABASE_URL ??= 'http://localhost:54321';
+process.env.VITE_SUPABASE_ANON_KEY ??= 'test-key';
 const label = process.argv[2] ?? 'audit';
+/** `--phone`: mede o layout de celular (390×844, toque), inclusive o sheet “Mais” e o menu Criar. */
+const phone = process.argv.includes('--phone');
+const PHONE_STATES = [
+  [
+    '/calendario?visao=mes&data=2026-10-29&fixture=views#mais',
+    async (p) => p.getByRole('button', { name: 'Mais', exact: true }).tap(),
+  ],
+  [
+    '/calendario?visao=semana&data=2026-10-29&fixture=views#criar',
+    async (p) => p.getByRole('button', { name: 'Criar', exact: true }).tap(),
+  ],
+  ['/habitos?fixture=habits#dia', async (p) => p.locator('[data-date="2026-11-09"]').first().tap()],
+];
 const PAGES = [
   '/estatisticas?fixture=stats',
   '/foco?fixture=stats',
@@ -41,18 +56,44 @@ await server.listen();
 const browser = await chromium.launch();
 const results = [];
 try {
-  for (const url of PAGES) {
-    const page = await (
-      await browser.newContext({ viewport: { width: 1920, height: 1080 } })
-    ).newPage();
+  const targets = phone
+    ? [
+        ...PAGES,
+        '/provas?fixture=views',
+        '/tarefas?fixture=views',
+        '/materias?fixture=views',
+        '/blocos?fixture=views',
+        '/preferencias?fixture=stats',
+        '/entrar',
+        '/privacidade',
+        ...PHONE_STATES.map(([u]) => u),
+      ]
+    : PAGES;
+  for (const url of targets) {
+    const context = await browser.newContext(
+      phone
+        ? {
+            viewport: { width: 390, height: 844 },
+            isMobile: true,
+            hasTouch: true,
+            deviceScaleFactor: 1,
+          }
+        : { viewport: { width: 1920, height: 1080 } },
+    );
+    const page = await context.newPage();
     await page.goto(`http://localhost:5196${url}`);
     await page.waitForTimeout(600);
+    const state = PHONE_STATES.find(([u]) => u === url);
+    if (state) {
+      await state[1](page);
+      await page.waitForTimeout(400);
+    }
     // Mostra a página inteira para medir tudo de uma vez.
     const scroller = page.locator('main > div.overflow-y-auto');
     // Páginas com rolagem interna (calendário) são medidas na janela, sem expandir.
     if ((await scroller.count()) > 0) {
       const height = await scroller.evaluate((el) => el.scrollHeight);
-      await page.setViewportSize({ width: 1920, height: height + 90 });
+      await page.setViewportSize({ width: phone ? 390 : 1920, height: height + 90 });
     }
     await page.waitForTimeout(300);
 
@@ -152,7 +193,7 @@ try {
       const large = item.size >= 24 || (item.size >= 18.66 && item.weight >= 700);
       const min = large ? 3 : 4.5;
       results.push({
-        page: url.split('?')[0],
+        page: url.split('?')[0] + (url.includes('#') ? '#' + url.split('#')[1] : ''),
         text: item.text,
         box: item.box,
         size: Math.round(item.size * 10) / 10,
