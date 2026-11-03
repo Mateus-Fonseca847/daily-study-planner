@@ -9,21 +9,21 @@ const BASE =
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    'h-control rounded-full bg-accent px-5 text-nav font-semibold text-accent-fg hover:brightness-95',
+    'h-control rounded-full bg-accent px-5 text-nav font-semibold text-accent-fg hover:brightness-95 coarse:min-h-touch',
   secondary:
-    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-md text-fg hover:bg-hover',
+    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-md text-fg hover:bg-hover coarse:min-h-touch',
   /** Igual ao secundário, em 13 px (como o botão da topbar na referência). */
   outline:
-    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-base text-fg hover:bg-hover',
+    'h-control rounded-full border-hair border-line-strong bg-transparent px-4 text-base text-fg hover:bg-hover coarse:min-h-touch',
   pill: 'h-create w-create-btn rounded-full bg-pill px-4 text-nav font-semibold text-pill-fg hover:brightness-95',
   icon: 'rounded-full bg-surface text-fg hover:brightness-125',
   tile: 'rounded-md bg-hover text-soft hover:text-fg',
 };
 
 const ICON_SIZES: Record<IconSize, string> = {
-  xs: 'size-control-sm',
-  sm: 'size-avatar-md',
-  md: 'size-control',
+  xs: 'size-control-sm coarse:size-touch',
+  sm: 'size-avatar-md coarse:size-touch',
+  md: 'size-control coarse:size-touch',
 };
 
 type CommonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'>;

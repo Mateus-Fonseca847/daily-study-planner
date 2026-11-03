@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { usePhone } from '../../lib/responsive/use-media';
 import { useFocusScope } from '../../lib/use-focus-scope';
+import { BottomSheet } from './BottomSheet';
 
 interface PopoverProps {
   /** Elemento âncora (ex.: o chip clicado). */
@@ -28,7 +30,7 @@ function computePosition(anchor: DOMRect, panel: DOMRect): Position {
   return { top, left };
 }
 
-export function Popover({ anchor, onClose, children, ...rest }: PopoverProps) {
+function FloatingPopover({ anchor, onClose, children, ...rest }: PopoverProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<Position | null>(null);
   // Ref evita reabrir/refocar o popover quando o pai recria `onClose` a cada render.
@@ -73,4 +75,20 @@ export function Popover({ anchor, onClose, children, ...rest }: PopoverProps) {
     </div>,
     document.body,
   );
+}
+
+/**
+ * Popover ancorado em tablet e desktop; em celular o mesmo conteúdo vira um sheet na borda
+ * inferior (sem âncora, com o botão voltar e o arrasto para fechar).
+ */
+export function Popover(props: PopoverProps) {
+  const phone = usePhone();
+  if (phone) {
+    return (
+      <BottomSheet title={props['aria-label']} onClose={props.onClose} hideTitle>
+        {props.children}
+      </BottomSheet>
+    );
+  }
+  return <FloatingPopover {...props} />;
 }
