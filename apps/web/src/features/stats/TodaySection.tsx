@@ -29,9 +29,14 @@ export function TodaySection({ now, today, index, habits, habitCtx }: StatsModel
 
   return (
     <div className="grid-stats">
-      <HoursCard days={week} today={today} />
-      <PrepCard prep={exam ? examPrep(exam) : undefined} subjectName={subjectName} now={now} />
-      <div className="flex min-h-0 min-w-0 flex-col gap-card-gap">
+      {/* Wrappers `contents`: no desktop somem; no celular só definem a ordem de leitura. */}
+      <div className="contents max-md:order-2 max-md:block">
+        <HoursCard days={week} today={today} />
+      </div>
+      <div className="contents max-md:order-1 max-md:block">
+        <PrepCard prep={exam ? examPrep(exam) : undefined} subjectName={subjectName} now={now} />
+      </div>
+      <div className="flex min-h-0 min-w-0 flex-col gap-card-gap max-md:order-4 max-md:flex-col-reverse">
         <StreakPill current={streaks.current} best={streaks.best} />
         <WaterCard
           ml={waterOn(index, today)}
@@ -40,10 +45,10 @@ export function TodaySection({ now, today, index, habits, habitCtx }: StatsModel
           now={now}
         />
       </div>
-      <div className="xl:row-span-2">
+      <div className="max-md:order-3 xl:row-span-2">
         <HabitsTodayCard habits={habits} ctx={habitCtx} now={now} />
       </div>
-      <div className="col-span-2 xl:col-span-3">
+      <div className="col-span-1 max-md:order-5 md:col-span-2 lg:col-span-3">
         <AgendaCard events={events} subjects={subjects} today={today} now={now} />
       </div>
     </div>

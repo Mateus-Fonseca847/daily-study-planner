@@ -79,7 +79,7 @@ export function AnalysisSection({ now, today, index, habits, habitCtx }: StatsMo
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 phone:sticky phone:top-0 phone:z-20 phone:-mx-page phone:bg-bg phone:px-page phone:py-2">
         <h2 id="analises-title" className="text-lg font-semibold tracking-tight">
           Análises
         </h2>

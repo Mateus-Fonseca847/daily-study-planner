@@ -226,6 +226,7 @@
   --spacing-handle-h: var(--ds-sheet-handle-h);
   --radius-sheet: var(--ds-sheet-radius);
 
+  --container-focus-notice: var(--ds-focus-notice-w);
   --container-modal: var(--ds-modal-w);
   --container-toast: var(--ds-toast-w);
   --container-content: var(--ds-page-max-w);
@@ -264,6 +265,36 @@
 /* Sem o menu "copiar/pré-visualizar" do toque longo (usado para criar evento na grade). */
 @utility no-callout {
   -webkit-touch-callout: none;
+}
+
+/* Páginas de leitura e formulários: no celular o texto sobe para ≥ 16 px (reescreve os tokens no escopo). */
+@utility readable {
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    --ds-text-md: var(--ds-text-readable);
+    --ds-text-base: var(--ds-text-readable);
+    --ds-text-sm: var(--ds-text-readable-sm);
+    --ds-text-xs: var(--ds-text-readable-xs);
+  }
+}
+
+/* Grupo de botões: em coluna, um por linha e em largura total, no celular. */
+@utility stack-on-phone {
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    flex-direction: column;
+    align-items: stretch;
+    > * {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+/* Área segura em páginas fora do AppShell: bordas transparentes do tamanho dos recuos (0 fora de aparelhos com entalhe),
+   para não brigar com o padding da página. */
+@utility safe-frame {
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--ds-safe-top) var(--ds-safe-right) var(--ds-safe-bottom) var(--ds-safe-left);
 }
 
 /* Variantes de dispositivo (mesmas consultas de lib/responsive/breakpoints.ts: MEDIA). */
@@ -316,8 +347,14 @@
   grid-template-columns: var(--ds-stats-cols);
   grid-template-rows: var(--ds-stats-row1-h) auto;
   @media (width < 80rem) {
-    grid-template-columns: var(--ds-stats-cols-md);
+    grid-template-columns: var(--ds-stats-cols-lg);
     grid-template-rows: none;
+  }
+  @media (width < 64rem) {
+    grid-template-columns: var(--ds-stats-cols-md);
+  }
+  @media (width < 48rem) {
+    grid-template-columns: var(--ds-stats-cols-sm);
   }
 }
 @utility grid-analysis {

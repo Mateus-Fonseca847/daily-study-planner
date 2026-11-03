@@ -10,8 +10,8 @@ export function StatsPage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-stats flex-col gap-10 px-page py-8">
-        <h1 className="text-display font-normal tracking-tighter">
+      <div className="mx-auto flex w-full max-w-stats flex-col gap-10 px-page py-8 phone:gap-6 phone:py-4 phone:pb-24">
+        <h1 className="text-display font-normal tracking-tighter max-md:text-xl">
           Olá
           {name && (
             <>

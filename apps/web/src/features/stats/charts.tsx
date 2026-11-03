@@ -1,4 +1,5 @@
 import type { SeriesItem, SubjectHours } from '../../lib/stats/analysis';
+import { usePhone } from '../../lib/responsive/use-media';
 import type { SUBJECT_COLOR_CLASS } from '../../components/ui/SubjectDot';
 
 /** Larguras do gráfico em unidades do `viewBox` (cada barra ocupa 10). */
@@ -8,6 +9,8 @@ const BAR_X = 1.5;
 const MIN_BAR_HEIGHT = 2;
 /** Com muitos rótulos, mostra só um a cada N para não encavalar. */
 const MAX_LABELS = 8;
+/** No celular o eixo tem menos marcas (o gráfico é mais estreito). */
+const MAX_LABELS_PHONE = 5;
 
 export const EMPTY_CHART_TEXT = 'Ainda não há dados neste período';
 
@@ -37,7 +40,9 @@ export function BarChart({ items, format, caption, valueHeader, plannedHeader }:
   const max = Math.max(1, ...items.map((i) => Math.max(i.planned ?? 0, i.value)));
   const height = (value: number) =>
     value <= 0 ? 0 : Math.max(MIN_BAR_HEIGHT, (value / max) * 100);
-  const step = items.length > MAX_LABELS * 2 ? Math.ceil(items.length / MAX_LABELS) : 1;
+  const phone = usePhone();
+  const maxLabels = phone ? MAX_LABELS_PHONE : MAX_LABELS;
+  const step = items.length > maxLabels * (phone ? 1 : 2) ? Math.ceil(items.length / maxLabels) : 1;
 
   return (
     <div>

@@ -267,7 +267,9 @@
   /* Dashboard de Estatísticas */
   --ds-stats-max-w: 72rem;
   --ds-stats-cols: 1.5fr 1.5fr 1fr 2fr;
+  --ds-stats-cols-lg: repeat(3, minmax(0, 1fr));
   --ds-stats-cols-md: repeat(2, minmax(0, 1fr));
+  --ds-stats-cols-sm: minmax(0, 1fr);
   --ds-stats-row1-h: 20rem;
   --ds-stats-pill-h: 4.5rem;
   --ds-ring-size: 9.5rem;
@@ -298,6 +300,11 @@
   --ds-focus-pill-px: 1.5rem;
   --ds-focus-hold-size: 1.75rem;
   --ds-focus-hold-ring: 0.1875rem;
+  --ds-focus-notice-w: 28rem;
+  /* Texto legível (≥ 16 px) nas páginas de leitura e formulários do celular. */
+  --ds-text-readable: 1rem;
+  --ds-text-readable-sm: 0.9375rem;
+  --ds-text-readable-xs: 0.875rem;
 
   /* Responsividade (celular e tablet) */
   --ds-safe-top: env(safe-area-inset-top, 0px);
@@ -329,6 +336,17 @@
 @supports (height: 100dvh) {
   :root {
     --ds-viewport-h: 100dvh;
+  }
+}
+
+/* Celular: células do heatmap com o alvo mínimo de 24 px (a grade rola na horizontal). */
+@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+  :root {
+    --ds-heat-cell-min: 1.5rem;
+    /* Modo Foco: dígitos fluidos pela largura e pela altura (celular em paisagem não estoura). */
+    --ds-text-focus: clamp(3.5rem, min(18vw, 30dvh), 7rem);
+    --ds-text-focus-frac: clamp(1rem, min(5vw, 8dvh), 1.75rem);
+    --ds-focus-gap: 1.5rem;
   }
 }
 
