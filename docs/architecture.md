@@ -1,6 +1,6 @@
 # Arquitetura
 
-O Daily é um front-end estático (React + Vite) que guarda os dados no navegador. Não há back-end: a UI nunca fala com o `localStorage` diretamente, e sim com um store que usa um repositório. Trocar o armazenamento por uma API é trocar o adaptador.
+O Daily é um front-end estático (React + Vite) que guarda os dados no navegador (local-first). Opcionalmente, quem entra com Google tem uma cópia sincronizada no Supabase; não há servidor próprio. A UI nunca fala com o `localStorage` diretamente, e sim com um store que usa um repositório.
 
 ## Camadas
 
@@ -25,6 +25,16 @@ flowchart TB
     LS["LocalStorageRepository (envelope, migração, validação zod)"]
     Storage[("localStorage daily:v3")]
   end
+  subgraph Cloud["Conta e nuvem (opcional)"]
+    Auth["lib/auth (Supabase Auth, login com Google, PKCE)"]
+    Sync["lib/sync (engine, reconcile, runtime)"]
+    Supa[("Supabase: user_data (RLS)")]
+  end
+  subgraph Resp["Responsividade"]
+    Bp["lib/responsive (breakpoints, hooks, gestos, teclado virtual)"]
+    Sheets["BottomSheet, Popover/Modal/Menu por faixa"]
+    Shell["AppShell por faixa: barra inferior, trilho, sidebar"]
+  end
   subgraph PWA["PWA"]
     SW["Service worker (Workbox, pré-cache)"]
     Manifest["Manifest, ícones e atalhos"]
@@ -41,6 +51,14 @@ flowchart TB
   LS --> Storage
   LS --> Shared
   Zustand --> Shared
+  Zustand <--> Sync
+  Sync --> Supa
+  Auth --> Supa
+  Auth --> Sync
+  Layout --> Shell
+  Shell --> Bp
+  Sheets --> Bp
+  UiStore --> Sheets
   SW -.cache do app shell.-> UI
   Persist -.protege.-> Storage
   Manifest -.instalação.-> UI
@@ -52,6 +70,7 @@ flowchart TB
 2. O store valida a regra de domínio (funções puras), grava pelo `DataRepository` e atualiza o estado.
 3. O `LocalStorageRepository` serializa num envelope versionado (`daily:v3`), mantém uma cópia do último estado válido e, se a gravação falhar, o estado continua em memória e a UI avisa.
 4. O evento `storage` mantém várias abas sincronizadas (a última escrita vence).
+5. Com conta, o `lib/sync` observa o store: `reconcile()` (puro) decide enviar, baixar, adotar ou pedir ao usuário que resolva um conflito; o envio usa concorrência otimista (`revision`) e a comparação é pelo hash do JSON canônico. Sem conta (ou sem as variáveis `VITE_SUPABASE_*`) nada disso roda.
 
 ## Decisões principais
 
@@ -79,3 +98,17 @@ flowchart TB
 ## Deploy
 
 Veja [`deploy.md`](deploy.md): Vercel, `apps/web/vercel.json` (rewrites, cache e cabeçalhos de segurança) e o risco de `main` ser produção.
+
+### Responsividade (celular e tablet)
+
+| Decisão                                                                                                                                                                              | Motivo                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Breakpoints num só lugar (`lib/responsive/breakpoints.ts`), espelhados no tema do Tailwind (`--breakpoint-*` e as variantes `phone`, `short` e `coarse`), com teste de que coincidem | Evita números soltos e CSS e TS divergirem                                                                   |
+| CSS onde só o estilo muda; JavaScript (`useBreakpoint`, `usePhone`) só quando a árvore muda (popover × sheet, sidebar × barra inferior)                                              | Sem flash na primeira renderização e sem lógica duplicada                                                    |
+| Responsivo por sobreposição (`max-md:`, `phone:`, `coarse:`) sobre as classes de desktop                                                                                             | O desktop (≥ 1280 px) fica pixel a pixel igual; `scripts/desktop-regression.mjs` compara com a linha de base |
+| Celular em paisagem = altura ≤ 500 px **com ponteiro de toque**                                                                                                                      | Uma janela baixa de desktop continua desktop                                                                 |
+| Alvos de toque por `pointer: coarse`, não por largura                                                                                                                                | Tablet e celular têm dedo; um notebook com mouse não muda                                                    |
+| `BottomSheet` próprio (foco preso, Esc, arrastar a alça, botão voltar via histórico)                                                                                                 | Sem biblioteca nova; o histórico guarda uma entrada por sheet aberto e o `popstate` o fecha                  |
+| Teclado virtual: `interactive-widget=resizes-content` (Chrome/Android) **e** variáveis `--ds-vv-h`/`--ds-vv-top` da `visualViewport` (iOS)                                           | O iOS não redimensiona a área de layout; os sheets e os formulários em tela cheia seguem a área visível      |
+| Gestos com eventos de ponteiro (`touch-action: pan-y` + limiar de distância, velocidade e domínio do eixo)                                                                           | Deslizar não conflita com rolar; nunca na Semana, que rola na horizontal                                     |
+| Criar evento por **toque longo** (com realce do horário) ou pelo botão +                                                                                                             | Um toque simples rola a grade e não cria evento sem querer                                                   |

@@ -36,15 +36,17 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 ## Status
 
-A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Os dados ficam no navegador; o login opcional com Google e a sincronização na nuvem (Supabase) estão em desenvolvimento.
+A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Sem conta, os dados ficam só no navegador; com o login opcional do Google, eles são sincronizados na nuvem (Supabase) entre os seus dispositivos. O app é usável em **celular e tablet**, além do desktop.
 
-| Marco                  | Escopo                                                                 | Status    |
-| ---------------------- | ---------------------------------------------------------------------- | --------- |
-| **0. Fundação visual** | Monorepo, design system, calendário mensal                             | Concluído |
-| **1. Dados locais**    | `localStorage` versionado, CRUD, páginas, backup                       | Concluído |
-| **2. Estudos**         | Provas, conteúdos, blocos de estudo, hábitos, Estatísticas e Modo Foco | Concluído |
-| **3. App**             | Visões do calendário, PWA instalável e offline, deploy                 | Concluído |
-| **4. Nuvem**           | Back-end, login, sincronização e notificações                          | Planejado |
+| Marco                   | Escopo                                                                 | Status    |
+| ----------------------- | ---------------------------------------------------------------------- | --------- |
+| **0. Fundação visual**  | Monorepo, design system, calendário mensal                             | Concluído |
+| **1. Dados locais**     | `localStorage` versionado, CRUD, páginas, backup                       | Concluído |
+| **2. Estudos**          | Provas, conteúdos, blocos de estudo, hábitos, Estatísticas e Modo Foco | Concluído |
+| **3. App**              | Visões do calendário, PWA instalável e offline, deploy                 | Concluído |
+| **4. Nuvem**            | Login opcional com Google e sincronização (Supabase)                   | Concluído |
+| **5. Celular e tablet** | Layout responsivo, toque, sheets e gestos                              | Concluído |
+| **6. Notificações**     | Lembretes de provas, blocos e hábitos                                  | Planejado |
 
 ## Telas
 
@@ -81,16 +83,50 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, hábitos de hoje e agenda) e “Análises” (semana, mês ou 90 dias) com cinco gráficos em SVG próprio e o heatmap de consistência dos hábitos
 
 - [x] **PWA**: instala como app (janela própria, atalhos para Modo Foco, Hábitos e Estatísticas), funciona offline em todas as rotas e só oferece atualização quando não há sessão de foco em andamento
+- [x] **Login opcional com Google e sincronização na nuvem** (Supabase): local-first, com tela de entrada, menu da conta, resolução de conflito e exclusão da conta
+- [x] **Celular e tablet**: barra inferior com "Mais" e botão + no celular, trilho de ícones no tablet, popovers viram sheets, formulários em tela cheia, gestos (deslizar para mudar o dia ou o mês, toque longo para criar na grade) e alvos de toque de 44 px (veja "Usar no celular e no tablet")
 - [x] Armazenamento persistente solicitado ao navegador, com situação e espaço usado em Preferências, e indicador "Offline" na topbar
 
 ### Em planejamento
 
-- [ ] Autenticação, back-end e sincronização
 - [ ] Notificações e lembretes periódicos
 - [ ] Recorrência de eventos, arrastar e redimensionar na grade, eventos de vários dias
 - [ ] Página de atalhos de teclado
 
 O detalhamento está nas [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues) e nos [milestones](https://github.com/Mateus-Fonseca847/daily-study-planner/milestones).
+
+## Usar no celular e no tablet
+
+O Daily se adapta a quatro faixas de tela (definidas em um só lugar: `apps/web/src/lib/responsive/breakpoints.ts`, espelhadas no tema do Tailwind e cobertas por teste):
+
+| Faixa            | Largura                          | Navegação                                                                                              |
+| ---------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Celular          | < 768 px (e celular em paisagem) | Barra inferior (Calendário, Hábitos, Foco, Estatísticas e **Mais**) e botão **+** flutuante para criar |
+| Tablet           | 768–1023 px                      | Trilho de ícones; ao expandir, o menu abre sobre o conteúdo e fecha ao tocar fora                      |
+| Notebook pequeno | 1024–1279 px                     | Barra lateral (lembra se você a recolheu)                                                              |
+| Desktop          | ≥ 1280 px                        | Como sempre foi                                                                                        |
+
+**No toque:**
+
+- Popovers viram **sheets** na borda inferior (arraste a alça ou use o botão voltar do aparelho para fechar); formulários ocupam a tela inteira, com as ações sempre visíveis acima do teclado.
+- **Calendário:** no Mês, toque num dia para ver a agenda dele logo abaixo; na Semana, a grade rola para os lados (~3 dias por tela) começando em hoje; **deslize** na horizontal no Dia e no Mês para mudar de período. Para criar um evento numa hora da grade, use o **toque longo** (o horário fica realçado) ou o botão **+**; um toque simples só rola.
+- **Hábitos:** toque numa célula do heatmap para abrir o dia, com ‹ › para navegar entre os dias.
+- **Modo Foco:** os dígitos se ajustam à tela (inclusive em paisagem); para destravar, **segure o botão por 3 s**. O cronômetro é medido por horário, então continua exato com a tela apagada ou a aba em segundo plano. O áudio de fim é liberado no toque em "Iniciar".
+
+**iPhone e iPad:** o Safari não oferece tela cheia para páginas e só mantém a tela ligada nas versões recentes do iOS; o Daily avisa isso na própria tela do Modo Foco. Para instalar, use **Compartilhar → Adicionar à Tela de Início**. O login com Google dentro do app instalado no iOS pode não concluir (veja as limitações).
+
+<p align="center">
+  <img src="docs/images/celular-calendario-mes.webp" width="190" alt="Calendário no celular: Mês compacto com a agenda do dia" />
+  <img src="docs/images/celular-calendario-semana.webp" width="190" alt="Calendário no celular: Semana com rolagem horizontal" />
+  <img src="docs/images/celular-habitos.webp" width="190" alt="Hábitos no celular com o heatmap rolável" />
+  <img src="docs/images/celular-mais.webp" width="190" alt="Sheet Mais da barra inferior" />
+</p>
+<p align="center">
+  <img src="docs/images/celular-estatisticas.webp" width="190" alt="Estatísticas no celular, em uma coluna" />
+  <img src="docs/images/celular-foco-travado.webp" width="190" alt="Modo Foco travado no celular" />
+  <img src="docs/images/tablet-calendario-mes.webp" width="260" alt="Calendário no tablet, com trilho de ícones" />
+  <img src="docs/images/tablet-habitos.webp" width="260" alt="Hábitos no tablet" />
+</p>
 
 ## Instalar como app
 
@@ -112,11 +148,12 @@ No Safari use _Compartilhar → Adicionar à Tela de Início_; no Firefox o Dail
 | Tipos e validação | Zod, compartilhados em `packages/shared`                                         |
 | Testes            | Vitest (unidade) e Playwright (e2e, inclusive contra o build com service worker) |
 | PWA               | vite-plugin-pwa (Workbox)                                                        |
+| Conta e nuvem     | Supabase (Auth com Google, PostgreSQL com RLS), opcional                         |
 | Qualidade         | ESLint, Prettier, TypeScript `strict`                                            |
 | Gerenciador       | pnpm workspaces                                                                  |
 | CI                | GitHub Actions                                                                   |
 
-**Hospedagem:** Vercel (front-end estático; cabeçalhos e CSP em `apps/web/vercel.json`, veja [`docs/deploy.md`](docs/deploy.md)). **Planejado:** Node.js com Fastify, PostgreSQL com Prisma, API no Render ou Railway e banco no Neon ou Supabase.
+**Hospedagem:** Vercel (front-end estático; cabeçalhos e CSP em `apps/web/vercel.json`, veja [`docs/deploy.md`](docs/deploy.md)). **Nuvem (opcional):** Supabase usado direto do front-end (login com Google e uma linha por usuário protegida por RLS); não há servidor próprio.
 
 ## Como rodar
 
@@ -168,7 +205,7 @@ daily-study-planner/
 │   │       │   └── calendar/   # grid mensal, chips, popover de evento
 │   │       ├── mocks/          # dados gerados em relação à data atual
 │   │       └── styles/         # tokens.css e estilos globais
-│   └── api/                    # back-end (Marco 1)
+│   └── api/                    # reservado (a nuvem usa o Supabase direto do front-end)
 ├── packages/
 │   └── shared/                 # tipos e schemas Zod
 ├── docs/
@@ -247,26 +284,29 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 
 - **Sem conta (modo visitante):** seus dados ficam **somente no seu navegador**, no `localStorage` deste site; nada é enviado a servidores.
 - **Com conta (Entrar com Google):** uma cópia fica na nuvem (Supabase, uma linha por usuário protegida por RLS) e é sincronizada entre dispositivos. Ao sair da conta, os dados do dispositivo são removidos; é possível excluir a conta e os dados da nuvem em Preferências.
-- Por isso, **limpar os dados do site, trocar de navegador ou de computador faz os dados "sumirem"**. Para guardar uma cópia, use **Preferências → Exportar dados (JSON)**; para restaurar ou levar a outro lugar, **Importar dados (JSON)**.
+- No modo visitante, **limpar os dados do site, trocar de navegador ou de computador faz os dados "sumirem"**. Para guardar uma cópia, use **Preferências → Exportar dados (JSON)**; para restaurar ou levar a outro lugar, **Importar dados (JSON)**.
 - O Daily mantém automaticamente uma cópia do último estado válido e, se o dado salvo ficar corrompido, avisa e oferece restaurá-la (detalhes em [`docs/data-model.md`](docs/data-model.md)).
 - Em navegação anônima/privada os dados podem não persistir; o app avisa quando não consegue salvar.
 
 ## Limitações conhecidas
 
 - **Testado apenas no Chromium** (Playwright e uso manual); Firefox e Safari não foram verificados, e os campos nativos de data e hora variam entre navegadores
-- Os dados vivem **só neste navegador** (sem conta nem sincronização): limpar os dados do site apaga tudo. Use Preferências → Exportar para guardar uma cópia
+- Sem conta, os dados vivem **só neste navegador**: limpar os dados do site apaga tudo. Use Preferências → Exportar para guardar uma cópia (com conta Google, a nuvem guarda uma cópia sincronizada)
 - Com várias abas abertas, **a última escrita vence** (o evento `storage` recarrega a aba que não gravou; não há mesclagem de edições simultâneas)
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
 - Busca e notificações ainda são apenas visuais
 - Atalhos, FAQ e Convidar amigos são páginas placeholder
 - Calendário: nas visões Dia e Semana não dá para arrastar nem redimensionar eventos, não há eventos de vários dias (os que cruzam a meia-noite são cortados em cada dia) nem recorrência de eventos; clicar num espaço vazio é uma ação de mouse (o teclado cria pelo botão do dia no cabeçalho da Semana e pelo "Nova Prova")
-- Hábitos: os registros ficam só neste navegador; correções retroativas só para hábitos manuais e até 366 dias atrás; a regra de repetição ainda não vale para eventos do calendário (recorrência de eventos fica para depois); mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
-- Estatísticas: a água é registrada só neste navegador; as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
+- Hábitos: os registros ficam no navegador (e na nuvem, com conta); correções retroativas só para hábitos manuais e até 366 dias atrás; a regra de repetição ainda não vale para eventos do calendário (recorrência de eventos fica para depois); mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
+- Estatísticas: a água é registrada no navegador (e na nuvem, com conta); as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px do design de referência: ele equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
 - Em janelas baixas (por exemplo 1280×720) ou meses com 6 semanas, o grid rola verticalmente em vez de encolher as linhas
 - PWA testado no Chromium (Chrome e Edge); a instalação em Safari e Firefox segue o fluxo manual de cada navegador
-- Criar evento clicando na grade é uma ação de mouse; por teclado use o botão do dia na Semana ou "Nova Prova"
+- Criar evento direto na grade: mouse (clique) e toque (toque longo); por teclado use o botão do dia na Semana ou "Nova Prova"
+- **Celular e tablet:** testado em emulação do Chromium (celular, tablet e paisagem) e no Chrome; Safari/iOS não foi testado em aparelho real. No iPhone não há tela cheia e o login com Google no app instalado pode não voltar para o app (a sessão do Safari não é a do app instalado); use o Daily numa aba do Safari para entrar
+- Modo Foco no toque: o teclado numérico não tem ":", então a duração digitada vale em minutos (`25`); para `1:30:00` use um teclado completo
+- Na Semana e no Dia, os blocos de eventos simultâneos ficam estreitos no celular (toque no bloco para abrir os detalhes, ou use a agenda do Mês)
 - A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`) e usa dados em memória, sem tocar nos seus dados
 
 ## Roadmap
@@ -275,7 +315,9 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - [x] **Marco 1:** dados locais versionados, CRUD, backup e páginas
 - [x] **Marco 2:** provas, conteúdos, blocos de estudo, hábitos, Estatísticas e Modo Foco
 - [x] **Marco 3:** visões Dia, Semana e Ano, PWA instalável e offline, deploy na Vercel
-- [ ] **Marco 4 (nuvem):** back-end com login e sincronização, notificações
+- [x] **Marco 4 (nuvem):** login opcional com Google e sincronização (Supabase)
+- [x] **Marco 5:** celular e tablet (layout responsivo, toque, sheets e gestos)
+- [ ] **Marco 6:** notificações e lembretes
 - [ ] **Depois:** recorrência de eventos, arrastar e redimensionar, eventos de vários dias, testes em Firefox e Safari, teste visual automatizado
 
 O acompanhamento detalhado fica nas [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues) e nos [milestones](https://github.com/Mateus-Fonseca847/daily-study-planner/milestones). Histórico de versões no [CHANGELOG](CHANGELOG.md).
