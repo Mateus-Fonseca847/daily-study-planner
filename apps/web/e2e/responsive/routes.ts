@@ -35,20 +35,22 @@ export interface ViewportCase {
   height: number;
   /** Celular (< 768 px de largura ou paisagem com altura baixa). */
   phone: boolean;
+  /** Aparelho de toque (celular e tablet): `isMobile` + `hasTouch`, o que liga `pointer: coarse`. */
+  touch: boolean;
 }
 
 export const VIEWPORTS: readonly ViewportCase[] = [
-  { name: 'celular-375x667', width: 375, height: 667, phone: true },
-  { name: 'celular-390x844', width: 390, height: 844, phone: true },
-  { name: 'celular-412x915', width: 412, height: 915, phone: true },
-  { name: 'celular-paisagem-844x390', width: 844, height: 390, phone: true },
-  { name: 'tablet-768x1024', width: 768, height: 1024, phone: false },
-  { name: 'notebook-1024x768', width: 1024, height: 768, phone: false },
-  { name: 'tablet-paisagem-1194x834', width: 1194, height: 834, phone: false },
+  { name: 'celular-375x667', width: 375, height: 667, phone: true, touch: true },
+  { name: 'celular-390x844', width: 390, height: 844, phone: true, touch: true },
+  { name: 'celular-412x915', width: 412, height: 915, phone: true, touch: true },
+  { name: 'celular-paisagem-844x390', width: 844, height: 390, phone: true, touch: true },
+  { name: 'tablet-768x1024', width: 768, height: 1024, phone: false, touch: true },
+  { name: 'notebook-1024x768', width: 1024, height: 768, phone: false, touch: true },
+  { name: 'tablet-paisagem-1194x834', width: 1194, height: 834, phone: false, touch: true },
 ];
 
 export const DESKTOP_VIEWPORTS: readonly ViewportCase[] = [
-  { name: 'desktop-1280x720', width: 1280, height: 720, phone: false },
-  { name: 'desktop-1440x900', width: 1440, height: 900, phone: false },
-  { name: 'desktop-1920x1080', width: 1920, height: 1080, phone: false },
+  { name: 'desktop-1280x720', width: 1280, height: 720, phone: false, touch: false },
+  { name: 'desktop-1440x900', width: 1440, height: 900, phone: false, touch: false },
+  { name: 'desktop-1920x1080', width: 1920, height: 1080, phone: false, touch: false },
 ];

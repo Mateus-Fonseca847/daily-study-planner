@@ -16,8 +16,8 @@ test('sonda', async ({ browser }) => {
   for (const viewport of VIEWPORTS) {
     const context = await browser.newContext({
       viewport: { width: viewport.width, height: viewport.height },
-      isMobile: viewport.width < 768,
-      hasTouch: true,
+      isMobile: viewport.touch,
+      hasTouch: viewport.touch,
       deviceScaleFactor: 2,
       locale: 'pt-BR',
       timezoneId: 'America/Sao_Paulo',

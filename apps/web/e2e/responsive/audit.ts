@@ -60,7 +60,8 @@ export async function auditPage(page: Page): Promise<AuditResult> {
       for (const el of document.body.querySelectorAll('*')) {
         if (!isVisible(el)) continue;
         const r = el.getBoundingClientRect();
-        const intentional = !!el.closest('[data-scroll-x]');
+        const intentional =
+          !!el.closest('[data-scroll-x]') || !!el.closest('.sr-only, [aria-hidden="true"]');
         const outsideX = r.right > width + 1 || r.left < -1;
         const outsideFixed =
           getComputedStyle(el).position === 'fixed' && (r.bottom > height + 1 || r.top < -1);
@@ -78,7 +79,11 @@ export async function auditPage(page: Page): Promise<AuditResult> {
         ) {
           horizontalScrollers.push(`${describe(el)} ${el.scrollWidth}>${el.clientWidth}`);
         }
-        if (el.matches(interactive) && !el.closest('[inert], [aria-hidden="true"]')) {
+        if (
+          el.matches(interactive) &&
+          !el.closest('[inert], [aria-hidden="true"]') &&
+          el.getAttribute('data-touch') !== 'inline' // links no meio de uma frase (exceção do WCAG 2.5.8)
+        ) {
           const isDense =
             el.getAttribute('data-touch') === 'dense' || !!el.closest('[data-touch="dense"]');
           const limit = isDense ? dense : main;
