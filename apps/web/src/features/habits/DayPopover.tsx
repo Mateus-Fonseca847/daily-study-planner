@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Habit } from '@daily/shared';
 import { Button } from '../../components/ui/Button';
 import { Popover } from '../../components/ui/Popover';
 import { useData } from '../../lib/data/app-store';
+import { shiftDay } from '../../lib/dates';
+import { usePhone } from '../../lib/responsive/use-media';
 import { canEditDay } from '../../lib/habits/edit';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../lib/habits';
 import { formatAmount, formatLongDay, stateText } from '../../lib/habits/summary';
@@ -13,11 +16,25 @@ interface DayPopoverProps {
   ctx: HabitContext;
   now: Date;
   anchor: HTMLElement;
+  /** Intervalo de dias navegável (os mesmos do heatmap). */
+  range?: { from: string; to: string };
+  /** Celular: troca de dia pelos botões ‹ ›. */
+  onDateChange?: (date: string) => void;
   onClose: () => void;
 }
 
 /** Popover do dia no heatmap: edita dias passados de hábitos manuais; nos demais só informa. */
-export function DayPopover({ habit, date, ctx, now, anchor, onClose }: DayPopoverProps) {
+export function DayPopover({
+  habit,
+  date,
+  ctx,
+  now,
+  anchor,
+  range,
+  onDateChange,
+  onClose,
+}: DayPopoverProps) {
+  const phone = usePhone();
   const setHabitValue = useData((s) => s.setHabitValue);
   const state = dayState(habit, date, ctx);
   const value = valueOn(habit, date, ctx);
@@ -42,12 +59,36 @@ export function DayPopover({ habit, date, ctx, now, anchor, onClose }: DayPopove
 
   return (
     <Popover anchor={anchor} onClose={onClose} aria-label={`${habit.name}, ${formatLongDay(date)}`}>
-      <div className="flex w-popover flex-col gap-3 p-4">
-        <div>
-          <p className="text-md font-semibold">{habit.name}</p>
-          <p className="text-sm text-muted">
-            {formatLongDay(date)} · {stateText(state)}
-          </p>
+      <div className="flex w-popover max-w-full flex-col gap-3 p-4 phone:w-full phone:p-0">
+        <div className="flex items-center justify-between gap-2">
+          {phone && onDateChange && range && (
+            <Button
+              variant="icon"
+              size="md"
+              aria-label="Dia anterior"
+              disabled={date <= range.from}
+              onClick={() => onDateChange(shiftDay(date, -1))}
+            >
+              <ChevronLeft aria-hidden strokeWidth={1.5} className="size-icon" />
+            </Button>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-md font-semibold">{habit.name}</p>
+            <p aria-live="polite" className="text-sm text-muted">
+              {formatLongDay(date)} · {stateText(state)}
+            </p>
+          </div>
+          {phone && onDateChange && range && (
+            <Button
+              variant="icon"
+              size="md"
+              aria-label="Próximo dia"
+              disabled={date >= range.to}
+              onClick={() => onDateChange(shiftDay(date, 1))}
+            >
+              <ChevronRight aria-hidden strokeWidth={1.5} className="size-icon" />
+            </Button>
+          )}
         </div>
 
         {habit.type === 'quantidade' && state !== 'nao-agendado' && state !== 'futuro' && (
@@ -80,7 +121,7 @@ export function DayPopover({ habit, date, ctx, now, anchor, onClose }: DayPopove
                 inputMode="decimal"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                className="h-select rounded-md border-hair bg-surface px-3 text-md text-fg"
+                className="h-select rounded-md border-hair bg-surface px-3 text-md text-fg coarse:h-touch"
               />
             </label>
             <Button type="submit">Salvar</Button>

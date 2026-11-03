@@ -41,7 +41,7 @@ export function BottomBar({ counts, moreActive, moreOpen, onMore }: BottomBarPro
             <span className="relative inline-flex">
               <Icon aria-hidden strokeWidth={1.5} className="size-icon" />
               {count > 0 && (
-                <span className="absolute -top-2 left-full -ml-1.5">
+                <span className="absolute -top-2 left-full -ml-1.5 short:right-full short:left-auto short:-mr-1.5 short:ml-0">
                   <Badge variant="counter">{count}</Badge>
                 </span>
               )}

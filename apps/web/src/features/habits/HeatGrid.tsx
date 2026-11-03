@@ -111,7 +111,7 @@ export function HeatGrid({
 
   return (
     <div className={cn('min-w-0', colorClass)}>
-      <div ref={scrollRef} className="overflow-x-auto pb-1">
+      <div ref={scrollRef} data-scroll-x className="overflow-x-auto pb-1">
         <div
           ref={gridRef}
           role="grid"
@@ -143,7 +143,10 @@ export function HeatGrid({
               className="grid items-center gap-x-heat-gap pb-heat-gap"
               style={{ gridTemplateColumns: template }}
             >
-              <span aria-hidden className="pr-1">
+              <span
+                aria-hidden
+                className="pr-1 max-xl:sticky max-xl:left-0 max-xl:z-10 max-xl:bg-bg"
+              >
                 {ROW_LABELS[row]}
               </span>
               {columns.map((column) => {
@@ -159,6 +162,7 @@ export function HeatGrid({
                     type="button"
                     role="gridcell"
                     data-date={date}
+                    data-touch="dense"
                     aria-label={view.label}
                     tabIndex={date === active ? 0 : -1}
                     disabled={!navigable}

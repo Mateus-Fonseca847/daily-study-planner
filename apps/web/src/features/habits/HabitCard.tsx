@@ -60,7 +60,7 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
         HABIT_COLOR_CLASS[habit.color],
       )}
     >
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-3">
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-3 phone:gap-x-3">
         <span className="habit-bg-soft habit-text inline-flex size-control shrink-0 items-center justify-center rounded-full">
           <Icon aria-hidden strokeWidth={1.5} className="size-icon" />
         </span>
@@ -69,7 +69,7 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
           <p className="truncate text-sm text-muted">{habitSummary(habit, ctx.today)}</p>
         </div>
 
-        <dl className="flex items-center gap-6 text-sm">
+        <dl className="flex items-center gap-6 text-sm phone:order-last phone:w-full phone:justify-between phone:gap-3">
           <div>
             <dt className="text-muted">Sequência</dt>
             <dd className="text-md font-semibold tabular-nums">
@@ -90,7 +90,7 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
           </div>
         </dl>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 phone:gap-2">
           {scheduledToday ? (
             <HabitControl habit={habit} date={ctx.today} ctx={ctx} now={now} />
           ) : (
@@ -104,7 +104,7 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
               <button
                 type="button"
                 aria-label={`Ações de ${habit.name}`}
-                className="inline-flex size-control items-center justify-center rounded-full bg-surface text-soft hover:text-fg"
+                className="inline-flex size-control items-center justify-center rounded-full bg-surface text-soft hover:text-fg coarse:size-touch"
                 {...props}
               >
                 <MoreHorizontal aria-hidden strokeWidth={1.5} className="size-icon" />
@@ -129,6 +129,8 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
           ctx={ctx}
           now={now}
           anchor={day.anchor}
+          range={{ from, to: ctx.today < to ? ctx.today : to }}
+          onDateChange={(date) => setDay({ date, anchor: day.anchor })}
           onClose={() => setDay(null)}
         />
       )}
