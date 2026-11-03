@@ -63,10 +63,11 @@ export function HoldToUnlock({ onUnlock }: HoldToUnlockProps) {
         }}
         onPointerUp={stop}
         onPointerCancel={stop}
+        onContextMenu={(e) => e.preventDefault()}
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
         onBlur={stop}
-        className={pillClass('outline', 'touch-none select-none')}
+        className={pillClass('outline', 'no-callout touch-none select-none')}
       >
         <span
           aria-hidden

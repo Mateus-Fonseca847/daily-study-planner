@@ -98,3 +98,56 @@ test.describe('CSP sem violações', () => {
     expect(errors.filter((e) => !/wake ?lock|NotAllowed|fullscreen/i.test(e))).toEqual([]);
   });
 });
+
+test.describe('CSP no celular (build de produção)', () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 2,
+  });
+
+  test('barra inferior, sheets, menu Criar, formulário em tela cheia e gestos sem violações', async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') errors.push(msg.text());
+    });
+    await page.addInitScript(() => {
+      const w = window as unknown as { __csp: string[] };
+      w.__csp = [];
+      document.addEventListener('securitypolicyviolation', (e) => {
+        w.__csp.push(`${e.violatedDirective} ${e.blockedURI}`);
+      });
+    });
+
+    await page.goto('/calendario');
+    const bar = page.getByRole('navigation', { name: 'Navegação principal' });
+    await expect(bar).toBeVisible();
+
+    await bar.getByRole('button', { name: 'Mais' }).tap();
+    await expect(page.getByRole('dialog', { name: 'Mais' })).toBeVisible();
+    await page.goBack();
+    await expect(page.getByRole('dialog', { name: 'Mais' })).toBeHidden();
+
+    await page.getByRole('button', { name: 'Criar', exact: true }).tap();
+    await page.getByRole('menuitem', { name: 'Matéria' }).tap();
+    await expect(page.getByRole('dialog', { name: 'Nova matéria' })).toBeVisible();
+    await page.getByLabel('Nome').fill('Cálculo');
+    await page.getByRole('button', { name: 'Salvar' }).tap();
+    await expect(page.getByRole('dialog', { name: 'Nova matéria' })).toBeHidden();
+
+    for (const view of ['Semana', 'Dia', 'Ano', 'Mês']) {
+      await page.getByRole('radio', { name: view, exact: true }).tap();
+    }
+    await page.getByRole('button', { name: /escolher mês e ano/i }).tap();
+    await expect(page.getByRole('dialog', { name: 'Escolher mês e ano' })).toBeVisible();
+
+    const violations = await page.evaluate(
+      () => (window as unknown as { __csp: string[] }).__csp ?? [],
+    );
+    expect(violations).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+});

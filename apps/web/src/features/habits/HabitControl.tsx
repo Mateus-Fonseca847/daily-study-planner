@@ -54,7 +54,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
         aria-label={`${habit.name}: feito hoje`}
         onClick={() => setHabitValue(habit.id, date, done ? 0 : 1, now)}
         className={cn(
-          'inline-flex size-goal-check shrink-0 items-center justify-center rounded-full',
+          'inline-flex size-goal-check shrink-0 items-center justify-center rounded-full coarse:size-touch',
           done ? 'bg-accent text-accent-fg' : 'bg-chart-track-strong',
         )}
       >
@@ -75,7 +75,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
         aria-label={`Diminuir ${formatAmount(step, habit.unit)}`}
         disabled={value <= 0}
         onClick={() => setHabitValue(habit.id, date, Math.max(0, value - step), now)}
-        className="inline-flex size-goal-check items-center justify-center rounded-full bg-chart-track-strong disabled:opacity-dimmed"
+        className="inline-flex size-goal-check items-center justify-center rounded-full bg-chart-track-strong disabled:opacity-dimmed coarse:size-touch"
       >
         <Minus aria-hidden strokeWidth={2} className="size-icon-sm" />
       </button>
@@ -87,7 +87,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
         type="button"
         aria-label={`Aumentar ${formatAmount(step, habit.unit)}`}
         onClick={() => setHabitValue(habit.id, date, value + step, now)}
-        className="inline-flex size-goal-check items-center justify-center rounded-full bg-chart-track-strong"
+        className="inline-flex size-goal-check items-center justify-center rounded-full bg-chart-track-strong coarse:size-touch"
       >
         <Plus aria-hidden strokeWidth={2} className="size-icon-sm" />
       </button>

@@ -30,7 +30,7 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
           to="/habitos"
           aria-label="Gerenciar hábitos"
           title="Gerenciar hábitos"
-          className="inline-flex size-control shrink-0 items-center justify-center rounded-full bg-pill text-pill-fg hover:brightness-95"
+          className="inline-flex size-control coarse:size-touch shrink-0 items-center justify-center rounded-full bg-pill text-pill-fg hover:brightness-95"
         >
           <Pencil aria-hidden strokeWidth={1.5} className="size-icon" />
         </Link>

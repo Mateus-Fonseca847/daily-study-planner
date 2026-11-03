@@ -57,6 +57,7 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
       aria-label={label}
       aria-pressed={done}
       title={label}
+      data-touch="dense"
       onClick={() => onToggle(habit, date)}
       className={className}
     >

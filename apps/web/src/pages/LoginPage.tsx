@@ -35,7 +35,7 @@ export function LoginPage() {
   };
 
   return (
-    <main className="grid min-h-full place-items-center bg-bg px-page py-8">
+    <main className="readable grid min-h-full place-items-center overflow-y-auto bg-bg px-page py-8 safe-frame">
       <div className="flex w-full max-w-modal flex-col gap-6 rounded-xl border-hair bg-raised p-8">
         <div>
           <p className="text-logo font-bold tracking-tighter">
@@ -67,7 +67,7 @@ export function LoginPage() {
         <p className="text-sm text-muted">
           Usamos o Google só para identificar você (nome e e-mail). Não vemos sua senha e não
           compartilhamos seus dados. Leia a{' '}
-          <Link to="/privacidade" className="underline">
+          <Link to="/privacidade" data-touch="inline" className="underline">
             política de privacidade
           </Link>
           .

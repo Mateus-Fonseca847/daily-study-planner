@@ -44,7 +44,10 @@ export function AppSection({ onExport }: AppSectionProps) {
       : null;
 
   return (
-    <section aria-labelledby="app-title" className="flex flex-col gap-4 rounded-xl border-hair p-6">
+    <section
+      aria-labelledby="app-title"
+      className="flex flex-col gap-4 rounded-xl border-hair p-6 phone:p-4"
+    >
       <h2 id="app-title" className="text-lg font-semibold tracking-tight">
         Aplicativo e armazenamento
       </h2>
@@ -82,7 +85,7 @@ export function AppSection({ onExport }: AppSectionProps) {
           Seus dados ficam só neste navegador; com o armazenamento persistente ele não os apaga
           quando o disco enche. Mesmo assim, guarde uma cópia.
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 stack-on-phone">
           {!persisted && (
             <Button variant="secondary" onClick={() => void persist()}>
               Pedir armazenamento persistente

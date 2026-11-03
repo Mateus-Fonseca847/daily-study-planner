@@ -109,6 +109,8 @@ export function CalendarPage() {
           selectedId={selected?.id ?? null}
           onSelect={select}
           onCreate={(day) => openEventForm({ date: day })}
+          onOpenDay={(day) => go({ view: 'dia', date: day })}
+          onStep={step}
         />
       )}
       {view === 'semana' && (
@@ -128,6 +130,7 @@ export function CalendarPage() {
           selectedId={selected?.id ?? null}
           onSelect={select}
           onCreateAt={(day, time) => openEventForm({ type: 'estudo', date: day, time })}
+          onStep={step}
         />
       )}
       {view === 'ano' && (

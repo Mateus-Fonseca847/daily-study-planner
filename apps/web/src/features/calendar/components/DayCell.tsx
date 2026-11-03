@@ -39,9 +39,10 @@ export function DayCell({ day, events, isToday, selectedId, onSelect, onCreate }
       <button
         type="button"
         aria-label={`${dayLabel}: criar evento`}
+        data-touch="dense"
         onClick={() => onCreate(day.key)}
         className={cn(
-          'inline-flex h-today min-w-today items-center justify-center self-start rounded-full text-xs font-bold',
+          'inline-flex h-today min-w-today items-center justify-center self-start rounded-full text-xs font-bold coarse:min-h-touch-dense coarse:min-w-touch-dense',
           isToday
             ? 'bg-accent px-1 text-accent-fg'
             : day.inMonth
@@ -60,6 +61,7 @@ export function DayCell({ day, events, isToday, selectedId, onSelect, onCreate }
             time={eventTimeRange(event)}
             status={event.status}
             selected={selectedId === event.id}
+            data-touch="dense"
             onClick={(e) => onSelect(event, e.currentTarget)}
           />
         ))}
@@ -71,7 +73,8 @@ export function DayCell({ day, events, isToday, selectedId, onSelect, onCreate }
           aria-haspopup="dialog"
           aria-expanded={listOpen}
           onClick={() => setListOpen((v) => !v)}
-          className="self-start rounded-sm px-1 text-xs text-muted hover:text-fg"
+          data-touch="dense"
+          className="self-start rounded-sm px-1 text-xs text-muted hover:text-fg coarse:min-h-touch-dense"
         >
           +{hidden} mais
         </button>

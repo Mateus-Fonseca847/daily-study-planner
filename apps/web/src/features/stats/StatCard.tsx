@@ -31,7 +31,7 @@ export function StatCard({ title, to, actionLabel, action, className, children }
           <Link
             to={to}
             aria-label={actionLabel ?? `Abrir ${title}`}
-            className="inline-flex size-control shrink-0 items-center justify-center rounded-full bg-pill text-pill-fg hover:brightness-95"
+            className="inline-flex size-control shrink-0 items-center justify-center rounded-full bg-pill text-pill-fg hover:brightness-95 coarse:size-touch"
           >
             <ArrowUpRight aria-hidden strokeWidth={1.5} className="size-icon" />
           </Link>

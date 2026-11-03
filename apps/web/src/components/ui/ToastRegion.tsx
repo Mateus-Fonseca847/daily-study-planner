@@ -15,7 +15,7 @@ function ToastItem({ toast }: { toast: Toast }) {
       {toast.actionLabel && (
         <Button
           variant="outline"
-          className="h-control-sm px-3"
+          className="h-control-sm px-3 coarse:h-touch coarse:min-w-touch"
           onClick={() => {
             toast.onAction?.();
             dismiss(toast.id);
@@ -35,7 +35,7 @@ export function ToastRegion() {
     <div
       role="status"
       aria-live="polite"
-      className="pointer-events-none fixed bottom-6 left-1/2 z-50 flex w-full max-w-toast -translate-x-1/2 flex-col gap-2 px-4"
+      className="toast-region pointer-events-none fixed left-1/2 z-50 flex w-full max-w-toast -translate-x-1/2 flex-col gap-2 px-4"
     >
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">

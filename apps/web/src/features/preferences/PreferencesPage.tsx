@@ -59,7 +59,7 @@ export function PreferencesPage() {
       <AppSection onExport={exportData} />
       <section
         aria-labelledby="backup-title"
-        className="flex flex-col gap-3 rounded-xl border-hair p-6"
+        className="flex flex-col gap-3 rounded-xl border-hair p-6 phone:p-4"
       >
         <h2 id="backup-title" className="text-lg font-semibold tracking-tight">
           Backup
@@ -69,7 +69,7 @@ export function PreferencesPage() {
           matérias, {current.events} eventos). Exporte um arquivo JSON para guardar uma cópia ou
           levar para outro computador.
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 stack-on-phone">
           <Button onClick={exportData}>
             <Download aria-hidden strokeWidth={1.5} className="size-icon" />
             Exportar dados (JSON)

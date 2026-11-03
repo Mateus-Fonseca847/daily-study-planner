@@ -63,7 +63,7 @@ export function WaterCard({ ml, goalMl, cupMl, now }: WaterCardProps) {
           aria-label={`Adicionar um copo de ${cupMl} ml`}
           title={`Adicionar um copo (${cupMl} ml)`}
           onClick={add}
-          className="inline-flex size-control-sm shrink-0 items-center justify-center rounded-full bg-water-button text-fg hover:brightness-125"
+          className="inline-flex size-control-sm shrink-0 items-center justify-center rounded-full bg-water-button text-fg hover:brightness-125 coarse:size-touch"
         >
           <Plus aria-hidden strokeWidth={1.5} className="size-icon-sm" />
         </button>

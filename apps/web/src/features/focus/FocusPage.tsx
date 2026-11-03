@@ -4,7 +4,14 @@ import { BarChart3, Lock, LockOpen, Pause, Play, RotateCcw, Square } from 'lucid
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { useData } from '../../lib/data/app-store';
-import { useIsFullscreen, useNowMs, wakeLockSupported } from '../../lib/focus/browser';
+import {
+  deviceNotice,
+  fullscreenSupported,
+  useIsFullscreen,
+  useNowMs,
+  wakeLockSupported,
+} from '../../lib/focus/browser';
+import { usePhone } from '../../lib/responsive/use-media';
 import { TICK_MS } from '../../lib/focus/constants';
 import {
   pauseFocus,
@@ -43,6 +50,8 @@ export function FocusPage() {
   const [announcement, setAnnouncement] = useState('');
   const [confirmStop, setConfirmStop] = useState(false);
 
+  const phone = usePhone();
+  const notice = deviceNotice({ wakeLock: wakeLockSupported(), fullscreen: fullscreenSupported() });
   const running = emAndamento(active);
   const locked = travado(active);
   const nowMs = useNowMs(TICK_MS, running);
@@ -95,7 +104,7 @@ export function FocusPage() {
   const paused = active?.status === 'pausado';
 
   return (
-    <div className="flex min-h-0 flex-1 overflow-y-auto p-page py-10">
+    <div className="flex min-h-0 flex-1 overflow-y-auto p-page py-10 phone:py-4 phone:pb-24">
       <div className="m-auto focus-layout">
         <div className="flex shrink-0 flex-col items-center gap-10">
           {done && summary ? (
@@ -170,11 +179,24 @@ export function FocusPage() {
                   Iniciar
                 </FocusPill>
               </div>
+              {notice && <p className="max-w-focus-notice text-center text-sm text-muted">{notice}</p>}
             </>
           )}
         </div>
 
-        {!locked && <TopFocusDays />}
+        {!locked &&
+          (phone ? (
+            <details className="w-full">
+              <summary className="flex min-h-touch cursor-pointer items-center justify-between rounded-md border-hair px-4 text-md font-medium text-soft">
+                Dias de mais foco
+              </summary>
+              <div className="pt-3">
+                <TopFocusDays />
+              </div>
+            </details>
+          ) : (
+            <TopFocusDays />
+          ))}
       </div>
 
       <div role="status" aria-live="polite" className="sr-only">

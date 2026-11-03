@@ -104,6 +104,7 @@
   --ds-grid-hour-h: 4.5rem;
   --ds-grid-label-w: 3.5rem;
   --ds-week-min-w: 60rem;
+  --ds-week-col-min-w: 7rem;
   --ds-week-head-h: 3.5rem;
   --ds-day-panel-w: 20rem;
   --ds-day-grid-min-h: 36rem;
@@ -266,7 +267,9 @@
   /* Dashboard de Estatísticas */
   --ds-stats-max-w: 72rem;
   --ds-stats-cols: 1.5fr 1.5fr 1fr 2fr;
+  --ds-stats-cols-lg: repeat(3, minmax(0, 1fr));
   --ds-stats-cols-md: repeat(2, minmax(0, 1fr));
+  --ds-stats-cols-sm: minmax(0, 1fr);
   --ds-stats-row1-h: 20rem;
   --ds-stats-pill-h: 4.5rem;
   --ds-ring-size: 9.5rem;
@@ -297,6 +300,35 @@
   --ds-focus-pill-px: 1.5rem;
   --ds-focus-hold-size: 1.75rem;
   --ds-focus-hold-ring: 0.1875rem;
+  --ds-focus-notice-w: 28rem;
+  /* Texto legível (≥ 16 px) nas páginas de leitura e formulários do celular. */
+  --ds-text-readable: 1rem;
+  --ds-text-readable-sm: 0.9375rem;
+  --ds-text-readable-xs: 0.875rem;
+
+  /* Responsividade (celular e tablet) */
+  --ds-safe-top: env(safe-area-inset-top, 0px);
+  --ds-safe-right: env(safe-area-inset-right, 0px);
+  --ds-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ds-safe-left: env(safe-area-inset-left, 0px);
+  --ds-touch: 2.75rem;
+  --ds-touch-dense: 1.5rem;
+  /* Trilho do segmentado/abas em telas de toque: 44 px de item + o respiro de 4 px de cada lado. */
+  --ds-segment-touch-h: 3.25rem;
+  --ds-bottom-bar-h: 3.5rem;
+  --ds-topbar-h-compact: 3.5rem;
+  --ds-bar-h-short: 2.75rem;
+  --ds-fab-size: 3.5rem;
+  --ds-sheet-radius: 1.25rem;
+  --ds-sheet-handle-w: 2.5rem;
+  --ds-sheet-handle-h: 0.25rem;
+  --ds-sheet-max-h: 92dvh;
+  --ds-sheet-duration: 200ms;
+  --ds-bar-gap: 0.75rem;
+  /* Altura da área visível com o teclado virtual aberto (a JS a atualiza; sem teclado = a janela). */
+  --ds-vv-h: 100dvh;
+  --ds-vv-top: 0px;
+  --ds-text-input-touch: 1rem;
 }
 
 /*
@@ -306,6 +338,25 @@
 @supports (height: 100dvh) {
   :root {
     --ds-viewport-h: 100dvh;
+  }
+}
+
+/* Telas de toque: células do heatmap com o alvo mínimo de 24 px (a grade rola na horizontal). */
+@media (pointer: coarse), (width < 48rem) {
+  :root {
+    --ds-heat-cell-min: 1.5rem;
+    /* Modo Foco: dígitos fluidos pela largura e pela altura (celular em paisagem não estoura). */
+    --ds-text-focus: clamp(3.5rem, min(18vw, 30dvh), 7rem);
+    --ds-text-focus-frac: clamp(1rem, min(5vw, 8dvh), 1.75rem);
+    --ds-focus-gap: 1.5rem;
+  }
+}
+
+/* Paisagem de celular: topbar e barra inferior mais finas. */
+@media (height <= 31.25rem) and (pointer: coarse) {
+  :root {
+    --ds-bottom-bar-h: var(--ds-bar-h-short);
+    --ds-topbar-h-compact: var(--ds-bar-h-short);
   }
 }
 

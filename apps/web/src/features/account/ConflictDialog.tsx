@@ -45,7 +45,7 @@ export function ConflictDialog() {
           vale; a outra será substituída. Dica: exporte um backup em Preferências antes, se quiser
           guardar as duas.
         </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-3 md:flex-row">
           <SummaryCard title="Neste dispositivo" s={conflict.device} />
           <SummaryCard title="Na nuvem" s={conflict.cloud} />
         </div>

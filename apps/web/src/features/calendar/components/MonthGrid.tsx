@@ -1,7 +1,9 @@
 import { isSameDay } from 'date-fns';
 import type { StudyEvent } from '@daily/shared';
 import { buildMonthGrid, groupEventsByDay } from '../lib/month-grid';
+import { usePhone } from '../../../lib/responsive/use-media';
 import { DayCell } from './DayCell';
+import { MonthCompact } from './MonthCompact';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'] as const;
 
@@ -12,6 +14,9 @@ interface MonthGridProps {
   selectedId: string | null;
   onSelect: (event: StudyEvent, anchor: HTMLElement) => void;
   onCreate: (dayKey: string) => void;
+  /** Celular: abre a visão Dia e muda o mês por deslize. */
+  onOpenDay: (dayKey: string) => void;
+  onStep: (direction: 1 | -1) => void;
 }
 
 export function MonthGrid({
@@ -21,9 +26,27 @@ export function MonthGrid({
   selectedId,
   onSelect,
   onCreate,
+  onOpenDay,
+  onStep,
 }: MonthGridProps) {
+  const phone = usePhone();
   const weeks = buildMonthGrid(month);
   const byDay = groupEventsByDay(events);
+
+  if (phone) {
+    return (
+      <MonthCompact
+        month={month}
+        events={events}
+        today={today}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        onCreate={onCreate}
+        onOpenDay={onOpenDay}
+        onStep={onStep}
+      />
+    );
+  }
 
   return (
     <div role="grid" aria-label="Calendário mensal" className="flex min-h-0 flex-1 flex-col">

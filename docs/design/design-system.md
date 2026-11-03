@@ -408,3 +408,32 @@ O calendário tem quatro visões: **Dia | Semana | Mês | Ano**. O botão “Hoj
 - **Altura numa camada só:** `html`, `body` e `#root` usam `height: var(--ds-viewport-h)` (`100vh`, trocado por `100dvh` onde houver suporte), `overflow: hidden`, `overscroll-behavior: none` e o fundo `--ds-color-bg`. O documento nunca rola.
 - **AppShell:** `relative overflow-hidden`; a sidebar vai de cima até o fim da janela (cabeçalho e "Criar" fixos, menus com rolagem interna e "Configurações" ancorada ao fundo) e a topbar fica fixa. Só a área de conteúdo de cada página rola.
 - **Texto só para leitor de tela:** nunca aplique `sr-only` direto a uma `<table>` (ela ignora `height` e `overflow`); embrulhe num `<div className="sr-only">`.
+
+## 14. Responsividade (celular e tablet)
+
+Os valores novos estão em `tokens.css` (bloco "Responsividade") e mapeados no tema em `styles/index.css`.
+
+**Faixas** (definidas em `lib/responsive/breakpoints.ts` e no tema do Tailwind, com teste de espelhamento):
+
+| Faixa    | Condição                                                  | Navegação                                          |
+| -------- | --------------------------------------------------------- | -------------------------------------------------- |
+| Celular  | largura < 768 px, ou altura ≤ 500 px com toque (paisagem) | barra inferior + botão + flutuante                 |
+| Tablet   | 768–1023 px                                               | trilho de ícones; o menu expandido abre sobreposto |
+| Notebook | 1024–1279 px                                              | sidebar (lembra recolher/expandir)                 |
+| Desktop  | ≥ 1280 px                                                 | sidebar, sem alterações                            |
+
+Variantes do Tailwind: `phone:` (celular), `short:` (paisagem baixa com toque) e `coarse:` (`pointer: coarse`); breakpoints `md:`, `lg:` e `xl:` = 768, 1024 e 1280 px. Classes sempre literais.
+
+**Tokens:** `--ds-touch` (44 px, alvo principal), `--ds-touch-dense` (24 px, WCAG 2.5.8), `--ds-segment-touch-h` (52 px: 44 + respiro do trilho), `--ds-bottom-bar-h` e `--ds-topbar-h-compact` (56 px; 44 px em paisagem), `--ds-fab-size` (56 px), `--ds-sheet-*` (raio, alça, altura máxima, duração), `--ds-safe-top/right/bottom/left` (`env(safe-area-inset-*)`, 0 sem entalhe), `--ds-vv-h`/`--ds-vv-top` (área visível com o teclado aberto), `--ds-text-input-touch` (16 px) e `--ds-text-readable*` (≥ 16 px nas páginas de leitura e formulários do celular), `--ds-week-col-min-w` (7 rem: ~3 dias por tela na Semana) e `--ds-heat-cell-min` (24 px em telas de toque).
+
+**Componentes:**
+
+- `BottomSheet` (`components/ui`): `role="dialog"`, foco preso, Esc, botão voltar do aparelho, arrastar a alça para baixo, rolagem interna, respeita a área segura e o teclado. `Popover` e `Menu` viram sheet (ou action sheet) no celular; `Modal` vira tela cheia com cabeçalho e ações fixos.
+- Barra inferior (Calendário, Hábitos, Foco, Estatísticas, **Mais**), sheet "Mais" (páginas restantes, conta, instalar e ajuda), botão **+** (menu Criar como action sheet), topbar compacta (título, filtro por matéria em sheet, offline e conta) e `SidebarOverlay` no tablet.
+- Calendário: segmentado em largura total, título que abre o seletor de mês e ano, **Mês compacto** (número e até 3 pontos por tipo, agenda do dia abaixo), Semana com rolagem e snap, **Dia** com resumo recolhível, Ano em 2 (celular) ou 3 (tablet) colunas.
+
+**Alvos de toque:** controles principais ≥ 44×44 px; controles **densos** (células do heatmap, blocos e pílulas da grade, chips do mês no tablet, número do dia) ≥ 24×24 px com `data-touch="dense"` e sempre com um equivalente maior (agenda do Mês, visão Dia, sheet do dia com ‹ ›). Links no meio de uma frase levam `data-touch="inline"` (exceção do WCAG 2.5.8). Campos de texto: 16 px e 44 px de altura em telas de toque (CSS fora das camadas, para vencer os utilitários).
+
+**Sem hover:** nada depende de hover; tooltips têm equivalente (rótulos acessíveis, agenda, sheets). Áreas que rolam na horizontal de propósito levam `data-scroll-x`. Animações respeitam `prefers-reduced-motion`.
+
+**Verificação:** `e2e/responsive` (documento sem rolagem, nada fora da janela, alvos, fontes, CSP, fluxos de toque, área segura e teclado) e `scripts/desktop-regression.mjs` (desktop idêntico à linha de base).

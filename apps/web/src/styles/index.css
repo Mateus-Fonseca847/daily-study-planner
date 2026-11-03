@@ -3,6 +3,12 @@
 
 /* Mapeia os tokens (--ds-*) no tema do Tailwind. Nada fora deste mapa vira utilitário. */
 @theme inline {
+  /* Breakpoints (único lugar; espelhados em lib/responsive/breakpoints.ts, com teste). */
+  --breakpoint-*: initial;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
   --color-*: initial;
   --color-transparent: transparent;
   --color-bg: var(--ds-color-bg);
@@ -176,6 +182,7 @@
   --spacing-grid-hour: var(--ds-grid-hour-h);
   --spacing-grid-label: var(--ds-grid-label-w);
   --spacing-week-min: var(--ds-week-min-w);
+  --spacing-week-col-min: var(--ds-week-col-min-w);
   --spacing-week-head: var(--ds-week-head-h);
   --spacing-day-panel: var(--ds-day-panel-w);
   --spacing-now-line: var(--ds-now-line-h);
@@ -202,11 +209,99 @@
   --spacing-swatch: var(--ds-swatch);
   --spacing-dot: var(--ds-dot);
 
+  --spacing-safe-top: var(--ds-safe-top);
+  --spacing-safe-right: var(--ds-safe-right);
+  --spacing-safe-bottom: var(--ds-safe-bottom);
+  --spacing-safe-left: var(--ds-safe-left);
+  --spacing-touch: var(--ds-touch);
+  --spacing-touch-dense: var(--ds-touch-dense);
+  --spacing-segment-touch: var(--ds-segment-touch-h);
+  --spacing-bottom-bar: var(--ds-bottom-bar-h);
+  --spacing-topbar-compact: var(--ds-topbar-h-compact);
+  --spacing-bar-short: var(--ds-bar-h-short);
+  --spacing-fab-size: var(--ds-fab-size);
+  --spacing-bar-gap: var(--ds-bar-gap);
+  --spacing-sheet-max: var(--ds-sheet-max-h);
+  --spacing-vv: var(--ds-vv-h);
+  --spacing-handle-w: var(--ds-sheet-handle-w);
+  --spacing-handle-h: var(--ds-sheet-handle-h);
+  --radius-sheet: var(--ds-sheet-radius);
+
+  --container-focus-notice: var(--ds-focus-notice-w);
   --container-modal: var(--ds-modal-w);
   --container-toast: var(--ds-toast-w);
   --container-content: var(--ds-page-max-w);
   --container-stats: var(--ds-stats-max-w);
 }
+
+/* Caixa fixa que acompanha a área visível (com o teclado virtual aberto, só a parte de cima da tela). */
+@utility vv-box {
+  top: var(--ds-vv-top);
+  left: 0;
+  right: 0;
+  height: var(--ds-vv-h);
+}
+
+/* Avisos: no desktop ficam a 1,5 rem da borda; em celular, acima da barra inferior, do + e da área segura. */
+@utility toast-region {
+  bottom: 1.5rem;
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    bottom: calc(
+      var(--ds-bottom-bar-h) + var(--ds-fab-size) + var(--ds-bar-gap) * 2 + var(--ds-safe-bottom)
+    );
+  }
+}
+
+/* Botão + flutuante do celular: no canto, acima da barra inferior e da área segura. */
+@utility fab-slot {
+  right: calc(var(--ds-page-pad-x) + var(--ds-safe-right));
+  bottom: calc(var(--ds-bottom-bar-h) + var(--ds-bar-gap) + var(--ds-safe-bottom));
+}
+
+/* Semana em tela estreita: a grade tem largura de rótulo + 7 colunas mínimas (rola na horizontal, ~3 dias por tela). */
+@utility week-min-narrow {
+  min-width: calc(var(--ds-grid-label-w) + 7 * var(--ds-week-col-min-w));
+}
+
+/* Sem o menu "copiar/pré-visualizar" do toque longo (usado para criar evento na grade). */
+@utility no-callout {
+  -webkit-touch-callout: none;
+}
+
+/* Páginas de leitura e formulários: no celular o texto sobe para ≥ 16 px (reescreve os tokens no escopo). */
+@utility readable {
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    --ds-text-md: var(--ds-text-readable);
+    --ds-text-base: var(--ds-text-readable);
+    --ds-text-sm: var(--ds-text-readable-sm);
+    --ds-text-xs: var(--ds-text-readable-xs);
+  }
+}
+
+/* Grupo de botões: em coluna, um por linha e em largura total, no celular. */
+@utility stack-on-phone {
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    flex-direction: column;
+    align-items: stretch;
+    > * {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+/* Área segura em páginas fora do AppShell: bordas transparentes do tamanho dos recuos (0 fora de aparelhos com entalhe),
+   para não brigar com o padding da página. */
+@utility safe-frame {
+  border-style: solid;
+  border-color: transparent;
+  border-width: var(--ds-safe-top) var(--ds-safe-right) var(--ds-safe-bottom) var(--ds-safe-left);
+}
+
+/* Variantes de dispositivo (mesmas consultas de lib/responsive/breakpoints.ts: MEDIA). */
+@custom-variant phone (@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse));
+@custom-variant short (@media (height <= 31.25rem) and (pointer: coarse));
+@custom-variant coarse (@media (pointer: coarse));
 
 /* Larguras de borda tokenizadas (o Tailwind não as expõe no tema). */
 @utility border-hair {
@@ -253,8 +348,14 @@
   grid-template-columns: var(--ds-stats-cols);
   grid-template-rows: var(--ds-stats-row1-h) auto;
   @media (width < 80rem) {
-    grid-template-columns: var(--ds-stats-cols-md);
+    grid-template-columns: var(--ds-stats-cols-lg);
     grid-template-rows: none;
+  }
+  @media (width < 64rem) {
+    grid-template-columns: var(--ds-stats-cols-md);
+  }
+  @media (width < 48rem) {
+    grid-template-columns: var(--ds-stats-cols-sm);
   }
 }
 @utility grid-analysis {
@@ -296,12 +397,12 @@
 @utility habit-bg-soft {
   background-color: color-mix(in srgb, var(--habit) 18%, transparent);
 }
-/* Visão Ano: 4×3 a partir de 1600 px, 3×4 a partir de 1100 px e 2×6 abaixo. */
+/* Visão Ano: 4×3 a partir de 1600 px, 3×4 a partir do tablet (768 px) e 2×6 no celular. */
 @utility year-grid {
   display: grid;
   gap: var(--ds-year-gap);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  @media (width >= 68.75rem) {
+  @media (width >= 48rem) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   @media (width >= 100rem) {
@@ -381,6 +482,15 @@
 }
 @theme {
   --animate-wave: wave var(--ds-wave-duration) linear infinite;
+  --animate-sheet-in: sheet-in var(--ds-sheet-duration) ease-out;
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
   @keyframes wave {
     from {
       transform: translateX(0);
@@ -430,8 +540,51 @@
   button {
     cursor: pointer;
   }
+  /* Toque: sem o brilho cinza do toque e sem o atraso/zoom de duplo toque nos controles. */
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  button,
+  a,
+  select,
+  summary,
+  [role='button'],
+  [role='tab'],
+  [role='radio'],
+  [role='checkbox'] {
+    touch-action: manipulation;
+  }
+  /* Animações respeitam a preferência de menos movimento. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
   input[type='radio'],
   input[type='checkbox'] {
     accent-color: var(--ds-color-accent);
+  }
+}
+
+/*
+ * Telas de toque: campos de texto e seletores com 16 px (o iOS dá zoom em campos menores) e 44 px de
+ * altura. Fora das camadas de propósito: precisa vencer os utilitários `text-*` dos componentes.
+ */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  select,
+  textarea {
+    font-size: var(--ds-text-input-touch);
+  }
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  select {
+    min-height: var(--ds-touch);
   }
 }

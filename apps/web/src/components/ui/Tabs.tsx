@@ -38,7 +38,7 @@ export function Tabs<T extends string>({
       <div
         role="tablist"
         aria-label={ariaLabel}
-        className="inline-flex h-control items-center gap-1 self-start rounded-full bg-surface p-1"
+        className="inline-flex h-control items-center gap-1 self-start rounded-full bg-surface p-1 coarse:h-segment-touch"
       >
         {tabs.map((tab, index) => {
           const active = tab.value === value;

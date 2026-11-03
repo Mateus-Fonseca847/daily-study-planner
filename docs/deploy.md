@@ -57,6 +57,12 @@ O app não carrega scripts nem fontes de terceiros (a fonte Inter vem empacotada
 
 Cada branch e cada pull request ganha um endereço de prévia próprio (`daily-git-<branch>-<conta>.vercel.app`), mostrado no próprio PR e em **Deployments**. Trabalhando direto na `main`, só existe a produção; as prévias passam a valer quando você começar a usar branches.
 
+### Testar a prévia no celular
+
+1. Abra o PR no GitHub e toque no link da prévia da Vercel (ou digite o endereço `daily-git-<branch>-<conta>.vercel.app` no celular, na mesma conta da Vercel se a proteção de prévias estiver ligada).
+2. No Chrome do Android, o menu ⋮ mostra **Instalar app**; no iPhone, use **Compartilhar → Adicionar à Tela de Início**. Para depurar o Android pelo computador: `chrome://inspect` com o celular em modo desenvolvedor.
+3. **Login com Google em prévias:** o Google e o Supabase só aceitam redirecionar para endereços cadastrados. Cada prévia tem um endereço diferente, então o login **não funciona nelas** a menos que o endereço (ou um curinga como `https://daily-git-*-<conta>.vercel.app/**`) esteja em _Authentication → URL Configuration → Redirect URLs_ no Supabase. Sem isso, o botão "Entrar com Google" volta com erro; "Continuar sem conta" funciona normalmente, e é o que basta para testar o layout.
+
 ## Domínio próprio
 
 **Project → Settings → Domains → Add**, digite o domínio e siga as instruções de DNS (registro `A`/`CNAME` indicado na tela). O HTTPS é emitido automaticamente. Depois de trocar o domínio, atualize `SITE_URL` (`apps/web/vite.config.ts`), o README e o `og.png` se ele citar o endereço. Atenção: dados do navegador (hábitos, eventos) ficam **por origem**; mudar o endereço abre um app vazio, então use _Exportar_ e _Importar_ em Preferências para levar os dados.

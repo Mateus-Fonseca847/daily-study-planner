@@ -6,9 +6,11 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { startAuth } from './lib/auth/auth-store';
 import { setupPwa } from './lib/pwa/register';
+import { installVisualViewport } from './lib/responsive/visual-viewport';
 import { startSync } from './lib/sync/runtime';
 
 setupPwa();
+installVisualViewport();
 startAuth();
 startSync();
 

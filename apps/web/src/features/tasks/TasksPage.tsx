@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { Checkbox } from '../../components/ui/Checkbox';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
+import { usePhone } from '../../lib/responsive/use-media';
 import { SubjectLabel } from '../../components/ui/SubjectLabel';
 import { deleteEventWithUndo } from '../../lib/data/actions';
 import { useData } from '../../lib/data/app-store';
@@ -74,6 +75,7 @@ function TaskRow({ task }: { task: Task }) {
 }
 
 export function TasksPage() {
+  const phone = usePhone();
   const events = useData((s) => s.events);
   const createEvent = useData((s) => s.createEvent);
   const [filter, setFilter] = useState<TaskFilter>('hoje');
@@ -107,10 +109,11 @@ export function TasksPage() {
           className="h-control w-full rounded-full border-hair bg-surface px-5 text-md text-fg placeholder:text-muted"
         />
       </form>
-      <div className="self-start">
+      <div className="self-start phone:w-full">
         <SegmentedControl
           aria-label="Filtro de tarefas"
           options={FILTERS}
+          scroll={phone}
           value={filter}
           onChange={setFilter}
         />

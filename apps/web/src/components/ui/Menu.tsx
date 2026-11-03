@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { usePhone } from '../../lib/responsive/use-media';
+import { BottomSheet } from './BottomSheet';
 
 export interface MenuItem {
   label: string;
@@ -33,16 +35,17 @@ export function Menu({ items, label, trigger, align = 'start', placement = 'belo
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
+  const phone = usePhone();
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || phone) return;
     rootRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
     const onPointerDown = (e: PointerEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
-  }, [open]);
+  }, [open, phone]);
 
   const close = (restoreFocus: boolean) => {
     setOpen(false);
@@ -88,7 +91,29 @@ export function Menu({ items, label, trigger, align = 'start', placement = 'belo
         'aria-controls': panelId,
         onClick: () => setOpen((v) => !v),
       })}
-      {open && (
+      {open && phone && (
+        <BottomSheet title={label} onClose={() => close(true)}>
+          <ul role="menu" aria-label={label} className="flex flex-col gap-1">
+            {items.map(({ label: itemLabel, icon: Icon, onSelect }) => (
+              <li key={itemLabel} role="none">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    close(false);
+                    onSelect();
+                  }}
+                  className="flex h-touch w-full items-center gap-3 rounded-md px-3 text-left text-md text-fg active:bg-hover"
+                >
+                  {Icon && <Icon aria-hidden strokeWidth={1.5} className="size-icon text-muted" />}
+                  {itemLabel}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </BottomSheet>
+      )}
+      {open && !phone && (
         <ul
           id={panelId}
           role="menu"
@@ -106,7 +131,7 @@ export function Menu({ items, label, trigger, align = 'start', placement = 'belo
                   close(false);
                   onSelect();
                 }}
-                className="flex h-select w-full items-center gap-2 rounded-md px-3 text-left text-md text-fg hover:bg-hover focus-visible:bg-hover"
+                className="flex h-select w-full items-center gap-2 rounded-md px-3 text-left text-md text-fg hover:bg-hover focus-visible:bg-hover coarse:h-touch"
               >
                 {Icon && <Icon aria-hidden strokeWidth={1.5} className="size-icon text-muted" />}
                 {itemLabel}
