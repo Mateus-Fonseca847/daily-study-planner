@@ -58,7 +58,7 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
           <Link
             to="/calendario"
             aria-label="Abrir calendário"
-            className="inline-flex size-control shrink-0 items-center justify-center rounded-full bg-chart-track hover:bg-chart-track-strong"
+            className="inline-flex size-control coarse:size-touch shrink-0 items-center justify-center rounded-full bg-chart-track hover:bg-chart-track-strong"
           >
             <CalendarDays aria-hidden strokeWidth={1.5} className="size-icon" />
           </Link>
@@ -71,6 +71,7 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
         tabIndex={0}
         role="region"
         aria-label="Linha do tempo de hoje"
+        data-scroll-x
         className="relative mt-4 h-agenda overflow-y-auto"
       >
         <div

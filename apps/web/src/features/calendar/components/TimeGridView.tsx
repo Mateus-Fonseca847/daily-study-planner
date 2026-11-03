@@ -53,7 +53,7 @@ function ColumnHeader({
         aria-current={isToday ? 'date' : undefined}
         onClick={() => onCreateDay(date)}
         className={cn(
-          'inline-flex h-today min-w-today items-center justify-center rounded-full px-1 text-md font-bold',
+          'inline-flex h-today min-w-today items-center justify-center rounded-full px-1 text-md font-bold coarse:size-touch',
           isToday ? 'bg-accent text-accent-fg' : 'text-soft hover:text-fg',
         )}
       >

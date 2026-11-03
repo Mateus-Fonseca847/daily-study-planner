@@ -45,7 +45,7 @@ export function SegmentedControl<T extends string>({
       aria-label={ariaLabel}
       data-scroll-x={block || scroll ? '' : undefined}
       className={cn(
-        'inline-flex h-control items-center gap-1 rounded-full bg-surface p-1 coarse:h-touch',
+        'inline-flex h-control items-center gap-1 rounded-full bg-surface p-1 coarse:h-segment-touch',
         (block || scroll) && 'flex w-full overflow-x-auto',
       )}
     >

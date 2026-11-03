@@ -215,6 +215,7 @@
   --spacing-safe-left: var(--ds-safe-left);
   --spacing-touch: var(--ds-touch);
   --spacing-touch-dense: var(--ds-touch-dense);
+  --spacing-segment-touch: var(--ds-segment-touch-h);
   --spacing-bottom-bar: var(--ds-bottom-bar-h);
   --spacing-topbar-compact: var(--ds-topbar-h-compact);
   --spacing-bar-short: var(--ds-bar-h-short);
@@ -555,14 +556,6 @@
   [role='checkbox'] {
     touch-action: manipulation;
   }
-  /* Campos de texto com 16 px em telas de toque (o iOS dá zoom em campos menores). */
-  @variant coarse {
-    input:not([type='checkbox']):not([type='radio']):not([type='range']),
-    select,
-    textarea {
-      font-size: var(--ds-text-input-touch);
-    }
-  }
   /* Animações respeitam a preferência de menos movimento. */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -577,5 +570,21 @@
   input[type='radio'],
   input[type='checkbox'] {
     accent-color: var(--ds-color-accent);
+  }
+}
+
+/*
+ * Telas de toque: campos de texto e seletores com 16 px (o iOS dá zoom em campos menores) e 44 px de
+ * altura. Fora das camadas de propósito: precisa vencer os utilitários `text-*` dos componentes.
+ */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  select,
+  textarea {
+    font-size: var(--ds-text-input-touch);
+  }
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+  select {
+    min-height: var(--ds-touch);
   }
 }

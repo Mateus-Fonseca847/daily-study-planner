@@ -313,6 +313,8 @@
   --ds-safe-left: env(safe-area-inset-left, 0px);
   --ds-touch: 2.75rem;
   --ds-touch-dense: 1.5rem;
+  /* Trilho do segmentado/abas em telas de toque: 44 px de item + o respiro de 4 px de cada lado. */
+  --ds-segment-touch-h: 3.25rem;
   --ds-bottom-bar-h: 3.5rem;
   --ds-topbar-h-compact: 3.5rem;
   --ds-bar-h-short: 2.75rem;
@@ -339,8 +341,8 @@
   }
 }
 
-/* Celular: células do heatmap com o alvo mínimo de 24 px (a grade rola na horizontal). */
-@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+/* Telas de toque: células do heatmap com o alvo mínimo de 24 px (a grade rola na horizontal). */
+@media (pointer: coarse), (width < 48rem) {
   :root {
     --ds-heat-cell-min: 1.5rem;
     /* Modo Foco: dígitos fluidos pela largura e pela altura (celular em paisagem não estoura). */

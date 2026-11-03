@@ -105,7 +105,7 @@ function NextExam({ events, now }: Pick<DayPanelProps, 'events' | 'now'>) {
           </span>
           <Link
             to="/provas"
-            className="self-start rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+            className="inline-flex self-start rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline coarse:min-h-touch coarse:items-center"
           >
             Abrir provas
           </Link>

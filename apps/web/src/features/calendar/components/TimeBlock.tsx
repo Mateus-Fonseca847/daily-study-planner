@@ -29,6 +29,7 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
       aria-label={`${meta.label}: ${event.title}, ${time}`}
       title={`${event.title} · ${time}`}
       aria-expanded={selected}
+      data-touch="dense"
       onClick={(e) => onSelect(event, e.currentTarget)}
       className={cn(
         'flex size-full min-w-0 flex-col justify-start overflow-hidden rounded-sm border-l-stripe px-2 py-chip-y text-left transition-[filter] hover:brightness-125',

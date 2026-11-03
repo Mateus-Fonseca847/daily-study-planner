@@ -179,7 +179,7 @@ export function TimeGrid({
                   <div
                     key={column.date}
                     role="columnheader"
-                    className="flex h-week-head items-center justify-center border-l-hair max-xl:snap-start"
+                    className="flex h-week-head items-center justify-center border-l-hair coarse:h-auto coarse:min-h-week-head max-xl:snap-start"
                   >
                     {renderHeader(column.date)}
                   </div>

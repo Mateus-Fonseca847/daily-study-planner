@@ -67,7 +67,7 @@ function MiniMonthView({
           aria-label={`Abrir ${name} na visão Mês`}
           title={`Abrir ${name} na visão Mês`}
           onClick={() => onOpenMonth(first)}
-          className="rounded-sm text-md font-semibold tracking-tight hover:text-accent coarse:inline-flex coarse:min-h-touch coarse:items-center"
+          className="rounded-sm text-md font-semibold tracking-tight hover:text-accent coarse:inline-flex coarse:min-h-touch coarse:min-w-touch coarse:items-center"
         >
           {name}
         </button>

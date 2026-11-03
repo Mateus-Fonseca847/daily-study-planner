@@ -59,7 +59,7 @@ export function TopFocusDays() {
 
       <Link
         to="/estatisticas"
-        className="self-start rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+        className="inline-flex self-start rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline coarse:min-h-touch coarse:items-center"
       >
         Ver estatísticas
       </Link>
