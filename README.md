@@ -335,8 +335,9 @@ Este é um projeto pessoal de portfólio, mas sugestões são bem-vindas via [is
 
 Distribuído sob a licença MIT. Veja o arquivo [`LICENSE`](LICENSE).
 
-## Autor
+## Autores
 
-Feito por Mateus de Souza Fonseca ([@Mateus-Fonseca847](https://github.com/Mateus-Fonseca847)).
+Feito por Mateus de Souza Fonseca ([@Mateus-Fonseca847](https://github.com/Mateus-Fonseca847)) & Pedro Henrique Toraldo([ph1007](https://github.com/ph1007)).
 
-[GitHub](https://github.com/Mateus-Fonseca847) · LinkedIn: [PREENCHER: link do perfil]
+Mateus: [GitHub](https://github.com/Mateus-Fonseca847) · LinkedIn: [https://www.linkedin.com/in/mateus-souza-fonseca/]
+Pedro Henrique: [GitHub](https://github.com/ph1007) · LinkedIn: [https://www.linkedin.com/in/pedro-henrique-toraldo/]
