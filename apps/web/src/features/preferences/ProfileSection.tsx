@@ -48,7 +48,7 @@ export function ProfileSection() {
   return (
     <section
       aria-labelledby="profile-title"
-      className="flex flex-col gap-4 rounded-xl border-hair p-6"
+      className="flex flex-col gap-4 rounded-xl border-hair p-6 phone:p-4"
     >
       <div>
         <h2 id="profile-title" className="text-lg font-semibold tracking-tight">
@@ -90,7 +90,7 @@ export function ProfileSection() {
           checked={values.lockByDefault}
           onChange={(e) => set({ lockByDefault: e.target.checked })}
         />
-        <Button type="submit" className="self-start">
+        <Button type="submit" className="self-start phone:self-stretch">
           Salvar preferências
         </Button>
       </form>

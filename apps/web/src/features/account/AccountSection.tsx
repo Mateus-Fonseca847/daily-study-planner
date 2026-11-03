@@ -42,7 +42,7 @@ export function AccountSection() {
   return (
     <section
       aria-labelledby="account-title"
-      className="flex flex-col gap-4 rounded-xl border-hair p-6"
+      className="flex flex-col gap-4 rounded-xl border-hair p-6 phone:p-4"
     >
       <h2 id="account-title" className="text-lg font-semibold tracking-tight">
         Conta e sincronização
@@ -56,7 +56,7 @@ export function AccountSection() {
           </p>
           <Link
             to="/entrar"
-            className="inline-flex h-control w-fit items-center gap-2 rounded-full bg-accent px-5 text-nav font-semibold text-accent-fg hover:brightness-95"
+            className="inline-flex h-control w-fit items-center justify-center gap-2 rounded-full bg-accent px-5 text-nav font-semibold text-accent-fg hover:brightness-95 coarse:min-h-touch phone:w-full"
           >
             <LogIn aria-hidden strokeWidth={1.5} className="size-icon" />
             Entrar
@@ -76,7 +76,7 @@ export function AccountSection() {
               ` · ${new Date(sync.lastSyncedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`}
             {sync.message && ` — ${sync.message}`}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 stack-on-phone">
             <Button variant="secondary" onClick={() => void syncNow()}>
               <RefreshCw aria-hidden strokeWidth={1.5} className="size-icon" />
               Sincronizar agora

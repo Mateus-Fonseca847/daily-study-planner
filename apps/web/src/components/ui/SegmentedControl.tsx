@@ -22,6 +22,8 @@ interface SegmentedControlProps<T extends string> {
   compact?: boolean;
   /** Ocupa a largura toda, com itens do mesmo tamanho e rolagem horizontal se não couber (celular). */
   block?: boolean;
+  /** Chips que rolam na horizontal, cada um com a largura do texto (filtros no celular). */
+  scroll?: boolean;
   'aria-label': string;
 }
 
@@ -34,16 +36,17 @@ export function SegmentedControl<T extends string>({
   actions = [],
   compact = false,
   block = false,
+  scroll = false,
   'aria-label': ariaLabel,
 }: SegmentedControlProps<T>) {
   return (
     <div
       role="group"
       aria-label={ariaLabel}
-      data-scroll-x={block ? '' : undefined}
+      data-scroll-x={block || scroll ? '' : undefined}
       className={cn(
         'inline-flex h-control items-center gap-1 rounded-full bg-surface p-1 coarse:h-touch',
-        block && 'flex w-full overflow-x-auto',
+        (block || scroll) && 'flex w-full overflow-x-auto',
       )}
     >
       <div role="radiogroup" aria-label={ariaLabel} className="contents">
@@ -62,6 +65,7 @@ export function SegmentedControl<T extends string>({
                 ITEM,
                 compact && 'min-w-0! px-3!',
                 block && 'min-w-0! flex-1 px-2!',
+                scroll && 'shrink-0 whitespace-nowrap',
                 active ? 'bg-accent font-semibold text-accent-fg' : 'text-soft hover:text-fg',
               )}
             >

@@ -15,7 +15,7 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
 /** Política de privacidade pública (exigida também pelo Google para publicar o login). */
 export function PrivacyPage() {
   return (
-    <main className="h-full overflow-y-auto bg-bg">
+    <main className="readable h-full overflow-y-auto bg-bg safe-frame">
       <div className="mx-auto flex w-full max-w-content flex-col gap-6 px-page py-10">
         <header>
           <Link to="/" className="text-sm text-muted underline">

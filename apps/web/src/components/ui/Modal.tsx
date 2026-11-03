@@ -34,7 +34,7 @@ export function Modal({ title, onClose, children, footer }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="vv-box fixed z-50 flex flex-col bg-raised pt-safe-top pr-safe-right pb-safe-bottom pl-safe-left"
+        className="readable vv-box fixed z-50 flex flex-col bg-raised pt-safe-top pr-safe-right pb-safe-bottom pl-safe-left"
       >
         <header className="flex h-topbar-compact shrink-0 items-center justify-between gap-2 border-b-hair px-4">
           <h2 id={titleId} className="truncate text-title font-semibold tracking-tight">
