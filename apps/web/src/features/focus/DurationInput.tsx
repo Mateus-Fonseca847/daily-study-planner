@@ -65,6 +65,7 @@ export function DurationInput({ seconds, onCommit, onNotice }: DurationInputProp
     <input
       type="text"
       inputMode="numeric"
+      enterKeyHint="done"
       autoComplete="off"
       spellCheck={false}
       aria-label="Duração da sessão"

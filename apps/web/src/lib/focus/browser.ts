@@ -32,6 +32,29 @@ export const useIsFullscreen = (): boolean =>
 
 export const wakeLockSupported = (): boolean => 'wakeLock' in navigator;
 
+/** O navegador oferece tela cheia para a página? (O iPhone, por exemplo, não.) */
+export const fullscreenSupported = (): boolean => document.fullscreenEnabled === true;
+
+/**
+ * Aviso de uma linha quando o aparelho não tem tela cheia e/ou não mantém a tela ligada; `null`
+ * quando tudo existe. O cronômetro é por timestamps, então segue exato de qualquer forma.
+ */
+export function deviceNotice({
+  wakeLock,
+  fullscreen,
+}: {
+  wakeLock: boolean;
+  fullscreen: boolean;
+}): string | null {
+  if (wakeLock && fullscreen) return null;
+  if (!wakeLock && !fullscreen) {
+    return 'Este aparelho não oferece tela cheia nem mantém a tela ligada; o cronômetro continua exato.';
+  }
+  return fullscreen
+    ? 'Este aparelho não mantém a tela ligada durante a sessão; o cronômetro continua exato.'
+    : 'Este aparelho não oferece tela cheia; o cronômetro continua exato.';
+}
+
 /** Mantém a tela ligada enquanto `active`; readquire ao voltar à aba (o navegador libera ao ocultá-la). */
 export function useWakeLock(active: boolean): void {
   useEffect(() => {
