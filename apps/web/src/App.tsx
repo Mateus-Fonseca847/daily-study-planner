@@ -11,7 +11,10 @@ import { StatsPage } from './features/stats/StatsPage';
 import { PreferencesPage } from './features/preferences/PreferencesPage';
 import { SubjectsPage } from './features/subjects/SubjectsPage';
 import { TasksPage } from './features/tasks/TasksPage';
+import { EntryRedirect } from './pages/EntryRedirect';
+import { LoginPage } from './pages/LoginPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 
 const CALENDAR_PATH = '/calendario';
 
@@ -29,11 +32,14 @@ const PAGES: Record<string, ReactNode> = {
 };
 
 const routes: RouteObject[] = [
+  // Fora do shell: sem barra lateral nem topo.
+  { path: '/entrar', element: <LoginPage /> },
+  { path: '/privacidade', element: <PrivacyPage /> },
   {
     // Roteador de dados: necessário para o bloqueador de navegação do Modo Foco (`useBlocker`).
     element: <AppShell />,
     children: [
-      { index: true, element: <Navigate to={CALENDAR_PATH} replace /> },
+      { index: true, element: <EntryRedirect /> },
       ...[...MENU_ITEMS, ...SETTINGS_ITEMS].map((item) => ({
         path: item.to,
         element: PAGES[item.to] ?? <PlaceholderPage item={item} />,

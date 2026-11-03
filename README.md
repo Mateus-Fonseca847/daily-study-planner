@@ -36,7 +36,7 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 ## Status
 
-A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Os dados ficam só no navegador; back-end, login e sincronização são o próximo marco.
+A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Os dados ficam no navegador; o login opcional com Google e a sincronização na nuvem (Supabase) estão em desenvolvimento.
 
 | Marco                  | Escopo                                                                 | Status    |
 | ---------------------- | ---------------------------------------------------------------------- | --------- |
@@ -243,9 +243,10 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 ## Dados e privacidade
 
 - Os dados ficam no **navegador de cada endereço**: `http://localhost:5173` e o endereço publicado têm armazenamentos separados. Para levar o que você criou em `localhost` para o app publicado, use **Preferências → Exportar dados (JSON)** em um e **Importar dados (JSON)** no outro.
-- Não há analytics, rastreamento nem requisições a terceiros (a política de segurança do site só aceita recursos do próprio domínio).
+- Não há analytics nem rastreamento. Sem conta, nenhuma requisição sai do navegador; com conta Google (opcional), os dados são sincronizados com o Supabase — veja a **política de privacidade** em `/privacidade` e a seção **Conta e sincronização** abaixo.
 
-- Seus dados (matérias, provas, tarefas, blocos de estudo, conteúdos e hábitos) ficam **somente no seu navegador**, no `localStorage` deste site. Nada é enviado a servidores, não há conta nem rastreamento.
+- **Sem conta (modo visitante):** seus dados ficam **somente no seu navegador**, no `localStorage` deste site; nada é enviado a servidores.
+- **Com conta (Entrar com Google):** uma cópia fica na nuvem (Supabase, uma linha por usuário protegida por RLS) e é sincronizada entre dispositivos. Ao sair da conta, os dados do dispositivo são removidos; é possível excluir a conta e os dados da nuvem em Preferências.
 - Por isso, **limpar os dados do site, trocar de navegador ou de computador faz os dados "sumirem"**. Para guardar uma cópia, use **Preferências → Exportar dados (JSON)**; para restaurar ou levar a outro lugar, **Importar dados (JSON)**.
 - O Daily mantém automaticamente uma cópia do último estado válido e, se o dado salvo ficar corrompido, avisa e oferece restaurá-la (detalhes em [`docs/data-model.md`](docs/data-model.md)).
 - Em navegação anônima/privada os dados podem não persistir; o app avisa quando não consegue salvar.

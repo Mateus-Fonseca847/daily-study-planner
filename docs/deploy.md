@@ -27,11 +27,22 @@ O que `apps/web/vercel.json` já configura (a Vercel o lê sozinha, a partir da 
 - **Cache:** `/assets/*` com `public, max-age=31536000, immutable` (nomes com hash); `/sw.js`, `/index.html`, `/manifest.webmanifest` e as rotas do app com `max-age=0, must-revalidate`, para o navegador sempre revalidar e a atualização do service worker chegar.
 - **Segurança:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva (câmera, microfone, geolocalização, pagamento, USB e sensores desligados; tela cheia e wake lock continuam permitidos), `X-Frame-Options: DENY` e `Content-Security-Policy`.
 
+### Variáveis de ambiente (conta e sincronização)
+
+Em **Settings → Environment Variables** da Vercel (Production e Preview), defina:
+
+| Variável                 | Valor                                                         |
+| ------------------------ | ------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`      | URL do projeto Supabase (`https://<ref>.supabase.co`)         |
+| `VITE_SUPABASE_ANON_KEY` | chave **publishable** (pública; o acesso é limitado pela RLS) |
+
+Sem elas o app funciona normalmente, só local (sem tela de entrada). Nunca use a chave `service_role`/secret no front-end. No Supabase: **Authentication → URL Configuration** com a Site URL de produção e as Redirect URLs (`https://dailystudyplanner.vercel.app/**`, `http://localhost:5173/**`); **Providers → Google** com o Client ID/Secret do Google Cloud (Credenciais de produção/URI de redirecionamento = `https://<ref>.supabase.co/auth/v1/callback`). Para o Google aceitar qualquer pessoa, a tela de consentimento precisa estar **publicada** e apontar para `/privacidade`.
+
 ### Content-Security-Policy
 
 ```text
 default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:;
-font-src 'self'; connect-src 'self'; media-src 'self' blob:; worker-src 'self';
+font-src 'self'; connect-src 'self' https://<ref>.supabase.co; media-src 'self' blob:; worker-src 'self';
 manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 ```
 
@@ -40,7 +51,7 @@ manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; fra
 - o zod 4 testava `Function('')` ao criar os schemas (o que a CSP reporta como violação de `script-src`); o app liga `z.config({ jitless: true })` antes de qualquer schema (`src/lib/zod-config.ts`), sem custo perceptível;
 - estilos por atributo (`style={…}` do React) funcionam sem `unsafe-inline` porque o React os aplica pela API do DOM, não por HTML.
 
-O app não carrega nada de terceiros (a fonte Inter vem empacotada) e não envia dados a lugar nenhum, por isso `connect-src 'self'` basta. O teste `e2e/pwa/headers.spec.ts` percorre todas as rotas, usa o Modo Foco (iniciar, tela cheia, wake lock, Web Audio) e falha se houver qualquer `securitypolicyviolation` ou erro de console, usando as regras do próprio `vercel.json` (`scripts/serve-dist.mjs`). Se você acrescentar algo que dependa de outro domínio (analytics, fontes remotas, API), amplie a diretiva correspondente e rode `pnpm e2e`.
+O app não carrega scripts nem fontes de terceiros (a fonte Inter vem empacotada). A única origem externa é o Supabase (`connect-src`), usada só com conta; o login Google é um redirecionamento de página inteira, que a CSP não bloqueia (`form-action`/`frame-ancestors` não se aplicam). Se mudar o projeto Supabase, atualize o domínio em `vercel.json`. O teste `e2e/pwa/headers.spec.ts` percorre todas as rotas, usa o Modo Foco (iniciar, tela cheia, wake lock, Web Audio) e falha se houver qualquer `securitypolicyviolation` ou erro de console, usando as regras do próprio `vercel.json` (`scripts/serve-dist.mjs`). Se você acrescentar algo que dependa de outro domínio (analytics, fontes remotas, API), amplie a diretiva correspondente e rode `pnpm e2e`.
 
 ## Prévias (preview deployments)
 

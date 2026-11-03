@@ -8,6 +8,7 @@ import { createBackupFile, readBackupFile } from '../../lib/data/backup';
 import { useData } from '../../lib/data/app-store';
 import { appNow } from '../../lib/fixture';
 import { useToasts } from '../../lib/toast-store';
+import { AccountSection } from '../account/AccountSection';
 import { AppSection } from './AppSection';
 import { ProfileSection } from './ProfileSection';
 
@@ -53,6 +54,7 @@ export function PreferencesPage() {
 
   return (
     <PageShell title="Preferências" description="Perfil, Modo Foco e backup dos seus dados.">
+      <AccountSection />
       <ProfileSection />
       <AppSection onExport={exportData} />
       <section
@@ -63,8 +65,9 @@ export function PreferencesPage() {
           Backup
         </h2>
         <p className="text-md text-muted">
-          Seus dados ficam salvos só neste navegador ({current.subjects} matérias, {current.events}{' '}
-          eventos). Exporte um arquivo JSON para guardar uma cópia ou levar para outro computador.
+          Seus dados ficam neste navegador (e na nuvem, se você entrou na conta) ({current.subjects}{' '}
+          matérias, {current.events} eventos). Exporte um arquivo JSON para guardar uma cópia ou
+          levar para outro computador.
         </p>
         <div className="flex flex-wrap gap-2">
           <Button onClick={exportData}>
