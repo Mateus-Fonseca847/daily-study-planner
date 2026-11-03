@@ -297,6 +297,28 @@
   --ds-focus-pill-px: 1.5rem;
   --ds-focus-hold-size: 1.75rem;
   --ds-focus-hold-ring: 0.1875rem;
+
+  /* Responsividade (celular e tablet) */
+  --ds-safe-top: env(safe-area-inset-top, 0px);
+  --ds-safe-right: env(safe-area-inset-right, 0px);
+  --ds-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ds-safe-left: env(safe-area-inset-left, 0px);
+  --ds-touch: 2.75rem;
+  --ds-touch-dense: 1.5rem;
+  --ds-bottom-bar-h: 3.5rem;
+  --ds-topbar-h-compact: 3.5rem;
+  --ds-bar-h-short: 2.75rem;
+  --ds-fab-size: 3.5rem;
+  --ds-sheet-radius: 1.25rem;
+  --ds-sheet-handle-w: 2.5rem;
+  --ds-sheet-handle-h: 0.25rem;
+  --ds-sheet-max-h: 92dvh;
+  --ds-sheet-duration: 200ms;
+  --ds-bar-gap: 0.75rem;
+  /* Altura da área visível com o teclado virtual aberto (a JS a atualiza; sem teclado = a janela). */
+  --ds-vv-h: 100dvh;
+  --ds-vv-top: 0px;
+  --ds-text-input-touch: 1rem;
 }
 
 /*

@@ -3,6 +3,12 @@
 
 /* Mapeia os tokens (--ds-*) no tema do Tailwind. Nada fora deste mapa vira utilitário. */
 @theme inline {
+  /* Breakpoints (único lugar; espelhados em lib/responsive/breakpoints.ts, com teste). */
+  --breakpoint-*: initial;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+
   --color-*: initial;
   --color-transparent: transparent;
   --color-bg: var(--ds-color-bg);
@@ -202,11 +208,51 @@
   --spacing-swatch: var(--ds-swatch);
   --spacing-dot: var(--ds-dot);
 
+  --spacing-safe-top: var(--ds-safe-top);
+  --spacing-safe-right: var(--ds-safe-right);
+  --spacing-safe-bottom: var(--ds-safe-bottom);
+  --spacing-safe-left: var(--ds-safe-left);
+  --spacing-touch: var(--ds-touch);
+  --spacing-touch-dense: var(--ds-touch-dense);
+  --spacing-bottom-bar: var(--ds-bottom-bar-h);
+  --spacing-topbar-compact: var(--ds-topbar-h-compact);
+  --spacing-bar-short: var(--ds-bar-h-short);
+  --spacing-fab-size: var(--ds-fab-size);
+  --spacing-bar-gap: var(--ds-bar-gap);
+  --spacing-sheet-max: var(--ds-sheet-max-h);
+  --spacing-vv: var(--ds-vv-h);
+  --spacing-handle-w: var(--ds-sheet-handle-w);
+  --spacing-handle-h: var(--ds-sheet-handle-h);
+  --radius-sheet: var(--ds-sheet-radius);
+
   --container-modal: var(--ds-modal-w);
   --container-toast: var(--ds-toast-w);
   --container-content: var(--ds-page-max-w);
   --container-stats: var(--ds-stats-max-w);
 }
+
+/* Caixa fixa que acompanha a área visível (com o teclado virtual aberto, só a parte de cima da tela). */
+@utility vv-box {
+  top: var(--ds-vv-top);
+  left: 0;
+  right: 0;
+  height: var(--ds-vv-h);
+}
+
+/* Avisos: no desktop ficam a 1,5 rem da borda; em celular, acima da barra inferior, do + e da área segura. */
+@utility toast-region {
+  bottom: 1.5rem;
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    bottom: calc(
+      var(--ds-bottom-bar-h) + var(--ds-fab-size) + var(--ds-bar-gap) * 2 + var(--ds-safe-bottom)
+    );
+  }
+}
+
+/* Variantes de dispositivo (mesmas consultas de lib/responsive/breakpoints.ts: MEDIA). */
+@custom-variant phone (@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse));
+@custom-variant short (@media (height <= 31.25rem) and (pointer: coarse));
+@custom-variant coarse (@media (pointer: coarse));
 
 /* Larguras de borda tokenizadas (o Tailwind não as expõe no tema). */
 @utility border-hair {
@@ -381,6 +427,15 @@
 }
 @theme {
   --animate-wave: wave var(--ds-wave-duration) linear infinite;
+  --animate-sheet-in: sheet-in var(--ds-sheet-duration) ease-out;
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
   @keyframes wave {
     from {
       transform: translateX(0);
@@ -429,6 +484,41 @@
   }
   button {
     cursor: pointer;
+  }
+  /* Toque: sem o brilho cinza do toque e sem o atraso/zoom de duplo toque nos controles. */
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  button,
+  a,
+  select,
+  summary,
+  [role='button'],
+  [role='tab'],
+  [role='radio'],
+  [role='checkbox'] {
+    touch-action: manipulation;
+  }
+  /* Campos de texto com 16 px em telas de toque (o iOS dá zoom em campos menores). */
+  @variant coarse {
+    input:not([type='checkbox']):not([type='radio']):not([type='range']),
+    select,
+    textarea {
+      font-size: var(--ds-text-input-touch);
+    }
+  }
+  /* Animações respeitam a preferência de menos movimento. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
   input[type='radio'],
   input[type='checkbox'] {

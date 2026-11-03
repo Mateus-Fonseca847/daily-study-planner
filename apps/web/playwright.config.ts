@@ -6,6 +6,8 @@ const PORT = 5198;
  * cabeçalhos, inclusive a CSP); o service worker não existe no dev.
  */
 const PWA_PORT = 5199;
+/** O projeto “responsive” usa o app em dev com variáveis de nuvem falsas (mostra “Entrar” e `/entrar`, sem rede). */
+const RESPONSIVE_PORT = 5197;
 
 const shared = {
   viewport: { width: 1440, height: 900 },
@@ -23,8 +25,13 @@ export default defineConfig({
   projects: [
     {
       name: 'app',
-      testIgnore: '**/pwa/**',
+      testIgnore: ['**/pwa/**', '**/responsive/**'],
       use: { ...shared, baseURL: `http://localhost:${PORT}` },
+    },
+    {
+      name: 'responsive',
+      testMatch: '**/responsive/**/*.spec.ts',
+      use: { ...shared, baseURL: `http://localhost:${RESPONSIVE_PORT}` },
     },
     {
       name: 'pwa',
@@ -37,6 +44,12 @@ export default defineConfig({
       command: `pnpm exec vite --port ${PORT} --strictPort`,
       url: `http://localhost:${PORT}`,
       reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `pnpm exec vite --port ${RESPONSIVE_PORT} --strictPort`,
+      url: `http://localhost:${RESPONSIVE_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      env: { VITE_SUPABASE_URL: 'http://localhost:54321', VITE_SUPABASE_ANON_KEY: 'test-key' },
     },
     {
       command: `pnpm exec vite build --outDir dist-pwa && node scripts/serve-dist.mjs dist-pwa ${PWA_PORT}`,
