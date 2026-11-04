@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarPlus, FileCheck2 } from 'lucide-react';
 import type { StudyEvent } from '@daily/shared';
 import { useShell } from '../../components/layout/shell-context';
+import { usePhone } from '../../lib/responsive/use-media';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { useData } from '../../lib/data/app-store';
@@ -22,6 +23,7 @@ import {
   buildCalendarSearch,
   parseCalendarSearch,
   shiftPeriod,
+  viewForScreen,
   type CalendarView,
 } from './lib/views';
 
@@ -35,7 +37,11 @@ export function CalendarPage() {
   const today = useMemo(() => appNow(), []);
   const todayKey = dayKey(today);
   const [params, setParams] = useSearchParams();
-  const { view, date } = parseCalendarSearch(params, todayKey);
+  const phone = usePhone();
+  const parsed = parseCalendarSearch(params, todayKey);
+  const { date } = parsed;
+  // No celular o ano inteiro não cabe: Mês é o padrão e a visão Ano some.
+  const view = viewForScreen(parsed.view, phone);
   const month = useMemo(() => parseISO(`${date}T00:00:00`), [date]);
   const [selection, setSelection] = useState<Selection | null>(null);
   const allEvents = useData((s) => s.events);
@@ -71,7 +77,11 @@ export function CalendarPage() {
     [go, view, date],
   );
   const goToday = useCallback(() => go({ date: todayKey }), [go, todayKey]);
-  useCalendarShortcuts({ onStep: step, onToday: goToday, onView: (next) => go({ view: next }) });
+  useCalendarShortcuts({
+    onStep: step,
+    onToday: goToday,
+    onView: (next) => go({ view: viewForScreen(next, phone) }),
+  });
 
   return (
     <>

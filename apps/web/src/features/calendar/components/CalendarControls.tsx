@@ -13,6 +13,8 @@ import { MONTH_OPTIONS } from '../lib/format';
 import {
   CALENDAR_VIEWS,
   periodTitle,
+  PHONE_VIEWS,
+  shortPeriodTitle,
   VIEW_LABEL,
   VIEW_SHORTCUT,
   type CalendarView,
@@ -75,7 +77,7 @@ export function CalendarControls({
       <div className="flex shrink-0 flex-col gap-2 border-b-hair px-4 py-2">
         <SegmentedControl
           aria-label="Visualização do calendário"
-          options={VIEW_OPTIONS}
+          options={VIEW_OPTIONS.filter((option) => PHONE_VIEWS.includes(option.value))}
           block
           value={view}
           onChange={onViewChange}
@@ -98,7 +100,7 @@ export function CalendarControls({
               onClick={() => setPickerOpen(true)}
               className="flex h-touch w-full items-center justify-end gap-1 truncate rounded-md pl-2 text-right"
             >
-              <span className="truncate">{periodTitle(view, date)}</span>
+              <span className="truncate">{shortPeriodTitle(view, date)}</span>
               <ChevronDown
                 aria-hidden
                 strokeWidth={1.5}

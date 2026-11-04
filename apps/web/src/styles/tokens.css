@@ -356,6 +356,16 @@
   }
 }
 
+/* Celular: grade de horas compacta (horas mais baixas, coluna de rótulos e colunas de dia mais estreitas, cabeçalho curto). */
+@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+  :root {
+    --ds-grid-hour-h: 3.25rem;
+    --ds-grid-label-w: 2.5rem;
+    --ds-week-col-min-w: 5rem;
+    --ds-week-head-h: 2.5rem;
+  }
+}
+
 /* Paisagem de celular: topbar e barra inferior mais finas. */
 @media (height <= 31.25rem) and (pointer: coarse) {
   :root {

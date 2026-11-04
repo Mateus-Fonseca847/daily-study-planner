@@ -179,7 +179,7 @@ export function TimeGrid({
                   <div
                     key={column.date}
                     role="columnheader"
-                    className="flex h-week-head items-center justify-center border-l-hair coarse:h-auto coarse:min-h-week-head max-xl:snap-start"
+                    className="flex h-week-head items-center justify-center border-l-hair coarse:h-auto coarse:min-h-week-head phone:py-1 max-xl:snap-start"
                   >
                     {renderHeader(column.date)}
                   </div>
@@ -194,7 +194,7 @@ export function TimeGrid({
                 style={{ gridTemplateColumns: template }}
               >
                 <div className="flex items-start justify-end px-2 py-2 text-xs text-muted max-xl:sticky max-xl:left-0 max-xl:z-10 max-xl:bg-bg">
-                  {stripLabel}
+                  <span className="phone:sr-only">{stripLabel}</span>
                 </div>
                 {columns.map((column) => (
                   <div key={column.date} role="gridcell" className="min-w-0 border-l-hair p-1">
