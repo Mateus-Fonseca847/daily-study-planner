@@ -162,11 +162,39 @@ test.describe('Celular: navegação, sheets e gestos', () => {
     await expect(page.getByRole('heading', { name: 'Hábitos do dia' })).toBeVisible();
     await summary.tap();
 
-    await expect(title(page)).toContainText('Quinta-feira, 29');
+    await expect(title(page)).toContainText('29 de out');
     await finger.swipe({ x: 330, y: 560 }, { x: 80, y: 565 }); // dedo para a esquerda: avança
     await expect(page).toHaveURL(/data=2026-10-30/);
     await finger.swipe({ x: 80, y: 560 }, { x: 330, y: 566 }); // para a direita: volta
     await expect(page).toHaveURL(/data=2026-10-29/);
+  });
+
+  test('celular: sem a visão Ano (o padrão é o Mês) e a Semana é compacta e legível', async ({
+    page,
+  }) => {
+    await page.goto(`${VIEWS}`);
+    const views = page.getByRole('radiogroup', { name: 'Visualização do calendário' });
+    await expect(views.getByRole('radio')).toHaveText(['Dia', 'Semana', 'Mês']);
+    await expect(views.getByRole('radio', { name: 'Mês' })).toBeChecked();
+
+    // Um link antigo com ?visao=ano cai no Mês no celular.
+    await page.goto(`${VIEWS}&visao=ano&data=2026-10-29`);
+    await expect(page.getByRole('radio', { name: 'Mês' })).toBeChecked();
+    await expect(page.getByRole('group', { name: /Calendário de/ })).toHaveCount(0);
+
+    await page.getByRole('radio', { name: 'Semana' }).tap();
+    await expect(title(page).locator('span').first()).toHaveText('25–31 out');
+    const hour = await page
+      .getByRole('gridcell', { name: '2026-10-29' })
+      .evaluate((el) => el.getBoundingClientRect().height / 24);
+    expect(hour).toBeLessThanOrEqual(56); // horas mais baixas que as de 72 px do desktop
+    // Hábitos da faixa viram ícones de 24 px e os blocos simultâneos só a faixa colorida.
+    const pill = (await page
+      .getByRole('button', { name: /^Meditação:/ })
+      .first()
+      .boundingBox())!;
+    expect(pill.width).toBeLessThanOrEqual(26);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   });
 
   test('Mês compacto: toque seleciona o dia e mostra a agenda; deslizar muda o mês', async ({
