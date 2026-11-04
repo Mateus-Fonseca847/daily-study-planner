@@ -82,7 +82,8 @@ export async function auditPage(page: Page): Promise<AuditResult> {
         if (
           el.matches(interactive) &&
           !el.closest('[inert], [aria-hidden="true"]') &&
-          el.getAttribute('data-touch') !== 'inline' // links no meio de uma frase (exceção do WCAG 2.5.8)
+          el.getAttribute('data-touch') !== 'inline' && // links no meio de uma frase (exceção do WCAG 2.5.8)
+          el.getAttribute('data-touch') !== 'grid' // células do heatmap: grade compacta, com o sheet do dia como equivalente
         ) {
           const isDense =
             el.getAttribute('data-touch') === 'dense' || !!el.closest('[data-touch="dense"]');
