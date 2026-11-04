@@ -28,6 +28,7 @@ describe('breakpoints espelhados no CSS', () => {
     expect(variant('phone')).toBe(MEDIA.phone);
     expect(variant('short')).toBe(MEDIA.short);
     expect(variant('coarse')).toBe(MEDIA.coarse);
+    expect(variant('compact')).toBe(MEDIA.compact);
   });
 
   it('a altura de paisagem de celular é a mesma no CSS e no TS', () => {

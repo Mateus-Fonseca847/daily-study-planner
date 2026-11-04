@@ -30,7 +30,7 @@ export function Select({ options, groups = [], className, ...rest }: SelectProps
   return (
     <div className={cn('relative inline-flex', className)}>
       <select
-        className="h-select w-full appearance-none rounded-md border-hair bg-surface pr-8 pl-3 text-md text-fg"
+        className="h-select w-full min-w-0 appearance-none rounded-md border-hair bg-surface pr-8 pl-3 text-md text-fg"
         {...rest}
       >
         {options.map(renderOption)}

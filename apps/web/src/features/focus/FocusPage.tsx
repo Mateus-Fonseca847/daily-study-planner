@@ -104,7 +104,7 @@ export function FocusPage() {
   const paused = active?.status === 'pausado';
 
   return (
-    <div className="flex min-h-0 flex-1 overflow-y-auto p-page py-10 phone:py-4 phone:pb-24">
+    <div className="flex min-h-0 flex-1 overflow-y-auto p-page py-10 phone:py-4 phone:fab-clearance">
       <div className="m-auto focus-layout">
         <div className="flex shrink-0 flex-col items-center gap-10">
           {done && summary ? (
@@ -179,7 +179,9 @@ export function FocusPage() {
                   Iniciar
                 </FocusPill>
               </div>
-              {notice && <p className="max-w-focus-notice text-center text-sm text-muted">{notice}</p>}
+              {notice && (
+                <p className="max-w-focus-notice text-center text-sm text-muted">{notice}</p>
+              )}
             </>
           )}
         </div>
