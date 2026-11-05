@@ -30,6 +30,7 @@ import {
   removeEvents,
   type SubjectDeletion,
 } from './rules';
+import type { WaterEntry } from '../water/day';
 import { StorageWriteError, type DataRepository, type Draft, type LoadIssue } from './repository';
 
 export interface DataState {
@@ -63,6 +64,12 @@ export interface DataActions {
   /** Soma um copo (tamanho das preferências) ao dia de `now`. */
   addWater(now: Date): WaterLog | undefined;
   removeWater(id: string): void;
+  /**
+   * Define os registros de água de um dia: quem tem `id` é mantido/atualizado, quem não tem é criado
+   * e os que ficaram de fora são removidos. Serve a adicionar, editar, excluir, ajustar o total e
+   * desfazer (reenviando o estado anterior, com os mesmos ids).
+   */
+  setWaterDay(date: string, entries: readonly WaterEntry[]): void;
   createHabit(draft: HabitDraft, now: Date): Habit | undefined;
   /** Edita o hábito; repetição, meta e horário viram uma nova regra a partir de hoje. */
   updateHabit(id: string, edit: HabitEdit, now: Date): void;
@@ -183,6 +190,18 @@ export function createDataStore(
           }),
         ),
       removeWater: (id) => void run(() => repo.waterLogs.delete(id)),
+      setWaterDay: (date, entries) =>
+        void run(() => {
+          const keep = new Set(entries.flatMap((entry) => (entry.id ? [entry.id] : [])));
+          for (const log of repo.waterLogs.list()) {
+            if (log.date === date && !keep.has(log.id)) repo.waterLogs.delete(log.id);
+          }
+          for (const entry of entries) {
+            const { id, ...fields } = { ...entry, date };
+            if (id) repo.waterLogs.upsert({ id, ...fields });
+            else repo.waterLogs.create(fields);
+          }
+        }),
       createHabit: (draft, now) =>
         run(() =>
           repo.habits.create(

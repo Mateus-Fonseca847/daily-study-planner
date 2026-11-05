@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Popover } from '../../components/ui/Popover';
 import { useData } from '../../lib/data/app-store';
 import { shiftDay } from '../../lib/dates';
+import { WaterPanel } from '../water/WaterPanel';
 import { usePhone } from '../../lib/responsive/use-media';
 import { canEditDay } from '../../lib/habits/edit';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../lib/habits';
@@ -55,6 +56,10 @@ export function DayPopover({
         : habit.source !== 'manual'
           ? 'Este hábito é calculado automaticamente a partir dos seus dados.'
           : 'Só dá para corrigir os últimos 366 dias.';
+  }
+
+  if (habit.source === 'agua') {
+    return <WaterPanel anchor={anchor} date={date} onClose={onClose} />;
   }
 
   return (

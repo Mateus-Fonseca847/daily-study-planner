@@ -3,6 +3,7 @@ import { useData } from '../../lib/data/app-store';
 import { formatLiters } from '../../lib/stats/format';
 import { waterPercent } from '../../lib/stats/derive';
 import { useToasts } from '../../lib/toast-store';
+import { WaterTrigger } from '../water/WaterPanel';
 
 interface WaterCardProps {
   ml: number;
@@ -57,7 +58,19 @@ export function WaterCard({ ml, goalMl, cupMl, now }: WaterCardProps) {
         Água
       </h2>
       <div className="relative mt-auto flex items-end justify-between gap-2 pt-6">
-        <span className="text-stat font-normal tabular-nums">{formatLiters(ml)}</span>
+        <WaterTrigger>
+          {(trigger) => (
+            <button
+              type="button"
+              aria-label={`Água de hoje: ${formatLiters(ml)}. Editar`}
+              title="Editar a água de hoje"
+              className="rounded-md text-stat font-normal tabular-nums hover:text-accent coarse:min-h-touch"
+              {...trigger}
+            >
+              {formatLiters(ml)}
+            </button>
+          )}
+        </WaterTrigger>
         <button
           type="button"
           aria-label={`Adicionar um copo de ${cupMl} ml`}

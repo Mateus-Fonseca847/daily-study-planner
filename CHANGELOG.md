@@ -4,6 +4,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (água editável e hábitos reordenáveis)
+
+- **Água editável:** tocar no valor do cartão "Água" (Estatísticas) ou do hábito "Água" abre um painel (popover no desktop, folha inferior no celular) com total, meta e progresso, a lista dos registros de hoje (editar e excluir, com "Desfazer"), quantidade personalizada (`300`, `300 ml`, `0,3 l`, `1,5L`), atalhos **+ copo** e **− último** e **Definir o total do dia** (aumentar acrescenta a diferença; diminuir pede confirmação e remove ou reduz os registros mais recentes). Limites: 1 a 5000 ml por registro e 20 L por dia. O novo total é anunciado a leitores de tela.
+- **Dias anteriores:** o popover do heatmap do hábito "Água" abre o mesmo painel para adicionar, editar ou excluir registros de até 366 dias atrás (nunca do futuro); o horário padrão de um registro retroativo é 12:00. Sem mudança no esquema de dados.
+- **Hábitos reordenáveis:** em `/habitos` cada cartão ganha uma alça de arrastar (`Reordenar {nome}`), que funciona com mouse, toque e teclado (espaço pega, setas movem, espaço solta, Esc cancela) com anúncios em pt-BR, e os itens "Mover para cima" e "Mover para baixo" no menu "...". A ordem vale em todas as listas (Estatísticas, Semana, Dia) e persiste; hábitos arquivados ficam fora e mantêm seus lugares.
+- Nova dependência: `@dnd-kit/core` e `@dnd-kit/sortable` (ordenação com acessibilidade pronta, sem estilos injetados nem `eval`, compatível com a CSP).
+
 ### Adicionado (responsividade: celular e tablet)
 
 - **Layout responsivo** em quatro faixas (celular < 768 px e paisagem de celular, tablet 768–1023, notebook 1024–1279 e desktop ≥ 1280, que ficou idêntico). Breakpoints num só lugar (`lib/responsive/breakpoints.ts`, espelhado no tema do Tailwind com teste), variantes `phone:`, `short:` e `coarse:`, hooks `useMediaQuery`, `useBreakpoint`, `usePhone` e `usePointerCoarse`.

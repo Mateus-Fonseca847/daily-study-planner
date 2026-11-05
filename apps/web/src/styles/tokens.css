@@ -215,6 +215,8 @@
 
   /* Sombras e foco */
   --ds-shadow-popover: 0 24px 48px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.08);
+  --ds-drag-scale: 1.02;
+  --ds-drag-outline-w: 2px;
   --ds-focus-w: 2px;
   --ds-focus-offset: 2px;
 

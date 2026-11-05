@@ -11,7 +11,8 @@ import { usePhone } from '../../lib/responsive/use-media';
 import { firstDay } from '../../lib/habits';
 import { habitSuggestions } from '../../lib/habits/suggestions';
 import { openHabitForm } from '../../lib/ui-store';
-import { HabitCard, habitSummary } from './HabitCard';
+import { habitSummary } from './HabitCard';
+import { SortableHabits } from './SortableHabits';
 import { cn } from '../../lib/cn';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from './habit-icons';
 import { useHabitModel } from './useHabitModel';
@@ -87,11 +88,7 @@ export function HabitsPage() {
           ))}
         </EmptyState>
       ) : (
-        <div className="flex flex-col gap-4">
-          {active.map((habit) => (
-            <HabitCard key={habit.id} habit={habit} ctx={ctx} now={now} from={from} to={to} />
-          ))}
-        </div>
+        <SortableHabits habits={habits} ctx={ctx} now={now} from={from} to={to} />
       )}
 
       {archived.length > 0 && (

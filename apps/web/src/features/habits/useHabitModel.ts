@@ -4,6 +4,7 @@ import { dayKey } from '../../lib/dates';
 import { appNow, isFixture } from '../../lib/fixture';
 import { useNowMs } from '../../lib/focus/browser';
 import { buildHabitContext, type HabitContext } from '../../lib/habits';
+import { sortHabits } from '../../lib/habits/order';
 import type { Habit } from '@daily/shared';
 
 /** O relógio das telas de hábitos atualiza a cada 30 s (e vira o dia à meia-noite sem recarregar). */
@@ -30,7 +31,7 @@ export function useHabitModel(): HabitModel {
   const focusSessions = useData((s) => s.focusSessions);
   const events = useData((s) => s.events);
 
-  const ordered = useMemo(() => [...habits].sort((a, b) => a.order - b.order), [habits]);
+  const ordered = useMemo(() => sortHabits(habits), [habits]);
   const ctx = useMemo(
     () => buildHabitContext({ habitLogs, waterLogs, focusSessions, events }, today),
     [habitLogs, waterLogs, focusSessions, events, today],
