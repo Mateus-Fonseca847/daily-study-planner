@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties, type ReactNode, type Ref } from 'react';
 import { Copy, Archive, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import type { Habit } from '@daily/shared';
 import { Menu, type MenuItem } from '../../components/ui/Menu';
@@ -14,12 +14,22 @@ import { cn } from '../../lib/cn';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from './habit-icons';
 import { HabitHeatmap } from './HabitHeatmap';
 
+/** Ligações de um cartão ordenável (alça de arrastar, ref/estilo do arrasto e “Mover para…”). */
+export interface HabitCardSortable {
+  rootRef: Ref<HTMLElement>;
+  rootStyle: CSSProperties;
+  dragging: boolean;
+  handle: ReactNode;
+  moveItems: MenuItem[];
+}
+
 interface HabitCardProps {
   habit: Habit;
   ctx: HabitContext;
   now: Date;
   from: string;
   to: string;
+  sortable?: HabitCardSortable;
 }
 
 /** Resumo da regra em vigor: “Seg, qua e sex · 19h · meta 750 ml”. */
@@ -35,7 +45,7 @@ export function habitSummary(habit: Habit, today: string): string {
 }
 
 /** Cartão de um hábito: cabeçalho, números, controle de hoje e o heatmap. */
-export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
+export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProps) {
   const duplicateHabit = useData((s) => s.duplicateHabit);
   const archiveHabit = useData((s) => s.archiveHabit);
   const [day, setDay] = useState<{ date: string; anchor: HTMLElement } | null>(null);
@@ -49,6 +59,7 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
 
   const items: MenuItem[] = [
     { label: 'Editar', icon: Pencil, onSelect: () => openHabitForm(habit) },
+    ...(sortable?.moveItems ?? []),
     { label: 'Duplicar', icon: Copy, onSelect: () => duplicateHabit(habit.id, now) },
     { label: 'Arquivar', icon: Archive, onSelect: () => archiveHabit(habit.id, now) },
     { label: 'Excluir', icon: Trash2, onSelect: () => deleteHabitWithUndo(habit.id) },
@@ -56,10 +67,13 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
 
   return (
     <section
+      ref={sortable?.rootRef}
+      style={sortable?.rootStyle}
       aria-label={habit.name}
       className={cn(
         'surface-glass flex flex-col gap-4 rounded-card p-card max-lg:gap-3 max-lg:rounded-card-sm max-lg:p-3',
         HABIT_COLOR_CLASS[habit.color],
+        sortable?.dragging && 'drag-lifted',
       )}
     >
       <header className="flex flex-wrap items-center gap-x-6 gap-y-3 max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:gap-x-3 max-lg:gap-y-2">
@@ -73,7 +87,7 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
           </p>
         </div>
 
-        <dl className="flex items-center gap-6 text-sm max-lg:order-last max-lg:col-span-3 max-lg:grid max-lg:grid-cols-3 max-lg:gap-2">
+        <dl className="flex items-center gap-6 text-sm max-lg:order-last max-lg:col-span-2 max-lg:grid max-lg:min-w-0 max-lg:grid-cols-3 max-lg:gap-2">
           <div className="max-lg:min-w-0">
             <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
               Sequência
@@ -99,11 +113,14 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
             </dd>
           </div>
         </dl>
+        <span className="max-lg:order-last max-lg:col-start-3 max-lg:justify-self-end lg:order-first">
+          {sortable?.handle}
+        </span>
 
         <div
           className={cn(
             'flex items-center gap-3 max-lg:gap-2',
-            wideControl && 'max-lg:col-span-3 max-lg:justify-between',
+            wideControl && 'max-lg:col-span-3 max-lg:min-w-0 max-lg:justify-between',
           )}
         >
           {scheduledToday ? (

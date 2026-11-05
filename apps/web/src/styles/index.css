@@ -515,6 +515,20 @@
     }
   }
 }
+/* Cartão levantado durante o arrasto: sombra, leve aumento e contorno de destino. */
+@utility drag-lifted {
+  position: relative;
+  z-index: 20;
+  scale: var(--ds-drag-scale);
+  box-shadow: var(--ds-shadow-popover);
+  outline: var(--ds-drag-outline-w) dashed var(--ds-color-accent);
+  outline-offset: var(--ds-focus-offset);
+}
+/* Só a alça inicia o arrasto: sem rolagem/zoom do navegador sobre ela. */
+@utility drag-handle {
+  touch-action: none;
+  cursor: grab;
+}
 @utility opacity-done {
   opacity: var(--ds-opacity-done);
 }
