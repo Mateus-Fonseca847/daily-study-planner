@@ -6,6 +6,8 @@ import type { HabitContext } from '../../lib/habits';
 import { isDone, targetOn, valueOn } from '../../lib/habits';
 import { stepFor } from '../../lib/habits/edit';
 import { formatAmount } from '../../lib/habits/summary';
+import { formatLiters } from '../../lib/stats/format';
+import { WaterTrigger } from '../water/WaterPanel';
 
 const SOURCE_TEXT = {
   agua: 'Automático: água do dia',
@@ -30,6 +32,21 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
   if (habit.source !== 'manual') {
     return (
       <span className="flex items-center gap-2 text-xs text-muted">
+        {habit.source === 'agua' && (
+          <WaterTrigger date={date}>
+            {(trigger) => (
+              <button
+                type="button"
+                aria-label={`${habit.name}: ${formatLiters(value)}. Editar a água`}
+                title="Editar a água"
+                className="rounded-md px-1 text-md font-medium tabular-nums text-fg hover:text-accent coarse:min-h-touch coarse:min-w-touch"
+                {...trigger}
+              >
+                {formatLiters(value)}
+              </button>
+            )}
+          </WaterTrigger>
+        )}
         <span>{SOURCE_TEXT[habit.source]}</span>
         <span
           role="img"
