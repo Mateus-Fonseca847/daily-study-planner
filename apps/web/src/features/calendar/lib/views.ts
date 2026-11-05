@@ -92,6 +92,31 @@ export function periodTitle(view: CalendarView, date: string): string {
   }
 }
 
+/** Título curto do período para telas estreitas: “qui., 29 out”, “25–31 out”, “Outubro 2026”. */
+export function shortPeriodTitle(view: CalendarView, date: string): string {
+  switch (view) {
+    case 'dia':
+      return fmt(date, "EEE, d 'de' MMM");
+    case 'semana': {
+      const { start, end } = weekRange(date);
+      return start.slice(0, 7) === end.slice(0, 7)
+        ? `${fmt(start, 'd')}–${fmt(end, 'd MMM')}`
+        : `${fmt(start, 'd MMM')}–${fmt(end, 'd MMM')}`;
+    }
+    case 'mes':
+      return capitalize(fmt(date, 'MMMM yyyy'));
+    case 'ano':
+      return fmt(date, 'yyyy');
+  }
+}
+
+/** Visões disponíveis no celular: o ano inteiro não cabe, então fica só Dia, Semana e Mês. */
+export const PHONE_VIEWS: readonly CalendarView[] = ['dia', 'semana', 'mes'];
+
+/** No celular a visão Ano vira Mês (o padrão); nas demais telas a visão é a pedida. */
+export const viewForScreen = (view: CalendarView, phone: boolean): CalendarView =>
+  phone && view === 'ano' ? 'mes' : view;
+
 /** Título da visão Dia: “Hoje, quinta-feira, 29 de outubro” ou a data por extenso. */
 export function dayHeading(date: string, today: string): string {
   if (date === today) return `Hoje, ${fmt(date, "EEEE, d 'de' MMMM")}`;

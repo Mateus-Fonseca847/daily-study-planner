@@ -30,6 +30,8 @@ export const MEDIA = {
   phone: `(width < ${rem(BREAKPOINT_PX.tablet)}), (height <= ${rem(SHORT_HEIGHT_PX)}) and (pointer: coarse)`,
   /** Paisagem baixa com toque (barras mais finas). */
   short: `(height <= ${rem(SHORT_HEIGHT_PX)}) and (pointer: coarse)`,
+  /** Telas de toque ou estreitas: o heatmap fica compacto. */
+  compact: '(pointer: coarse), (width < 48rem)',
   /** Ponteiro grosseiro e sem hover: dedo. */
   coarse: '(pointer: coarse)',
   /** Sem hover: nada pode depender dele. */

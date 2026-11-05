@@ -20,12 +20,14 @@ describe('regras de alvo de toque', () => {
     expect(px('segment-touch-h')).toBe(TOUCH_MAIN_PX + 2 * 4);
   });
 
-  it('a célula mínima do heatmap em telas de toque é o alvo denso (24 px)', () => {
+  it('o heatmap compacto tem células de 13 px e vão de 3 px em telas de toque ou estreitas', () => {
     const block = tokens.match(
-      /@media \(pointer: coarse\), \(width < 48rem\) \{[^}]*--ds-heat-cell-min:\s*([\d.]+)rem/,
+      /@media \(pointer: coarse\), \(width < 48rem\) \{[^}]*--ds-heat-cell-min:\s*([\d.]+)rem;\s*--ds-heat-cell-max:\s*([\d.]+)rem/,
     );
     expect(block, 'override do heatmap').not.toBeNull();
-    expect(Number(block![1]) * 16).toBe(TOUCH_DENSE_PX);
+    expect(Number(block![1]) * 16).toBe(13);
+    expect(Number(block![2]) * 16).toBe(13); // mínimo = máximo: a grade não estica
+    expect(px('heat-gap')).toBe(3);
   });
 
   it('o texto de leitura do celular sobe para ≥ 16 px', () => {

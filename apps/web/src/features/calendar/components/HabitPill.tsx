@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react';
 import type { Habit } from '@daily/shared';
 import { cn } from '../../../lib/cn';
+import { usePhone } from '../../../lib/responsive/use-media';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../../lib/habits';
 import { formatAmount, stateText } from '../../../lib/habits/summary';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
@@ -20,6 +21,7 @@ interface HabitPillProps {
  */
 export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
   const Icon = HABIT_ICON_COMPONENT[habit.icon];
+  const phone = usePhone();
   const done = isDone(habit, date, ctx);
   const state = stateText(dayState(habit, date, ctx));
   // Na pílula, só “valor/meta” (a unidade fica no rótulo e no tooltip).
@@ -34,7 +36,8 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
   const interactive = habit.source === 'manual' && date <= ctx.today;
   const label = `${habit.name}: ${state}${quantityLong ? ` (${quantityLong})` : ''}`;
   const className = cn(
-    'flex h-habit-pill w-full items-center gap-1 rounded-full px-2 text-2xs font-medium',
+    'flex h-habit-pill items-center gap-1 rounded-full text-2xs font-medium',
+    phone ? 'size-touch-dense justify-center' : 'w-full px-2',
     HABIT_COLOR_CLASS[habit.color],
     done ? 'habit-bg text-accent-fg' : 'habit-bg-soft text-fg',
     interactive && 'hover:brightness-125',
@@ -46,8 +49,8 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
       ) : (
         <Icon aria-hidden strokeWidth={1.5} className="habit-text size-icon-sm shrink-0" />
       )}
-      <span className="min-w-0 flex-1 truncate">{habit.name}</span>
-      {quantity && <span className="shrink-0 tabular-nums">{quantity}</span>}
+      {!phone && <span className="min-w-0 flex-1 truncate">{habit.name}</span>}
+      {!phone && quantity && <span className="shrink-0 tabular-nums">{quantity}</span>}
     </>
   );
 

@@ -138,7 +138,7 @@ test.describe('CSP no celular (build de produção)', () => {
     await page.getByRole('button', { name: 'Salvar' }).tap();
     await expect(page.getByRole('dialog', { name: 'Nova matéria' })).toBeHidden();
 
-    for (const view of ['Semana', 'Dia', 'Ano', 'Mês']) {
+    for (const view of ['Semana', 'Dia', 'Mês']) {
       await page.getByRole('radio', { name: view, exact: true }).tap();
     }
     await page.getByRole('button', { name: /escolher mês e ano/i }).tap();

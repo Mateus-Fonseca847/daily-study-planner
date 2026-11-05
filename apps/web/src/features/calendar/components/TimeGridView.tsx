@@ -51,9 +51,10 @@ function ColumnHeader({
         type="button"
         aria-label={`${label}: criar evento`}
         aria-current={isToday ? 'date' : undefined}
+        data-touch="dense"
         onClick={() => onCreateDay(date)}
         className={cn(
-          'inline-flex h-today min-w-today items-center justify-center rounded-full px-1 text-md font-bold coarse:size-touch',
+          'inline-flex h-today min-w-today items-center justify-center rounded-full px-1 text-md font-bold coarse:size-touch-dense',
           isToday ? 'bg-accent text-accent-fg' : 'text-soft hover:text-fg',
         )}
       >
@@ -107,7 +108,7 @@ export function TimeGridView({
             ),
             stripLabel: 'Hábitos',
             renderStrip: (date: string) => (
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 phone:flex-row phone:flex-wrap">
                 {untimedHabits(habits, date, ctx).map((habit) => (
                   <HabitPill key={habit.id} habit={habit} date={date} ctx={ctx} onToggle={toggle} />
                 ))}

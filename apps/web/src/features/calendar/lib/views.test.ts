@@ -4,8 +4,11 @@ import {
   dayHeading,
   isValidDay,
   parseCalendarSearch,
+  PHONE_VIEWS,
   periodTitle,
   shiftPeriod,
+  shortPeriodTitle,
+  viewForScreen,
   weekRange,
 } from './views';
 
@@ -83,5 +86,22 @@ describe('períodos', () => {
   it('título da visão Dia: hoje ou data por extenso', () => {
     expect(dayHeading(TODAY, TODAY)).toBe('Hoje, quinta-feira, 29 de outubro');
     expect(dayHeading('2026-10-28', TODAY)).toBe('Quarta-feira, 28 de outubro de 2026');
+  });
+});
+
+describe('visões no celular', () => {
+  it('Ano vira Mês no celular e fica como está nas demais telas', () => {
+    expect(viewForScreen('ano', true)).toBe('mes');
+    expect(viewForScreen('ano', false)).toBe('ano');
+    expect(viewForScreen('semana', true)).toBe('semana');
+    expect(PHONE_VIEWS).toEqual(['dia', 'semana', 'mes']);
+  });
+
+  it('títulos curtos', () => {
+    expect(shortPeriodTitle('semana', '2026-10-29')).toBe('25–31 out');
+    expect(shortPeriodTitle('semana', '2026-11-02')).toBe('1–7 nov');
+    expect(shortPeriodTitle('semana', '2026-10-01')).toBe('27 set–3 out');
+    expect(shortPeriodTitle('mes', '2026-10-29')).toBe('Outubro 2026');
+    expect(shortPeriodTitle('dia', '2026-10-29')).toMatch(/29 de out/);
   });
 });

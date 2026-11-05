@@ -7,6 +7,7 @@ import { Select } from '../../components/ui/Select';
 import { deleteHabitWithUndo } from '../../lib/data/actions';
 import { useData } from '../../lib/data/app-store';
 import { shiftDay } from '../../lib/dates';
+import { usePhone } from '../../lib/responsive/use-media';
 import { firstDay } from '../../lib/habits';
 import { habitSuggestions } from '../../lib/habits/suggestions';
 import { openHabitForm } from '../../lib/ui-store';
@@ -37,6 +38,7 @@ export function HabitsPage() {
   const restoreHabit = useData((s) => s.restoreHabit);
   const waterGoalMl = useData((s) => s.preferences.waterGoalMl);
   const [period, setPeriod] = useState(LAST_12_MONTHS);
+  const phone = usePhone();
 
   const active = habits.filter((h) => h.archivedAt === null);
   const archived = habits.filter((h) => h.archivedAt !== null);
@@ -44,7 +46,7 @@ export function HabitsPage() {
   const { from, to } = periodRange(period, today);
 
   const options = [
-    { value: LAST_12_MONTHS, label: 'Últimos 12 meses' },
+    { value: LAST_12_MONTHS, label: phone ? '12 meses' : 'Últimos 12 meses' },
     ...years.map((year) => ({ value: year, label: year })),
   ];
 
@@ -53,15 +55,15 @@ export function HabitsPage() {
       title="Hábitos"
       description="Acompanhe o que você repete: cada hábito tem o próprio calendário, sequência e taxa."
       actions={
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 phone:grid phone:grid-cols-2 phone:gap-2">
           <Select
             aria-label="Período"
             value={period}
             options={options}
-            className="w-menu"
+            className="w-menu phone:w-full phone:min-w-0"
             onChange={(e) => setPeriod(e.target.value)}
           />
-          <Button onClick={() => openHabitForm()}>
+          <Button className="phone:min-w-0 phone:px-3" onClick={() => openHabitForm()}>
             <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
             Novo hábito
           </Button>

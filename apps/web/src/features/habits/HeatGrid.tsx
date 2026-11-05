@@ -111,91 +111,109 @@ export function HeatGrid({
 
   return (
     <div className={cn('min-w-0', colorClass)}>
-      <div ref={scrollRef} data-scroll-x className="overflow-x-auto pb-1">
+      <div className="compact:flex">
+        {/* Telas compactas: os rótulos de dia ficam fora da rolagem, sem sobrepor as células. */}
         <div
-          ref={gridRef}
-          role="grid"
-          aria-label={caption}
-          aria-readonly
-          className="relative text-heat text-muted"
-          style={{
-            maxWidth,
-            minWidth: `calc(var(--spacing-heat-label) + ${weeks} * (var(--spacing-heat-cell-min) + var(--spacing-heat-gap)))`,
-          }}
+          aria-hidden
+          className="hidden w-heat-label-ext shrink-0 text-heat text-muted compact:block"
+        >
+          <span className="block pb-1">&nbsp;</span>
+          {Array.from({ length: 7 }, (_, row) => (
+            <span key={row} className="mb-heat-gap flex h-heat-cell-min items-center leading-none">
+              {ROW_LABELS[row]}
+            </span>
+          ))}
+        </div>
+        <div
+          ref={scrollRef}
+          data-scroll-x
+          className="overflow-x-auto pb-1 compact:min-w-0 compact:flex-1 compact:scroll-thin"
         >
           <div
-            aria-hidden
-            className="grid gap-x-heat-gap pb-1"
-            style={{ gridTemplateColumns: template }}
+            ref={gridRef}
+            role="grid"
+            aria-label={caption}
+            aria-readonly
+            className="relative text-heat text-muted"
+            style={{
+              maxWidth,
+              minWidth: `calc(var(--spacing-heat-label) + ${weeks} * (var(--spacing-heat-cell-min) + var(--spacing-heat-gap)))`,
+            }}
           >
-            <span />
-            {labels.map((label, i) => (
-              <span key={columns[i]?.[0]} className="overflow-visible whitespace-nowrap">
-                {label}
-              </span>
-            ))}
-          </div>
-
-          {Array.from({ length: 7 }, (_, row) => (
             <div
-              key={row}
-              role="row"
-              className="grid items-center gap-x-heat-gap pb-heat-gap"
+              aria-hidden
+              className="grid gap-x-heat-gap pb-1"
               style={{ gridTemplateColumns: template }}
             >
-              <span
-                aria-hidden
-                className="pr-1 max-xl:sticky max-xl:left-0 max-xl:z-10 max-xl:bg-bg"
-              >
-                {ROW_LABELS[row]}
-              </span>
-              {columns.map((column) => {
-                const date = column[row]!;
-                const inRange = date >= from && date <= to;
-                if (!inRange)
-                  return <span key={date} role="gridcell" aria-hidden className="invisible" />;
-                const view = cell(date);
-                const navigable = date <= today;
-                return (
-                  <button
-                    key={date}
-                    type="button"
-                    role="gridcell"
-                    data-date={date}
-                    data-touch="dense"
-                    aria-label={view.label}
-                    tabIndex={date === active ? 0 : -1}
-                    disabled={!navigable}
-                    onFocus={(e) => {
-                      setActive(date);
-                      showTip(date, e.currentTarget);
-                    }}
-                    onBlur={() => setTip(null)}
-                    onMouseEnter={(e) => showTip(date, e.currentTarget)}
-                    onMouseLeave={() => setTip(null)}
-                    onKeyDown={(e) => onKeyDown(e, date)}
-                    onClick={(e) => onActivate?.(date, e.currentTarget)}
-                    className={cn(
-                      'aspect-square w-full rounded-heat',
-                      cellClass(view.kind),
-                      date === today && 'heat-today',
-                      !navigable && 'cursor-default',
-                    )}
-                  />
-                );
-              })}
+              <span />
+              {labels.map((label, i) => (
+                <span key={columns[i]?.[0]} className="overflow-visible whitespace-nowrap">
+                  {label}
+                </span>
+              ))}
             </div>
-          ))}
 
-          {tip && (
-            <span
-              role="tooltip"
-              className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-sm bg-surface px-2 py-1 text-xs whitespace-nowrap text-fg shadow-popover"
-              style={{ left: tip.left, top: tip.top }}
-            >
-              {cell(tip.date).label}
-            </span>
-          )}
+            {Array.from({ length: 7 }, (_, row) => (
+              <div
+                key={row}
+                role="row"
+                className="grid items-center gap-x-heat-gap pb-heat-gap"
+                style={{ gridTemplateColumns: template }}
+              >
+                <span
+                  aria-hidden
+                  className="pr-1 compact:h-0 compact:invisible compact:overflow-hidden"
+                >
+                  {ROW_LABELS[row]}
+                </span>
+                {columns.map((column) => {
+                  const date = column[row]!;
+                  const inRange = date >= from && date <= to;
+                  if (!inRange)
+                    return <span key={date} role="gridcell" aria-hidden className="invisible" />;
+                  const view = cell(date);
+                  const navigable = date <= today;
+                  return (
+                    <button
+                      key={date}
+                      type="button"
+                      role="gridcell"
+                      data-date={date}
+                      data-touch="grid"
+                      aria-label={view.label}
+                      tabIndex={date === active ? 0 : -1}
+                      disabled={!navigable}
+                      onFocus={(e) => {
+                        setActive(date);
+                        showTip(date, e.currentTarget);
+                      }}
+                      onBlur={() => setTip(null)}
+                      onMouseEnter={(e) => showTip(date, e.currentTarget)}
+                      onMouseLeave={() => setTip(null)}
+                      onKeyDown={(e) => onKeyDown(e, date)}
+                      onClick={(e) => onActivate?.(date, e.currentTarget)}
+                      className={cn(
+                        'aspect-square w-full rounded-heat',
+                        cellClass(view.kind),
+                        date === today && 'heat-today',
+                        !navigable && 'cursor-default',
+                      )}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+
+            {tip && (
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full rounded-sm bg-surface px-2 py-1 text-xs whitespace-nowrap text-fg shadow-popover"
+                style={{ left: tip.left, top: tip.top }}
+              >
+                {cell(tip.date).label}
+              </span>
+            )}
+          </div>
         </div>
       </div>
       {summary}
@@ -208,7 +226,10 @@ export function HeatLegend({ colorClass }: { colorClass: string }) {
   return (
     <div
       aria-hidden
-      className={cn('mt-2 flex items-center justify-end gap-1 text-heat text-muted', colorClass)}
+      className={cn(
+        'mt-2 flex items-center justify-end gap-1 text-heat text-muted compact:text-2xs',
+        colorClass,
+      )}
     >
       <span className="pr-1">Menos</span>
       {([0, 1, 2, 3, 4] as const).map((level) => (

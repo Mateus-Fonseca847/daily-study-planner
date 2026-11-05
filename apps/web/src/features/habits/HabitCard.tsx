@@ -44,6 +44,8 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
   const stats = useMemo(() => streaks(habit, ctx), [habit, ctx]);
   const rate90 = useMemo(() => rate(habit, ctx, 90), [habit, ctx]);
   const scheduledToday = isScheduled(habit, ctx.today, ctx);
+  // Quantidade, fonte automática e “não agendado hoje” têm um controle largo: ganham uma linha própria no celular.
+  const wideControl = habit.type === 'quantidade' || habit.source !== 'manual' || !scheduledToday;
 
   const items: MenuItem[] = [
     { label: 'Editar', icon: Pencil, onSelect: () => openHabitForm(habit) },
@@ -56,41 +58,54 @@ export function HabitCard({ habit, ctx, now, from, to }: HabitCardProps) {
     <section
       aria-label={habit.name}
       className={cn(
-        'surface-glass flex flex-col gap-4 rounded-card p-card',
+        'surface-glass flex flex-col gap-4 rounded-card p-card max-lg:gap-3 max-lg:rounded-card-sm max-lg:p-3',
         HABIT_COLOR_CLASS[habit.color],
       )}
     >
-      <header className="flex flex-wrap items-center gap-x-6 gap-y-3 phone:gap-x-3">
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-3 max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:gap-x-3 max-lg:gap-y-2">
         <span className="habit-bg-soft habit-text inline-flex size-control shrink-0 items-center justify-center rounded-full">
           <Icon aria-hidden strokeWidth={1.5} className="size-icon" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="truncate text-card-title font-normal">{habit.name}</h2>
-          <p className="truncate text-sm text-muted">{habitSummary(habit, ctx.today)}</p>
+          <h2 className="truncate text-card-title font-normal max-lg:text-lg">{habit.name}</h2>
+          <p className="truncate text-sm text-muted max-lg:line-clamp-2 max-lg:whitespace-normal">
+            {habitSummary(habit, ctx.today)}
+          </p>
         </div>
 
-        <dl className="flex items-center gap-6 text-sm phone:order-last phone:w-full phone:justify-between phone:gap-3">
-          <div>
-            <dt className="text-muted">Sequência</dt>
+        <dl className="flex items-center gap-6 text-sm max-lg:order-last max-lg:col-span-3 max-lg:grid max-lg:grid-cols-3 max-lg:gap-2">
+          <div className="max-lg:min-w-0">
+            <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
+              Sequência
+            </dt>
             <dd className="text-md font-semibold tabular-nums">
               {stats.current} {stats.current === 1 ? 'dia' : 'dias'}
             </dd>
           </div>
-          <div>
-            <dt className="text-muted">Melhor</dt>
+          <div className="max-lg:min-w-0">
+            <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
+              Melhor
+            </dt>
             <dd className="text-md font-semibold tabular-nums">
               {stats.best} {stats.best === 1 ? 'dia' : 'dias'}
             </dd>
           </div>
-          <div>
-            <dt className="text-muted">Taxa (90 dias)</dt>
+          <div className="max-lg:min-w-0">
+            <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
+              Taxa (90 dias)
+            </dt>
             <dd className="text-md font-semibold tabular-nums">
               {rate90.percent === null ? '—' : `${rate90.percent}%`}
             </dd>
           </div>
         </dl>
 
-        <div className="flex items-center gap-3 phone:gap-2">
+        <div
+          className={cn(
+            'flex items-center gap-3 max-lg:gap-2',
+            wideControl && 'max-lg:col-span-3 max-lg:justify-between',
+          )}
+        >
           {scheduledToday ? (
             <HabitControl habit={habit} date={ctx.today} ctx={ctx} now={now} />
           ) : (

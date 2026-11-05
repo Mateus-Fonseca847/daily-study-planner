@@ -195,6 +195,7 @@
   --spacing-heat-cell-min: var(--ds-heat-cell-min);
   --spacing-heat-legend: var(--ds-heat-legend-size);
   --spacing-heat-label: var(--ds-heat-label-w);
+  --spacing-heat-label-ext: var(--ds-heat-label-ext-w);
   --spacing-focus-gap: var(--ds-focus-gap);
   --spacing-focus-panel: var(--ds-focus-panel-w);
   --spacing-focus-row: var(--ds-focus-row-h);
@@ -298,10 +299,24 @@
   border-width: var(--ds-safe-top) var(--ds-safe-right) var(--ds-safe-bottom) var(--ds-safe-left);
 }
 
+/* Barra de rolagem fina e discreta (heatmaps que rolam na horizontal). */
+@utility scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ds-color-border-strong) transparent;
+}
+
+/* Fim da página no celular: o botão + flutuante e a folga acima da barra inferior não cobrem o último item. */
+@utility fab-clearance {
+  @media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+    padding-bottom: calc(var(--ds-fab-size) + var(--ds-bar-gap) * 3);
+  }
+}
+
 /* Variantes de dispositivo (mesmas consultas de lib/responsive/breakpoints.ts: MEDIA). */
 @custom-variant phone (@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse));
 @custom-variant short (@media (height <= 31.25rem) and (pointer: coarse));
 @custom-variant coarse (@media (pointer: coarse));
+@custom-variant compact (@media (pointer: coarse), (width < 48rem));
 
 /* Larguras de borda tokenizadas (o Tailwind não as expõe no tema). */
 @utility border-hair {

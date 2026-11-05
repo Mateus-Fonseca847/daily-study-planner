@@ -127,6 +127,7 @@
   --ds-heat-gap: 0.1875rem;
   --ds-heat-radius: 0.1875rem;
   --ds-heat-label-w: 2rem;
+  --ds-heat-label-ext-w: 1.75rem;
   --ds-text-heat: 0.6875rem;
   --ds-text-heat-lh: 1rem;
   /* Agendado e não feito / não agendado (mais transparente). */
@@ -341,14 +342,27 @@
   }
 }
 
-/* Telas de toque: células do heatmap com o alvo mínimo de 24 px (a grade rola na horizontal). */
+/* Telas de toque e estreitas: heatmap compacto (células de 13 px, vão de 3 px) que rola na horizontal; os rótulos de dia ficam numa coluna fora da rolagem. */
 @media (pointer: coarse), (width < 48rem) {
   :root {
-    --ds-heat-cell-min: 1.5rem;
+    --ds-heat-cell-min: 0.8125rem;
+    --ds-heat-cell-max: 0.8125rem;
+    --ds-heat-label-w: 0px;
+    --ds-heat-legend-size: 0.625rem;
     /* Modo Foco: dígitos fluidos pela largura e pela altura (celular em paisagem não estoura). */
     --ds-text-focus: clamp(3.5rem, min(18vw, 30dvh), 7rem);
     --ds-text-focus-frac: clamp(1rem, min(5vw, 8dvh), 1.75rem);
     --ds-focus-gap: 1.5rem;
+  }
+}
+
+/* Celular: grade de horas compacta (horas mais baixas, coluna de rótulos e colunas de dia mais estreitas, cabeçalho curto). */
+@media (width < 48rem), (height <= 31.25rem) and (pointer: coarse) {
+  :root {
+    --ds-grid-hour-h: 3.25rem;
+    --ds-grid-label-w: 2.5rem;
+    --ds-week-col-min-w: 5rem;
+    --ds-week-head-h: 2.5rem;
   }
 }
 
