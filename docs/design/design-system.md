@@ -437,3 +437,19 @@ Variantes do Tailwind: `phone:` (celular), `short:` (paisagem baixa com toque) e
 **Sem hover:** nada depende de hover; tooltips têm equivalente (rótulos acessíveis, agenda, sheets). Áreas que rolam na horizontal de propósito levam `data-scroll-x`. Animações respeitam `prefers-reduced-motion`.
 
 **Verificação:** `e2e/responsive` (documento sem rolagem, nada fora da janela, alvos, fontes, CSP, fluxos de toque, área segura e teclado) e `scripts/desktop-regression.mjs` (desktop idêntico à linha de base).
+
+## 15. Água editável e ordenação por arrastar
+
+### Painel de água (`features/water`)
+
+- Popover de `w-popover` no desktop e folha inferior no celular (mesmos componentes `Popover`/`BottomSheet`); nada de overlay novo.
+- Estrutura: título, total (`text-stat`), meta, `ProgressBar`, atalhos (`Copo (N ml)` e `Último`), campo "Quantidade personalizada" com botão "Adicionar", campo "Definir o total do dia", lista "Registros" com editar e excluir (`coarse:size-touch`).
+- Campos: `h-select` (`coarse:h-touch`), borda `border-danger` quando `aria-invalid`, erro em `text-sm text-danger` ligado por `aria-describedby`; o foco vai ao campo ao abrir e volta ao gatilho ao fechar.
+- Sem tokens novos: reaproveita `surface`, `raised`, `text-soft`, `text-muted`, `danger`.
+
+### Alça de arrastar e estados do arrasto (`/habitos`)
+
+- **Alça:** botão redondo `size-control` (`coarse:size-touch`, 44 px), ícone `GripVertical` em `text-soft`, utilitário `drag-handle` (`touch-action: none`, cursor `grab`). Só ela inicia o arrasto. No desktop fica antes do ícone do hábito; no celular, ao fim da linha dos números.
+- **Cartão levantado** (`drag-lifted`): `scale: var(--ds-drag-scale)` (1.02), sombra `shadow-popover`, contorno tracejado de destaque (`--ds-drag-outline-w`, 2 px) e `z-index` acima dos vizinhos. Os vizinhos deslizam para abrir o lugar de destino.
+- **Movimento:** só no eixo vertical; rolagem automática perto das bordas. Com `prefers-reduced-motion` a regra global zera as transições (o cartão só troca de lugar).
+- Tokens novos: `--ds-drag-scale`, `--ds-drag-outline-w`.
