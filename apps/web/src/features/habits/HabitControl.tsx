@@ -31,7 +31,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
 
   if (habit.source !== 'manual') {
     return (
-      <span className="flex items-center gap-2 text-xs text-muted">
+      <span className="flex min-w-0 items-center gap-2 text-xs text-muted">
         {habit.source === 'agua' && (
           <WaterTrigger date={date}>
             {(trigger) => (
@@ -47,7 +47,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
             )}
           </WaterTrigger>
         )}
-        <span>{SOURCE_TEXT[habit.source]}</span>
+        <span className="min-w-0 truncate">{SOURCE_TEXT[habit.source]}</span>
         <span
           role="img"
           aria-label={done ? 'Cumprido automaticamente' : 'Ainda não cumprido (automático)'}

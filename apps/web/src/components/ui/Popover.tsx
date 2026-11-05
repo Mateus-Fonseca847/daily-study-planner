@@ -55,6 +55,8 @@ function FloatingPopover({ anchor, onClose, children, ...rest }: PopoverProps) {
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Node;
       if (panelRef.current?.contains(target) || anchor.contains(target)) return;
+      // “Desfazer” de um aviso não fecha o painel que o gerou.
+      if (target instanceof Element && target.closest('.toast-region')) return;
       onCloseRef.current();
     };
     document.addEventListener('pointerdown', onPointerDown);
