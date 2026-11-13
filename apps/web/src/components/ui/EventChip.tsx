@@ -57,7 +57,7 @@ export function EventChip({
       <span className={cn('truncate text-sm font-semibold text-fg', finished && 'line-through')}>
         {title}
       </span>
-      <span className="truncate text-2xs text-muted">{time}</span>
+      <span className="truncate text-2xs text-soft">{time}</span>
     </button>
   );
 }

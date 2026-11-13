@@ -63,7 +63,7 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
           {event.title}
         </span>
       )}
-      {!narrow && lines >= 2 && <span className="truncate text-2xs text-muted">{time}</span>}
+      {!narrow && lines >= 2 && <span className="truncate text-2xs text-soft">{time}</span>}
     </button>
   );
 }
