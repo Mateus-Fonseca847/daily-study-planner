@@ -35,7 +35,7 @@
   --ds-color-status-concluido: #3dd68c;
   --ds-color-status-cancelado: #ff6b78;
   /* Tipos: a Tarefa usa a cor do status; Prova e Especial têm cor própria. */
-  --ds-color-type-prova: #4d8dff;
+  --ds-color-type-prova: #5c97ff;
   --ds-color-type-especial: #b48cff;
   --ds-color-status-pendente-soft: color-mix(
     in srgb,

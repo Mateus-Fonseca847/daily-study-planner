@@ -16,7 +16,7 @@ import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem } from './nav';
 const ROW =
   'flex h-touch w-full items-center gap-3 rounded-md px-3 text-left text-md active:bg-hover';
 
-/** Itens que não cabem na barra inferior (Provas, Tarefas, Matérias, Blocos) e os de configuração. */
+/** Itens que não cabem na barra inferior (Provas, Tarefas, Matérias) e os de configuração. */
 export const MORE_ITEMS: readonly NavItem[] = MENU_ITEMS.filter(
   (item) => !BAR_ITEMS.some((bar) => bar.to === item.to),
 );

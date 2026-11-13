@@ -16,7 +16,7 @@ export const RESERVED = {
   'status-pendente': '#f2c94c',
   'status-concluido': '#3dd68c',
   'status-cancelado': '#ff6b78',
-  'tipo-prova': '#4d8dff',
+  'tipo-prova': '#5c97ff',
   'tipo-especial': '#b48cff',
   marca: '#f5e94b',
   chama: '#ff8a3d',

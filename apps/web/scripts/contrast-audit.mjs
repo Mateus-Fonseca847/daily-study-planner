@@ -62,7 +62,6 @@ try {
         '/provas?fixture=views',
         '/tarefas?fixture=views',
         '/materias?fixture=views',
-        '/blocos?fixture=views',
         '/preferencias?fixture=stats',
         '/entrar',
         '/privacidade',

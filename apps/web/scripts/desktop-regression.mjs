@@ -39,7 +39,6 @@ const ROUTES = [
   ['provas', '/provas?fixture=views', VIEWS_NOW],
   ['tarefas', '/tarefas?fixture=views', VIEWS_NOW],
   ['materias', '/materias?fixture=views', VIEWS_NOW],
-  ['blocos', '/blocos?fixture=views', VIEWS_NOW],
   ['habitos', '/habitos?fixture=habits', STATS_NOW],
   ['foco', '/foco?fixture=stats', STATS_NOW],
   ['foco-travado', '/foco?fixture=focus', STATS_NOW],

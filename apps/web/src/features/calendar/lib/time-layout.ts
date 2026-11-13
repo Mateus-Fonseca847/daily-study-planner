@@ -27,7 +27,7 @@ const minutesOf = (iso: string): number =>
 /**
  * Corta um intervalo `[start, end]` (ISO local) no dia `day`. Itens que cruzam a meia-noite aparecem
  * em cada dia (cada um com o seu pedaço); devolve `null` se o intervalo não toca o dia.
- * Entregas (início = fim) viram um bloco de duração mínima.
+ * Compromissos pontuais (início = fim) viram um bloco de duração mínima.
  */
 export function segmentOnDay(id: string, start: string, end: string, day: string): Segment | null {
   const startDay = start.slice(0, 10);

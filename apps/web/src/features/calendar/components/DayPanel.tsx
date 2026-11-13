@@ -117,7 +117,7 @@ function NextExam({ events, now }: Pick<DayPanelProps, 'events' | 'now'>) {
   );
 }
 
-/** Entregas pendentes do dia e as atrasadas, com caixa de seleção para concluir. */
+/** Tarefas pendentes do dia e as atrasadas, com caixa de seleção para concluir. */
 function DayTasks({ date, today, events }: Pick<DayPanelProps, 'date' | 'today' | 'events'>) {
   const setStatus = useData((s) => s.setEventStatus);
   const tasks = events
@@ -134,7 +134,7 @@ function DayTasks({ date, today, events }: Pick<DayPanelProps, 'date' | 'today' 
         Tarefas do dia
       </h3>
       {tasks.length === 0 ? (
-        <p className="mt-3 text-sm text-muted">Nenhuma entrega pendente. Dia livre!</p>
+        <p className="mt-3 text-sm text-muted">Nenhuma tarefa pendente. Dia livre!</p>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
           {tasks.map((task) => {
