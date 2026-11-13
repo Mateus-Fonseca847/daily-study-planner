@@ -51,12 +51,13 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 
 ## Telas
 
-|                                                                                                                    |                                                                                                                                                              |
-| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp) | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                             |
-| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)         | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                                    |
-| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)       | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Estatísticas](docs/images/estatisticas.webp) |
-| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)        | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                              |
+|                                                                                                                              |                                                                                                                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp)           | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                 |
+| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                   | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                        |
+| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                 | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Perfil](docs/images/perfil.webp) |
+| **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp) | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)  |
+| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                  | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                  |
 
 ## Funcionalidades
 
@@ -123,7 +124,7 @@ O Daily se adapta a quatro faixas de tela (definidas em um só lugar: `apps/web/
   <img src="docs/images/celular-mais.webp" width="190" alt="Sheet Mais da barra inferior" />
 </p>
 <p align="center">
-  <img src="docs/images/celular-estatisticas.webp" width="190" alt="Estatísticas no celular, em uma coluna" />
+  <img src="docs/images/celular-estatisticas.webp" width="190" alt="Perfil (antes Estatísticas) no celular, em uma coluna" />
   <img src="docs/images/celular-foco-travado.webp" width="190" alt="Modo Foco travado no celular" />
   <img src="docs/images/tablet-calendario-mes.webp" width="260" alt="Calendário no tablet, com trilho de ícones" />
   <img src="docs/images/tablet-habitos.webp" width="260" alt="Hábitos no tablet" />
