@@ -69,7 +69,7 @@ function FloatingPopover({ anchor, onClose, children, ...rest }: PopoverProps) {
       role="dialog"
       aria-label={rest['aria-label']}
       style={{ top: position?.top ?? 0, left: position?.left ?? 0 }}
-      className={`fixed z-50 max-h-modal w-popover overflow-y-auto rounded-xl border-hair bg-raised p-4 shadow-popover ${
+      className={`scroll-body fixed z-50 max-h-modal w-popover overflow-y-auto rounded-xl border-hair bg-raised p-4 shadow-popover ${
         position ? '' : 'opacity-0'
       }`}
     >

@@ -528,3 +528,13 @@ Célula do heatmap listrada (`heat-rest`: `--ds-color-rest` em listras de `--ds-
 - Título grande (`text-display`), linhas de metadado com ícone e rótulo (`ui/MetaRow`, largura do rótulo `--ds-panel-label-w`), descrição em cartão e “Mais opções” recolhido (`MoreOptionsToggle`).
 - Filtro por tipo: popover com checkboxes (`--ds-filter-w`), “Todos” e “Limpar”; vira sheet no celular.
 - Perfil: foto ou iniciais em `--ds-profile-avatar` (4 rem).
+
+### Foco dentro de painéis, modais, sheets e popovers
+
+O corpo desses componentes rola (`overflow`) e corta tudo que passa da borda; o anel de foco global fica por fora do controle e era cortado (o Título do painel, colado ao cabeçalho, perdia o topo). A utilidade `scroll-body` (aplicada em `Modal`, `BottomSheet` e `Popover`) resolve na raiz:
+
+- anel **interno**: `outline-offset` = `--ds-focus-inset-offset` (−`--ds-focus-w`) e uma faixa escura por dentro (`--ds-color-focus-inner`, `--ds-focus-inner-w`) para o amarelo aparecer também sobre controles selecionados (amarelos);
+- `scroll-padding-block: --ds-scroll-pad` para o foco rolado para a vista não encostar nas bordas;
+- respiro do corpo por token: `--ds-panel-pad-x` (painel e modal), `--ds-sheet-pad-x` (celular e sheets) e `--ds-panel-pad-top`; cabeçalho, corpo e rodapé usam a mesma margem lateral.
+
+Coberto pelo e2e `panel-focus.spec.ts` (desktop: painel novo e em edição, hábito, matéria, registrar tempo, dia do heatmap) e `responsive/panel-focus-phone.spec.ts` (tela cheia no celular).

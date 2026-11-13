@@ -234,6 +234,16 @@
   --ds-drag-outline-w: 2px;
   --ds-focus-w: 2px;
   --ds-focus-offset: 2px;
+  /* Anel interno (dentro de áreas que rolam e cortam o excesso): faixa escura sob o anel amarelo,
+     para ele aparecer também sobre controles amarelos (selecionados). */
+  --ds-focus-inset-offset: calc(var(--ds-focus-w) * -1);
+  --ds-focus-inner-w: calc(var(--ds-focus-w) * 2);
+  --ds-color-focus-inner: var(--ds-color-bg);
+  /* Corpo de painéis, modais e sheets: respiro e margem de rolagem do foco. */
+  --ds-panel-pad-x: 1.5rem;
+  --ds-sheet-pad-x: 1rem;
+  --ds-panel-pad-top: 0.5rem;
+  --ds-scroll-pad: 1rem;
 
   /* Dimensões de layout */
   /* Altura da janela: 100vh com 100dvh quando o navegador suporta (ver o @supports abaixo). */

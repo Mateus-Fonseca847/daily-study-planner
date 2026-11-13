@@ -282,7 +282,7 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
           <input
             id={ids.title}
             data-autofocus={editing ? undefined : true}
-            placeholder={`Título da ${typeName}`}
+            placeholder="Título"
             value={values.title}
             maxLength={120}
             aria-invalid={errors.title ? true : undefined}
