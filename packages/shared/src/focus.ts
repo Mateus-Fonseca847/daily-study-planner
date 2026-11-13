@@ -8,6 +8,10 @@ const link = id.nullable().default(null);
 export const FOCUS_SESSION_STATUSES = ['concluida', 'interrompida'] as const;
 export const focusSessionStatusSchema = z.enum(FOCUS_SESSION_STATUSES);
 
+/** `cronometro`: sessão do Modo Foco; `manual`: tempo registrado à mão. */
+export const FOCUS_SESSION_ORIGINS = ['cronometro', 'manual'] as const;
+export const focusSessionOriginSchema = z.enum(FOCUS_SESSION_ORIGINS);
+
 /** Sessão de foco já encerrada (histórico; entra no backup). */
 export const focusSessionSchema = z.object({
   id,
@@ -17,7 +21,9 @@ export const focusSessionSchema = z.object({
   status: focusSessionStatusSchema,
   subjectId: link,
   examId: link,
-  blockId: link,
+  origin: focusSessionOriginSchema.default('cronometro'),
+  /** Nota opcional (registros manuais). */
+  note: z.string().trim().max(200, 'Use no máximo 200 caracteres.').default(''),
 });
 
 export const ACTIVE_FOCUS_STATUSES = ['ocioso', 'rodando', 'pausado'] as const;
@@ -26,7 +32,6 @@ export const ACTIVE_FOCUS_STATUSES = ['ocioso', 'rodando', 'pausado'] as const;
 export const focusLinkSchema = z.object({
   subjectId: link,
   examId: link,
-  blockId: link,
 });
 
 /**
@@ -48,11 +53,12 @@ export const activeFocusSchema = z.object({
   /** Tempo restante, só quando `pausado`. */
   remainingMs: z.number().int().min(0).nullable().default(null),
   locked: z.boolean().default(false),
-  link: focusLinkSchema.default({ subjectId: null, examId: null, blockId: null }),
+  link: focusLinkSchema.default({ subjectId: null, examId: null }),
   /** Aba que iniciou a sessão: só ela toca o som de fim. */
   tabId: id,
 });
 
+export type FocusSessionOrigin = z.infer<typeof focusSessionOriginSchema>;
 export type FocusSessionStatus = z.infer<typeof focusSessionStatusSchema>;
 export type FocusSession = z.infer<typeof focusSessionSchema>;
 export type FocusLink = z.infer<typeof focusLinkSchema>;

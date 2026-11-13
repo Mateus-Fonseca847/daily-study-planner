@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { block } from '../data/test-utils';
+import { timedTask } from '../data/test-utils';
 import { AGENDA_HOURS, layoutAgenda, nowOffsetHours } from './agenda';
 
 const DAY = '2026-11-10';
 const at = (id: string, hour: number, minute = 0, extra: object = {}) => ({
-  ...block(id),
+  ...timedTask(id),
   start: `${DAY}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`,
   end: `${DAY}T${String(hour + 1).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`,
   ...extra,

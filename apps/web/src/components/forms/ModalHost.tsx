@@ -1,6 +1,6 @@
 import { useUi } from '../../lib/ui-store';
 import { HabitFormModal } from '../../features/habits/HabitFormModal';
-import { EventFormModal } from './EventFormModal';
+import { TaskPanel } from '../../features/tasks/TaskPanel';
 import { SubjectDeleteModal, SubjectFormModal } from './SubjectModals';
 
 /** Renderiza o modal ativo (formulários abrem de qualquer lugar via `useUi`). */
@@ -11,8 +11,8 @@ export function ModalHost() {
   switch (modal.kind) {
     case 'event':
       return (
-        <EventFormModal
-          event={modal.event}
+        <TaskPanel
+          eventId={modal.eventId}
           type={modal.type}
           date={modal.date}
           time={modal.time}

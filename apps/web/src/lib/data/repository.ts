@@ -4,7 +4,9 @@ import type {
   FocusSession,
   Habit,
   HabitLog,
+  Onboarding,
   Preferences,
+  RestDay,
   StudyEvent,
   Subject,
   WaterLog,
@@ -36,6 +38,12 @@ export interface DataRepository {
   readonly habitLogs: EntityRepository<HabitLog>;
   readonly waterLogs: EntityRepository<WaterLog>;
   readonly focusSessions: EntityRepository<FocusSession>;
+  readonly restDays: EntityRepository<RestDay>;
+  /** Marcas de primeiro uso (sincronizam com o resto do snapshot). */
+  readonly onboarding: {
+    get(): Onboarding;
+    update(patch: Partial<Onboarding>): Onboarding;
+  };
   readonly preferences: {
     get(): Preferences;
     update(patch: Partial<Preferences>): Preferences;

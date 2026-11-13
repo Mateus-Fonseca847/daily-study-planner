@@ -1,13 +1,14 @@
-import { BookOpen, FileCheck2, Library, ListChecks, Plus } from 'lucide-react';
-import { openEventForm, openSubjectForm } from '../../lib/ui-store';
+import { FileCheck2, Library, ListTodo, Plus, Repeat, Sparkles } from 'lucide-react';
+import { openEventForm, openHabitForm, openSubjectForm } from '../../lib/ui-store';
 import { Button } from '../ui/Button';
 import { Menu, type MenuItem } from '../ui/Menu';
 
 /** Itens do menu “Criar” (também usados pelo botão + da agenda). */
 export const CREATE_ITEMS: readonly MenuItem[] = [
+  { label: 'Tarefa', icon: ListTodo, onSelect: () => openEventForm({ type: 'tarefa' }) },
   { label: 'Prova', icon: FileCheck2, onSelect: () => openEventForm({ type: 'prova' }) },
-  { label: 'Tarefa', icon: ListChecks, onSelect: () => openEventForm({ type: 'entrega' }) },
-  { label: 'Bloco de estudo', icon: BookOpen, onSelect: () => openEventForm({ type: 'estudo' }) },
+  { label: 'Especial', icon: Sparkles, onSelect: () => openEventForm({ type: 'especial' }) },
+  { label: 'Hábito', icon: Repeat, onSelect: () => openHabitForm() },
   { label: 'Matéria', icon: Library, onSelect: () => openSubjectForm() },
 ];
 

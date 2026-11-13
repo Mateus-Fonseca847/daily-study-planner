@@ -12,6 +12,12 @@ interface ModalProps {
   children: ReactNode;
   /** Botões de ação (alinhados à direita; em celular, em largura total no rodapé fixo). */
   footer?: ReactNode;
+  /** `side`: painel alto à direita (tablet e desktop), para criar/ver/editar. */
+  variant?: 'center' | 'side';
+  /** Ações extras no cabeçalho (ex.: menu “…”), antes do botão Fechar. */
+  headerActions?: ReactNode;
+  /** Título visível maior (o painel de tarefa usa o próprio campo de título). */
+  hideTitle?: boolean;
 }
 
 /**
@@ -19,7 +25,15 @@ interface ModalProps {
  * inteira, com cabeçalho e ações fixos, e o botão voltar do aparelho o fecha; em tablet e desktop é
  * centralizado.
  */
-export function Modal({ title, onClose, children, footer }: ModalProps) {
+export function Modal({
+  title,
+  onClose,
+  children,
+  footer,
+  variant = 'center',
+  headerActions,
+  hideTitle = false,
+}: ModalProps) {
   const ref = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const phone = usePhone();
@@ -37,12 +51,18 @@ export function Modal({ title, onClose, children, footer }: ModalProps) {
         className="readable vv-box fixed z-50 flex flex-col bg-raised pt-safe-top pr-safe-right pb-safe-bottom pl-safe-left"
       >
         <header className="flex h-topbar-compact shrink-0 items-center justify-between gap-2 border-b-hair px-4">
-          <h2 id={titleId} className="truncate text-title font-semibold tracking-tight">
+          <h2
+            id={titleId}
+            className={hideTitle ? 'sr-only' : 'truncate text-title font-semibold tracking-tight'}
+          >
             {title}
           </h2>
-          <Button variant="tile" size="xs" aria-label="Fechar" onClick={close}>
-            <X aria-hidden strokeWidth={1.5} className="size-icon-sm" />
-          </Button>
+          <div className="ml-auto flex items-center gap-2">
+            {headerActions}
+            <Button variant="tile" size="xs" aria-label="Fechar" onClick={close}>
+              <X aria-hidden strokeWidth={1.5} className="size-icon-sm" />
+            </Button>
+          </div>
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
           {children}
@@ -52,6 +72,40 @@ export function Modal({ title, onClose, children, footer }: ModalProps) {
             {footer}
           </footer>
         )}
+      </div>,
+      document.body,
+    );
+  }
+
+  if (variant === 'side') {
+    return createPortal(
+      <div className="fixed inset-0 z-50 flex justify-end bg-scrim">
+        <div
+          ref={ref}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          className="flex h-full w-full max-w-panel flex-col border-l-hair bg-raised shadow-popover"
+        >
+          <header className="flex items-center justify-between gap-4 px-6 pt-5 pb-2">
+            <h2
+              id={titleId}
+              className={hideTitle ? 'sr-only' : 'text-title font-semibold tracking-tight'}
+            >
+              {title}
+            </h2>
+            <div className="ml-auto flex items-center gap-2">
+              {headerActions}
+              <Button variant="tile" size="xs" aria-label="Fechar" onClick={onClose}>
+                <X aria-hidden strokeWidth={1.5} className="size-icon-sm" />
+              </Button>
+            </div>
+          </header>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-4">{children}</div>
+          {footer && (
+            <footer className="flex justify-end gap-2 border-t-hair px-6 py-4">{footer}</footer>
+          )}
+        </div>
       </div>,
       document.body,
     );

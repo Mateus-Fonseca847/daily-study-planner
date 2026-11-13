@@ -15,14 +15,13 @@ const MAX_LABELS_PHONE = 5;
 export const EMPTY_CHART_TEXT = 'Ainda não há dados neste período';
 
 const SUBJECT_FILL: Record<keyof typeof SUBJECT_COLOR_CLASS, string> = {
-  vermelho: 'fill-subject-vermelho',
-  laranja: 'fill-subject-laranja',
-  amarelo: 'fill-subject-amarelo',
-  verde: 'fill-subject-verde',
-  turquesa: 'fill-subject-turquesa',
-  azul: 'fill-subject-azul',
-  violeta: 'fill-subject-violeta',
+  ciano: 'fill-subject-ciano',
+  petroleo: 'fill-subject-petroleo',
+  gelo: 'fill-subject-gelo',
+  lilas: 'fill-subject-lilas',
+  fucsia: 'fill-subject-fucsia',
   rosa: 'fill-subject-rosa',
+  cinza: 'fill-subject-cinza',
 };
 
 interface BarChartProps {

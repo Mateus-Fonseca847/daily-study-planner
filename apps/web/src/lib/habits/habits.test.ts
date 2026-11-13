@@ -7,7 +7,6 @@ import {
   type Habit,
   type HabitLog,
   type Repeat,
-  type StudyEvent,
   type WaterLog,
 } from '@daily/shared';
 import {
@@ -48,7 +47,7 @@ function habit(
     id: `h${seq}`,
     name: 'Hábito',
     icon: 'target',
-    color: 'amarelo',
+    color: 'ciano',
     type: 'check',
     unit: '',
     source: 'manual',
@@ -69,26 +68,11 @@ const log = (h: Habit, date: string, value = 1): HabitLog => ({
 
 const ctxOf = (sources: Partial<HabitSources> = {}, today = TODAY) =>
   buildHabitContext(
-    { habitLogs: [], waterLogs: [], focusSessions: [], events: [], ...sources },
+    { habitLogs: [], waterLogs: [], focusSessions: [], restDays: [], ...sources },
     today,
   );
 
 const week = (days: number[]): Repeat => ({ kind: 'dias-da-semana', days });
-const block = (
-  id: string,
-  start: string,
-  status: StudyEvent['status'] = 'pendente',
-): StudyEvent => ({
-  id,
-  type: 'estudo',
-  title: id,
-  start: `${start}T14:00:00`,
-  end: `${start}T15:00:00`,
-  subjectId: null,
-  examId: null,
-  status,
-  notes: '',
-});
 const water = (date: string, ml: number): WaterLog => ({
   id: `${date}-${ml}`,
   date,
@@ -103,7 +87,8 @@ const session = (startedAt: string, actualSec: number): FocusSession => ({
   status: 'concluida',
   subjectId: null,
   examId: null,
-  blockId: null,
+  origin: 'cronometro' as const,
+  note: '',
 });
 
 describe('repetição', () => {
@@ -139,40 +124,28 @@ describe('agendado e regras versionadas', () => {
       ...h,
       rules: [...h.rules, { since: '2026-11-10', repeat: week([2, 4]), target: null, time: null }],
     });
-    const ctx = ctxOf();
     expect(ruleOn(edited, '2026-11-09')?.since).toBe('2026-10-01');
-    expect(isScheduled(edited, '2026-11-09', ctx)).toBe(true); // segunda: regra antiga
-    expect(isScheduled(edited, '2026-11-10', ctx)).toBe(true); // terça: regra nova
-    expect(isScheduled(edited, '2026-11-11', ctx)).toBe(false); // quarta: já não
-    expect(isScheduled(edited, '2026-09-30', ctx)).toBe(false); // antes da primeira regra
+    expect(isScheduled(edited, '2026-11-09')).toBe(true); // segunda: regra antiga
+    expect(isScheduled(edited, '2026-11-10')).toBe(true); // terça: regra nova
+    expect(isScheduled(edited, '2026-11-11')).toBe(false); // quarta: já não
+    expect(isScheduled(edited, '2026-09-30')).toBe(false); // antes da primeira regra
   });
 
   it('arquivar: o próprio dia conta, os seguintes não', () => {
     const h = habit({ archivedAt: '2026-11-05T10:00:00' });
-    const ctx = ctxOf();
-    expect(isScheduled(h, '2026-11-05', ctx)).toBe(true);
-    expect(isScheduled(h, '2026-11-06', ctx)).toBe(false);
+    expect(isScheduled(h, '2026-11-05')).toBe(true);
+    expect(isScheduled(h, '2026-11-06')).toBe(false);
   });
 
   it('fim opcional (endsOn) encerra a agenda sem arquivar', () => {
     const h = habit({ endsOn: '2026-11-03' });
-    expect(isScheduled(h, '2026-11-03', ctxOf())).toBe(true);
-    expect(isScheduled(h, '2026-11-04', ctxOf())).toBe(false);
-  });
-
-  it('fonte blocos: sem blocos no dia não está agendado; cancelados não contam', () => {
-    const h = habit({ source: 'blocos' });
-    const ctx = ctxOf({
-      events: [block('a', '2026-11-09'), block('b', '2026-11-08', 'cancelado')],
-    });
-    expect(isScheduled(h, '2026-11-09', ctx)).toBe(true);
-    expect(isScheduled(h, '2026-11-08', ctx)).toBe(false);
-    expect(isScheduled(h, '2026-11-07', ctx)).toBe(false);
+    expect(isScheduled(h, '2026-11-03')).toBe(true);
+    expect(isScheduled(h, '2026-11-04')).toBe(false);
   });
 });
 
 describe('valor, estado e nível do dia', () => {
-  it('manual lê o registro; água e foco são derivados; blocos é proporção', () => {
+  it('manual lê o registro; água e foco são derivados', () => {
     const manual = habit();
     const agua = habit({
       type: 'quantidade',
@@ -186,18 +159,15 @@ describe('valor, estado e nível do dia', () => {
       source: 'foco',
       rules: [{ since: '2026-10-01', repeat: EVERY_DAY, target: 60, time: null }],
     });
-    const blocos = habit({ source: 'blocos' });
     const ctx = ctxOf({
       habitLogs: [log(manual, '2026-11-09')],
       waterLogs: [water('2026-11-09', 500), water('2026-11-09', 750)],
       focusSessions: [session('2026-11-09T09:00:00', 1500), session('2026-11-09T11:00:00', 1500)],
-      events: [block('a', '2026-11-09', 'concluido'), block('b', '2026-11-09')],
     });
     expect(valueOn(manual, '2026-11-09', ctx)).toBe(1);
     expect(valueOn(manual, '2026-11-08', ctx)).toBe(0);
     expect(valueOn(agua, '2026-11-09', ctx)).toBe(1250);
     expect(valueOn(foco, '2026-11-09', ctx)).toBe(50);
-    expect(valueOn(blocos, '2026-11-09', ctx)).toBe(0.5);
     expect(targetOn(agua, '2026-11-09')).toBe(2000);
     expect(targetOn(manual, '2026-11-09')).toBe(1);
   });
@@ -428,7 +398,7 @@ describe('schema do hábito', () => {
       id: 'x',
       name: 'Teste',
       icon: 'target',
-      color: 'azul',
+      color: 'ciano',
       type: 'quantidade',
       unit: 'min',
       source: 'manual',
@@ -464,7 +434,7 @@ describe('schema do hábito', () => {
       id: 'x',
       name: 'Teste',
       icon: 'target',
-      color: 'azul',
+      color: 'ciano',
       type: 'check',
       source: 'manual',
       rules: [{ since: '2026-11-01', repeat: { kind: 'dias-da-semana', days: [5, 1, 1, 3] } }],

@@ -1,10 +1,5 @@
 import { habitLogId } from '@daily/shared';
-import type { FocusSession, HabitLog, StudyEvent, WaterLog } from '@daily/shared';
-
-export interface DayBlocks {
-  total: number;
-  done: number;
-}
+import type { FocusSession, HabitLog, RestDay, WaterLog } from '@daily/shared';
 
 /** Tudo de que os hábitos precisam para calcular um dia; montado uma vez por render. */
 export interface HabitContext {
@@ -16,15 +11,15 @@ export interface HabitContext {
   waterMl: ReadonlyMap<string, number>;
   /** Minutos reais de foco por dia (sessões concluídas e interrompidas). */
   focusMin: ReadonlyMap<string, number>;
-  /** Blocos de estudo (não cancelados) por dia. */
-  blocks: ReadonlyMap<string, DayBlocks>;
+  /** Descansos: `${habitId}:${data}` ou `*:${data}` (todos os hábitos). */
+  rest: ReadonlySet<string>;
 }
 
 export interface HabitSources {
   habitLogs: readonly HabitLog[];
   waterLogs: readonly WaterLog[];
   focusSessions: readonly FocusSession[];
-  events: readonly StudyEvent[];
+  restDays?: readonly RestDay[];
 }
 
 export function buildHabitContext(sources: HabitSources, today: string): HabitContext {
@@ -41,18 +36,14 @@ export function buildHabitContext(sources: HabitSources, today: string): HabitCo
   }
   const focusMin = new Map([...focusSec].map(([day, sec]) => [day, Math.round(sec / 60)]));
 
-  const blocks = new Map<string, DayBlocks>();
-  for (const event of sources.events) {
-    if (event.type !== 'estudo' || event.status === 'cancelado') continue;
-    const day = event.start.slice(0, 10);
-    const entry = blocks.get(day) ?? { total: 0, done: 0 };
-    entry.total += 1;
-    if (event.status === 'concluido') entry.done += 1;
-    blocks.set(day, entry);
-  }
-  return { today, logs, waterMl, focusMin, blocks };
+  const rest = new Set((sources.restDays ?? []).map((r) => `${r.habitId ?? '*'}:${r.date}`));
+  return { today, logs, waterMl, focusMin, rest };
 }
 
 /** Valor registrado de um hábito manual (0 se não houver registro). */
 export const loggedValue = (ctx: HabitContext, habitId: string, date: string): number =>
   ctx.logs.get(habitLogId(habitId, date)) ?? 0;
+
+/** Dia de descanso deste hábito (marcado só para ele ou para todos). */
+export const isRestDay = (ctx: HabitContext, habitId: string, date: string): boolean =>
+  ctx.rest.has(`${habitId}:${date}`) || ctx.rest.has(`*:${date}`);

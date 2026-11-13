@@ -1,9 +1,10 @@
 import type { Habit, HabitRule } from '@daily/shared';
 import { daysBetween, shiftDay } from '../dates';
-import { loggedValue, type HabitContext } from './context';
+import { isRestDay, loggedValue, type HabitContext } from './context';
 import { occursOn } from './repeat';
 
-export type DayState = 'futuro' | 'nao-agendado' | 'feito' | 'parcial' | 'perdido' | 'pendente';
+export type DayState =
+  'futuro' | 'nao-agendado' | 'descanso' | 'feito' | 'parcial' | 'perdido' | 'pendente';
 export type Level = 0 | 1 | 2 | 3 | 4;
 
 /** Limite de segurança das buscas para trás (10 anos). */
@@ -23,13 +24,12 @@ export function ruleOn(habit: Habit, date: string): HabitRule | undefined {
 export const firstDay = (habit: Habit): string =>
   habit.rules[0]?.since ?? habit.createdAt.slice(0, 10);
 
-/** O hábito está agendado em `date` (regra vigente, arquivamento, fim e blocos de estudo do dia). */
-export function isScheduled(habit: Habit, date: string, ctx: HabitContext): boolean {
+/** O hábito está agendado em `date` (regra vigente, arquivamento e fim). Descanso à parte. */
+export function isScheduled(habit: Habit, date: string): boolean {
   const rule = ruleOn(habit, date);
   if (!rule || !occursOn(rule.repeat, rule.since, date)) return false;
   if (habit.archivedAt !== null && date > habit.archivedAt.slice(0, 10)) return false;
   if (habit.endsOn !== null && date > habit.endsOn) return false;
-  if (habit.source === 'blocos') return (ctx.blocks.get(date)?.total ?? 0) > 0;
   return true;
 }
 
@@ -37,7 +37,7 @@ export function isScheduled(habit: Habit, date: string, ctx: HabitContext): bool
 export const targetOn = (habit: Habit, date: string): number =>
   habit.type === 'check' ? 1 : (ruleOn(habit, date)?.target ?? 1);
 
-/** Valor do dia: registro (manual) ou derivado de água, foco ou blocos (proporção 0–1). */
+/** Valor do dia: registro (manual) ou derivado de água e foco. */
 export function valueOn(habit: Habit, date: string, ctx: HabitContext): number {
   switch (habit.source) {
     case 'manual':
@@ -46,10 +46,6 @@ export function valueOn(habit: Habit, date: string, ctx: HabitContext): number {
       return ctx.waterMl.get(date) ?? 0;
     case 'foco':
       return ctx.focusMin.get(date) ?? 0;
-    case 'blocos': {
-      const blocks = ctx.blocks.get(date);
-      return blocks && blocks.total > 0 ? blocks.done / blocks.total : 0;
-    }
   }
 }
 
@@ -57,10 +53,16 @@ export function valueOn(habit: Habit, date: string, ctx: HabitContext): number {
 export const isDone = (habit: Habit, date: string, ctx: HabitContext): boolean =>
   valueOn(habit, date, ctx) >= targetOn(habit, date);
 
+/**
+ * Estado do dia. Descanso conta como não agendado (não quebra a sequência nem entra na taxa),
+ * mas cumprir o hábito num dia de descanso conta como feito.
+ */
 export function dayState(habit: Habit, date: string, ctx: HabitContext): DayState {
-  if (date > ctx.today) return 'futuro';
-  if (!isScheduled(habit, date, ctx)) return 'nao-agendado';
+  const rest = isRestDay(ctx, habit.id, date);
+  if (date > ctx.today) return rest && isScheduled(habit, date) ? 'descanso' : 'futuro';
+  if (!isScheduled(habit, date)) return 'nao-agendado';
   if (isDone(habit, date, ctx)) return 'feito';
+  if (rest) return 'descanso';
   if (date === ctx.today) return 'pendente';
   return valueOn(habit, date, ctx) > 0 ? 'parcial' : 'perdido';
 }
@@ -77,7 +79,7 @@ export function levelOfRatio(ratio: number): Level {
 /** Intensidade da célula: check = 0 ou 4; quantidade = proporção da meta. Fora da agenda = 0. */
 export function levelOn(habit: Habit, date: string, ctx: HabitContext): Level {
   const state = dayState(habit, date, ctx);
-  if (state === 'futuro' || state === 'nao-agendado') return 0;
+  if (state === 'futuro' || state === 'nao-agendado' || state === 'descanso') return 0;
   if (habit.type === 'check') return state === 'feito' ? 4 : 0;
   return levelOfRatio(valueOn(habit, date, ctx) / targetOn(habit, date));
 }
@@ -149,6 +151,11 @@ export function rate(habit: Habit, ctx: HabitContext, days: number): Rate {
 export const pendingToday = (habits: readonly Habit[], ctx: HabitContext): Habit[] =>
   habits.filter((h) => h.archivedAt === null && dayState(h, ctx.today, ctx) === 'pendente');
 
-/** Hábitos ativos agendados hoje (cumpridos ou não). */
+/** Hábitos ativos agendados hoje (cumpridos ou não); em descanso só aparecem se cumpridos. */
 export const scheduledToday = (habits: readonly Habit[], ctx: HabitContext): Habit[] =>
-  habits.filter((h) => h.archivedAt === null && isScheduled(h, ctx.today, ctx));
+  habits.filter(
+    (h) =>
+      h.archivedAt === null &&
+      isScheduled(h, ctx.today) &&
+      dayState(h, ctx.today, ctx) !== 'descanso',
+  );

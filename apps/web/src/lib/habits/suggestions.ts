@@ -16,7 +16,7 @@ export function habitSuggestions(waterGoalMl: number): HabitSuggestion[] {
       draft: {
         name: 'Musculação',
         icon: 'dumbbell',
-        color: 'laranja',
+        color: 'rosa',
         type: 'check',
         unit: '',
         source: 'manual',
@@ -32,7 +32,7 @@ export function habitSuggestions(waterGoalMl: number): HabitSuggestion[] {
       draft: {
         name: 'Hidratação',
         icon: 'droplets',
-        color: 'azul',
+        color: 'ciano',
         type: 'quantidade',
         unit: 'ml',
         source: 'agua',
@@ -48,7 +48,7 @@ export function habitSuggestions(waterGoalMl: number): HabitSuggestion[] {
       draft: {
         name: 'Luta',
         icon: 'swords',
-        color: 'violeta',
+        color: 'lilas',
         type: 'check',
         unit: '',
         source: 'manual',
@@ -64,7 +64,7 @@ export function habitSuggestions(waterGoalMl: number): HabitSuggestion[] {
       draft: {
         name: 'Estudo',
         icon: 'book-open',
-        color: 'verde',
+        color: 'petroleo',
         type: 'quantidade',
         unit: 'min',
         source: 'foco',
@@ -75,4 +75,20 @@ export function habitSuggestions(waterGoalMl: number): HabitSuggestion[] {
       },
     },
   ];
+}
+
+/** Hábito “Água” criado automaticamente no primeiro uso (meta = meta de água, todo dia). */
+export function waterHabitDraft(waterGoalMl: number): HabitDraft {
+  return {
+    name: 'Água',
+    icon: 'droplets',
+    color: 'ciano',
+    type: 'quantidade',
+    unit: 'ml',
+    source: 'agua',
+    repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+    target: waterGoalMl,
+    time: null,
+    endsOn: null,
+  };
 }

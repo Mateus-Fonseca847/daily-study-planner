@@ -50,7 +50,9 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
   const id = (prefix: string) => `${prefix}-${++uid}`;
 
   const pushEvent = (event: Record<string, unknown>) =>
-    events.push(studyEventSchema.parse({ notes: '', subjectId: 'mat', ...event }));
+    events.push(
+      studyEventSchema.parse({ notes: '', subjectId: 'mat', createdAt: event.start, ...event }),
+    );
 
   // ── Próximas provas (a primeira: 3/5 conteúdos, em 4 dias) ──
   const contents = (prefix: string, titles: string[], done: number) =>
@@ -62,7 +64,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     start: at(shiftDay(today, 4), 9, 30),
     end: at(shiftDay(today, 4), 11, 30),
     status: 'pendente',
-    contents: contents(
+    subtasks: contents(
       'e1',
       ['Limites', 'Derivadas', 'Regra da cadeia', 'Integrais', 'Aplicações'],
       3,
@@ -76,7 +78,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     start: at(shiftDay(today, 10), 14),
     end: at(shiftDay(today, 10), 16),
     status: 'pendente',
-    contents: contents('e2', ['Funções orgânicas', 'Isomeria', 'Reações', 'Nomenclatura'], 1),
+    subtasks: contents('e2', ['Funções orgânicas', 'Isomeria', 'Reações', 'Nomenclatura'], 1),
   });
   pushEvent({
     id: 'fx-exam-3',
@@ -86,21 +88,21 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     start: at(shiftDay(today, 17), 8),
     end: at(shiftDay(today, 17), 10),
     status: 'pendente',
-    contents: [],
+    subtasks: [],
   });
 
   // ── Hoje: eventos às 10h e 11h ──
   pushEvent({
     id: 'fx-today-1',
-    type: 'estudo',
+    type: 'tarefa',
     title: 'Lista de limites',
     start: at(today, 10),
     end: at(today, 11),
-    status: 'em-andamento',
+    status: 'pendente',
   });
   pushEvent({
     id: 'fx-today-2',
-    type: 'revisao',
+    type: 'tarefa',
     title: 'Revisar fichamento',
     subjectId: 'his',
     start: at(today, 11),
@@ -149,7 +151,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
       id: 'fx-gym',
       name: 'Musculação',
       icon: 'dumbbell',
-      color: 'laranja',
+      color: 'rosa',
       type: 'check',
       unit: '',
       source: 'manual',
@@ -159,7 +161,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
       id: 'fx-water',
       name: 'Hidratação',
       icon: 'droplets',
-      color: 'azul',
+      color: 'ciano',
       type: 'quantidade',
       unit: 'ml',
       source: 'agua',
@@ -169,7 +171,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
       id: 'fx-fight',
       name: 'Luta',
       icon: 'swords',
-      color: 'violeta',
+      color: 'lilas',
       type: 'check',
       unit: '',
       source: 'manual',
@@ -179,7 +181,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
       id: 'fx-study',
       name: 'Estudo',
       icon: 'book-open',
-      color: 'verde',
+      color: 'petroleo',
       type: 'quantidade',
       unit: 'min',
       source: 'foco',
@@ -215,7 +217,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
         const doneBlock = goodDay || random() < 0.7;
         pushEvent({
           id: id('fx-h'),
-          type: 'estudo',
+          type: 'tarefa',
           title: 'Bloco de estudo',
           subjectId,
           start: at(day, hour),
@@ -262,7 +264,8 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
           status: finished ? 'concluida' : 'interrompida',
           subjectId: null,
           examId: null,
-          blockId: null,
+          origin: 'cronometro',
+          note: '',
         });
       }
     }
@@ -283,7 +286,8 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     status: 'concluida',
     subjectId: null,
     examId: null,
-    blockId: null,
+    origin: 'cronometro',
+    note: '',
   });
 
   const base = createInitialSnapshot();

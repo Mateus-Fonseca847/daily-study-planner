@@ -7,17 +7,17 @@ import {
   STORAGE_KEY,
 } from './local-storage-repository';
 import { StorageWriteError } from './repository';
-import { block, exam, makeSnapshot, memoryRepo, snapshot } from './test-utils';
+import { timedTask, exam, makeSnapshot, memoryRepo, snapshot } from './test-utils';
 
 describe('LocalStorageRepository — CRUD', () => {
   it('cria, lê, atualiza e exclui matérias', () => {
     const { repo } = memoryRepo();
-    const created = repo.subjects.create({ name: 'Física', color: 'violeta' });
-    expect(created).toEqual({ id: 'id-1', name: 'Física', color: 'violeta' });
+    const created = repo.subjects.create({ name: 'Física', color: 'lilas' });
+    expect(created).toEqual({ id: 'id-1', name: 'Física', color: 'lilas' });
     expect(repo.subjects.get('id-1')).toEqual(created);
 
     repo.subjects.update('id-1', { name: 'Física II' });
-    expect(repo.subjects.list()).toEqual([{ id: 'id-1', name: 'Física II', color: 'violeta' }]);
+    expect(repo.subjects.list()).toEqual([{ id: 'id-1', name: 'Física II', color: 'lilas' }]);
 
     repo.subjects.delete('id-1');
     expect(repo.subjects.list()).toEqual([]);
@@ -38,7 +38,7 @@ describe('LocalStorageRepository — CRUD', () => {
 
   it('rejeita fim antes do início', () => {
     const { repo } = memoryRepo();
-    const { id: _id, ...draft } = block('b');
+    const { id: _id, ...draft } = timedTask('b');
     void _id;
     expect(() => repo.events.create({ ...draft, end: '2026-11-09T13:00:00' })).toThrow();
   });
@@ -55,8 +55,8 @@ describe('LocalStorageRepository — persistência e versão', () => {
     const { repo, storage } = memoryRepo();
     repo.replaceAll(snapshot());
     const saved = JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}');
-    expect(STORAGE_KEY).toBe('daily:v3');
-    expect(saved).toMatchObject({ app: 'daily', version: 3 });
+    expect(STORAGE_KEY).toBe('daily:v4');
+    expect(saved).toMatchObject({ app: 'daily', version: 4 });
 
     const reopened = new LocalStorageRepository(storage);
     expect(reopened.snapshot()).toEqual(snapshot());
@@ -99,20 +99,22 @@ describe('LocalStorageRepository — persistência e versão', () => {
     const [first, second] = repo.events.list();
     expect(first).toMatchObject({
       status: 'concluido',
-      contents: [{ id: 'c1', order: 0 }],
+      subtasks: [{ id: 'c1', order: 0 }],
       notes: '',
     });
-    expect(second).toMatchObject({ status: 'pendente', subjectId: null, examId: null });
-    expect(repo.subjects.list()[0]?.color).toBe('vermelho');
+    expect(second).toMatchObject({ type: 'tarefa', status: 'pendente', subjectId: null });
+    expect(second).not.toHaveProperty('examId');
+    // Vermelho (v0 → v1) vira fúcsia na paleta v4.
+    expect(repo.subjects.list()[0]?.color).toBe('fucsia');
     // Regravado já na versão atual, com o original guardado como backup.
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(3);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(4);
     expect(JSON.parse(storage.getItem(BACKUP_KEY) ?? '{}').version).toBe(0);
   });
 
   it('o backup é o último estado válido anterior', () => {
     const { repo, storage } = memoryRepo();
-    repo.subjects.create({ name: 'A', color: 'azul' });
-    repo.subjects.create({ name: 'B', color: 'azul' });
+    repo.subjects.create({ name: 'A', color: 'ciano' });
+    repo.subjects.create({ name: 'B', color: 'ciano' });
     const backup = JSON.parse(storage.getItem(BACKUP_KEY) ?? '{}');
     expect(backup.data.subjects).toHaveLength(1);
   });
@@ -164,7 +166,7 @@ describe('LocalStorageRepository — dado corrompido', () => {
     storage.setItem(STORAGE_KEY, '{quebrado');
 
     const repo = new LocalStorageRepository(storage);
-    repo.subjects.create({ name: 'Depois', color: 'azul' });
+    repo.subjects.create({ name: 'Depois', color: 'ciano' });
     expect(JSON.parse(storage.getItem(BACKUP_KEY) ?? '{}').data.subjects).toHaveLength(2);
   });
 
@@ -182,7 +184,7 @@ describe('LocalStorageRepository — falha de gravação', () => {
     storage.setItem = () => {
       throw new DOMException('cheio', 'QuotaExceededError');
     };
-    expect(() => repo.subjects.create({ name: 'X', color: 'azul' })).toThrow(StorageWriteError);
+    expect(() => repo.subjects.create({ name: 'X', color: 'ciano' })).toThrow(StorageWriteError);
     expect(repo.subjects.list()).toHaveLength(1);
   });
 });

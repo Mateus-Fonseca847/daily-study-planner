@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { localDateSchema, localDateTimeSchema } from './dates';
+import { PALETTE_COLORS } from './subject';
 
 const id = z.string().min(1);
 
@@ -20,22 +21,14 @@ export const HABIT_ICONS = [
 ] as const;
 export const DEFAULT_HABIT_ICON = 'target';
 
-/** Chaves da paleta de hábitos (`--ds-habit-*` em tokens.css); a primeira é o amarelo do Daily. */
-export const HABIT_COLORS = [
-  'amarelo',
-  'azul',
-  'verde',
-  'laranja',
-  'rosa',
-  'violeta',
-  'turquesa',
-] as const;
+/** Chaves da paleta de hábitos (`--ds-habit-*` em tokens.css): a mesma paleta das matérias. */
+export const HABIT_COLORS = PALETTE_COLORS;
 
 /** `check`: feito ou não; `quantidade`: valor numérico contra uma meta. */
 export const HABIT_TYPES = ['check', 'quantidade'] as const;
 
-/** `manual`: o usuário registra; as demais derivam de água, sessões de foco e blocos de estudo. */
-export const HABIT_SOURCES = ['manual', 'agua', 'foco', 'blocos'] as const;
+/** `manual`: o usuário registra; as demais derivam de água e de sessões de foco. */
+export const HABIT_SOURCES = ['manual', 'agua', 'foco'] as const;
 
 export const habitIconSchema = z.enum(HABIT_ICONS);
 export const habitColorSchema = z.enum(HABIT_COLORS);
@@ -118,9 +111,6 @@ export const habitSchema = z
     if ((habit.source === 'agua' || habit.source === 'foco') && habit.type !== 'quantidade') {
       issue('Esta fonte automática exige um hábito de quantidade.', ['type']);
     }
-    if (habit.source === 'blocos' && habit.type !== 'check') {
-      issue('A fonte “blocos de estudo” exige um hábito de check.', ['type']);
-    }
     if (habit.endsOn !== null && habit.endsOn < habit.rules[0]!.since) {
       issue('O fim não pode ser antes do início.', ['endsOn']);
     }
@@ -135,6 +125,16 @@ export const habitLogSchema = z.object({
   updatedAt: localDateTimeSchema,
 });
 
+/**
+ * Dia de descanso: conta como não agendado (não quebra a sequência nem entra na taxa).
+ * `habitId = null` vale para todos os hábitos.
+ */
+export const restDaySchema = z.object({
+  id,
+  habitId: id.nullable(),
+  date: localDateSchema,
+});
+
 export type HabitIcon = z.infer<typeof habitIconSchema>;
 export type HabitColor = z.infer<typeof habitColorSchema>;
 export type HabitType = z.infer<typeof habitTypeSchema>;
@@ -144,6 +144,11 @@ export type Repeat = z.infer<typeof repeatSchema>;
 export type HabitRule = z.infer<typeof habitRuleSchema>;
 export type Habit = z.infer<typeof habitSchema>;
 export type HabitLog = z.infer<typeof habitLogSchema>;
+export type RestDay = z.infer<typeof restDaySchema>;
+
+/** Id determinístico do descanso (`*` = todos os hábitos). */
+export const restDayId = (habitId: string | null, date: string): string =>
+  `rest:${habitId ?? '*'}:${date}`;
 
 export const habitLogId = (habitId: string, date: string): string => `${habitId}:${date}`;
 

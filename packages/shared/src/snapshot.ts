@@ -1,12 +1,20 @@
 import { z } from 'zod';
 import { isExam, studyEventSchema } from './event';
 import { focusSessionSchema } from './focus';
-import { habitLogSchema, habitSchema } from './habits';
+import { habitLogSchema, habitSchema, restDaySchema } from './habits';
 import { DEFAULT_PREFERENCES, preferencesSchema } from './preferences';
 import { subjectSchema } from './subject';
 import { waterLogSchema } from './water';
 
-/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 3. */
+/** Marcas de primeiro uso que precisam valer em todos os dispositivos (por isso sincronizam). */
+export const onboardingSchema = z.object({
+  /** O hábito “Água” automático já foi criado (ou a conta já tinha dados): nunca recriar. */
+  waterHabitCreated: z.boolean().default(false),
+});
+
+export type Onboarding = z.infer<typeof onboardingSchema>;
+
+/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 4. */
 export const dataSnapshotSchema = z
   .object({
     subjects: z.array(subjectSchema),
@@ -16,6 +24,8 @@ export const dataSnapshotSchema = z
     habitLogs: z.array(habitLogSchema),
     waterLogs: z.array(waterLogSchema),
     focusSessions: z.array(focusSessionSchema),
+    restDays: z.array(restDaySchema).default([]),
+    onboarding: onboardingSchema.default({ waterHabitCreated: false }),
   })
   .superRefine((snapshot, ctx) => {
     const issue = (message: string, path: (string | number)[]) =>
@@ -25,7 +35,6 @@ export const dataSnapshotSchema = z
     const subjectIds = ids(snapshot.subjects);
     const eventIds = ids(snapshot.events);
     const examIds = new Set(snapshot.events.filter(isExam).map((e) => e.id));
-    const blockIds = new Set(snapshot.events.filter((e) => e.type === 'estudo').map((e) => e.id));
     const habitIds = ids(snapshot.habits);
 
     const collections: [string, readonly { id: string }[], Set<string>, string][] = [
@@ -35,6 +44,7 @@ export const dataSnapshotSchema = z
       ['habitLogs', snapshot.habitLogs, ids(snapshot.habitLogs), 'registros de hábito'],
       ['waterLogs', snapshot.waterLogs, ids(snapshot.waterLogs), 'registros de água'],
       ['focusSessions', snapshot.focusSessions, ids(snapshot.focusSessions), 'sessões de foco'],
+      ['restDays', snapshot.restDays, ids(snapshot.restDays), 'dias de descanso'],
     ];
     for (const [key, items, unique, label] of collections) {
       if (unique.size !== items.length) issue(`Há ${label} com ids repetidos.`, [key]);
@@ -44,18 +54,24 @@ export const dataSnapshotSchema = z
       if (event.subjectId !== null && !subjectIds.has(event.subjectId)) {
         issue('O evento aponta para uma matéria que não existe.', ['events', index, 'subjectId']);
       }
-      if (event.type === 'estudo' && event.examId !== null && !examIds.has(event.examId)) {
-        issue('O bloco de estudo aponta para uma prova que não existe.', [
-          'events',
-          index,
-          'examId',
-        ]);
+      const subtaskIds = new Set(event.subtasks.map((s) => s.id));
+      if (subtaskIds.size !== event.subtasks.length) {
+        issue('Há subtarefas com ids repetidos.', ['events', index, 'subtasks']);
       }
     });
     snapshot.habitLogs.forEach((log, index) => {
       if (!habitIds.has(log.habitId)) {
         issue('O registro aponta para um hábito que não existe.', ['habitLogs', index, 'habitId']);
       }
+    });
+    const restKeys = new Set<string>();
+    snapshot.restDays.forEach((rest, index) => {
+      if (rest.habitId !== null && !habitIds.has(rest.habitId)) {
+        issue('O descanso aponta para um hábito que não existe.', ['restDays', index, 'habitId']);
+      }
+      const key = `${rest.habitId ?? '*'}:${rest.date}`;
+      if (restKeys.has(key)) issue('Há dias de descanso repetidos.', ['restDays', index]);
+      restKeys.add(key);
     });
     snapshot.focusSessions.forEach((session, index) => {
       const bad = (value: string | null, valid: Set<string>) => value !== null && !valid.has(value);
@@ -68,9 +84,6 @@ export const dataSnapshotSchema = z
       }
       if (bad(session.examId, examIds)) {
         issue('A sessão aponta para uma prova que não existe.', ['focusSessions', index, 'examId']);
-      }
-      if (bad(session.blockId, blockIds)) {
-        issue('A sessão aponta para um bloco que não existe.', ['focusSessions', index, 'blockId']);
       }
     });
   });
@@ -87,5 +100,42 @@ export function createInitialSnapshot(): DataSnapshot {
     habitLogs: [],
     waterLogs: [],
     focusSessions: [],
+    restDays: [],
+    onboarding: { waterHabitCreated: false },
   };
 }
+
+/**
+ * “Virgem”: nada que o usuário tenha criado. O hábito de água automático (sem registros) e as
+ * preferências padrão não contam — um dispositivo novo continua aceitando os dados da nuvem.
+ */
+export function isPristineSnapshot(snapshot: DataSnapshot): boolean {
+  const onlyAutoWater =
+    snapshot.habits.length === 0 ||
+    (snapshot.habits.length === 1 &&
+      snapshot.habits[0]!.source === 'agua' &&
+      snapshot.habits[0]!.archivedAt === null);
+  const prefs = snapshot.preferences;
+  const defaultPrefs = (Object.keys(DEFAULT_PREFERENCES) as (keyof typeof prefs)[]).every(
+    (key) => prefs[key] === DEFAULT_PREFERENCES[key],
+  );
+  return (
+    snapshot.subjects.length === 0 &&
+    snapshot.events.length === 0 &&
+    snapshot.habitLogs.length === 0 &&
+    snapshot.waterLogs.length === 0 &&
+    snapshot.focusSessions.length === 0 &&
+    snapshot.restDays.length === 0 &&
+    onlyAutoWater &&
+    defaultPrefs
+  );
+}
+
+/** Há algum dado do usuário (para não criar o hábito de água numa conta que já existe). */
+export const hasUserData = (snapshot: Omit<DataSnapshot, 'onboarding'>): boolean =>
+  snapshot.subjects.length > 0 ||
+  snapshot.events.length > 0 ||
+  snapshot.habits.length > 0 ||
+  snapshot.habitLogs.length > 0 ||
+  snapshot.waterLogs.length > 0 ||
+  snapshot.focusSessions.length > 0;

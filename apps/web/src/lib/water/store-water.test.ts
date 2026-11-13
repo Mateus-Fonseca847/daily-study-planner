@@ -55,7 +55,7 @@ describe('setWaterDay', () => {
         habitLogs: s.habitLogs,
         waterLogs: s.waterLogs,
         focusSessions: s.focusSessions,
-        events: s.events,
+        restDays: s.restDays,
       },
       DAY,
     );
@@ -67,7 +67,7 @@ describe('setWaterDay', () => {
         habitLogs: t.habitLogs,
         waterLogs: t.waterLogs,
         focusSessions: t.focusSessions,
-        events: t.events,
+        restDays: t.restDays,
       },
       DAY,
     );

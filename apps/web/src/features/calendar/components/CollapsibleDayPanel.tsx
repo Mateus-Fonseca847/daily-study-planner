@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import type { Habit, StudyEvent } from '@daily/shared';
 import { cn } from '../../../lib/cn';
 import { formatCountdown } from '../../../lib/data/countdown';
-import { isDone, isScheduled, type HabitContext } from '../../../lib/habits';
+import { isDone, isRestDay, isScheduled, type HabitContext } from '../../../lib/habits';
 import { nextExam } from '../../../lib/stats/derive';
 import { daySummary } from '../lib/compact';
 import { DayPanel } from './DayPanel';
@@ -27,7 +27,9 @@ export function CollapsibleDayPanel(props: CollapsibleDayPanelProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
-  const scheduled = habits.filter((habit) => isScheduled(habit, date, ctx));
+  const scheduled = habits.filter(
+    (habit) => isScheduled(habit, date) && !isRestDay(ctx, habit.id, date),
+  );
   const exam = nextExam(events, now);
   const summary = daySummary({
     scheduledHabits: scheduled.length,

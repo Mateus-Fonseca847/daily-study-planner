@@ -68,10 +68,6 @@ describe('formulário de hábito', () => {
   it('fontes automáticas fixam tipo e unidade', () => {
     const water = applySource(emptyForm(TODAY), 'agua', 2500);
     expect(water).toMatchObject({ type: 'quantidade', unit: 'ml', target: '2500' });
-    expect(applySource(emptyForm(TODAY), 'blocos', 2000)).toMatchObject({
-      type: 'check',
-      target: '',
-    });
     expect(applySource(emptyForm(TODAY), 'foco', 2000)).toMatchObject({
       unit: 'min',
       target: '60',
@@ -101,7 +97,7 @@ describe('formulário de hábito', () => {
       timeStart: '07:00',
     });
 
-    const same = validateForm({ ...form, name: 'Peso', color: 'azul' });
+    const same = validateForm({ ...form, name: 'Peso', color: 'ciano' });
     expect(same.ok && editFromForm(habit, same.draft, TODAY).changesRule).toBe(false);
     const changed = validateForm({ ...form, days: [1, 3] });
     expect(changed.ok && editFromForm(habit, changed.draft, TODAY).changesRule).toBe(true);

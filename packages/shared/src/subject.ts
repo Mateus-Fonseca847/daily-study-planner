@@ -1,16 +1,22 @@
 import { z } from 'zod';
 
 /** Paleta fixa de matérias; cada chave tem um token `--ds-color-subject-<chave>`. */
-export const SUBJECT_COLORS = [
-  'vermelho',
-  'laranja',
-  'amarelo',
-  'verde',
-  'turquesa',
-  'azul',
-  'violeta',
+/**
+ * Paleta de matérias e hábitos (v4): sem vermelho, verde, amarelo e laranja (reservados aos status
+ * e à marca) e sem repetir o azul da Prova e o roxo do Especial. Tokens `--ds-palette-<chave>`.
+ */
+export const PALETTE_COLORS = [
+  'ciano',
+  'petroleo',
+  'gelo',
+  'lilas',
+  'fucsia',
   'rosa',
+  'cinza',
 ] as const;
+
+/** Paleta fixa de matérias; cada chave tem um token `--ds-color-subject-<chave>`. */
+export const SUBJECT_COLORS = PALETTE_COLORS;
 
 export const subjectColorSchema = z.enum(SUBJECT_COLORS);
 

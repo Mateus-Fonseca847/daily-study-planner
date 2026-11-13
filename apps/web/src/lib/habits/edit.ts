@@ -138,6 +138,7 @@ export const removeHabit = (snapshot: DataSnapshot, id: string): DataSnapshot =>
   ...snapshot,
   habits: snapshot.habits.filter((h) => h.id !== id),
   habitLogs: snapshot.habitLogs.filter((log) => log.habitId !== id),
+  restDays: snapshot.restDays.filter((rest) => rest.habitId !== id),
 });
 
 /** Só hábitos manuais; hoje ou dia passado dentro dos últimos 366 dias (o futuro é bloqueado). */

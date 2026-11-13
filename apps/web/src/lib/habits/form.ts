@@ -38,7 +38,7 @@ export function emptyForm(today: string): HabitFormState {
   return {
     name: '',
     icon: 'target',
-    color: 'amarelo',
+    color: 'ciano',
     type: 'check',
     unit: '',
     source: 'manual',
@@ -65,8 +65,6 @@ export function applySource(
       return { ...form, source, type: 'quantidade', unit: 'ml', target: String(waterGoalMl) };
     case 'foco':
       return { ...form, source, type: 'quantidade', unit: 'min', target: form.target || '60' };
-    case 'blocos':
-      return { ...form, source, type: 'check', unit: '', target: '' };
     case 'manual':
       return { ...form, source };
   }

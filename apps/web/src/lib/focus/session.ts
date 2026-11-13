@@ -11,7 +11,7 @@ import { clampSeconds } from './time-input';
  * O tempo restante é SEMPRE `fimEm − agora` (timestamps), nunca uma contagem de ticks.
  */
 
-export const NO_LINK: FocusLink = { subjectId: null, examId: null, blockId: null };
+export const NO_LINK: FocusLink = { subjectId: null, examId: null };
 
 export interface NewSession {
   id: string;
@@ -123,6 +123,8 @@ function toRecord(
     plannedSec: session.durationSec,
     actualSec,
     status,
+    origin: 'cronometro',
+    note: '',
     ...session.link,
   };
 }

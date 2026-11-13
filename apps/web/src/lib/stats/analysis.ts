@@ -153,7 +153,6 @@ export function hoursBySubject(
       minutes: sumBy(
         events.filter(
           (e) =>
-            e.type === 'estudo' &&
             e.status === 'concluido' &&
             e.subjectId === subject.id &&
             inRange.has(e.start.slice(0, 10)),

@@ -21,7 +21,7 @@ export function dayConsistency(
   let done = 0;
   for (const habit of habits) {
     const state = dayState(habit, date, ctx);
-    if (state === 'nao-agendado' || state === 'futuro') continue;
+    if (state === 'nao-agendado' || state === 'futuro' || state === 'descanso') continue;
     scheduled += 1;
     if (state === 'feito') done += 1;
   }

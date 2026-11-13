@@ -2,7 +2,7 @@ import { Check } from 'lucide-react';
 import type { Habit, StudyEvent } from '@daily/shared';
 import { cn } from '../../../lib/cn';
 import { usePhone } from '../../../lib/responsive/use-media';
-import { EVENT_TYPE_META } from '../../../lib/event-meta';
+import { chipStyle, EVENT_TYPE_META } from '../../../lib/event-meta';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../../lib/habits';
 import { formatAmount, stateText } from '../../../lib/habits/summary';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
@@ -20,6 +20,7 @@ interface EventBlockProps {
 export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
   const { event } = item;
   const meta = EVENT_TYPE_META[event.type];
+  const style = chipStyle(event);
   const Icon = meta.icon;
   const phone = usePhone();
   // Celular: no máximo 2 linhas, e blocos simultâneos (colunas estreitas) viram só a faixa colorida.
@@ -37,13 +38,13 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
       onClick={(e) => onSelect(event, e.currentTarget)}
       className={cn(
         'flex size-full min-w-0 flex-col justify-start overflow-hidden rounded-sm border-l-stripe px-2 py-chip-y text-left phone:px-1 transition-[filter] hover:brightness-125',
-        meta.chip,
+        style.chip,
         finished && 'opacity-done',
         selected && 'brightness-150',
       )}
     >
       {!narrow && lines === 3 && (
-        <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', meta.text)}>
+        <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}>
           <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
           <span className="truncate">{meta.label}</span>
         </span>

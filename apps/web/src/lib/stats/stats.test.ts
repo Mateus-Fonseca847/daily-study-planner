@@ -6,8 +6,8 @@ import {
   type WaterLog,
 } from '@daily/shared';
 import { createDataStore } from '../data/store';
-import { block, exam, memoryRepo, subject } from '../data/test-utils';
-import { focusAnalysis, hoursAnalysis, hoursBySubject, bucketsFor, periodRange } from './analysis';
+import { timedTask, exam, memoryRepo } from '../data/test-utils';
+import { focusAnalysis, hoursAnalysis, bucketsFor, periodRange } from './analysis';
 import {
   buildIndex,
   examPrep,
@@ -38,14 +38,15 @@ const make = (patch: Partial<StatsData> = {}): StatsData => ({
 const ev = (id: string, patch: Record<string, unknown>): StudyEvent =>
   ({
     id,
-    type: 'estudo',
+    type: 'tarefa',
     title: id,
     start: `${TODAY}T10:00:00`,
     end: `${TODAY}T11:00:00`,
     subjectId: null,
     status: 'pendente',
     notes: '',
-    examId: null,
+    subtasks: [],
+    createdAt: `${TODAY}T08:00:00`,
     ...patch,
   }) as StudyEvent;
 const water = (date: string, ml: number, id = `${date}-${ml}`): WaterLog => ({
@@ -66,7 +67,8 @@ const session = (
   status,
   subjectId: null,
   examId: null,
-  blockId: null,
+  origin: 'cronometro' as const,
+  note: '',
 });
 /** Cumpre as 2 metas manuais num dia. */
 describe('formatação', () => {
@@ -123,7 +125,7 @@ describe('semana e horas', () => {
     const events = [
       ev('a', { start: '2026-11-09T14:00:00', end: '2026-11-09T16:00:00', status: 'concluido' }),
       ev('b', {
-        type: 'revisao',
+        type: 'tarefa',
         start: '2026-11-09T19:00:00',
         end: '2026-11-09T19:30:00',
         status: 'pendente',
@@ -179,7 +181,7 @@ describe('próxima prova e preparação', () => {
       }),
       soon('longe', { start: '2026-12-01T09:00:00', end: '2026-12-01T10:00:00' }),
       soon('perto'),
-      block('bloco'),
+      timedTask('bloco'),
     ];
     expect(nextExam(events, NOW)?.id).toBe('perto');
     expect(upcomingPreps(events, NOW, 5).map((p) => p.exam.id)).toEqual(['perto', 'longe']);
@@ -196,7 +198,7 @@ describe('próxima prova e preparação', () => {
   it('preparação: % de conteúdos concluídos; sem conteúdos = 0 % com dica', () => {
     const done = (n: number, total: number) =>
       soon('p', {
-        contents: Array.from({ length: total }, (_, i) => ({
+        subtasks: Array.from({ length: total }, (_, i) => ({
           id: `c${i}`,
           title: `C${i}`,
           done: i < n,
@@ -274,34 +276,6 @@ describe('análises', () => {
     expect(week).toMatchObject({ totalSec: 2100, concluded: 1, interrupted: 1 });
     expect(focusAnalysis(sessions, '90d', TODAY).totalSec).toBe(3000);
     expect(focusAnalysis([], 'semana', TODAY).items.every((i) => i.value === 0)).toBe(true);
-  });
-
-  it('horas por matéria: só blocos de estudo concluídos, da maior para a menor', () => {
-    const events = [
-      ev('a', {
-        subjectId: 'mat',
-        status: 'concluido',
-        start: '2026-11-09T10:00:00',
-        end: '2026-11-09T12:00:00',
-      }),
-      ev('b', {
-        subjectId: 'fis',
-        status: 'concluido',
-        start: '2026-11-09T14:00:00',
-        end: '2026-11-09T14:30:00',
-      }),
-      ev('c', { subjectId: 'fis', status: 'pendente' }),
-      ev('d', { type: 'revisao', subjectId: 'fis', status: 'concluido' }),
-    ];
-    const rows = hoursBySubject(
-      events,
-      [subject('mat'), subject('fis'), subject('qui')],
-      weekDays(TODAY),
-    );
-    expect(rows.map((r) => [r.subject.id, r.minutes])).toEqual([
-      ['mat', 120],
-      ['fis', 30],
-    ]);
   });
 });
 

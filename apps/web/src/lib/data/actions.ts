@@ -32,6 +32,23 @@ export function deleteHabitWithUndo(id: string): void {
 }
 
 export function duplicateEventWithToast(id: string): void {
-  const copy = useData.getState().duplicateEvent(id);
+  const copy = useData.getState().duplicateEvent(id, new Date());
   if (copy) useToasts.getState().push({ message: `“${copy.title}” criado` });
+}
+
+/** Concluir/reabrir com um clique (chips, linhas e painel), com toast “Desfazer”. */
+export function toggleDoneWithUndo(id: string): void {
+  const event = useData.getState().events.find((e) => e.id === id);
+  if (!event) return;
+  const next = event.status === 'concluido' ? 'pendente' : 'concluido';
+  withUndo(next === 'concluido' ? `“${event.title}” concluída` : `“${event.title}” reaberta`, () =>
+    useData.getState().setEventStatus(id, next),
+  );
+}
+
+/** Cancelar (menu “…”), com toast “Desfazer”. */
+export function cancelEventWithUndo(id: string): void {
+  const event = useData.getState().events.find((e) => e.id === id);
+  if (!event) return;
+  withUndo(`“${event.title}” cancelada`, () => useData.getState().setEventStatus(id, 'cancelado'));
 }

@@ -53,7 +53,7 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
 
   const stats = useMemo(() => streaks(habit, ctx), [habit, ctx]);
   const rate90 = useMemo(() => rate(habit, ctx, 90), [habit, ctx]);
-  const scheduledToday = isScheduled(habit, ctx.today, ctx);
+  const scheduledToday = isScheduled(habit, ctx.today);
   // Quantidade, fonte automática e “não agendado hoje” têm um controle largo: ganham uma linha própria no celular.
   const wideControl = habit.type === 'quantidade' || habit.source !== 'manual' || !scheduledToday;
 

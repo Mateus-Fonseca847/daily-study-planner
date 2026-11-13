@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { activeFocusSchema } from './focus';
 import { goalSchema } from './legacy-goals';
 import { DEFAULT_PREFERENCES, preferencesSchema } from './preferences';
-import { createInitialSnapshot, dataSnapshotSchema } from './snapshot';
+import { createInitialSnapshot, dataSnapshotSchema, isPristineSnapshot } from './snapshot';
 
 const CREATED = '2026-11-10T09:00:00';
 const base = createInitialSnapshot();
@@ -14,21 +14,33 @@ const event = {
   end: '2026-11-10T11:00:00',
   subjectId: 'mat',
   status: 'pendente',
+  createdAt: CREATED,
 };
-const subjects = [{ id: 'mat', name: 'Matemática', color: 'azul' }];
+const subjects = [{ id: 'mat', name: 'Matemática', color: 'ciano' }];
 
 describe('dataSnapshotSchema', () => {
-  it('aceita dados válidos e aplica padrões (notas vazias, sem conteúdos)', () => {
+  it('aceita dados válidos e aplica padrões (notas vazias, sem subtarefas)', () => {
     const result = dataSnapshotSchema.parse({ ...base, subjects, events: [event] });
-    expect(result.events[0]).toMatchObject({ notes: '', contents: [] });
+    expect(result.events[0]).toMatchObject({ notes: '', subtasks: [] });
   });
 
-  it('rejeita fim antes do início, matéria inexistente e prova inexistente', () => {
+  it('rejeita fim antes do início, matéria inexistente e tipos/status antigos', () => {
     const parse = (events: unknown[], subs: unknown[] = subjects) =>
       dataSnapshotSchema.safeParse({ ...base, subjects: subs, events }).success;
     expect(parse([{ ...event, end: '2026-11-10T08:00:00' }])).toBe(false);
     expect(parse([event], [])).toBe(false);
-    expect(parse([{ ...event, id: 'b', type: 'estudo', examId: 'nao-existe' }])).toBe(false);
+    expect(parse([{ ...event, type: 'estudo' }])).toBe(false);
+    expect(parse([{ ...event, status: 'em-andamento' }])).toBe(false);
+    expect(parse([{ ...event, type: 'tarefa', subjectId: null }])).toBe(true);
+  });
+
+  it('descansos: hábito existente ou todos (null), sem repetição', () => {
+    const rest = (id: string, habitId: string | null) => ({ id, habitId, date: '2026-11-10' });
+    const parse = (restDays: unknown[]) =>
+      dataSnapshotSchema.safeParse({ ...base, restDays }).success;
+    expect(parse([rest('r1', null)])).toBe(true);
+    expect(parse([rest('r1', 'nao-existe')])).toBe(false);
+    expect(parse([rest('r1', null), rest('r2', null)])).toBe(false);
   });
 
   it('rejeita registros e sessões que apontam para algo inexistente', () => {
@@ -47,7 +59,7 @@ describe('dataSnapshotSchema', () => {
       actualSec: 60,
       status: 'concluida',
     };
-    expect(bad({ focusSessions: [{ ...session, blockId: 'nada' }] })).toBe(false);
+    expect(bad({ focusSessions: [{ ...session, examId: 'nada' }] })).toBe(false);
     expect(bad({ focusSessions: [session] })).toBe(true);
   });
 
@@ -94,12 +106,68 @@ describe('preferências, metas e sessão ativa', () => {
 
   it('a sessão ativa aceita 1 a 180 minutos e vínculo opcional', () => {
     const active = { id: 'a', status: 'rodando', durationSec: 1500, tabId: 't' };
-    expect(activeFocusSchema.parse(active).link).toEqual({
-      subjectId: null,
-      examId: null,
-      blockId: null,
-    });
+    expect(activeFocusSchema.parse(active).link).toEqual({ subjectId: null, examId: null });
+    // Sessão ativa salva por uma versão antiga (com `blockId`): a chave é descartada na leitura.
+    const old = { ...active, link: { subjectId: null, examId: null, blockId: 'b' } };
+    expect(activeFocusSchema.parse(old).link).toEqual({ subjectId: null, examId: null });
     expect(activeFocusSchema.safeParse({ ...active, durationSec: 30 }).success).toBe(false);
     expect(activeFocusSchema.safeParse({ ...active, durationSec: 181 * 60 }).success).toBe(false);
+  });
+});
+
+describe('isPristineSnapshot', () => {
+  const water = {
+    id: 'agua',
+    name: 'Água',
+    icon: 'droplets',
+    color: 'ciano',
+    type: 'quantidade',
+    unit: 'ml',
+    source: 'agua',
+    rules: [
+      {
+        since: '2026-11-10',
+        repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+        target: 2000,
+      },
+    ],
+    createdAt: CREATED,
+    order: 0,
+  };
+  it('estado inicial e “só o hábito de água automático” contam como vazio', () => {
+    expect(isPristineSnapshot(base)).toBe(true);
+    const withWater = dataSnapshotSchema.parse({
+      ...base,
+      habits: [water],
+      onboarding: { waterHabitCreated: true },
+    });
+    expect(isPristineSnapshot(withWater)).toBe(true);
+  });
+  it('qualquer dado do usuário deixa de ser vazio', () => {
+    const parsed = (patch: object) => dataSnapshotSchema.parse({ ...base, ...patch });
+    expect(isPristineSnapshot(parsed({ subjects }))).toBe(false);
+    expect(
+      isPristineSnapshot(
+        parsed({
+          habits: [
+            {
+              ...water,
+              source: 'manual',
+              type: 'check',
+              unit: '',
+              rules: [{ ...water.rules[0], target: null }],
+            },
+          ],
+        }),
+      ),
+    ).toBe(false);
+    expect(
+      isPristineSnapshot(parsed({ preferences: { ...DEFAULT_PREFERENCES, name: 'Ana' } })),
+    ).toBe(false);
+    expect(
+      isPristineSnapshot(
+        parsed({ waterLogs: [{ id: 'w', date: '2026-11-10', ml: 250, time: '10:00' }] }),
+      ),
+    ).toBe(false);
   });
 });

@@ -1,15 +1,18 @@
 import { format } from 'date-fns';
 import { create } from 'zustand';
 import {
+  hasUserData,
   habitLogId,
-  isExam,
+  restDayId,
   type ActiveFocus,
   type DataSnapshot,
   type EventStatus,
   type FocusSession,
   type Habit,
   type HabitLog,
+  type Onboarding,
   type Preferences,
+  type RestDay,
   type StudyEvent,
   type Subject,
   type WaterLog,
@@ -24,6 +27,9 @@ import {
   type HabitDraft,
   type HabitEdit,
 } from '../habits/edit';
+import { waterHabitDraft } from '../habits/suggestions';
+import { manualFocusSession, type ManualFocusEntry } from '../focus/manual';
+import { moveSubtask, type MoveDirection } from './subtasks';
 import {
   applySubjectDeletion,
   duplicateEventDraft,
@@ -41,6 +47,8 @@ export interface DataState {
   habitLogs: HabitLog[];
   waterLogs: WaterLog[];
   focusSessions: FocusSession[];
+  restDays: RestDay[];
+  onboarding: Onboarding;
   /** Sessão de foco em andamento (fora do snapshot/backup). */
   focusActive: ActiveFocus | null;
   issue: LoadIssue | null;
@@ -56,10 +64,25 @@ export interface DataActions {
   createEvent(draft: Draft<StudyEvent>): StudyEvent | undefined;
   updateEvent(event: StudyEvent): void;
   deleteEvent(id: string): void;
-  duplicateEvent(id: string): StudyEvent | undefined;
+  duplicateEvent(id: string, now: Date): StudyEvent | undefined;
   setEventStatus(id: string, status: EventStatus): void;
-  toggleContent(eventId: string, contentId: string): void;
-  addContent(eventId: string, title: string): void;
+  addSubtask(eventId: string, title: string): void;
+  toggleSubtask(eventId: string, subtaskId: string): void;
+  renameSubtask(eventId: string, subtaskId: string, title: string): void;
+  deleteSubtask(eventId: string, subtaskId: string): void;
+  moveSubtask(eventId: string, subtaskId: string, direction: MoveDirection): void;
+  /**
+   * Marca (ou desmarca) dias de descanso. `habitId = null` vale para todos os hábitos. Idempotente
+   * pelo id determinístico.
+   */
+  setRestDays(habitId: string | null, dates: readonly string[], rest: boolean): void;
+  /**
+   * Primeiro uso: cria o hábito “Água” uma única vez. Só com os dados totalmente vazios; em conta
+   * que já tem dados apenas marca a flag. Nunca recria depois de excluído.
+   */
+  ensureWaterHabit(now: Date): void;
+  /** Tempo de foco registrado à mão (Perfil e Modo Foco). */
+  addManualFocus(entry: ManualFocusEntry): FocusSession | undefined;
   updatePreferences(patch: Partial<Preferences>): void;
   /** Soma um copo (tamanho das preferências) ao dia de `now`. */
   addWater(now: Date): WaterLog | undefined;
@@ -112,6 +135,8 @@ export function createDataStore(
       habitLogs: repo.habitLogs.list(),
       waterLogs: repo.waterLogs.list(),
       focusSessions: repo.focusSessions.list(),
+      restDays: repo.restDays.list(),
+      onboarding: repo.onboarding.get(),
       focusActive: repo.focusActive.get(),
       issue: repo.issue,
     });
@@ -155,31 +180,78 @@ export function createDataStore(
       },
       deleteEvent: (id) =>
         void run(() => repo.replaceAll(removeEvents(repo.snapshot(), new Set([id])))),
-      duplicateEvent: (id) =>
+      duplicateEvent: (id, now) =>
         run(() => {
           const event = eventById(id);
-          return event ? repo.events.create(duplicateEventDraft(event, newId)) : undefined;
+          return event
+            ? repo.events.create(duplicateEventDraft(event, newId, toLocalIso(now)))
+            : undefined;
         }),
       setEventStatus: (id, status) => void run(() => repo.events.update(id, { status })),
-      toggleContent: (eventId, contentId) =>
+      addSubtask: (eventId, title) =>
         void run(() => {
           const event = eventById(eventId);
-          if (!event || !isExam(event)) return;
+          const clean = title.trim();
+          if (!event || clean === '') return;
+          const order = Math.max(-1, ...event.subtasks.map((c) => c.order)) + 1;
           repo.events.update(eventId, {
-            contents: event.contents.map((c) => (c.id === contentId ? { ...c, done: !c.done } : c)),
+            subtasks: [...event.subtasks, { id: newId(), title: clean, done: false, order }],
           });
         }),
-      addContent: (eventId, title) =>
+      toggleSubtask: (eventId, subtaskId) =>
         void run(() => {
           const event = eventById(eventId);
-          if (!event || !isExam(event)) return;
+          if (!event) return;
           repo.events.update(eventId, {
-            contents: [
-              ...event.contents,
-              { id: newId(), title, done: false, order: event.contents.length },
-            ],
+            subtasks: event.subtasks.map((c) => (c.id === subtaskId ? { ...c, done: !c.done } : c)),
           });
         }),
+      renameSubtask: (eventId, subtaskId, title) =>
+        void run(() => {
+          const event = eventById(eventId);
+          const clean = title.trim();
+          if (!event || clean === '') return;
+          repo.events.update(eventId, {
+            subtasks: event.subtasks.map((c) => (c.id === subtaskId ? { ...c, title: clean } : c)),
+          });
+        }),
+      deleteSubtask: (eventId, subtaskId) =>
+        void run(() => {
+          const event = eventById(eventId);
+          if (!event) return;
+          const rest = event.subtasks
+            .filter((c) => c.id !== subtaskId)
+            .sort((a, b) => a.order - b.order)
+            .map((c, order) => ({ ...c, order }));
+          repo.events.update(eventId, { subtasks: rest });
+        }),
+      moveSubtask: (eventId, subtaskId, direction) =>
+        void run(() => {
+          const event = eventById(eventId);
+          if (!event) return;
+          repo.events.update(eventId, {
+            subtasks: moveSubtask(event.subtasks, subtaskId, direction),
+          });
+        }),
+      setRestDays: (habitId, dates, rest) =>
+        void run(() => {
+          for (const date of dates) {
+            const id = restDayId(habitId, date);
+            if (rest) repo.restDays.upsert({ id, habitId, date });
+            else repo.restDays.delete(id);
+          }
+        }),
+      ensureWaterHabit: (now) =>
+        void run(() => {
+          // Dado ilegível em disco: não grava nada por cima antes de o usuário decidir.
+          if (repo.issue || repo.onboarding.get().waterHabitCreated) return;
+          if (!hasUserData(repo.snapshot())) {
+            const draft = waterHabitDraft(repo.preferences.get().waterGoalMl);
+            repo.habits.create(newHabit(draft, now, 0));
+          }
+          repo.onboarding.update({ waterHabitCreated: true });
+        }),
+      addManualFocus: (entry) => run(() => repo.focusSessions.create(manualFocusSession(entry))),
       updatePreferences: (patch) => void run(() => repo.preferences.update(patch)),
       addWater: (now) =>
         run(() =>
