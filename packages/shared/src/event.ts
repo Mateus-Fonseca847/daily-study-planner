@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { recurrenceSchema } from './recurrence';
 
 /** Tipos de compromisso (v4). A Tarefa é o padrão. */
 export const EVENT_TYPES = ['tarefa', 'prova', 'especial'] as const;
@@ -39,11 +40,27 @@ export const studyEventSchema = z
     subtasks: z.array(subtaskSchema).default([]),
     /** Quando foi criado (ISO local). Dados migrados usam o início. */
     createdAt: localDateTime,
+    /**
+     * Repetição (só Tarefa e Especial). Numa série, `status` e o `done` das subtarefas não valem:
+     * o estado é de cada ocorrência (coleção `exceptions`); as subtarefas são o modelo.
+     */
+    recurrence: recurrenceSchema.optional(),
   })
   .refine((e) => e.end >= e.start, {
     message: 'O término não pode ser antes do início.',
     path: ['end'],
-  });
+  })
+  .refine((e) => !(e.recurrence && e.type === 'prova'), {
+    message: 'Prova não se repete.',
+    path: ['recurrence'],
+  })
+  .refine(
+    (e) => !(e.recurrence?.end.kind === 'em' && e.recurrence.end.date < e.start.slice(0, 10)),
+    {
+      message: 'A data final não pode ser antes do início.',
+      path: ['recurrence', 'end'],
+    },
+  );
 
 export type EventType = z.infer<typeof eventTypeSchema>;
 export type EventStatus = z.infer<typeof eventStatusSchema>;
@@ -51,6 +68,41 @@ export type Subtask = z.infer<typeof subtaskSchema>;
 export type StudyEvent = z.infer<typeof studyEventSchema>;
 /** Prova: um compromisso com `type: 'prova'`. */
 export type Exam = StudyEvent & { type: 'prova' };
+
+/** O compromisso é uma série recorrente. */
+export const isRecurring = (event: Pick<StudyEvent, 'recurrence'>): boolean =>
+  event.recurrence !== undefined;
+
+/**
+ * Exceção de uma ocorrência de série (`id` = `eventoId@aaaa-mm-dd`, a data original). `pulada`:
+ * a ocorrência não existe; `alterada`: mudanças pontuais, status e subtarefas desta ocorrência.
+ */
+export const occurrenceExceptionSchema = z.object({
+  id,
+  eventId: id,
+  originalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida.'),
+  kind: z.enum(['pulada', 'alterada']),
+  /** Valem só nesta ocorrência (`start`/`end` completos permitem movê-la). */
+  changes: z
+    .object({
+      title: z
+        .string()
+        .trim()
+        .min(1, 'Informe o título.')
+        .max(120, 'Use no máximo 120 caracteres.'),
+      start: localDateTime,
+      end: localDateTime,
+      notes: z.string().max(2000, 'Use no máximo 2000 caracteres.'),
+    })
+    .partial()
+    .optional(),
+  /** Ausente = pendente. */
+  status: z.enum(['concluido', 'cancelado']).optional(),
+  /** Ids das subtarefas-modelo concluídas nesta ocorrência. */
+  doneSubtasks: z.array(id).optional(),
+});
+
+export type OccurrenceException = z.infer<typeof occurrenceExceptionSchema>;
 
 export const isExam = (event: StudyEvent): event is Exam => event.type === 'prova';
 

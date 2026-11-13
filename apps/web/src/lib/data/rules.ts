@@ -15,6 +15,7 @@ export function removeEvents(snapshot: DataSnapshot, ids: ReadonlySet<string>): 
   return {
     ...snapshot,
     events: snapshot.events.filter((event) => !ids.has(event.id)),
+    exceptions: snapshot.exceptions.filter((ex) => !ids.has(ex.eventId)),
     focusSessions: snapshot.focusSessions.map((s) => ({ ...s, examId: drop(s.examId) })),
   };
 }

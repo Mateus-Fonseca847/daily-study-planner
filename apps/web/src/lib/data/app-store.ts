@@ -4,7 +4,7 @@ import { referenceSnapshot } from '../../mocks/reference-fixture';
 import { runningLockedSession, statsSnapshot } from '../../mocks/stats-fixture';
 import { viewsSnapshot } from '../../mocks/views-fixture';
 import {
-  LEGACY_V3_KEY,
+  LEGACY_TAB_KEYS,
   LocalStorageRepository,
   MemoryStorage,
   WATCHED_KEYS,
@@ -42,7 +42,7 @@ if (!isFixture && typeof window !== 'undefined') {
   window.addEventListener('storage', (event) => {
     // `key === null` = o storage foi limpo.
     if (event.key === null || WATCHED_KEYS.includes(event.key)) useData.getState().reload();
-    // Uma aba com a versão antiga do app ainda grava no formato v3: avisa em vez de mesclar.
-    if (event.key === LEGACY_V3_KEY) useLegacyTab.getState().detect();
+    // Uma aba com uma versão antiga do app ainda grava num formato anterior: avisa em vez de mesclar.
+    if (event.key !== null && LEGACY_TAB_KEYS.includes(event.key)) useLegacyTab.getState().detect();
   });
 }

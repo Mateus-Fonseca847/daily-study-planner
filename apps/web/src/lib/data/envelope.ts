@@ -18,7 +18,7 @@ import {
 import { z } from 'zod';
 import { toLocalIso } from '../dates';
 
-export const DATA_VERSION = 4;
+export const DATA_VERSION = 5;
 export const APP_ID = 'daily';
 
 export type ParseResult =
@@ -235,6 +235,16 @@ function migrateV3(data: unknown): unknown {
   };
 }
 
+/**
+ * v4 → v5: tarefas recorrentes. Nenhum evento muda (a recorrência é opcional); entra a coleção
+ * de exceções por ocorrência. Idempotente. Sem `events`, não é um v4 legível: segue como veio e a
+ * validação final aciona o fluxo de corrupção.
+ */
+function migrateV4(data: unknown): unknown {
+  if (!isObj(data) || !Array.isArray(data.events)) return data;
+  return { ...data, exceptions: Array.isArray(data.exceptions) ? data.exceptions : [] };
+}
+
 interface MigrationContext {
   /** Relógio injetável: data de criação das metas padrão. */
   now: Date;
@@ -246,6 +256,7 @@ const MIGRATIONS: Record<number, (data: unknown, ctx: MigrationContext) => unkno
   1: migrateV1,
   2: migrateV2,
   3: (data) => migrateV3(data),
+  4: (data) => migrateV4(data),
 };
 
 /**
