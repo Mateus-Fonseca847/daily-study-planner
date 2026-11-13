@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { withoutAutoWater } from './helpers';
+import { seedSnapshot, withoutAutoWater } from './helpers';
 
 /** Quarta-feira: dia agendado da “Musculação” (seg, qua e sex). */
 const NOW = new Date('2026-11-11T10:30:00');
@@ -17,6 +17,7 @@ async function createGym(page: Page) {
   for (const day of ['dom', 'ter', 'qui', 'sáb']) {
     await dialog.getByRole('button', { name: day, exact: true }).click();
   }
+  await dialog.getByRole('button', { name: 'Mais opções' }).click();
   await dialog.getByLabel('Início', { exact: true }).fill('2026-11-01');
   await dialog.getByRole('button', { name: 'Criar hábito' }).click();
   await expect(dialog).toHaveCount(0);
@@ -156,6 +157,66 @@ test.describe('Hábitos', () => {
     expect(keys).toEqual({ v4: true, backup: true });
     // Conta que já tinha dados: o hábito de água automático não é criado.
     await expect(habitCard(page, 'Água')).toHaveCount(0);
+  });
+
+  test('marcar um dia de descanso não quebra a sequência e pode ser desfeito', async ({ page }) => {
+    // Leitura todo dia desde 01/11; feita de 01 a 10, exceto 05 (hoje é 11/11).
+    const days = ['01', '02', '03', '04', '06', '07', '08', '09', '10'].map((d) => `2026-11-${d}`);
+    await seedSnapshot(page, {
+      habits: [
+        {
+          id: 'leitura',
+          name: 'Leitura',
+          icon: 'book-open',
+          color: 'ciano',
+          type: 'check',
+          unit: '',
+          source: 'manual',
+          rules: [
+            {
+              since: '2026-11-01',
+              repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+              target: null,
+              time: null,
+            },
+          ],
+          createdAt: '2026-11-01T08:00:00',
+          archivedAt: null,
+          endsOn: null,
+          order: 0,
+        },
+      ],
+      habitLogs: days.map((date) => ({
+        id: `leitura:${date}`,
+        habitId: 'leitura',
+        date,
+        value: 1,
+        updatedAt: `${date}T09:00:00`,
+      })),
+    });
+    await page.goto('/habitos');
+    const card = habitCard(page, 'Leitura');
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
+    await expect(card.getByRole('img', { name: 'Sequência: 5 dias' })).toBeVisible();
+
+    await cell(page, 'Leitura', '2026-11-05').click();
+    const day = page.getByRole('dialog', { name: /^Leitura, / });
+    await day.getByRole('button', { name: 'Só este hábito' }).click();
+
+    await expect(cell(page, 'Leitura', '2026-11-05')).toHaveAttribute('aria-label', /descanso/);
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('9 dias');
+    await expect(card.getByRole('img', { name: 'Sequência: 9 dias' })).toBeVisible();
+
+    // Persiste ao recarregar…
+    await page.reload();
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('9 dias');
+    // …e dá para desfazer pelo próprio dia.
+    await cell(page, 'Leitura', '2026-11-05').click();
+    await page
+      .getByRole('dialog', { name: /^Leitura, / })
+      .getByRole('button', { name: 'Desfazer descanso' })
+      .click();
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
   });
 
   test('o heatmap se navega pelo teclado: setas movem entre dias e Enter abre o dia', async ({

@@ -34,3 +34,31 @@ export async function withoutAutoWater(page: Page): Promise<void> {
     );
   });
 }
+
+/** Grava um snapshot v4 antes de o app carregar (só se ainda não houver dados). */
+export async function seedSnapshot(page: Page, data: Record<string, unknown>): Promise<void> {
+  await page.addInitScript((patch) => {
+    if (localStorage.getItem('daily:v4')) return;
+    const base = {
+      subjects: [],
+      events: [],
+      preferences: {
+        name: '',
+        waterGoalMl: 2000,
+        cupMl: 250,
+        focusDurationSec: 1500,
+        lockByDefault: false,
+      },
+      habits: [],
+      habitLogs: [],
+      waterLogs: [],
+      focusSessions: [],
+      restDays: [],
+      onboarding: { waterHabitCreated: true },
+    };
+    localStorage.setItem(
+      'daily:v4',
+      JSON.stringify({ app: 'daily', version: 4, savedAt: 'x', data: { ...base, ...patch } }),
+    );
+  }, data);
+}

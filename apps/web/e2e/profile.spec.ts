@@ -27,7 +27,12 @@ test.describe('Perfil', () => {
     ]) {
       await expect(page.getByRole('heading', { name: title, exact: true }).first()).toBeVisible();
     }
-    for (const gone of ['Horas de estudo', 'Horas estudadas', 'Tempo focado', 'Horas por matéria']) {
+    for (const gone of [
+      'Horas de estudo',
+      'Horas estudadas',
+      'Tempo focado',
+      'Horas por matéria',
+    ]) {
       await expect(page.getByRole('heading', { name: gone, exact: true })).toHaveCount(0);
     }
     await expect(page.getByRole('radiogroup', { name: 'Período das análises' })).toHaveCount(0);
@@ -36,7 +41,12 @@ test.describe('Perfil', () => {
     await expect(page.getByRole('img', { name: /^Sequência: \d+ dias?$/ }).first()).toBeVisible();
     await expect(page.getByText('3/5 conteúdos').first()).toBeVisible();
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,7 L de 2 L/);
-    for (const label of ['Tarefas concluídas', 'Foco na semana', 'Melhor sequência', 'Dias ativos']) {
+    for (const label of [
+      'Tarefas concluídas',
+      'Foco na semana',
+      'Melhor sequência',
+      'Dias ativos',
+    ]) {
       await expect(page.getByText(label, { exact: true })).toBeVisible();
     }
   });

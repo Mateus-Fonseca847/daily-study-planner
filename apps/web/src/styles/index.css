@@ -469,6 +469,15 @@
   outline: var(--ds-border-w) solid var(--ds-color-fg);
   outline-offset: 0;
 }
+/* Dia de descanso: listras neutras (não é falta nem cumprimento). */
+@utility heat-rest {
+  background-color: var(--ds-color-heat-off);
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--ds-color-rest) 0 var(--ds-rest-stripe),
+    transparent var(--ds-rest-stripe) calc(var(--ds-rest-stripe) * 2)
+  );
+}
 @utility heat-off {
   background-color: var(--ds-color-heat-off);
 }

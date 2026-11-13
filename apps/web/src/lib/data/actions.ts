@@ -52,3 +52,15 @@ export function cancelEventWithUndo(id: string): void {
   if (!event) return;
   withUndo(`“${event.title}” cancelada`, () => useData.getState().setEventStatus(id, 'cancelado'));
 }
+
+/** Marca ou desfaz dias de descanso (este hábito ou todos), com toast “Desfazer”. */
+export function setRestDaysWithUndo(
+  habitId: string | null,
+  dates: readonly string[],
+  rest: boolean,
+): void {
+  const who = habitId === null ? 'todos os hábitos' : 'este hábito';
+  const days = dates.length === 1 ? 'dia' : `${dates.length} dias`;
+  const message = rest ? `Descanso marcado (${days}, ${who})` : 'Descanso desfeito';
+  withUndo(message, () => useData.getState().setRestDays(habitId, dates, rest));
+}

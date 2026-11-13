@@ -125,14 +125,7 @@ test.describe('PWA (build de produção)', () => {
 
   test('as rotas principais carregam sem erros de console', async ({ page }) => {
     const errors = collectErrors(page);
-    for (const path of [
-      '/calendario',
-      '/provas',
-      '/tarefas',
-      '/habitos',
-      '/foco',
-      '/perfil',
-    ]) {
+    for (const path of ['/calendario', '/provas', '/tarefas', '/habitos', '/foco', '/perfil']) {
       await page.goto(path);
       await expect(page.locator('main')).toBeVisible();
     }

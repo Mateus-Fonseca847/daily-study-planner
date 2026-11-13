@@ -1,10 +1,9 @@
-import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   BarChart3,
   CalendarClock,
-  ChevronDown,
   CircleDot,
   Clock3,
   Copy,
@@ -19,6 +18,7 @@ import {
 import { EVENT_TYPES, subtaskListLabel, subtaskProgress, type EventType } from '@daily/shared';
 import { Button } from '../../components/ui/Button';
 import { Menu, type MenuItem } from '../../components/ui/Menu';
+import { MetaRow, MoreOptionsToggle } from '../../components/ui/MetaRow';
 import { Modal } from '../../components/ui/Modal';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
@@ -59,33 +59,6 @@ const TYPE_OPTIONS = EVENT_TYPES.map((t) => ({ value: t, label: EVENT_TYPE_META[
 
 const INPUT =
   'h-field min-w-0 rounded-md bg-hover px-2 text-base text-fg placeholder:text-muted aria-invalid:outline-1 aria-invalid:outline-danger';
-
-/** Linha de metadado: ícone, rótulo e controle (empilha no celular). */
-function MetaRow({
-  icon: Icon,
-  label,
-  htmlFor,
-  children,
-}: {
-  icon: typeof Clock3;
-  label: string;
-  htmlFor?: string;
-  children: ReactNode;
-}) {
-  const LabelTag = htmlFor ? 'label' : 'span';
-  return (
-    <div className="flex items-start gap-3 phone:flex-col phone:gap-1">
-      <LabelTag
-        {...(htmlFor ? { htmlFor } : {})}
-        className="flex h-field w-panel-label shrink-0 items-center gap-2 text-base text-muted phone:h-auto"
-      >
-        <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm" />
-        {label}
-      </LabelTag>
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">{children}</div>
-    </div>
-  );
-}
 
 const FieldError = ({ message }: { message: string | undefined }) =>
   message ? <p className="w-full text-sm text-danger">{message}</p> : null;
@@ -430,20 +403,11 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
         </div>
 
         <div className="flex flex-col gap-3">
-          <button
-            type="button"
-            aria-expanded={moreOpen}
-            aria-controls={ids.more}
-            onClick={() => setMoreOpen((open) => !open)}
-            className="inline-flex h-control-sm items-center gap-1 self-start rounded-full px-2 text-sm font-medium text-soft hover:text-fg coarse:h-touch"
-          >
-            <ChevronDown
-              aria-hidden
-              strokeWidth={1.5}
-              className={cn('size-icon-sm transition-transform', moreOpen && 'rotate-180')}
-            />
-            Mais opções
-          </button>
+          <MoreOptionsToggle
+            open={moreOpen}
+            controls={ids.more}
+            onToggle={() => setMoreOpen((open) => !open)}
+          />
           {moreOpen && (
             <div id={ids.more} className="flex flex-col gap-3">
               <MetaRow icon={Library} label="Matéria" htmlFor={ids.subject}>

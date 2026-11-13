@@ -4,7 +4,8 @@ import { shiftDay } from '../../lib/dates';
 import type { Level } from '../../lib/habits/engine';
 import { monthLabels } from '../../lib/habits/summary';
 
-export type CellKind = 'off' | 'future' | Level;
+/** `rest`: dia de descanso (estado visual próprio, listrado). */
+export type CellKind = 'off' | 'future' | 'rest' | Level;
 
 export interface CellView {
   kind: CellKind;
@@ -21,7 +22,13 @@ const LEVEL_CLASS: Record<Level, string> = {
 };
 
 const cellClass = (kind: CellKind): string =>
-  kind === 'off' ? 'heat-off' : kind === 'future' ? 'heat-off opacity-dimmed' : LEVEL_CLASS[kind];
+  kind === 'off'
+    ? 'heat-off'
+    : kind === 'future'
+      ? 'heat-off opacity-dimmed'
+      : kind === 'rest'
+        ? 'heat-rest'
+        : LEVEL_CLASS[kind];
 
 /** Rótulos de dia à esquerda: só segunda, quarta e sexta (linhas 1, 3 e 5; semana de domingo a sábado). */
 const ROW_LABELS: Record<number, string> = { 1: 'Seg', 3: 'Qua', 5: 'Sex' };

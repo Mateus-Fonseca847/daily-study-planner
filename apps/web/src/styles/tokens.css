@@ -66,7 +66,8 @@
   --ds-color-streak: #ff8a3d;
   --ds-color-streak-off: var(--ds-color-fg-subtle);
   /* Dia de descanso no heatmap (listras neutras). */
-  --ds-color-rest: rgb(255 255 255 / 0.18);
+  --ds-color-rest: rgb(255 255 255 / 0.22);
+  --ds-rest-stripe: 2px;
 
   --ds-color-danger: #ff6b78;
 

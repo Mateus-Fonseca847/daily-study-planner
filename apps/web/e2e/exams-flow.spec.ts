@@ -16,7 +16,10 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
 
   // 2. Prova com 3 conteúdos, pelo painel (“+ Nova tarefa” e o tipo Prova).
   await page.getByRole('button', { name: 'Nova tarefa' }).click();
-  await page.getByRole('dialog', { name: 'Nova tarefa' }).getByRole('radio', { name: 'Prova' }).click();
+  await page
+    .getByRole('dialog', { name: 'Nova tarefa' })
+    .getByRole('radio', { name: 'Prova' })
+    .click();
   // O painel acompanha o tipo escolhido.
   const form = page.getByRole('dialog', { name: 'Nova prova' });
   await expect(form).toBeVisible();

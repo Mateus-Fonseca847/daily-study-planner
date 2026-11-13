@@ -19,7 +19,12 @@ export function StreakFlame({ days, className }: { days: number; className?: str
         className,
       )}
     >
-      <Flame aria-hidden strokeWidth={1.75} className="size-icon-sm" fill={on ? 'currentColor' : 'none'} />
+      <Flame
+        aria-hidden
+        strokeWidth={1.75}
+        className="size-icon-sm"
+        fill={on ? 'currentColor' : 'none'}
+      />
       {days}
     </span>
   );
