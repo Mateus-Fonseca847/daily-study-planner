@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   CalendarDays,
   CircleHelp,
   FileCheck2,
@@ -10,6 +9,7 @@ import {
   ListChecks,
   Repeat,
   Settings,
+  UserRound,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -31,7 +31,7 @@ export const MENU_ITEMS: readonly NavItem[] = [
   { to: '/materias', label: 'Matérias', icon: Library },
   { to: '/habitos', label: 'Hábitos', icon: Repeat, counter: 'habitos' },
   { to: '/foco', label: 'Modo Foco', icon: Focus, badgeNew: true },
-  { to: '/estatisticas', label: 'Estatísticas', icon: BarChart3 },
+  { to: '/perfil', label: 'Perfil', icon: UserRound },
 ];
 
 export const SETTINGS_ITEMS: readonly NavItem[] = [

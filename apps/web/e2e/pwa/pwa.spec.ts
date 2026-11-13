@@ -68,7 +68,7 @@ test.describe('PWA (build de produção)', () => {
     expect(manifest.shortcuts.map((s: { url: string }) => s.url)).toEqual([
       '/foco',
       '/habitos',
-      '/estatisticas',
+      '/perfil',
     ]);
   });
 
@@ -96,7 +96,7 @@ test.describe('PWA (build de produção)', () => {
 
     await context.setOffline(true);
 
-    for (const path of ['/habitos', '/foco', '/estatisticas']) {
+    for (const path of ['/habitos', '/foco', '/perfil']) {
       await page.goto(path); // navegação direta, só com o service worker
       await expect(page.getByRole('navigation', { name: 'Menus' })).toBeVisible();
       await expect(page).toHaveURL(new RegExp(`${path}$`));
@@ -131,7 +131,7 @@ test.describe('PWA (build de produção)', () => {
       '/tarefas',
       '/habitos',
       '/foco',
-      '/estatisticas',
+      '/perfil',
     ]) {
       await page.goto(path);
       await expect(page.locator('main')).toBeVisible();

@@ -1,5 +1,5 @@
 /**
- * Auditoria de contraste (WCAG AA) do texto da página de Estatísticas e do Modo Foco: para cada
+ * Auditoria de contraste (WCAG AA) do texto da página do Perfil e do Modo Foco: para cada
  * elemento com texto, lê a cor e o tamanho, e mede o fundo REAL renderizado (texto escondido +
  * captura do pixel). Uso: `node scripts/contrast-audit.mjs [rotulo]` → apps/web/.reports/contrast-<rotulo>.json (pasta ignorada pelo Git)
  */
@@ -29,7 +29,7 @@ const PHONE_STATES = [
   ['/habitos?fixture=habits#dia', async (p) => p.locator('[data-date="2026-11-09"]').first().tap()],
 ];
 const PAGES = [
-  '/estatisticas?fixture=stats',
+  '/perfil?fixture=stats',
   '/foco?fixture=stats',
   '/habitos?fixture=habits',
   ...['dia', 'semana', 'mes', 'ano'].map(

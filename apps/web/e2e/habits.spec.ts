@@ -94,7 +94,7 @@ test.describe('Hábitos', () => {
     await expect(card).toContainText('Automático: água do dia');
     await expect(cell(page, 'Água', '2026-11-11')).toHaveAttribute('aria-label', /pendente/);
 
-    await page.goto('/estatisticas');
+    await page.goto('/perfil');
     await page.getByRole('button', { name: /^Adicionar um copo/ }).click();
 
     await page.goto('/habitos');
@@ -102,8 +102,8 @@ test.describe('Hábitos', () => {
       'aria-label',
       /250 ml de 2000 ml/,
     );
-    // Em Estatísticas o hábito aparece em “Hábitos de hoje”.
-    await page.goto('/estatisticas');
+    // No Perfil o hábito aparece em “Hábitos de hoje”.
+    await page.goto('/perfil');
     await expect(page.getByRole('heading', { name: 'Hábitos de hoje' })).toBeVisible();
     await expect(page.getByText('Água', { exact: true }).first()).toBeVisible();
   });

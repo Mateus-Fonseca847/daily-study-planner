@@ -10,7 +10,7 @@ const ROUTES = [
   ['matérias', '/materias?fixture=views'],
   ['hábitos', '/habitos?fixture=habits'],
   ['foco', '/foco?fixture=focus'],
-  ['estatísticas', '/estatisticas?fixture=stats'],
+  ['perfil', '/perfil?fixture=stats'],
 ] as const;
 
 /** Os quatro tamanhos pedidos e os equivalentes em CSS px de zoom 67 % e 150 % do navegador. */

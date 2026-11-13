@@ -52,7 +52,7 @@ test.describe('Celular: água e reordenação', () => {
 
   test('a água abre numa folha inferior, com alvos de toque ≥ 44 px, e salva', async ({ page }) => {
     // O hábito “Água” já existe (criado sozinho no primeiro uso).
-    await page.goto('/estatisticas');
+    await page.goto('/perfil');
     await page.getByRole('button', { name: /^Água de hoje: .*Editar/ }).tap();
 
     const sheet = page.getByRole('dialog', { name: 'Água de hoje' });

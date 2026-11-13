@@ -158,6 +158,7 @@
   --spacing-check-target: var(--ds-check-target);
   --spacing-panel-label: var(--ds-panel-label-w);
   --spacing-filter: var(--ds-filter-w);
+  --spacing-profile-avatar: var(--ds-profile-avatar);
   --spacing-segment: var(--ds-segment-min-w);
   --spacing-select-month: var(--ds-select-month-w);
   --spacing-select-year: var(--ds-select-year-w);
@@ -168,7 +169,6 @@
   --spacing-card: var(--ds-card-pad);
   --spacing-card-gap: var(--ds-card-gap);
   --spacing-stats-row: var(--ds-stats-row1-h);
-  --spacing-stats-pill: var(--ds-stats-pill-h);
   --spacing-ring: var(--ds-ring-size);
   --spacing-bar-w: var(--ds-bar-w);
   --spacing-bar-h: var(--ds-bar-h);
@@ -182,7 +182,6 @@
   --spacing-agenda-label: var(--ds-agenda-label-w);
   --spacing-agenda-card-w: var(--ds-agenda-card-w);
   --spacing-agenda-card-h: var(--ds-agenda-card-h);
-  --spacing-chart: var(--ds-chart-h);
   --spacing-heat-gap: var(--ds-heat-gap);
   --spacing-grid-hour: var(--ds-grid-hour-h);
   --spacing-grid-label: var(--ds-grid-label-w);
@@ -379,14 +378,6 @@
     grid-template-columns: var(--ds-stats-cols-sm);
   }
 }
-@utility grid-analysis {
-  display: grid;
-  gap: var(--ds-card-gap);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  @media (width < 80rem) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 /* Hábitos: a cor do hábito vem de `--habit`; os níveis do heatmap derivam dela sobre `heat-0`. */
 @utility habit-ciano {
   --habit: var(--ds-habit-ciano);
@@ -484,10 +475,6 @@
 /* Célula do mapa de calor: `--heat` (0–1) vai de `--ds-heat-min` até opacidade total. */
 @utility heat-cell {
   fill-opacity: calc(var(--ds-heat-min) + (1 - var(--ds-heat-min)) * var(--heat));
-}
-/* Hachurado dos blocos planejados. */
-@utility bg-hatch {
-  background-image: var(--ds-hatch-planned);
 }
 /* Gradiente da água. */
 @utility bg-water {

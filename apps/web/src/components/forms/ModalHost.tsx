@@ -1,5 +1,6 @@
 import { useUi } from '../../lib/ui-store';
 import { HabitFormModal } from '../../features/habits/HabitFormModal';
+import { FocusLogModal } from '../../features/focus/FocusLogModal';
 import { TaskPanel } from '../../features/tasks/TaskPanel';
 import { SubjectDeleteModal, SubjectFormModal } from './SubjectModals';
 
@@ -25,5 +26,7 @@ export function ModalHost() {
       return <HabitFormModal habit={modal.habit} onClose={close} />;
     case 'subject-delete':
       return <SubjectDeleteModal subject={modal.subject} onClose={close} />;
+    case 'focus-log':
+      return <FocusLogModal onClose={close} />;
   }
 }

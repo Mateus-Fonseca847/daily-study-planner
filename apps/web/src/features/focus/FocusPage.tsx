@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BarChart3, Lock, LockOpen, Pause, Play, RotateCcw, Square } from 'lucide-react';
+import { UserRound, Lock, LockOpen, Pause, Play, RotateCcw, Square } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { useData } from '../../lib/data/app-store';
@@ -118,9 +118,9 @@ export function FocusPage() {
                   <Play aria-hidden strokeWidth={1.5} className="size-icon" />
                   Nova sessão
                 </FocusPill>
-                <Link to="/estatisticas" className={pillClass('outline')}>
-                  <BarChart3 aria-hidden strokeWidth={1.5} className="size-icon" />
-                  Ver estatísticas
+                <Link to="/perfil" className={pillClass('outline')}>
+                  <UserRound aria-hidden strokeWidth={1.5} className="size-icon" />
+                  Ver no perfil
                 </Link>
               </div>
             </>

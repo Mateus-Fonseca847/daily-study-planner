@@ -6,7 +6,7 @@ import { Badge } from '../ui/Badge';
 import { MENU_ITEMS, type NavItem } from './nav';
 
 /** Os quatro destinos fixos da barra inferior; o resto fica em "Mais". */
-const BAR_PATHS = ['/calendario', '/habitos', '/foco', '/estatisticas'] as const;
+const BAR_PATHS = ['/calendario', '/habitos', '/foco', '/perfil'] as const;
 export const BAR_ITEMS: readonly NavItem[] = BAR_PATHS.map(
   (to) => MENU_ITEMS.find((item) => item.to === to) as NavItem,
 );
@@ -22,7 +22,7 @@ interface BottomBarProps {
   onMore: () => void;
 }
 
-/** Barra inferior do celular: Calendário, Hábitos, Foco, Estatísticas e "Mais". */
+/** Barra inferior do celular: Calendário, Hábitos, Foco, Perfil e "Mais". */
 export function BottomBar({ counts, moreActive, moreOpen, onMore }: BottomBarProps) {
   return (
     <nav

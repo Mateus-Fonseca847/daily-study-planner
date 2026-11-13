@@ -8,9 +8,9 @@ const habitCard = (page: Page, name: string) => page.getByRole('region', { name,
 const cell = (page: Page, name: string, date: string) =>
   habitCard(page, name).locator(`[data-date="${date}"]`);
 
-/** Abre o painel de água pelo valor no cartão de Estatísticas. */
+/** Abre o painel de água pelo valor no cartão do Perfil. */
 async function openWaterPanel(page: Page) {
-  await page.goto('/estatisticas');
+  await page.goto('/perfil');
   await page.getByRole('button', { name: /^Água de hoje: .*Editar/ }).click();
   const panel = page.getByRole('dialog', { name: 'Água de hoje' });
   await expect(panel).toBeVisible();
@@ -148,7 +148,7 @@ test.describe('Hábitos reordenáveis', () => {
   async function expectSameOrderEverywhere(page: Page, expected: string[]) {
     await page.goto('/habitos');
     expect(await habitsPageOrder(page)).toEqual(expected);
-    await page.goto('/estatisticas');
+    await page.goto('/perfil');
     await expect(page.getByRole('heading', { name: 'Hábitos de hoje' })).toBeVisible();
     expect(await orderIn(page)).toEqual(expected);
     await page.goto('/calendario?visao=semana&data=2026-11-11');

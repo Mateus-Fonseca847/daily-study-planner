@@ -8,7 +8,7 @@ const ROUTES = [
   '/blocos',
   '/habitos',
   '/foco',
-  '/estatisticas',
+  '/perfil',
   '/preferencias',
 ];
 

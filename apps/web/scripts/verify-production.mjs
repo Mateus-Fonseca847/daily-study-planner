@@ -5,7 +5,7 @@
 import { chromium } from '@playwright/test';
 
 const base = (process.argv[2] ?? 'https://dailystudyplanner.vercel.app').replace(/\/$/, '');
-const ROUTES = ['/calendario', '/habitos', '/foco', '/estatisticas'];
+const ROUTES = ['/calendario', '/habitos', '/foco', '/perfil'];
 const errors = [];
 const results = [];
 const check = (name, ok, detail = '') => {
@@ -47,8 +47,8 @@ try {
   check('service worker controla a página', controlled);
 
   await context.setOffline(true);
-  await page.goto(`${base}/estatisticas`);
-  check('abre offline (/estatisticas)', (await page.locator('main').count()) === 1);
+  await page.goto(`${base}/perfil`);
+  check('abre offline (/perfil)', (await page.locator('main').count()) === 1);
   await context.setOffline(false);
 
   const og = await page.locator('meta[property="og:image"]').getAttribute('content');

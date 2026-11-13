@@ -22,7 +22,7 @@ export const ROUTES: readonly RouteCase[] = [
   { name: 'habitos', url: '/habitos?fixture=habits', now: STATS_NOW },
   { name: 'foco', url: '/foco?fixture=stats', now: STATS_NOW },
   { name: 'foco-travado', url: '/foco?fixture=focus', now: STATS_NOW },
-  { name: 'estatisticas', url: '/estatisticas?fixture=stats', now: STATS_NOW },
+  { name: 'perfil', url: '/perfil?fixture=stats', now: STATS_NOW },
   { name: 'preferencias', url: '/preferencias?fixture=stats', now: STATS_NOW },
   { name: 'entrar', url: '/entrar', now: STATS_NOW },
   { name: 'privacidade', url: '/privacidade', now: STATS_NOW },

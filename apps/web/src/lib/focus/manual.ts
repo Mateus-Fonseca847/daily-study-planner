@@ -39,3 +39,19 @@ export function focusSecondsByDay(sessions: readonly FocusSession[]): Map<string
   }
   return byDay;
 }
+
+/**
+ * Lê a duração digitada no registro manual, em minutos: “45” (min), “1:30” (h:mm), “1h30”,
+ * “2h” ou “90min”. Devolve `null` se não entender.
+ */
+export function parseManualMinutes(text: string): number | null {
+  const value = text.trim().toLowerCase().replace(/\s+/g, '');
+  if (value === '') return null;
+  let match = /^(\d{1,4})(?:min|m)?$/.exec(value);
+  if (match) return Number(match[1]);
+  match = /^(\d{1,2}):([0-5]\d)$/.exec(value);
+  if (match) return Number(match[1]) * 60 + Number(match[2]);
+  match = /^(\d{1,2})h(?:([0-5]?\d)(?:min|m)?)?$/.exec(value);
+  if (match) return Number(match[1]) * 60 + Number(match[2] ?? 0);
+  return null;
+}

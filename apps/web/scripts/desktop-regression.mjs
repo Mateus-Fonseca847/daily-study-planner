@@ -43,7 +43,7 @@ const ROUTES = [
   ['habitos', '/habitos?fixture=habits', STATS_NOW],
   ['foco', '/foco?fixture=stats', STATS_NOW],
   ['foco-travado', '/foco?fixture=focus', STATS_NOW],
-  ['estatisticas', '/estatisticas?fixture=stats', STATS_NOW],
+  ['perfil', '/perfil?fixture=stats', STATS_NOW],
   ['preferencias', '/preferencias?fixture=stats', STATS_NOW],
   ['entrar', '/entrar', STATS_NOW],
   ['privacidade', '/privacidade', STATS_NOW],

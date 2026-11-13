@@ -7,44 +7,67 @@ const waterBar = (page: Page) => page.getByRole('progressbar', { name: 'Meta de 
 const habitsBar = (page: Page) =>
   page.getByRole('progressbar', { name: 'Hábitos concluídos hoje' });
 
-test.describe('Estatísticas', () => {
-  test('fixture: os cartões de “Hoje” e as seis análises aparecem', async ({ page }) => {
+test.describe('Perfil', () => {
+  test('/estatisticas leva ao Perfil: cabeçalho, “Hoje” e estatísticas pessoais, sem Análises', async ({
+    page,
+  }) => {
     await page.clock.install({ time: NOW });
     await page.goto('/estatisticas?fixture=stats');
+    await expect(page).toHaveURL(/\/perfil/);
 
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Olá, Ana');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ana');
     for (const title of [
-      'Horas de estudo',
+      'Tempo de foco',
       'Preparação',
+      'Água',
       'Hábitos de hoje',
       'Agenda de hoje',
-      'Horas estudadas',
-      'Tempo focado',
-      'Preparação das próximas provas',
-      'Horas por matéria',
+      'Estatísticas pessoais',
       'Consistência',
-      'Água', // só na seção Hoje
     ]) {
       await expect(page.getByRole('heading', { name: title, exact: true }).first()).toBeVisible();
     }
-    // A seção Análises tem 5 cartões (a água fica só em “Hoje”).
-    await expect(page.getByRole('heading', { name: 'Água', exact: true })).toHaveCount(1);
-    await expect(page.getByText(/^\d+ dias?$/).first()).toBeVisible();
+    for (const gone of ['Horas de estudo', 'Horas estudadas', 'Tempo focado', 'Horas por matéria']) {
+      await expect(page.getByRole('heading', { name: gone, exact: true })).toHaveCount(0);
+    }
+    await expect(page.getByRole('radiogroup', { name: 'Período das análises' })).toHaveCount(0);
+    // O cartão “Sequência” (pílula amarela) saiu: cada hábito mostra a própria chama.
+    await expect(page.getByText('Sequência', { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('img', { name: /^Sequência: \d+ dias?$/ }).first()).toBeVisible();
     await expect(page.getByText('3/5 conteúdos').first()).toBeVisible();
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,7 L de 2 L/);
+    for (const label of ['Tarefas concluídas', 'Foco na semana', 'Melhor sequência', 'Dias ativos']) {
+      await expect(page.getByText(label, { exact: true })).toBeVisible();
+    }
+  });
 
-    // O seletor de período troca os dados sem erro e mantém os cartões.
-    const period = page.getByRole('radiogroup', { name: 'Período das análises' });
-    await period.getByText('90 dias').click();
-    await expect(page.getByRole('heading', { name: 'Tempo focado' })).toBeVisible();
-    await expect(page.getByText('Ainda não há dados neste período')).toHaveCount(0);
+  test('registrar tempo manual soma no cartão “Tempo de foco”', async ({ page }) => {
+    await page.clock.install({ time: NOW });
+    await page.goto('/perfil');
+    const card = page.getByRole('region', { name: 'Tempo de foco' });
+    await expect(card).toContainText('0h');
+
+    await card.getByRole('button', { name: 'Registrar tempo' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Registrar tempo' });
+    await expect(dialog.getByLabel('Data')).toHaveValue('2026-11-10');
+    await dialog.getByLabel('Duração').fill('abc');
+    await dialog.getByRole('button', { name: 'Registrar' }).click();
+    await expect(dialog).toContainText('Informe a duração');
+    await dialog.getByLabel('Duração').fill('1h30');
+    await dialog.getByLabel('Nota (opcional)').fill('Leitura');
+    await dialog.getByRole('button', { name: 'Registrar' }).click();
+    await expect(dialog).toBeHidden();
+    await expect(card).toContainText('1h30');
+
+    await page.reload();
+    await expect(page.getByRole('region', { name: 'Tempo de foco' })).toContainText('1h30');
   });
 
   test('água: dois copos, persistem ao recarregar e sincronizam entre abas', async ({
     page,
     context,
   }) => {
-    await page.goto('/estatisticas');
+    await page.goto('/perfil');
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0 L de 2 L/);
 
     await addCup(page).click();
@@ -55,7 +78,7 @@ test.describe('Estatísticas', () => {
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,5 L de 2 L/);
 
     const other = await context.newPage();
-    await other.goto('/estatisticas');
+    await other.goto('/perfil');
     await expect(waterBar(other)).toHaveAttribute('aria-valuetext', /^0,5 L de 2 L/);
     await addCup(other).click();
     await expect(waterBar(page)).toHaveAttribute('aria-valuetext', /^0,75 L de 2 L/);
@@ -63,7 +86,7 @@ test.describe('Estatísticas', () => {
 
   test('hábitos de hoje: marcar um hábito manual muda a porcentagem', async ({ page }) => {
     await page.clock.install({ time: NOW });
-    await page.goto('/estatisticas?fixture=stats');
+    await page.goto('/perfil?fixture=stats');
 
     const percent = async () => Number(await habitsBar(page).getAttribute('aria-valuenow'));
     const before = await percent();

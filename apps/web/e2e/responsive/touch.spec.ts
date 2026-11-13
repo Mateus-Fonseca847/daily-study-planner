@@ -82,8 +82,8 @@ test.describe('Celular: navegação, sheets e gestos', () => {
     await expect(page).toHaveURL(/\/habitos/);
     await bottomBar(page).getByRole('link', { name: 'Foco' }).tap();
     await expect(page).toHaveURL(/\/foco/);
-    await bottomBar(page).getByRole('link', { name: 'Estatísticas' }).tap();
-    await expect(page).toHaveURL(/\/estatisticas/);
+    await bottomBar(page).getByRole('link', { name: 'Perfil' }).tap();
+    await expect(page).toHaveURL(/\/perfil/);
 
     // “Mais” abre o sheet; o botão voltar do aparelho fecha o sheet sem sair da página.
     await bottomBar(page).getByRole('button', { name: 'Mais' }).tap();
@@ -91,7 +91,7 @@ test.describe('Celular: navegação, sheets e gestos', () => {
     await expect(more).toBeVisible();
     await page.goBack();
     await expect(more).toBeHidden();
-    await expect(page).toHaveURL(/\/estatisticas/);
+    await expect(page).toHaveURL(/\/perfil/);
 
     // Abre de novo e navega por dentro: o sheet fecha e a página muda.
     await bottomBar(page).getByRole('button', { name: 'Mais' }).tap();

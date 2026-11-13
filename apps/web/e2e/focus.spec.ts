@@ -128,11 +128,11 @@ test.describe('Modo Foco minimalista', () => {
     await page.getByRole('button', { name: 'Retomar' }).click();
     await page.clock.fastForward(91_000);
 
-    // Concluído: dígitos zerados, duração focada, “Nova sessão” e “Ver estatísticas”; sessão salva.
+    // Concluído: dígitos zerados, duração focada, “Nova sessão” e “Ver no perfil”; sessão salva.
     await expect(page.getByText('Concluído · 2 min')).toBeVisible();
     await expect(timer(page)).toHaveText('00:00');
     await expect(page).toHaveTitle('Sessão concluída');
-    await expect(page.getByRole('link', { name: 'Ver estatísticas' })).toHaveCount(2); // pílula + painel
+    await expect(page.getByRole('link', { name: 'Ver no perfil' })).toHaveCount(2); // pílula + painel
     // O painel já traz a sessão nova, com o dia de hoje marcado.
     await expect(topDays(page).getByRole('listitem')).toHaveCount(1);
     await expect(topDays(page)).toContainText('2 min');

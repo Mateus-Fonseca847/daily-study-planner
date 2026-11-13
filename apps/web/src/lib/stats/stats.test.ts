@@ -2,18 +2,15 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_PREFERENCES,
   type FocusSession,
-  type StudyEvent,
   type WaterLog,
 } from '@daily/shared';
 import { createDataStore } from '../data/store';
 import { timedTask, exam, memoryRepo } from '../data/test-utils';
-import { focusAnalysis, hoursAnalysis, bucketsFor, periodRange } from './analysis';
 import {
   buildIndex,
   examPrep,
   focusSecondsByDay,
   nextExam,
-  studyHoursByDay,
   upcomingPreps,
   variation,
   waterOn,
@@ -35,20 +32,6 @@ const make = (patch: Partial<StatsData> = {}): StatsData => ({
   preferences: { ...DEFAULT_PREFERENCES },
   ...patch,
 });
-const ev = (id: string, patch: Record<string, unknown>): StudyEvent =>
-  ({
-    id,
-    type: 'tarefa',
-    title: id,
-    start: `${TODAY}T10:00:00`,
-    end: `${TODAY}T11:00:00`,
-    subjectId: null,
-    status: 'pendente',
-    notes: '',
-    subtasks: [],
-    createdAt: `${TODAY}T08:00:00`,
-    ...patch,
-  }) as StudyEvent;
 const water = (date: string, ml: number, id = `${date}-${ml}`): WaterLog => ({
   id,
   date,
@@ -121,24 +104,6 @@ describe('semana e horas', () => {
     expect(weekDays('2026-11-16')[0]).toBe('2026-11-16'); // virada de semana
   });
 
-  it('planejado vs concluído conta estudo e revisão; ignora cancelados, provas e tarefas', () => {
-    const events = [
-      ev('a', { start: '2026-11-09T14:00:00', end: '2026-11-09T16:00:00', status: 'concluido' }),
-      ev('b', {
-        type: 'tarefa',
-        start: '2026-11-09T19:00:00',
-        end: '2026-11-09T19:30:00',
-        status: 'pendente',
-      }),
-      ev('c', { start: '2026-11-09T20:00:00', end: '2026-11-09T21:00:00', status: 'cancelado' }),
-      exam('prova'),
-      ev('d', { type: 'entrega', start: '2026-11-09T09:00:00', end: '2026-11-09T09:00:00' }),
-      ev('fora', { start: '2026-11-23T10:00:00', end: '2026-11-23T11:00:00', status: 'concluido' }),
-    ];
-    const days = studyHoursByDay(events, weekDays(TODAY));
-    expect(days[0]).toEqual({ day: '2026-11-09', plannedMin: 150, doneMin: 120 });
-    expect(days.slice(1).every((d) => d.plannedMin === 0 && d.doneMin === 0)).toBe(true);
-  });
 
   it('tempo focado por dia soma sessões (concluídas e interrompidas)', () => {
     const sessions = [
@@ -216,7 +181,7 @@ describe('próxima prova e preparação', () => {
   });
 });
 
-describe('variação e períodos', () => {
+describe('variação', () => {
   it('variação em relação ao período anterior', () => {
     expect(variation(120, 100)).toEqual({ delta: 20, percent: 20 });
     expect(variation(90, 100)).toEqual({ delta: -10, percent: -10 });
@@ -224,60 +189,9 @@ describe('variação e períodos', () => {
     expect(variation(0, 0)).toEqual({ delta: 0, percent: null });
   });
 
-  it('períodos terminam hoje e o anterior vem logo antes, com o mesmo tamanho', () => {
-    const { days, previous } = periodRange('semana', TODAY);
-    expect(days).toHaveLength(7);
-    expect(days[6]).toBe(TODAY);
-    expect(days[0]).toBe('2026-11-04');
-    expect(previous).toHaveLength(7);
-    expect(previous[6]).toBe('2026-11-03');
-    expect(periodRange('mes', TODAY).days).toHaveLength(30);
-    expect(periodRange('90d', TODAY).days).toHaveLength(90);
-  });
 
-  it('90 dias agrupa por semana; semana e mês, por dia', () => {
-    expect(bucketsFor('semana', periodRange('semana', TODAY).days)).toHaveLength(7);
-    expect(bucketsFor('mes', periodRange('mes', TODAY).days)).toHaveLength(30);
-    const weekly = bucketsFor('90d', periodRange('90d', TODAY).days);
-    expect(weekly).toHaveLength(13);
-    expect(weekly.reduce((t, b) => t + b.days.length, 0)).toBe(90);
-  });
 });
 
-describe('análises', () => {
-  it('horas estudadas: totais e variação contra o período anterior', () => {
-    const events = [
-      ev('atual', {
-        start: '2026-11-09T10:00:00',
-        end: '2026-11-09T12:00:00',
-        status: 'concluido',
-      }),
-      ev('plan', { start: '2026-11-10T10:00:00', end: '2026-11-10T11:00:00' }),
-      ev('antes', {
-        start: '2026-11-01T10:00:00',
-        end: '2026-11-01T11:00:00',
-        status: 'concluido',
-      }),
-    ];
-    const result = hoursAnalysis(events, 'semana', TODAY);
-    expect(result).toMatchObject({ doneMin: 120, plannedMin: 180 });
-    expect(result.variation).toEqual({ delta: 60, percent: 100 });
-    expect(result.items).toHaveLength(7);
-    expect(hoursAnalysis([], 'mes', TODAY)).toMatchObject({ doneMin: 0, plannedMin: 0 });
-  });
-
-  it('tempo focado: total do período, concluídas vs interrompidas', () => {
-    const sessions = [
-      session('2026-11-09', 1500),
-      session('2026-11-10', 600, 'interrompida'),
-      session('2026-10-01', 900),
-    ];
-    const week = focusAnalysis(sessions, 'semana', TODAY);
-    expect(week).toMatchObject({ totalSec: 2100, concluded: 1, interrupted: 1 });
-    expect(focusAnalysis(sessions, '90d', TODAY).totalSec).toBe(3000);
-    expect(focusAnalysis([], 'semana', TODAY).items.every((i) => i.value === 0)).toBe(true);
-  });
-});
 
 describe('ações de água no store', () => {
   const setup = () => {

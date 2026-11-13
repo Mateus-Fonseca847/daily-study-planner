@@ -6,7 +6,8 @@ export type ModalState =
   | { kind: 'event'; eventId?: string; type?: EventType; date?: string; time?: string }
   | { kind: 'subject'; subject?: Subject }
   | { kind: 'habit'; habit?: Habit }
-  | { kind: 'subject-delete'; subject: Subject };
+  | { kind: 'subject-delete'; subject: Subject }
+  | { kind: 'focus-log' };
 
 interface UiState {
   modal: ModalState;
@@ -34,3 +35,6 @@ export const openSubjectForm = (subject?: Subject) =>
   useUi.getState().open({ kind: 'subject', ...(subject ? { subject } : {}) });
 export const openHabitForm = (habit?: Habit) =>
   useUi.getState().open({ kind: 'habit', ...(habit ? { habit } : {}) });
+
+/** Registrar tempo de foco à mão (Perfil e Modo Foco). */
+export const openFocusLog = () => useUi.getState().open({ kind: 'focus-log' });
