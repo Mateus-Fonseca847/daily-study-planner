@@ -36,9 +36,7 @@ export function ProfileHeader() {
         <h1 className="truncate text-display font-normal tracking-tighter max-md:text-xl">
           {name || 'Seu perfil'}
         </h1>
-        {!name && (
-          <p className="text-md text-muted">Defina seu nome em Preferências.</p>
-        )}
+        {!name && <p className="text-md text-muted">Defina seu nome em Preferências.</p>}
       </div>
     </header>
   );

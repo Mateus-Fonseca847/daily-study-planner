@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  DEFAULT_PREFERENCES,
-  type FocusSession,
-  type WaterLog,
-} from '@daily/shared';
+import { DEFAULT_PREFERENCES, type FocusSession, type WaterLog } from '@daily/shared';
 import { createDataStore } from '../data/store';
 import { timedTask, exam, memoryRepo } from '../data/test-utils';
 import {
@@ -104,7 +100,6 @@ describe('semana e horas', () => {
     expect(weekDays('2026-11-16')[0]).toBe('2026-11-16'); // virada de semana
   });
 
-
   it('tempo focado por dia soma sessões (concluídas e interrompidas)', () => {
     const sessions = [
       session('2026-11-09', 1500),
@@ -188,10 +183,7 @@ describe('variação', () => {
     expect(variation(50, 0)).toEqual({ delta: 50, percent: null });
     expect(variation(0, 0)).toEqual({ delta: 0, percent: null });
   });
-
-
 });
-
 
 describe('ações de água no store', () => {
   const setup = () => {

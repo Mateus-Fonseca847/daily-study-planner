@@ -41,7 +41,8 @@ test.describe('Entrada e login no celular', () => {
     );
     expect(url.searchParams.get('code_challenge')).toBeTruthy(); // PKCE
     expect(popups).toBe(0);
-    expect(page.url()).toContain('localhost:54321'); // a própria aba foi para o provedor
+    // A própria aba foi para o provedor (espera a navegação terminar; a rota já foi interceptada).
+    await expect.poll(() => page.url()).toContain('localhost:54321');
   });
 
   test('“Continuar sem conta” entra no app e a tela de entrada não volta sozinha', async ({
