@@ -21,6 +21,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+  // Local: 2 workers. Com o padrão (metade dos núcleos) a máquina satura e testes de tempo real
+  // (gestos, navegação) ficam instáveis. O CI usa o padrão do runner.
+  workers: process.env.CI ? undefined : 2,
   reporter: process.env.CI ? 'github' : 'list',
   projects: [
     {

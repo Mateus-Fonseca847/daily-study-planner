@@ -62,3 +62,26 @@ export async function seedSnapshot(page: Page, data: Record<string, unknown>): P
     );
   }, data);
 }
+
+/** Hábito manual de check, todo dia desde 01/11/2026, pronto para `seedSnapshot`. */
+export const manualHabit = (id: string, name: string, order: number) => ({
+  id,
+  name,
+  icon: 'target',
+  color: 'ciano',
+  type: 'check',
+  unit: '',
+  source: 'manual',
+  rules: [
+    {
+      since: '2026-11-01',
+      repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+      target: null,
+      time: null,
+    },
+  ],
+  createdAt: '2026-11-01T08:00:00',
+  archivedAt: null,
+  endsOn: null,
+  order,
+});

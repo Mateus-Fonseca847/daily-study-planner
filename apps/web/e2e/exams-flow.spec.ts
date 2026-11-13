@@ -51,7 +51,7 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
   const reopened = page.getByRole('dialog', { name: 'Prova de Cálculo' });
   await expect(reopened.getByRole('heading', { name: /Conteúdos/ })).toContainText('2 de 3');
   await reopened.getByRole('button', { name: 'Mais opções' }).click();
-  await expect(reopened.getByLabel('Matéria')).toHaveValue(/.+/);
+  await expect(reopened.getByLabel('Matéria').locator('option:checked')).toHaveText('Cálculo');
 
   // 5. Excluir (menu “…”) e desfazer.
   await reopened.getByRole('button', { name: 'Ações de Prova de Cálculo' }).click();
@@ -65,4 +65,23 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
   // O desfazer também persiste.
   await page.reload();
   await expect(page.getByRole('button', { name: /^Prova: Prova de Cálculo/ })).toBeVisible();
+});
+
+test('dado corrompido no armazenamento não quebra o app', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem('seeded')) {
+      localStorage.setItem('daily:v4', '{isto não é json');
+      sessionStorage.setItem('seeded', '1');
+    }
+  });
+  await page.goto('/calendario');
+
+  const notice = page.getByRole('alert');
+  await expect(notice).toContainText('corrompidos');
+  await expect(page.getByRole('grid', { name: 'Calendário mensal' })).toBeVisible();
+  // Nada é gravado por cima antes de o usuário decidir (nem o hábito de água automático).
+  expect(await page.evaluate(() => localStorage.getItem('daily:v4'))).toBe('{isto não é json');
+
+  await notice.getByRole('button', { name: 'Começar do zero' }).click();
+  await expect(notice).toBeHidden();
 });

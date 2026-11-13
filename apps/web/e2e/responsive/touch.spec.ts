@@ -217,6 +217,8 @@ test.describe('Celular: navegação, sheets e gestos', () => {
     await expect(page).toHaveURL(/visao=dia&data=2026-10-28/);
 
     await page.goto(`${VIEWS}&visao=mes&data=2026-10-29`);
+    // Só desliza com o mês montado (o gesto vive no componente); sob carga o toque chegava antes.
+    await expect(page.getByRole('gridcell', { name: /^29 de outubro/ })).toBeVisible();
     await finger.swipe({ x: 320, y: 300 }, { x: 70, y: 304 });
     await expect(title(page).locator('span').first()).toHaveText('Novembro 2026');
   });

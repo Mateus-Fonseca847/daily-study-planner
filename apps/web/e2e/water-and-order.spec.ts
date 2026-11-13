@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { withoutAutoWater } from './helpers';
+import { manualHabit, seedSnapshot } from './helpers';
 
 /** Quarta-feira, 11/11/2026. */
 const NOW = new Date('2026-11-11T10:30:00');
@@ -118,15 +118,12 @@ test.describe('Hábitos reordenáveis', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.clock.install({ time: NOW });
-    await withoutAutoWater(page);
+    // Hábitos semeados (criar pelo formulário já é coberto em habits.spec): o tempo do teste vai
+    // para o que ele verifica — reordenar e conferir a ordem em várias telas.
+    await seedSnapshot(page, {
+      habits: NAMES.map((name, order) => manualHabit(name.toLowerCase(), name, order)),
+    });
     await page.goto('/habitos');
-    for (const name of NAMES) {
-      await page.getByRole('button', { name: 'Novo hábito' }).first().click();
-      const dialog = page.getByRole('dialog', { name: 'Novo hábito' });
-      await dialog.getByLabel('Nome').fill(name);
-      await dialog.getByRole('button', { name: 'Criar hábito' }).click();
-      await expect(dialog).toHaveCount(0);
-    }
   });
 
   /** Nomes na ordem em que aparecem no texto da página (DOM). */
@@ -145,6 +142,10 @@ test.describe('Hábitos reordenáveis', () => {
       .evaluateAll((els) => els.map((el) => el.getAttribute('aria-label')));
   };
 
+  /**
+   * A ordem é a mesma em Hábitos, Perfil, Semana e Dia. Cada `goto` é um carregamento completo a
+   * partir do armazenamento, então isto também verifica que a ordem persistiu.
+   */
   async function expectSameOrderEverywhere(page: Page, expected: string[]) {
     await page.goto('/habitos');
     expect(await habitsPageOrder(page)).toEqual(expected);
@@ -177,8 +178,6 @@ test.describe('Hábitos reordenáveis', () => {
     await page.keyboard.press('Escape');
     expect(await habitsPageOrder(page)).toEqual(['Beta', 'Alfa', 'Gama']);
 
-    await expectSameOrderEverywhere(page, ['Beta', 'Alfa', 'Gama']);
-    await page.reload();
     await expectSameOrderEverywhere(page, ['Beta', 'Alfa', 'Gama']);
   });
 
