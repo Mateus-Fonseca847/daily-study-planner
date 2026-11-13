@@ -10,6 +10,7 @@ import {
   Library,
   MoreHorizontal,
   NotebookPen,
+  Repeat2,
   RotateCcw,
   Shapes,
   Trash2,
@@ -26,8 +27,13 @@ import { cn } from '../../lib/cn';
 import {
   cancelEventWithUndo,
   deleteEventWithUndo,
+  deleteOccurrenceWithUndo,
   duplicateEventWithToast,
+  editOccurrenceWithUndo,
 } from '../../lib/data/actions';
+import { changesSeriesFields, type EditScope } from '../../lib/data/series';
+import { findView } from '../../lib/recurrence/expand';
+import { formatPreviewDate } from '../../lib/recurrence/presets';
 import { useData } from '../../lib/data/app-store';
 import { moveSubtask } from '../../lib/data/subtasks';
 import { toLocalIso } from '../../lib/dates';
@@ -43,6 +49,9 @@ import {
   type EventFormValues,
 } from '../../lib/forms/event-form';
 import { CompleteButton } from './CompleteButton';
+import { RepeatDialog } from './RepeatDialog';
+import { RepeatPicker } from './RepeatPicker';
+import { ScopeDialog } from './ScopeDialog';
 import { StatusControl } from './StatusControl';
 import { SubtaskList } from './SubtaskList';
 
@@ -66,7 +75,10 @@ const FieldError = ({ message }: { message: string | undefined }) =>
 /**
  * Painel de tarefa: um só componente para criar, ver e editar Tarefa, Prova e Especial. No desktop
  * é um painel à direita; no celular, tela cheia. Criar mostra o essencial e guarda o resto em
- * “Mais opções”; ver/editar aplica cada mudança direto (sem botão Salvar).
+ * “Mais opções”; ver/editar aplica cada mudança direto (sem botão Salvar). Numa ocorrência de
+ * tarefa recorrente, as edições ficam no painel até “Salvar…”, que pergunta o escopo (somente
+ * esta, esta e as próximas, todas); concluir, status e marcar subtarefas valem na hora, só para
+ * a ocorrência.
  */
 export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps) {
   const ids = {
@@ -82,14 +94,28 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
   };
   const formRef = useRef<HTMLFormElement>(null);
   const subjects = useData((s) => s.subjects);
-  const event = useData((s) => (eventId ? s.events.find((e) => e.id === eventId) : undefined));
+  const events = useData((s) => s.events);
+  const exceptions = useData((s) => s.exceptions);
+  // Evento avulso ou ocorrência de série (`serie@aaaa-mm-dd`).
+  const event = useMemo(
+    () => (eventId ? findView(events, exceptions, eventId) : undefined),
+    [events, exceptions, eventId],
+  );
+  const series = event ? events.find((e) => e.id === event.seriesId) : undefined;
   const editing = eventId !== undefined;
+  /** Numa série, edições esperam “Salvar…” (e a escolha do escopo). */
+  const buffered = Boolean(event?.recurrence && event.originalDate);
 
   const [values, setValues] = useState<EventFormValues>(() =>
     initialEventValues({ event, type, date, time }, appNow()),
   );
   const [errors, setErrors] = useState<EventFormErrors>({});
   const [moreOpen, setMoreOpen] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [scopeFor, setScopeFor] = useState<'editar' | 'excluir' | null>(null);
+  /** “Somente esta” só vale para mudanças pontuais (calculado ao abrir o diálogo). */
+  const [allowThis, setAllowThis] = useState(true);
+  const [repeatOpen, setRepeatOpen] = useState(false);
 
   // Excluído (por outra aba, pelo menu ou pelo “Desfazer” de uma criação): fecha.
   useEffect(() => {
@@ -121,6 +147,7 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
       draft = { ...draft, subjectId: created?.id ?? null };
       setValues((prev) => ({ ...prev, subjectId: created?.id ?? '', newSubjectName: '' }));
     }
+    if (buffered) return true;
     // Na edição, status e subtarefas vêm do compromisso vivo (mudam por ações próprias).
     if (event) {
       store.updateEvent({ ...draft, status: event.status, subtasks: event.subtasks, id: event.id });
@@ -135,11 +162,45 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
     persist = editing,
   ) => {
     const next = { ...values, [key]: value };
+    // Prova não repete: trocar para Prova tira a repetição.
+    if (key === 'type' && value === 'prova') next.recurrence = null;
     setValues(next);
-    if (persist) save(next);
+    if (buffered) setDirty(true);
+    else if (persist) save(next);
   };
   const commit = () => {
-    if (editing) save(values);
+    if (editing && !buffered) save(values);
+  };
+
+  /** Rascunho validado da edição de uma ocorrência (para o diálogo de escopo). */
+  const draftForScope = () => {
+    const result = validateEventForm(
+      values,
+      subjects,
+      () => crypto.randomUUID(),
+      series?.createdAt ?? toLocalIso(appNow()),
+    );
+    if (!result.ok) {
+      setErrors(result.errors);
+      return null;
+    }
+    setErrors({});
+    // As subtarefas da série são o modelo (mudam na hora, pela lista).
+    return { ...result.draft, subtasks: series?.subtasks ?? [] };
+  };
+  const confirmScope = (scope: EditScope) => {
+    if (!event) return;
+    if (scopeFor === 'excluir') {
+      setScopeFor(null);
+      onClose();
+      deleteOccurrenceWithUndo(event.id, scope);
+      return;
+    }
+    const draft = draftForScope();
+    setScopeFor(null);
+    if (!draft) return;
+    onClose();
+    editOccurrenceWithUndo(event.id, scope, draft);
   };
 
   const onCreate = (e: FormEvent) => {
@@ -160,11 +221,11 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
   const store = useData.getState;
   const subtaskHandlers = event
     ? {
-        onAdd: (t: string) => store().addSubtask(event.id, t),
+        onAdd: (t: string) => store().addSubtask(event.seriesId, t),
         onToggle: (id: string) => store().toggleSubtask(event.id, id),
-        onRename: (id: string, t: string) => store().renameSubtask(event.id, id, t),
-        onDelete: (id: string) => store().deleteSubtask(event.id, id),
-        onMove: (id: string, d: 'up' | 'down') => store().moveSubtask(event.id, id, d),
+        onRename: (id: string, t: string) => store().renameSubtask(event.seriesId, id, t),
+        onDelete: (id: string) => store().deleteSubtask(event.seriesId, id),
+        onMove: (id: string, d: 'up' | 'down') => store().moveSubtask(event.seriesId, id, d),
       }
     : {
         onAdd: (t: string) =>
@@ -203,8 +264,11 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
         {
           label: 'Duplicar',
           icon: Copy,
-          onSelect: () => duplicateEventWithToast(event.id),
+          onSelect: () => duplicateEventWithToast(event.seriesId),
         },
+        ...(event.type === 'prova'
+          ? []
+          : [{ label: 'Repetir…', icon: Repeat2, onSelect: () => setRepeatOpen(true) }]),
         event.status === 'cancelado'
           ? {
               label: 'Reabrir',
@@ -220,6 +284,10 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
           label: 'Excluir',
           icon: Trash2,
           onSelect: () => {
+            if (buffered) {
+              setScopeFor('excluir');
+              return;
+            }
             onClose();
             deleteEventWithUndo(event.id);
           },
@@ -256,15 +324,40 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
         )
       }
       footer={
-        !editing && (
+        buffered && dirty ? (
           <>
-            <Button variant="secondary" onClick={onClose}>
-              Cancelar
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setValues(initialEventValues({ event }, appNow()));
+                setErrors({});
+                setDirty(false);
+              }}
+            >
+              Descartar
             </Button>
-            <Button type="submit" form={ids.form}>
-              {`Criar ${typeName}`}
+            <Button
+              onClick={() => {
+                const draft = draftForScope();
+                if (!draft) return;
+                setAllowThis(!series || !changesSeriesFields(series, draft));
+                setScopeFor('editar');
+              }}
+            >
+              Salvar…
             </Button>
           </>
+        ) : (
+          !editing && (
+            <>
+              <Button variant="secondary" onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button type="submit" form={ids.form}>
+                {`Criar ${typeName}`}
+              </Button>
+            </>
+          )
         )
       }
     >
@@ -351,12 +444,31 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
                     : values.endTime;
                 const next = { ...values, startTime: start, endTime: end };
                 setValues(next);
-                if (editing) save(next);
+                if (buffered) setDirty(true);
+                else if (editing) save(next);
               }}
               className={INPUT}
             />
             <FieldError message={errors.date ?? errors.startTime} />
           </MetaRow>
+
+          {values.type !== 'prova' && (
+            <MetaRow icon={Repeat2} label="Repetir">
+              <RepeatPicker
+                key={values.date}
+                value={values.recurrence}
+                anchor={series ? series.start.slice(0, 10) : values.date}
+                onChange={(rule, problem) => {
+                  setErrors((prev) => {
+                    const { recurrence: _r, ...rest } = prev;
+                    void _r;
+                    return problem ? { ...rest, recurrence: problem } : rest;
+                  });
+                  if (!problem) change('recurrence', rule);
+                }}
+              />
+            </MetaRow>
+          )}
 
           {liveSubtasks.length > 0 && (
             <MetaRow icon={BarChart3} label="Progresso">
@@ -469,6 +581,24 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
           )}
         </div>
       </form>
+      {scopeFor && event?.originalDate && (
+        <ScopeDialog
+          mode={scopeFor}
+          when={formatPreviewDate(event.originalDate, event.originalDate)}
+          allowThis={scopeFor === 'excluir' || allowThis}
+          onConfirm={confirmScope}
+          onClose={() => setScopeFor(null)}
+        />
+      )}
+      {repeatOpen && event && (
+        <RepeatDialog
+          eventId={event.seriesId}
+          title={event.title}
+          anchor={(series ?? event).start.slice(0, 10)}
+          value={series?.recurrence ?? null}
+          onClose={() => setRepeatOpen(false)}
+        />
+      )}
     </Modal>
   );
 }
