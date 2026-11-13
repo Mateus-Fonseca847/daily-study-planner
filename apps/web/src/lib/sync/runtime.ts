@@ -11,7 +11,7 @@ import type { SyncMeta } from './reconcile';
 
 const metaKey = (userId: string) => `daily:sync:${userId}`;
 /** Última cópia do que estava neste dispositivo antes de a nuvem substituí-lo. */
-export const PRE_SYNC_KEY = 'daily:v3:pre-sync';
+export const PRE_SYNC_KEY = 'daily:v4:pre-sync';
 
 let engine: SyncEngine | null = null;
 let activeUser: string | null = null;

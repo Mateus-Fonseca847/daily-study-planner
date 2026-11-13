@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { reconcile } from './reconcile';
 
-const base = { pristineHash: 'P' };
+const base = { localPristine: false };
 
 describe('reconcile', () => {
   it('nuvem vazia: envia o local', () => {
@@ -13,7 +13,12 @@ describe('reconcile', () => {
 
   it('primeiro login com local virgem: puxa a nuvem', () => {
     expect(
-      reconcile({ ...base, localHash: 'P', remote: { revision: 4, hash: 'R' }, meta: null }),
+      reconcile({
+        localPristine: true,
+        localHash: 'P',
+        remote: { revision: 4, hash: 'R' },
+        meta: null,
+      }),
     ).toEqual({ kind: 'pull' });
   });
 

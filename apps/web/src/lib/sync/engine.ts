@@ -1,5 +1,5 @@
-import { createInitialSnapshot, dataSnapshotSchema, type DataSnapshot } from '@daily/shared';
-import { DATA_VERSION } from '../data/envelope';
+import { dataSnapshotSchema, isPristineSnapshot, type DataSnapshot } from '@daily/shared';
+import { DATA_VERSION, migrateData } from '../data/envelope';
 import { fingerprint as defaultFingerprint } from './canonical';
 import { reconcile, type SyncMeta } from './reconcile';
 
@@ -68,6 +68,8 @@ export interface EngineDeps {
   /** Impressão digital do estado (padrão: SHA-256); injetável para testes determinísticos. */
   fingerprint?(value: unknown): Promise<string>;
   now?(): number;
+  /** Versão do formato que este app grava (injetável só para simular um app antigo nos testes). */
+  dataVersion?: number;
   debounceMs?: number;
   retryMs?: number;
 }
@@ -92,6 +94,7 @@ export function createSyncEngine(deps: EngineDeps) {
   const fingerprint = deps.fingerprint ?? defaultFingerprint;
   const debounceMs = deps.debounceMs ?? 1500;
   const retryMs = deps.retryMs ?? 30_000;
+  const dataVersion = deps.dataVersion ?? DATA_VERSION;
 
   let applying = false;
   let stopped = false;
@@ -100,9 +103,6 @@ export function createSyncEngine(deps: EngineDeps) {
   let retry: ReturnType<typeof setTimeout> | undefined;
   let queue: Promise<void> = Promise.resolve();
   let stash: Stash | null = null;
-  let pristine: string | undefined;
-
-  const pristineHash = async () => (pristine ??= await fingerprint(createInitialSnapshot()));
 
   /** Serializa as execuções: nunca há dois ciclos ao mesmo tempo. */
   const enqueue = (task: () => Promise<void>): Promise<void> => {
@@ -144,7 +144,7 @@ export function createSyncEngine(deps: EngineDeps) {
 
     let remote: { snapshot: DataSnapshot; hash: string } | null = null;
     if (row) {
-      if (row.version > DATA_VERSION) {
+      if (row.version > dataVersion) {
         blocked = true;
         report({
           phase: 'outdated',
@@ -152,7 +152,10 @@ export function createSyncEngine(deps: EngineDeps) {
         });
         return;
       }
-      const parsed = dataSnapshotSchema.safeParse(row.data);
+      // Nuvem de uma versão anterior (ex.: v3): migra em memória, como o app faz com o local. A
+      // linha só é reescrita quando houver um envio normal (uma edição de verdade).
+      const data = row.version < dataVersion ? migrateData(row.version, row.data) : row.data;
+      const parsed = dataSnapshotSchema.safeParse(data);
       if (!parsed.success) {
         // Nunca sobrescreve uma nuvem que não entendemos.
         blocked = true;
@@ -166,7 +169,7 @@ export function createSyncEngine(deps: EngineDeps) {
     const localHash = await fingerprint(localSnap);
     const decision = reconcile({
       localHash,
-      pristineHash: await pristineHash(),
+      localPristine: isPristineSnapshot(localSnap),
       remote: row && remote ? { revision: row.revision, hash: remote.hash } : null,
       meta: meta.read(),
     });
@@ -185,8 +188,8 @@ export function createSyncEngine(deps: EngineDeps) {
       case 'push': {
         const result =
           decision.expectedRevision === null
-            ? await api.insert(localSnap, DATA_VERSION)
-            : await api.update(decision.expectedRevision, localSnap, DATA_VERSION);
+            ? await api.insert(localSnap, dataVersion)
+            : await api.update(decision.expectedRevision, localSnap, dataVersion);
         if (result === 'conflict') {
           if (attempt >= MAX_ATTEMPTS)
             throw new Error('A nuvem mudou várias vezes durante o envio.');
@@ -268,7 +271,7 @@ export function createSyncEngine(deps: EngineDeps) {
             return synced();
           }
           const snap = local.snapshot();
-          const result = await api.update(row.revision, snap, DATA_VERSION);
+          const result = await api.update(row.revision, snap, dataVersion);
           if (result === 'conflict') {
             // A nuvem mudou enquanto o usuário decidia: reavalia tudo.
             blocked = false;
