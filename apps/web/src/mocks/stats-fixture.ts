@@ -113,11 +113,11 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
   // ── Resto da semana (seg–dom): planejado e concluído ──
   const weekPlan: [number, string, number, number, string, string][] = [
     // [deslocamento a partir de hoje, tipo, hora, duração (min), status, matéria]
-    [-1, 'estudo', 14, 120, 'concluido', 'mat'],
-    [-1, 'revisao', 19, 30, 'concluido', 'fis'],
-    [1, 'estudo', 15, 120, 'pendente', 'mat'],
-    [2, 'revisao', 18, 60, 'pendente', 'qui'],
-    [3, 'estudo', 14, 150, 'pendente', 'mat'],
+    [-1, 'tarefa', 14, 120, 'concluido', 'mat'],
+    [-1, 'tarefa', 19, 30, 'concluido', 'fis'],
+    [1, 'tarefa', 15, 120, 'pendente', 'mat'],
+    [2, 'tarefa', 18, 60, 'pendente', 'qui'],
+    [3, 'tarefa', 14, 150, 'pendente', 'mat'],
   ];
   weekPlan.forEach(([offset, type, hour, minutes, status, subjectId], index) => {
     const day = shiftDay(today, offset);
@@ -125,7 +125,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
     pushEvent({
       id: `fx-week-${index}`,
       type,
-      title: type === 'estudo' ? 'Bloco de estudo' : 'Revisão',
+      title: index % 2 === 0 ? 'Lista de exercícios' : 'Revisão',
       subjectId,
       start: at(day, hour),
       end: at(day, Math.floor(end / 60), end % 60),

@@ -19,7 +19,6 @@ export const ROUTES: readonly RouteCase[] = [
   { name: 'provas', url: '/provas?fixture=views', now: VIEWS_NOW },
   { name: 'tarefas', url: '/tarefas?fixture=views', now: VIEWS_NOW },
   { name: 'materias', url: '/materias?fixture=views', now: VIEWS_NOW },
-  { name: 'blocos', url: '/blocos?fixture=views', now: VIEWS_NOW },
   { name: 'habitos', url: '/habitos?fixture=habits', now: STATS_NOW },
   { name: 'foco', url: '/foco?fixture=stats', now: STATS_NOW },
   { name: 'foco-travado', url: '/foco?fixture=focus', now: STATS_NOW },

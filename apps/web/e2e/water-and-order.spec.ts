@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { withoutAutoWater } from './helpers';
 
 /** Quarta-feira, 11/11/2026. */
 const NOW = new Date('2026-11-11T10:30:00');
@@ -24,9 +25,9 @@ async function addCustom(panel: ReturnType<Page['getByRole']>, text: string) {
 test.describe('Água editável', () => {
   test.beforeEach(async ({ page }) => {
     await page.clock.install({ time: NOW });
-    // A “Hidratação” lê a água do dia: o heatmap muda junto com os registros.
+    // O hábito “Água” (criado sozinho) lê a água do dia: o heatmap muda junto com os registros.
     await page.goto('/habitos');
-    await page.getByRole('button', { name: 'Hidratação' }).click();
+    await expect(habitCard(page, 'Água')).toBeVisible();
   });
 
   test('quantidade personalizada: total e heatmap mudam; erro em pt-BR sem alterar nada', async ({
@@ -48,7 +49,7 @@ test.describe('Água editável', () => {
     await expect(page.getByRole('button', { name: /^Água de hoje: .*Editar/ })).toBeFocused();
 
     await page.goto('/habitos');
-    await expect(cell(page, 'Hidratação', '2026-11-11')).toHaveAttribute(
+    await expect(cell(page, 'Água', '2026-11-11')).toHaveAttribute(
       'aria-label',
       /300 ml de 2000 ml/,
     );
@@ -94,7 +95,7 @@ test.describe('Água editável', () => {
 
   test('corrigir um dia passado pelo heatmap e recarregar: tudo persiste', async ({ page }) => {
     await page.goto('/habitos');
-    await cell(page, 'Hidratação', '2026-11-09').click();
+    await cell(page, 'Água', '2026-11-09').click();
     const panel = page.getByRole('dialog', { name: /^Água de (?!hoje)/ });
     await expect(panel.getByText('Nenhum registro.')).toBeVisible();
     await addCustom(panel, '1,5 l');
@@ -104,11 +105,11 @@ test.describe('Água editável', () => {
     await page.keyboard.press('Escape');
 
     await page.reload();
-    await cell(page, 'Hidratação', '2026-11-09').click();
+    await cell(page, 'Água', '2026-11-09').click();
     const again = page.getByRole('dialog', { name: /^Água de (?!hoje)/ });
     await expect(again.getByText('1500 ml', { exact: true })).toBeVisible();
     // Dia futuro não existe no heatmap.
-    await expect(cell(page, 'Hidratação', '2026-11-12')).toHaveCount(0);
+    await expect(cell(page, 'Água', '2026-11-12')).toHaveCount(0);
   });
 });
 
@@ -117,6 +118,7 @@ test.describe('Hábitos reordenáveis', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.clock.install({ time: NOW });
+    await withoutAutoWater(page);
     await page.goto('/habitos');
     for (const name of NAMES) {
       await page.getByRole('button', { name: 'Novo hábito' }).first().click();

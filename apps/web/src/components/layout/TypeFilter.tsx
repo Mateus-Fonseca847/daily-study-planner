@@ -98,7 +98,7 @@ export function TypeFilter({ compact = false }: { compact?: boolean }) {
           aria-label={`Filtrar por tipo: ${label}`}
           onClick={(e) => setAnchor(e.currentTarget)}
           className={cn(
-            'inline-flex h-select items-center gap-2 rounded-full bg-surface pr-3 pl-4 text-md font-medium',
+            'inline-flex h-select items-center gap-2 rounded-full bg-surface pr-3 pl-4 text-md font-medium coarse:h-touch',
             active ? 'text-fg' : 'text-soft',
           )}
         >

@@ -1,3 +1,4 @@
+import { withoutAutoWater } from '../helpers';
 import { expect, test, type Page } from '@playwright/test';
 
 /** Quarta-feira, 11/11/2026. */
@@ -50,8 +51,7 @@ test.describe('Celular: água e reordenação', () => {
   });
 
   test('a água abre numa folha inferior, com alvos de toque ≥ 44 px, e salva', async ({ page }) => {
-    await page.goto('/habitos');
-    await page.getByRole('button', { name: 'Hidratação' }).tap();
+    // O hábito “Água” já existe (criado sozinho no primeiro uso).
     await page.goto('/estatisticas');
     await page.getByRole('button', { name: /^Água de hoje: .*Editar/ }).tap();
 
@@ -80,6 +80,7 @@ test.describe('Celular: água e reordenação', () => {
   });
 
   test('a alça tem ≥ 44 px, touch-action none e reordena por toque', async ({ page }) => {
+    await withoutAutoWater(page);
     await page.goto('/habitos');
     for (const name of ['Alfa', 'Beta', 'Gama']) await createHabit(page, name);
 

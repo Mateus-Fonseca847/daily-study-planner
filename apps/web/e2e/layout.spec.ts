@@ -8,7 +8,6 @@ const ROUTES = [
   ['provas', '/provas?fixture=views'],
   ['tarefas', '/tarefas?fixture=views'],
   ['matérias', '/materias?fixture=views'],
-  ['blocos', '/blocos?fixture=views'],
   ['hábitos', '/habitos?fixture=habits'],
   ['foco', '/foco?fixture=focus'],
   ['estatísticas', '/estatisticas?fixture=stats'],

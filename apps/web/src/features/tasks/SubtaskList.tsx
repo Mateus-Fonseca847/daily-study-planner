@@ -36,7 +36,9 @@ export function SubtaskList({
   error,
 }: SubtaskListProps) {
   const [draft, setDraft] = useState('');
-  const singular = label === 'Conteúdos' ? 'conteúdo' : 'subtarefa';
+  const exam = label === 'Conteúdos';
+  const singular = exam ? 'conteúdo' : 'subtarefa';
+  const newLabel = exam ? 'Novo conteúdo' : 'Nova subtarefa';
   // Sem <form>: a lista vive dentro do formulário do painel (formulários não podem se aninhar).
   const add = () => {
     const title = draft.trim();
@@ -119,7 +121,7 @@ export function SubtaskList({
       </ul>
       <div className="flex items-center gap-1">
         <input
-          aria-label={`Nova ${singular}`}
+          aria-label={newLabel}
           placeholder={`Adicionar ${singular}`}
           value={draft}
           maxLength={120}

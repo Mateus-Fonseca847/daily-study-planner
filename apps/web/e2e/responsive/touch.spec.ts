@@ -110,9 +110,16 @@ test.describe('Celular: navegação, sheets e gestos', () => {
     await page.getByRole('button', { name: 'Criar', exact: true }).tap();
     const sheet = page.getByRole('dialog', { name: 'Criar' });
     await expect(sheet).toBeVisible();
-    await sheet.getByRole('menuitem', { name: 'Bloco de estudo' }).tap();
+    await expect(sheet.getByRole('menuitem')).toHaveText([
+      'Tarefa',
+      'Prova',
+      'Especial',
+      'Hábito',
+      'Matéria',
+    ]);
+    await sheet.getByRole('menuitem', { name: 'Tarefa' }).tap();
 
-    const form = page.getByRole('dialog', { name: 'Nova bloco de estudo' });
+    const form = page.getByRole('dialog', { name: 'Nova tarefa' });
     await expect(form).toBeVisible();
     // Tela cheia: ocupa a janela toda; o botão voltar fecha.
     const box = await form.boundingBox();
@@ -139,8 +146,9 @@ test.describe('Celular: navegação, sheets e gestos', () => {
 
     await finger.hold(x, y, 700); // toque longo
     const dialog = page.getByRole('dialog');
-    await expect(dialog.getByLabel('Data')).toHaveValue('2026-10-29');
-    await expect(dialog.getByLabel('Início')).toHaveValue('13:00');
+    await expect(dialog.getByLabel('Data do prazo')).toHaveValue('2026-10-29');
+    await expect(dialog.getByLabel('Hora do prazo')).toHaveValue('13:00');
+    await expect(dialog.getByRole('radio', { name: 'Tarefa' })).toBeChecked();
     await page.goBack();
 
     const pill = page.getByRole('button', { name: /^Meditação: pendente/ });
