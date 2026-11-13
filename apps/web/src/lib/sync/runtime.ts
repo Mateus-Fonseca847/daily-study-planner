@@ -5,14 +5,14 @@ import { getSupabase } from '../cloud/client';
 import { createSupabaseApi } from '../cloud/supabase-api';
 import { useAuth } from '../auth/auth-store';
 import { useData } from '../data/app-store';
-import { PRE_V4_KEY } from '../data/local-storage-repository';
+import { PRE_MIGRATION_KEYS } from '../data/local-storage-repository';
 import { createSyncEngine, type SyncEngine } from './engine';
 import { INITIAL_SYNC, useSync } from './sync-store';
 import type { SyncMeta } from './reconcile';
 
 const metaKey = (userId: string) => `daily:sync:${userId}`;
 /** Última cópia do que estava neste dispositivo antes de a nuvem substituí-lo. */
-export const PRE_SYNC_KEY = 'daily:v4:pre-sync';
+export const PRE_SYNC_KEY = 'daily:v5:pre-sync';
 
 let engine: SyncEngine | null = null;
 let activeUser: string | null = null;
@@ -64,9 +64,11 @@ function start(userId: string): void {
       },
     },
     report: (patch) => useSync.setState(patch),
-    legacySynced: () => {
+    // A cópia que o app daquela versão tinha salvo antes de migrar (`daily:vN:pre-vN+1`).
+    legacySynced: (version) => {
       try {
-        const raw = browserStorage().getItem(PRE_V4_KEY);
+        const key = PRE_MIGRATION_KEYS[version];
+        const raw = key ? browserStorage().getItem(key) : null;
         if (!raw) return null;
         const envelope = JSON.parse(raw) as { version?: unknown; data?: unknown };
         return typeof envelope.version === 'number' && 'data' in envelope
