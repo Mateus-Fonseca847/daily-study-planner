@@ -4,6 +4,19 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (tarefas recorrentes)
+
+- **Repetir** em Tarefa e Especial (Prova nunca repete): atalhos de um toque (Não repete, Todo dia, Dias úteis, Toda semana, Todo mês, Todo ano) e **Personalizado** (a cada N dias/semanas/meses/anos, dias da semana, dia do mês ou último dia, término Nunca / Em data / Após N vezes), sempre com o resumo em texto (“Toda segunda e quarta, até 20/12”) e a prévia das próximas 5 datas. Também pelo menu “…” → “Repetir…”.
+- **Cada ocorrência é independente:** concluir, cancelar e marcar subtarefas valem só para aquele dia, sem perguntar; as subtarefas recomeçam em cada ocorrência.
+- **Editar ou excluir uma série** pergunta o escopo: Somente esta, Esta e as próximas ou Todas (com “Desfazer”). Numa ocorrência, as edições do painel esperam “Salvar…”.
+- **Entrada rápida** na página Tarefas, em pt-BR: `Treinar toda segunda 19h`, `Aluguel todo dia 5`, `Ler todo dia até 20/12`, `amanhã às 9h30`… mostra “Entendi: …” antes de salvar; o que não entende fica no título.
+- **Exibição:** ícone de repetição (com nome acessível) nos chips e blocos; o calendário expande as ocorrências só da janela visível; a visão Ano conta ocorrências na densidade. Na página Tarefas, “Próximas” mostra a próxima ocorrência de cada série com a regra e “+N nesta semana”; “Atrasadas” mostra ocorrências perdidas dos últimos 7 dias (as mais antigas não acumulam). Contadores e resumos contam ocorrências.
+- **Dados:** formato v5 (`daily:v5`) com `recurrence` no compromisso e as **exceções por ocorrência** (`exceptions`, id `serie@aaaa-mm-dd`). Migração idempotente do v4 (cópia em `daily:v4:pre-v5`, removida 30 dias depois). Exportar gera v5; importar aceita v1 a v5. Sem mudança no esquema do Supabase; um app antigo nunca sobrescreve dados v5 e o rebase da sincronização vale para qualquer versão anterior.
+
+### Corrigido
+
+- Horário dos chips e blocos do calendário com contraste AA sobre o fundo de status (era 4,06:1).
+
 ### Alterado (tarefas, subtarefas, tipos e status; Perfil)
 
 - **Tipos:** Tarefa (padrão), Prova e Especial. Revisão, Entrega e Bloco de estudo deixaram de existir (os dados migram para Tarefa).

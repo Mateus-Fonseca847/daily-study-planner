@@ -1,4 +1,4 @@
-# Daily — Design System (v1.1)
+# Daily — Design System (v1.2)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
@@ -538,3 +538,18 @@ O corpo desses componentes rola (`overflow`) e corta tudo que passa da borda; o 
 - respiro do corpo por token: `--ds-panel-pad-x` (painel e modal), `--ds-sheet-pad-x` (celular e sheets) e `--ds-panel-pad-top`; cabeçalho, corpo e rodapé usam a mesma margem lateral.
 
 Coberto pelo e2e `panel-focus.spec.ts` (desktop: painel novo e em edição, hábito, matéria, registrar tempo, dia do heatmap) e `responsive/panel-focus-phone.spec.ts` (tela cheia no celular).
+
+## 17. Tarefas recorrentes
+
+Sem tokens novos: tudo usa os existentes (chips de seleção, `MetaRow`, `Modal`, `--ds-touch`).
+
+- **Ícone de repetição** (`ui/RecurrenceIcon`, `Repeat2` do lucide em `size-icon-sm`, `currentColor`): ao lado do rótulo do tipo nos chips e blocos, e antes da regra nas linhas da página Tarefas. É decorativo onde o nome acessível do chip já diz “repete: Toda segunda e quarta”; fora disso tem `role="img"` e `aria-label`.
+- **Linha “Repetir”** no painel (Tarefa e Especial): atalhos como chips de seleção (`radiogroup`, um toque), “Personalizado…” abre um `fieldset` com borda fina (`border-hair`, `rounded-card-sm`): “A cada” (número + unidade), dias da semana como chips `aria-pressed` (DOM–SÁB, nome completo no `aria-label`), dia do mês ou “Último dia do mês” e término (Nunca / Em / Após). Embaixo, sempre: o resumo em texto (`text-sm font-medium`), “Próximas: …” (`text-soft`), o erro em `role="alert"` e a dica hábito × tarefa recorrente (`text-muted`, ícone `Info`).
+- **Diálogo de escopo** (`features/tasks/ScopeDialog`): `Modal` pequeno por cima do painel (só o diálogo do topo trata Esc e Tab), três opções em cartões com rádio e dica; a escolhida ganha `border-accent`; “Somente esta” fica esmaecida e explicada quando a mudança vale para a série. Botões Voltar (secundário) e Salvar/Excluir (primário).
+- **Entrada rápida** (página Tarefas): campo largo; o “Entendi: **título** · data · hora · regra” fica abaixo, ligado por `aria-describedby`.
+- **Contraste:** o horário nos chips e blocos passou de `text-muted` para `text-soft` (era 4,06:1 sobre os fundos suaves de status). Medido nas visões Semana e Mês, na página Tarefas, no painel com “Personalizado” aberto e no diálogo de escopo: tudo ≥ 4,5:1.
+
+| Repetir no painel                                       | Escopo da edição                                       |
+| ------------------------------------------------------- | ------------------------------------------------------ |
+| ![Repetir no painel](../images/recorrentes-painel.webp) | ![Escopo da edição](../images/recorrentes-escopo.webp) |
+| ![Semana](../images/recorrentes-calendario.webp)        | ![Tarefas](../images/recorrentes-tarefas.webp)         |
