@@ -2,6 +2,8 @@ import { useId, useMemo, useState } from 'react';
 import { Info } from 'lucide-react';
 import { MAX_RECURRENCE_COUNT, MAX_RECURRENCE_INTERVAL, type Recurrence } from '@daily/shared';
 import { cn } from '../../lib/cn';
+import { dayKey } from '../../lib/dates';
+import { appNow } from '../../lib/fixture';
 import { describeRule, WEEKDAY_CHIPS, WEEKDAY_NAMES } from '../../lib/recurrence/describe';
 import { nextOccurrences, weekdayOf } from '../../lib/recurrence/engine';
 import {
@@ -120,7 +122,12 @@ export function RepeatPicker({ value, anchor, onChange }: RepeatPickerProps) {
   };
 
   const preview = useMemo(
-    () => (value && !error ? nextOccurrences(value, anchor, anchor, PREVIEW_COUNT) : []),
+    () => {
+      if (!value || error) return [];
+      // Numa série já em curso, a prévia começa hoje (não no início da série).
+      const today = dayKey(appNow());
+      return nextOccurrences(value, anchor, today > anchor ? today : anchor, PREVIEW_COUNT);
+    },
     [value, anchor, error],
   );
 
