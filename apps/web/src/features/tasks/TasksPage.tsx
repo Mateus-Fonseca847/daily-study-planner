@@ -19,6 +19,7 @@ import { useData } from '../../lib/data/app-store';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
 import { appNow } from '../../lib/fixture';
 import { quickTaskDraft } from '../../lib/forms/quick-create';
+import { parseQuickEntry } from '../../lib/tasks/quick-parse';
 import {
   dueOf,
   filterByType,
@@ -203,6 +204,7 @@ export function TasksPage() {
   const createEvent = useData((s) => s.createEvent);
   const types = useTypeFilter((s) => s.types);
   const [title, setTitle] = useState('');
+  const quickHintId = useId();
   const now = useMemo(() => appNow(), []);
 
   const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
@@ -212,11 +214,14 @@ export function TasksPage() {
   const nothingOpen =
     sections.atrasadas.length === 0 && sections.hoje.length === 0 && upcomingCount === 0;
 
+  // Entrada rápida: entende dia, hora e repetição em pt-BR e mostra antes de salvar.
+  const parsed = useMemo(() => parseQuickEntry(title, now), [title, now]);
   const add = (e: FormEvent) => {
     e.preventDefault();
-    const value = title.trim();
-    if (!value) return;
-    createEvent(quickTaskDraft(value, now));
+    if (!title.trim()) return;
+    const { title: name, understood: _u, ...options } = parsed;
+    void _u;
+    createEvent(quickTaskDraft(name, now, options));
     setTitle('');
   };
 
@@ -228,12 +233,21 @@ export function TasksPage() {
       <form onSubmit={add}>
         <input
           aria-label="Nova tarefa"
-          placeholder="Nova tarefa (prazo hoje) — Enter para adicionar"
+          aria-describedby={quickHintId}
+          placeholder="Nova tarefa — ex.: Treinar toda segunda 19h (Enter para adicionar)"
           value={title}
-          maxLength={120}
+          maxLength={160}
           onChange={(e) => setTitle(e.target.value)}
           className="h-control w-full rounded-full border-hair bg-surface px-5 text-md text-fg placeholder:text-muted"
         />
+        <p id={quickHintId} aria-live="polite" className="mt-2 min-h-5 px-5 text-sm text-muted">
+          {parsed.understood.length > 0 && (
+            <>
+              Entendi: <span className="font-medium text-fg">{parsed.title}</span> ·{' '}
+              {parsed.understood.join(' · ')}
+            </>
+          )}
+        </p>
       </form>
 
       <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2">
