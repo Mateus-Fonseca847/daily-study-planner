@@ -121,8 +121,10 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
       draft = { ...draft, subjectId: created?.id ?? null };
       setValues((prev) => ({ ...prev, subjectId: created?.id ?? '', newSubjectName: '' }));
     }
-    if (event) store.updateEvent({ ...draft, subtasks: event.subtasks, id: event.id });
-    else store.createEvent(draft);
+    // Na edição, status e subtarefas vêm do compromisso vivo (mudam por ações próprias).
+    if (event) {
+      store.updateEvent({ ...draft, status: event.status, subtasks: event.subtasks, id: event.id });
+    } else store.createEvent(draft);
     return true;
   };
 
@@ -207,15 +209,12 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
           ? {
               label: 'Reabrir',
               icon: RotateCcw,
-              onSelect: () => change('status', 'pendente', true),
+              onSelect: () => useData.getState().setEventStatus(event.id, 'pendente'),
             }
           : {
               label: 'Cancelar',
               icon: XCircle,
-              onSelect: () => {
-                cancelEventWithUndo(event.id);
-                setValues((prev) => ({ ...prev, status: 'cancelado' }));
-              },
+              onSelect: () => cancelEventWithUndo(event.id),
             },
         {
           label: 'Excluir',
@@ -309,9 +308,12 @@ export function TaskPanel({ eventId, type, date, time, onClose }: TaskPanelProps
             />
           </MetaRow>
 
-          {editing && (
+          {event && (
             <MetaRow icon={CircleDot} label="Status">
-              <StatusControl value={values.status} onChange={(s) => change('status', s)} />
+              <StatusControl
+                value={event.status}
+                onChange={(s) => useData.getState().setEventStatus(event.id, s)}
+              />
             </MetaRow>
           )}
 
