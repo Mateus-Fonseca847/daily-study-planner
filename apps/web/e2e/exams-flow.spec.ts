@@ -70,7 +70,7 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
 test('dado corrompido no armazenamento não quebra o app', async ({ page }) => {
   await page.addInitScript(() => {
     if (!sessionStorage.getItem('seeded')) {
-      localStorage.setItem('daily:v4', '{isto não é json');
+      localStorage.setItem('daily:v5', '{isto não é json');
       sessionStorage.setItem('seeded', '1');
     }
   });
@@ -80,7 +80,7 @@ test('dado corrompido no armazenamento não quebra o app', async ({ page }) => {
   await expect(notice).toContainText('corrompidos');
   await expect(page.getByRole('grid', { name: 'Calendário mensal' })).toBeVisible();
   // Nada é gravado por cima antes de o usuário decidir (nem o hábito de água automático).
-  expect(await page.evaluate(() => localStorage.getItem('daily:v4'))).toBe('{isto não é json');
+  expect(await page.evaluate(() => localStorage.getItem('daily:v5'))).toBe('{isto não é json');
 
   await notice.getByRole('button', { name: 'Começar do zero' }).click();
   await expect(notice).toBeHidden();

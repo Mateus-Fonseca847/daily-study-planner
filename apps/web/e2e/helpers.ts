@@ -6,12 +6,12 @@ import { expect, type Page } from '@playwright/test';
  */
 export async function withoutAutoWater(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    if (localStorage.getItem('daily:v4')) return;
+    if (localStorage.getItem('daily:v5')) return;
     localStorage.setItem(
-      'daily:v4',
+      'daily:v5',
       JSON.stringify({
         app: 'daily',
-        version: 4,
+        version: 5,
         savedAt: '2026-11-01T00:00:00.000Z',
         data: {
           subjects: [],
@@ -28,6 +28,7 @@ export async function withoutAutoWater(page: Page): Promise<void> {
           waterLogs: [],
           focusSessions: [],
           restDays: [],
+          exceptions: [],
           onboarding: { waterHabitCreated: true },
         },
       }),
@@ -38,7 +39,7 @@ export async function withoutAutoWater(page: Page): Promise<void> {
 /** Grava um snapshot v4 antes de o app carregar (só se ainda não houver dados). */
 export async function seedSnapshot(page: Page, data: Record<string, unknown>): Promise<void> {
   await page.addInitScript((patch) => {
-    if (localStorage.getItem('daily:v4')) return;
+    if (localStorage.getItem('daily:v5')) return;
     const base = {
       subjects: [],
       events: [],
@@ -54,11 +55,12 @@ export async function seedSnapshot(page: Page, data: Record<string, unknown>): P
       waterLogs: [],
       focusSessions: [],
       restDays: [],
+      exceptions: [],
       onboarding: { waterHabitCreated: true },
     };
     localStorage.setItem(
-      'daily:v4',
-      JSON.stringify({ app: 'daily', version: 4, savedAt: 'x', data: { ...base, ...patch } }),
+      'daily:v5',
+      JSON.stringify({ app: 'daily', version: 5, savedAt: 'x', data: { ...base, ...patch } }),
     );
   }, data);
 }
