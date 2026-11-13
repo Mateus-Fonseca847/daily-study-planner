@@ -8,6 +8,8 @@ import { CREATE_ITEMS } from '../../components/layout/CreateMenu';
 import { Menu } from '../../components/ui/Menu';
 import { cn } from '../../lib/cn';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
+import { RecurrenceIcon } from '../../components/ui/RecurrenceIcon';
+import { recurrenceText } from '../../lib/recurrence/view';
 import { AGENDA_HOURS, layoutAgenda, nowOffsetHours } from '../../lib/stats/agenda';
 import { openEventForm } from '../../lib/ui-store';
 import { eventTimeRange } from '../calendar/lib/format';
@@ -109,12 +111,13 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
           {items.map(({ event, offsetHours, column }) => {
             const meta = EVENT_TYPE_META[event.type];
             const style = chipStyle(event);
+            const rule = recurrenceText(event);
             const subject = subjects.find((s) => s.id === event.subjectId);
             return (
               <button
                 key={event.id}
                 type="button"
-                aria-label={`${meta.label}: ${event.title}, ${eventTimeRange(event)}`}
+                aria-label={`${meta.label}: ${event.title}, ${eventTimeRange(event)}${rule ? `, repete: ${rule}` : ''}`}
                 onClick={() => openEventForm({ event })}
                 className={cn(
                   'absolute z-20 flex h-agenda-card-h w-agenda-card-w max-w-[calc(100%-var(--ds-agenda-label-w))] flex-col justify-center gap-0.5 rounded-card-sm border-l-stripe bg-bg px-4 text-left shadow-popover transition-[filter] hover:brightness-125',
@@ -137,6 +140,7 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
                 <span className={cn('truncate text-xs', style.text)}>
                   {subject ? `${subject.name} · ` : ''}
                   {meta.label}
+                  {rule && <RecurrenceIcon label={rule} decorative className="ml-1 inline" />}
                 </span>
               </button>
             );

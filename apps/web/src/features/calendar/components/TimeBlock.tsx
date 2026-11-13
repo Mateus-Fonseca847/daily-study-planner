@@ -3,6 +3,8 @@ import type { Habit, StudyEvent } from '@daily/shared';
 import { cn } from '../../../lib/cn';
 import { usePhone } from '../../../lib/responsive/use-media';
 import { chipStyle, EVENT_TYPE_META } from '../../../lib/event-meta';
+import { RecurrenceIcon } from '../../../components/ui/RecurrenceIcon';
+import { recurrenceText } from '../../../lib/recurrence/view';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../../lib/habits';
 import { formatAmount, stateText } from '../../../lib/habits/summary';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
@@ -21,6 +23,7 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
   const { event } = item;
   const meta = EVENT_TYPE_META[event.type];
   const style = chipStyle(event);
+  const rule = recurrenceText(event);
   const Icon = meta.icon;
   const phone = usePhone();
   // Celular: no máximo 2 linhas, e blocos simultâneos (colunas estreitas) viram só a faixa colorida.
@@ -31,7 +34,7 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
   return (
     <button
       type="button"
-      aria-label={`${meta.label}: ${event.title}, ${time}`}
+      aria-label={`${meta.label}: ${event.title}, ${time}${rule ? `, repete: ${rule}` : ''}`}
       title={`${event.title} · ${time}`}
       aria-expanded={selected}
       data-touch={narrow ? 'grid' : 'dense'}
@@ -47,6 +50,7 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
         <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}>
           <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
           <span className="truncate">{meta.label}</span>
+          {rule && <RecurrenceIcon label={rule} decorative />}
         </span>
       )}
       {!narrow && (

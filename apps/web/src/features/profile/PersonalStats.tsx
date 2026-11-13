@@ -26,9 +26,11 @@ export function PersonalStats({ today, habits, habitCtx }: StatsModel) {
   const focusSessions = useData((s) => s.focusSessions);
   const waterLogs = useData((s) => s.waterLogs);
   const habitLogs = useData((s) => s.habitLogs);
+  const exceptions = useData((s) => s.exceptions);
   const totals = useMemo(
-    () => profileTotals({ events, focusSessions, waterLogs, habitLogs, habits }, habitCtx),
-    [events, focusSessions, waterLogs, habitLogs, habits, habitCtx],
+    () =>
+      profileTotals({ events, focusSessions, waterLogs, habitLogs, habits, exceptions }, habitCtx),
+    [events, focusSessions, waterLogs, habitLogs, habits, exceptions, habitCtx],
   );
   const active = useMemo(() => habits.filter((h) => h.archivedAt === null), [habits]);
   const from = useMemo(() => shiftDay(weekStart(today), -7 * (CONSISTENCY_WEEKS - 1)), [today]);

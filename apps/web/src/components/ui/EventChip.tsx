@@ -2,6 +2,7 @@ import type { ButtonHTMLAttributes, Ref } from 'react';
 import type { EventStatus, EventType } from '@daily/shared';
 import { cn } from '../../lib/cn';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
+import { RecurrenceIcon } from './RecurrenceIcon';
 
 interface EventChipProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'title'> {
   eventType: EventType;
@@ -11,6 +12,8 @@ interface EventChipProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, '
   /** Concluído e cancelado ficam esmaecidos, com título riscado. */
   status?: EventStatus;
   selected?: boolean;
+  /** Texto da regra numa ocorrência de série (mostra o ícone de repetição). */
+  recurrence?: string | null;
   ref?: Ref<HTMLButtonElement>;
 }
 
@@ -21,6 +24,7 @@ export function EventChip({
   time,
   status,
   selected,
+  recurrence,
   className,
   ref,
   ...rest
@@ -33,7 +37,7 @@ export function EventChip({
     <button
       ref={ref}
       type="button"
-      aria-label={`${meta.label}: ${title}, ${time}`}
+      aria-label={`${meta.label}: ${title}, ${time}${recurrence ? `, repete: ${recurrence}` : ''}`}
       title={title}
       aria-expanded={selected}
       className={cn(
@@ -48,6 +52,7 @@ export function EventChip({
       <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}>
         <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
         <span className="truncate">{meta.label}</span>
+        {recurrence && <RecurrenceIcon label={recurrence} decorative />}
       </span>
       <span className={cn('truncate text-sm font-semibold text-fg', finished && 'line-through')}>
         {title}

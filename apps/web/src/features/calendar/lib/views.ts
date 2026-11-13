@@ -46,6 +46,29 @@ export const buildCalendarSearch = ({ view, date }: CalendarUrlState): string =>
   new URLSearchParams({ visao: view, data: date }).toString();
 
 /** Domingo a sábado da semana de `date`. */
+/**
+ * Dias que a visão mostra (com um dia antes, para compromissos que cruzam a meia-noite): só essa
+ * janela é expandida nas séries.
+ */
+export function visibleWindow(view: CalendarView, date: string): { from: string; to: string } {
+  switch (view) {
+    case 'dia':
+      return { from: shiftDay(date, -1), to: date };
+    case 'semana': {
+      const { start, end } = weekRange(date);
+      return { from: shiftDay(start, -1), to: end };
+    }
+    case 'mes': {
+      const first = `${date.slice(0, 8)}01`;
+      const start = shiftDay(first, -parseDayKey(first).getDay());
+      // A grade do mês tem no máximo 6 semanas.
+      return { from: shiftDay(start, -1), to: shiftDay(start, 41) };
+    }
+    case 'ano':
+      return { from: `${date.slice(0, 4)}-01-01`, to: `${date.slice(0, 4)}-12-31` };
+  }
+}
+
 export function weekRange(date: string): { start: string; end: string; days: string[] } {
   const start = shiftDay(date, -parseDayKey(date).getDay());
   return {

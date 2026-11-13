@@ -28,6 +28,8 @@ import {
 } from '../../lib/tasks/sections';
 import { useTypeFilter } from '../../lib/tasks/type-filter-store';
 import { openEventForm } from '../../lib/ui-store';
+import { RecurrenceIcon } from '../../components/ui/RecurrenceIcon';
+import { recurrenceText } from '../../lib/recurrence/view';
 import { buildCalendarSearch } from '../calendar/lib/views';
 import { CompleteButton } from './CompleteButton';
 
@@ -66,7 +68,16 @@ function SummaryCard({
 }
 
 /** Linha em cartão: check, título, tipo, progresso das subtarefas, prazo e “Ver no calendário”. */
-function TaskRow({ task, overdue = false }: { task: StudyEvent; overdue?: boolean }) {
+function TaskRow({
+  task,
+  overdue = false,
+  moreThisWeek = 0,
+}: {
+  task: StudyEvent;
+  overdue?: boolean;
+  moreThisWeek?: number;
+}) {
+  const rule = recurrenceText(task);
   const meta = EVENT_TYPE_META[task.type];
   const style = chipStyle(task);
   const progress = subtaskProgress(task.subtasks);
@@ -88,6 +99,13 @@ function TaskRow({ task, overdue = false }: { task: StudyEvent; overdue?: boolea
             <TypeIcon aria-hidden strokeWidth={1.5} className="size-icon-sm" />
             {meta.label}
           </span>
+          {rule && (
+            <span className="inline-flex items-center gap-1">
+              <RecurrenceIcon label={rule} decorative />
+              <span>{rule}</span>
+              {moreThisWeek > 0 && <span>· +{moreThisWeek} nesta semana</span>}
+            </span>
+          )}
           {progress.total > 0 && (
             <span>
               {progress.done} de {progress.total} {subtaskListLabel(task.type).toLowerCase()}
@@ -159,10 +177,21 @@ function Section({
   );
 }
 
-const List = ({ items, overdue }: { items: readonly StudyEvent[]; overdue?: boolean }) => (
+const List = ({
+  items,
+  overdue,
+}: {
+  items: readonly (StudyEvent & { moreThisWeek?: number })[];
+  overdue?: boolean;
+}) => (
   <ul className="flex flex-col gap-2">
     {items.map((task) => (
-      <TaskRow key={task.id} task={task} {...(overdue ? { overdue } : {})} />
+      <TaskRow
+        key={task.id}
+        task={task}
+        moreThisWeek={task.moreThisWeek ?? 0}
+        {...(overdue ? { overdue } : {})}
+      />
     ))}
   </ul>
 );
@@ -170,14 +199,15 @@ const List = ({ items, overdue }: { items: readonly StudyEvent[]; overdue?: bool
 /** Página Tarefas: resumo, Atrasadas, Hoje, Próximas (todas as futuras) e Concluídas. */
 export function TasksPage() {
   const allEvents = useData((s) => s.events);
+  const exceptions = useData((s) => s.exceptions);
   const createEvent = useData((s) => s.createEvent);
   const types = useTypeFilter((s) => s.types);
   const [title, setTitle] = useState('');
   const now = useMemo(() => appNow(), []);
 
   const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
-  const sections = useMemo(() => taskSections(events, now), [events, now]);
-  const summary = useMemo(() => taskSummary(events, now), [events, now]);
+  const sections = useMemo(() => taskSections(events, now, exceptions), [events, now, exceptions]);
+  const summary = useMemo(() => taskSummary(events, now, exceptions), [events, now, exceptions]);
   const upcomingCount = sections.proximas.reduce((n, g) => n + g.items.length, 0);
   const nothingOpen =
     sections.atrasadas.length === 0 && sections.hoje.length === 0 && upcomingCount === 0;

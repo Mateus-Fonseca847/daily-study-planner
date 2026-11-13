@@ -1,9 +1,16 @@
-import type { FocusSession, Habit, HabitLog, StudyEvent, WaterLog } from '@daily/shared';
+import type {
+  FocusSession,
+  Habit,
+  HabitLog,
+  OccurrenceException,
+  StudyEvent,
+  WaterLog,
+} from '@daily/shared';
 import { streaks, type HabitContext } from '../habits';
 import { weekDays } from './derive';
 
 export interface ProfileTotals {
-  /** Compromissos concluídos (de todos os tipos), em todo o histórico. */
+  /** Compromissos concluídos (avulsos e ocorrências de séries), em todo o histórico. */
   tasksDone: number;
   /** Segundos de foco (cronômetro + manual) na semana de hoje (seg–dom) e no total. */
   focusWeekSec: number;
@@ -20,6 +27,8 @@ interface ProfileData {
   waterLogs: readonly WaterLog[];
   habitLogs: readonly HabitLog[];
   habits: readonly Habit[];
+  /** Exceções das séries: ocorrências concluídas também contam. */
+  exceptions?: readonly OccurrenceException[];
 }
 
 /** Totais e sequências do Perfil (função pura; “hoje” vem do contexto dos hábitos). */
@@ -45,7 +54,9 @@ export function profileTotals(data: ProfileData, ctx: HabitContext): ProfileTota
   }
 
   return {
-    tasksDone: data.events.filter((e) => e.status === 'concluido').length,
+    tasksDone:
+      data.events.filter((e) => !e.recurrence && e.status === 'concluido').length +
+      (data.exceptions ?? []).filter((ex) => ex.status === 'concluido').length,
     focusWeekSec,
     focusTotalSec,
     bestStreak,

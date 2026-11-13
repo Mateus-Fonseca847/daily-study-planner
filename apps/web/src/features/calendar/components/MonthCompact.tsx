@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { recurrenceText } from '../../../lib/recurrence/view';
 import { format, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarDays, Plus } from 'lucide-react';
@@ -154,6 +155,7 @@ export function MonthCompact({
                   title={event.title}
                   time={eventTimeRange(event)}
                   status={event.status}
+                  recurrence={recurrenceText(event)}
                   selected={selectedId === event.id}
                   onClick={(e) => onSelect(event, e.currentTarget)}
                 />

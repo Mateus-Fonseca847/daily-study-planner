@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarPlus, ListTodo } from 'lucide-react';
 import type { StudyEvent } from '@daily/shared';
 import { filterByType } from '../../lib/tasks/sections';
+import { useOccurrences } from '../../lib/recurrence/use-occurrences';
 import { useTypeFilter } from '../../lib/tasks/type-filter-store';
 import { usePhone } from '../../lib/responsive/use-media';
 import { Button } from '../../components/ui/Button';
@@ -25,6 +26,7 @@ import {
   shiftPeriod,
   viewForScreen,
   type CalendarView,
+  visibleWindow,
 } from './lib/views';
 
 export function CalendarPage() {
@@ -37,12 +39,15 @@ export function CalendarPage() {
   const { date } = parsed;
   // No celular o ano inteiro não cabe: Mês é o padrão e a visão Ano some.
   const view = viewForScreen(parsed.view, phone);
+  // Séries viram ocorrências só da janela visível.
+  const { from: visibleFrom, to: visibleTo } = visibleWindow(view, date);
+  const occurrences = useOccurrences(visibleFrom, visibleTo);
   const month = useMemo(() => parseISO(`${date}T00:00:00`), [date]);
   const allEvents = useData((s) => s.events);
   const subjectCount = useData((s) => s.subjects.length);
   const replaceAll = useData((s) => s.replaceAll);
 
-  const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
+  const events = useMemo(() => filterByType(occurrences, types), [occurrences, types]);
 
   // O clique num compromisso abre o painel de tarefa (ver, editar, concluir).
   const select = (event: StudyEvent) => openEventForm({ event });

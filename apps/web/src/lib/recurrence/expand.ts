@@ -17,12 +17,15 @@ export type EventView = StudyEvent & {
   seriesId: string;
   /** Dia original da ocorrência; `null` num evento avulso. */
   originalDate: string | null;
+  /** Data inicial da série (o próprio dia num avulso): descreve a regra na ocorrência. */
+  anchor: string;
 };
 
 export const asView = (event: StudyEvent): EventView => ({
   ...event,
   seriesId: event.id,
   originalDate: null,
+  anchor: event.start.slice(0, 10),
 });
 
 /** A ocorrência do dia `date`, já com a exceção aplicada (ou `null` se ela foi pulada). */
@@ -41,6 +44,7 @@ export function buildOccurrence(
     id: occurrenceId(series.id, date),
     seriesId: series.id,
     originalDate: date,
+    anchor: series.start.slice(0, 10),
     start,
     end: toLocalIso(addMinutes(fromLocalIso(start), minutes)),
     status: exception?.status ?? 'pendente',
