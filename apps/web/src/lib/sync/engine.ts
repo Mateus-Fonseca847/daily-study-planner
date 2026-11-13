@@ -63,6 +63,12 @@ export interface EngineDeps {
   local: LocalData;
   meta: MetaStore;
   report(patch: Partial<SyncStatus>): void;
+  /**
+   * O que estava salvo localmente antes da migração de formato (`daily:v3:pre-v4`), como
+   * `{ version, data }`. Usado uma vez para “rebasear” o ponto de sincronia: se era exatamente o
+   * que tinha sido sincronizado, o local migrado também está sincronizado (sem conflito falso).
+   */
+  legacySynced?(): { version: number; data: unknown } | null;
   /** Cópia de segurança do estado local antes de ele ser substituído pela nuvem. */
   saveSafetyCopy?(snapshot: DataSnapshot): void;
   /** Impressão digital do estado (padrão: SHA-256); injetável para testes determinísticos. */
@@ -103,6 +109,27 @@ export function createSyncEngine(deps: EngineDeps) {
   let retry: ReturnType<typeof setTimeout> | undefined;
   let queue: Promise<void> = Promise.resolve();
   let stash: Stash | null = null;
+  /** O rebase pelo local antigo não fechou: tenta pela nuvem no primeiro ciclo. */
+  let remoteRebase = false;
+
+  /**
+   * O app migrou o local para um formato novo, mas o ponto de sincronia guarda o hash do formato
+   * antigo. Sem isto, atualizar o app pareceria uma edição local (e daria conflito se outro
+   * dispositivo também tivesse gravado). Se o local antigo era exatamente o sincronizado, o novo
+   * hash é o do local antigo migrado (a migração é determinística).
+   */
+  async function rebaseAfterMigration(): Promise<void> {
+    const current = meta.read();
+    if (!current || (current.version ?? 3) >= dataVersion) return;
+    let hash = current.hash;
+    const legacy = deps.legacySynced?.() ?? null;
+    if (legacy && (await fingerprint(legacy.data)) === current.hash) {
+      const parsed = dataSnapshotSchema.safeParse(migrateData(legacy.version, legacy.data));
+      if (parsed.success) hash = await fingerprint(parsed.data);
+    }
+    remoteRebase = hash === current.hash;
+    meta.write({ revision: current.revision, hash, version: dataVersion });
+  }
 
   /** Serializa as execuções: nunca há dois ciclos ao mesmo tempo. */
   const enqueue = (task: () => Promise<void>): Promise<void> => {
@@ -167,6 +194,14 @@ export function createSyncEngine(deps: EngineDeps) {
 
     const localSnap = local.snapshot();
     const localHash = await fingerprint(localSnap);
+    if (remoteRebase) {
+      remoteRebase = false;
+      // A nuvem não mudou desde a última sincronia: ela (migrada) é o ponto de sincronia.
+      const current = meta.read();
+      if (row && remote && current?.revision === row.revision) {
+        meta.write({ revision: row.revision, hash: remote.hash, version: dataVersion });
+      }
+    }
     const decision = reconcile({
       localHash,
       localPristine: isPristineSnapshot(localSnap),
@@ -177,13 +212,13 @@ export function createSyncEngine(deps: EngineDeps) {
     switch (decision.kind) {
       case 'noop':
       case 'adopt':
-        if (row) meta.write({ revision: row.revision, hash: localHash });
+        if (row) meta.write({ revision: row.revision, hash: localHash, version: dataVersion });
         return synced();
       case 'pull':
         if (!row || !remote) return;
         deps.saveSafetyCopy?.(localSnap);
         applyRemote(remote.snapshot);
-        meta.write({ revision: row.revision, hash: remote.hash });
+        meta.write({ revision: row.revision, hash: remote.hash, version: dataVersion });
         return synced();
       case 'push': {
         const result =
@@ -195,7 +230,7 @@ export function createSyncEngine(deps: EngineDeps) {
             throw new Error('A nuvem mudou várias vezes durante o envio.');
           return cycle(attempt + 1);
         }
-        meta.write({ revision: result.revision, hash: localHash });
+        meta.write({ revision: result.revision, hash: localHash, version: dataVersion });
         // Se algo mudou durante o envio, um novo ciclo já foi agendado pelo assinante.
         return synced();
       }
@@ -241,7 +276,8 @@ export function createSyncEngine(deps: EngineDeps) {
   const unsubscribe = { fn: undefined as undefined | (() => void) };
 
   return {
-    start(): Promise<void> {
+    async start(): Promise<void> {
+      await rebaseAfterMigration();
       unsubscribe.fn = local.subscribe(() => void onLocalChange());
       return syncNow();
     },
@@ -267,7 +303,11 @@ export function createSyncEngine(deps: EngineDeps) {
           if (choice === 'cloud') {
             deps.saveSafetyCopy?.(local.snapshot());
             applyRemote(parsed);
-            meta.write({ revision: row.revision, hash: await fingerprint(parsed) });
+            meta.write({
+              revision: row.revision,
+              hash: await fingerprint(parsed),
+              version: dataVersion,
+            });
             return synced();
           }
           const snap = local.snapshot();
@@ -277,7 +317,11 @@ export function createSyncEngine(deps: EngineDeps) {
             blocked = false;
             return cycle();
           }
-          meta.write({ revision: result.revision, hash: await fingerprint(snap) });
+          meta.write({
+            revision: result.revision,
+            hash: await fingerprint(snap),
+            version: dataVersion,
+          });
           synced();
         } catch (error) {
           fail(error);

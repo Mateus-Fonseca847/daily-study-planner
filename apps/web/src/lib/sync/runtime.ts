@@ -5,6 +5,7 @@ import { getSupabase } from '../cloud/client';
 import { createSupabaseApi } from '../cloud/supabase-api';
 import { useAuth } from '../auth/auth-store';
 import { useData } from '../data/app-store';
+import { PRE_V4_KEY } from '../data/local-storage-repository';
 import { createSyncEngine, type SyncEngine } from './engine';
 import { INITIAL_SYNC, useSync } from './sync-store';
 import type { SyncMeta } from './reconcile';
@@ -22,9 +23,10 @@ function readMeta(key: string): SyncMeta | null {
     const raw = browserStorage().getItem(key);
     if (!raw) return null;
     const m = JSON.parse(raw) as Partial<SyncMeta>;
-    return typeof m.revision === 'number' && typeof m.hash === 'string'
-      ? { revision: m.revision, hash: m.hash }
-      : null;
+    if (typeof m.revision !== 'number' || typeof m.hash !== 'string') return null;
+    return typeof m.version === 'number'
+      ? { revision: m.revision, hash: m.hash, version: m.version }
+      : { revision: m.revision, hash: m.hash };
   } catch {
     return null;
   }
@@ -62,6 +64,18 @@ function start(userId: string): void {
       },
     },
     report: (patch) => useSync.setState(patch),
+    legacySynced: () => {
+      try {
+        const raw = browserStorage().getItem(PRE_V4_KEY);
+        if (!raw) return null;
+        const envelope = JSON.parse(raw) as { version?: unknown; data?: unknown };
+        return typeof envelope.version === 'number' && 'data' in envelope
+          ? { version: envelope.version, data: envelope.data }
+          : null;
+      } catch {
+        return null;
+      }
+    },
     saveSafetyCopy: (snapshot: DataSnapshot) => {
       try {
         browserStorage().setItem(PRE_SYNC_KEY, JSON.stringify(snapshot));

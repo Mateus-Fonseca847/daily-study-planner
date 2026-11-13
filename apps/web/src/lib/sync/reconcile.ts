@@ -4,6 +4,11 @@
 export interface SyncMeta {
   revision: number;
   hash: string;
+  /**
+   * Versão do formato em que `hash` foi calculado. Ausente = gravado por um app v3: depois da
+   * migração local o hash precisa ser “rebaseado” (ver `createSyncEngine`).
+   */
+  version?: number;
 }
 
 export interface RemoteInfo {

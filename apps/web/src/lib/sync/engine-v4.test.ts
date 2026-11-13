@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createInitialSnapshot, type DataSnapshot } from '@daily/shared';
+import { parseEnvelope } from '../data/envelope';
 import { createDataStore } from '../data/store';
+import { canonicalJson } from './canonical';
 import { memoryRepo } from '../data/test-utils';
 import { fakeCloud, last, settle, setup, withSubject } from './test-helpers';
 
@@ -159,5 +161,90 @@ describe('sincronização com o formato v4', () => {
     expect(last(old.status)).toBe('outdated');
     expect(cloud.row).toMatchObject({ revision: 2, version: 4 });
     expect((cloud.row?.data as DataSnapshot).subjects[0]?.id).toBe('v4');
+  });
+});
+
+describe('ponto de sincronia depois de atualizar o app (rebase)', () => {
+  beforeEach(() => vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] }));
+  afterEach(() => vi.useRealTimers());
+
+  /** O local depois da migração v3 → v4 (o que o repositório grava em daily:v4). */
+  const migratedLocal = (): DataSnapshot => {
+    const result = parseEnvelope(JSON.stringify({ version: 3, data: v3Cloud }), new Date());
+    if (!result.ok) throw new Error(result.error);
+    return result.snapshot;
+  };
+  /** Meta gravada pelo app v3: sem `version`, hash do snapshot v3 (`canonicalJson` nos testes). */
+  const v3Meta = { revision: 1, hash: canonicalJson(v3Cloud) };
+  const legacy = (data: unknown = v3Cloud) => ({ legacySynced: () => ({ version: 3, data }) });
+  const withExtraSubject = (s: DataSnapshot): DataSnapshot => ({
+    ...s,
+    subjects: [...s.subjects, { id: 'nova', name: 'Nova', color: 'rosa' }],
+  });
+
+  it('(b) ninguém editou: sem conflito falso e sem escrever na nuvem', async () => {
+    const cloud = fakeCloud({ data: v3Cloud, version: 3 });
+    const t = setup(cloud, migratedLocal(), v3Meta, legacy());
+    await t.engine.start();
+    expect(last(t.status)).toBe('synced');
+    expect(cloud.calls.update + cloud.calls.insert).toBe(0);
+    expect(t.meta).toMatchObject({ revision: 1, version: 4 });
+  });
+
+  it('(b) sem a cópia pre-v4 (já limpa), a nuvem intacta serve de referência', async () => {
+    const cloud = fakeCloud({ data: v3Cloud, version: 3 });
+    const t = setup(cloud, migratedLocal(), v3Meta);
+    await t.engine.start();
+    expect(last(t.status)).toBe('synced');
+    expect(cloud.calls.update + cloud.calls.insert).toBe(0);
+  });
+
+  it('(b) só a nuvem mudou (outro dispositivo já no v4): baixa, sem conflito', async () => {
+    const cloud = fakeCloud({ data: v3Cloud, version: 3 });
+    const remote = withExtraSubject(migratedLocal());
+    cloud.set({ revision: 2, version: 4, data: remote, updatedAt: 't' });
+    const t = setup(cloud, migratedLocal(), v3Meta, legacy());
+    await t.engine.start();
+    expect(last(t.status)).toBe('synced');
+    expect(t.snap.subjects.map((s) => s.id)).toContain('nova');
+    expect(cloud.calls.update).toBe(0);
+  });
+
+  it('(c) só o local mudou depois da atualização: envia (já em v4)', async () => {
+    const cloud = fakeCloud({ data: v3Cloud, version: 3 });
+    const t = setup(cloud, withExtraSubject(migratedLocal()), v3Meta, legacy());
+    await t.engine.start();
+    expect(cloud.calls.update).toBe(1);
+    expect(cloud.row).toMatchObject({ revision: 2, version: 4 });
+  });
+
+  it('(c) local editado depois da atualização e nuvem editada em outro lugar: conflito real', async () => {
+    const cloud = fakeCloud({ data: v3Cloud, version: 3 });
+    cloud.set({ revision: 2, version: 4, data: migratedLocal(), updatedAt: 't' });
+    const remote = {
+      ...migratedLocal(),
+      preferences: { ...migratedLocal().preferences, name: 'Bia' },
+    };
+    cloud.set({ revision: 2, version: 4, data: remote, updatedAt: 't' });
+    const t = setup(cloud, withExtraSubject(migratedLocal()), v3Meta, legacy());
+    await t.engine.start();
+    expect(last(t.status)).toBe('conflict');
+    expect(cloud.calls.update + cloud.calls.insert).toBe(0);
+  });
+
+  it('(c) edição feita no app antigo e ainda não enviada, com a nuvem também mudada: conflito real', async () => {
+    const editedInV3 = {
+      ...v3Cloud,
+      subjects: [...v3Cloud.subjects, { id: 'q', name: 'Q', color: 'verde' }],
+    };
+    const cloud = fakeCloud({ data: v3Cloud, version: 3 });
+    cloud.set({ revision: 2, version: 4, data: withExtraSubject(migratedLocal()), updatedAt: 't' });
+    const local = parseEnvelope(JSON.stringify({ version: 3, data: editedInV3 }), new Date());
+    if (!local.ok) throw new Error(local.error);
+    // O pre-v4 guarda o v3 editado, que não é o que foi sincronizado (v3Meta).
+    const t = setup(cloud, local.snapshot, v3Meta, legacy(editedInV3));
+    await t.engine.start();
+    expect(last(t.status)).toBe('conflict');
+    expect(cloud.calls.update + cloud.calls.insert).toBe(0);
   });
 });
