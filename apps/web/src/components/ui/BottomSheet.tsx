@@ -73,15 +73,17 @@ export function BottomSheet({ title, onClose, children, footer, hideTitle }: Bot
         <h2
           id={titleId}
           className={
-            hideTitle ? 'sr-only' : 'px-4 pb-3 text-title font-semibold tracking-tight text-fg'
+            hideTitle
+              ? 'sr-only'
+              : 'px-sheet-x pb-3 text-title font-semibold tracking-tight text-fg'
           }
         >
           {title}
         </h2>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
+        <div className="scroll-body min-h-0 flex-1 overflow-y-auto overscroll-contain px-sheet-x pt-panel-top pb-4">
           {children}
         </div>
-        {footer && <footer className="flex flex-col gap-2 px-4 pb-4">{footer}</footer>}
+        {footer && <footer className="flex flex-col gap-2 px-sheet-x pb-4">{footer}</footer>}
       </div>
     </div>,
     document.body,

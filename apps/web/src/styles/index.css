@@ -157,6 +157,9 @@
   --spacing-checkbox: var(--ds-checkbox);
   --spacing-check-target: var(--ds-check-target);
   --spacing-panel-label: var(--ds-panel-label-w);
+  --spacing-panel-x: var(--ds-panel-pad-x);
+  --spacing-sheet-x: var(--ds-sheet-pad-x);
+  --spacing-panel-top: var(--ds-panel-pad-top);
   --spacing-filter: var(--ds-filter-w);
   --spacing-profile-avatar: var(--ds-profile-avatar);
   --spacing-segment: var(--ds-segment-min-w);
@@ -352,6 +355,18 @@
   background-image: var(--ds-glow-accent);
 }
 /* Modo Foco: duas colunas (painel + relógio; o relógio vem primeiro no DOM); abaixo de 1100 px o painel desce para baixo dos botões. */
+/*
+ * Corpo rolável de painéis, modais, sheets e popovers. Áreas com `overflow` cortam o anel de
+ * foco desenhado por fora; aqui o anel fica por dentro do controle (com uma faixa escura para
+ * contrastar com fundos amarelos) e o foco rolado para a vista deixa um respiro nas bordas.
+ */
+@utility scroll-body {
+  scroll-padding-block: var(--ds-scroll-pad);
+  & :focus-visible {
+    outline-offset: var(--ds-focus-inset-offset);
+    box-shadow: inset 0 0 0 var(--ds-focus-inner-w) var(--ds-color-focus-inner);
+  }
+}
 @utility focus-layout {
   display: flex;
   flex-direction: column;

@@ -50,7 +50,7 @@ export function Modal({
         aria-labelledby={titleId}
         className="readable vv-box fixed z-50 flex flex-col bg-raised pt-safe-top pr-safe-right pb-safe-bottom pl-safe-left"
       >
-        <header className="flex h-topbar-compact shrink-0 items-center justify-between gap-2 border-b-hair px-4">
+        <header className="flex h-topbar-compact shrink-0 items-center justify-between gap-2 border-b-hair px-sheet-x">
           <h2
             id={titleId}
             className={hideTitle ? 'sr-only' : 'truncate text-title font-semibold tracking-tight'}
@@ -64,11 +64,11 @@ export function Modal({
             </Button>
           </div>
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
+        <div className="scroll-body min-h-0 flex-1 overflow-y-auto overscroll-contain px-sheet-x py-4">
           {children}
         </div>
         {footer && (
-          <footer className="flex shrink-0 flex-col-reverse gap-2 border-t-hair px-4 py-3 *:w-full">
+          <footer className="flex shrink-0 flex-col-reverse gap-2 border-t-hair px-sheet-x py-3 *:w-full">
             {footer}
           </footer>
         )}
@@ -87,7 +87,7 @@ export function Modal({
           aria-labelledby={titleId}
           className="flex h-full w-full max-w-panel flex-col border-l-hair bg-raised shadow-popover"
         >
-          <header className="flex items-center justify-between gap-4 px-6 pt-5 pb-2">
+          <header className="flex items-center justify-between gap-4 px-panel-x pt-5 pb-2">
             <h2
               id={titleId}
               className={hideTitle ? 'sr-only' : 'text-title font-semibold tracking-tight'}
@@ -101,9 +101,13 @@ export function Modal({
               </Button>
             </div>
           </header>
-          <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-4">{children}</div>
+          <div className="scroll-body min-h-0 flex-1 overflow-y-auto px-panel-x pt-panel-top pb-4">
+            {children}
+          </div>
           {footer && (
-            <footer className="flex justify-end gap-2 border-t-hair px-6 py-4">{footer}</footer>
+            <footer className="flex justify-end gap-2 border-t-hair px-panel-x py-4">
+              {footer}
+            </footer>
           )}
         </div>
       </div>,
@@ -120,7 +124,7 @@ export function Modal({
         aria-labelledby={titleId}
         className="flex max-h-modal w-full max-w-modal flex-col rounded-xl border-hair bg-raised shadow-popover"
       >
-        <header className="flex items-center justify-between gap-4 px-6 pt-6 pb-4">
+        <header className="flex items-center justify-between gap-4 px-panel-x pt-6 pb-4">
           <h2 id={titleId} className="text-title font-semibold tracking-tight">
             {title}
           </h2>
@@ -128,8 +132,10 @@ export function Modal({
             <X aria-hidden strokeWidth={1.5} className="size-icon-sm" />
           </Button>
         </header>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2">{children}</div>
-        {footer && <footer className="flex justify-end gap-2 px-6 py-4">{footer}</footer>}
+        <div className="scroll-body min-h-0 flex-1 overflow-y-auto px-panel-x pt-panel-top pb-2">
+          {children}
+        </div>
+        {footer && <footer className="flex justify-end gap-2 px-panel-x py-4">{footer}</footer>}
       </div>
     </div>,
     document.body,
