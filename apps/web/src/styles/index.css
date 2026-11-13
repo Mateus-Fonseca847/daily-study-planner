@@ -34,14 +34,13 @@
   --color-density-3: var(--ds-density-3);
   --color-heat-off: var(--ds-color-heat-off);
   --color-danger: var(--ds-color-danger);
-  --color-subject-vermelho: var(--ds-color-subject-vermelho);
-  --color-subject-laranja: var(--ds-color-subject-laranja);
-  --color-subject-amarelo: var(--ds-color-subject-amarelo);
-  --color-subject-verde: var(--ds-color-subject-verde);
-  --color-subject-turquesa: var(--ds-color-subject-turquesa);
-  --color-subject-azul: var(--ds-color-subject-azul);
-  --color-subject-violeta: var(--ds-color-subject-violeta);
+  --color-subject-ciano: var(--ds-color-subject-ciano);
+  --color-subject-petroleo: var(--ds-color-subject-petroleo);
+  --color-subject-gelo: var(--ds-color-subject-gelo);
+  --color-subject-lilas: var(--ds-color-subject-lilas);
+  --color-subject-fucsia: var(--ds-color-subject-fucsia);
   --color-subject-rosa: var(--ds-color-subject-rosa);
+  --color-subject-cinza: var(--ds-color-subject-cinza);
   --color-accent: var(--ds-color-accent);
   --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
@@ -53,16 +52,19 @@
   --color-subtle: var(--ds-color-fg-subtle);
   --color-pill: var(--ds-color-white-pill);
   --color-pill-fg: var(--ds-color-white-pill-fg);
-  --color-prova: var(--ds-color-event-prova);
-  --color-estudo: var(--ds-color-event-estudo);
-  --color-entrega: var(--ds-color-event-entrega);
-  --color-revisao: var(--ds-color-event-revisao);
-  --color-especial: var(--ds-color-event-especial);
-  --color-prova-soft: var(--ds-color-event-prova-soft);
-  --color-estudo-soft: var(--ds-color-event-estudo-soft);
-  --color-entrega-soft: var(--ds-color-event-entrega-soft);
-  --color-revisao-soft: var(--ds-color-event-revisao-soft);
-  --color-especial-soft: var(--ds-color-event-especial-soft);
+  --color-pendente: var(--ds-color-status-pendente);
+  --color-concluido: var(--ds-color-status-concluido);
+  --color-cancelado: var(--ds-color-status-cancelado);
+  --color-prova: var(--ds-color-type-prova);
+  --color-especial: var(--ds-color-type-especial);
+  --color-pendente-soft: var(--ds-color-status-pendente-soft);
+  --color-concluido-soft: var(--ds-color-status-concluido-soft);
+  --color-cancelado-soft: var(--ds-color-status-cancelado-soft);
+  --color-prova-soft: var(--ds-color-type-prova-soft);
+  --color-especial-soft: var(--ds-color-type-especial-soft);
+  --color-streak: var(--ds-color-streak);
+  --color-streak-off: var(--ds-color-streak-off);
+  --color-rest: var(--ds-color-rest);
 
   --font-sans: var(--ds-font-sans);
 
@@ -153,6 +155,10 @@
   --spacing-today: var(--ds-today-size);
   --spacing-progress: var(--ds-progress-h);
   --spacing-checkbox: var(--ds-checkbox);
+  --spacing-check-target: var(--ds-check-target);
+  --spacing-panel-label: var(--ds-panel-label-w);
+  --spacing-filter: var(--ds-filter-w);
+  --spacing-profile-avatar: var(--ds-profile-avatar);
   --spacing-segment: var(--ds-segment-min-w);
   --spacing-select-month: var(--ds-select-month-w);
   --spacing-select-year: var(--ds-select-year-w);
@@ -163,7 +169,6 @@
   --spacing-card: var(--ds-card-pad);
   --spacing-card-gap: var(--ds-card-gap);
   --spacing-stats-row: var(--ds-stats-row1-h);
-  --spacing-stats-pill: var(--ds-stats-pill-h);
   --spacing-ring: var(--ds-ring-size);
   --spacing-bar-w: var(--ds-bar-w);
   --spacing-bar-h: var(--ds-bar-h);
@@ -177,7 +182,6 @@
   --spacing-agenda-label: var(--ds-agenda-label-w);
   --spacing-agenda-card-w: var(--ds-agenda-card-w);
   --spacing-agenda-card-h: var(--ds-agenda-card-h);
-  --spacing-chart: var(--ds-chart-h);
   --spacing-heat-gap: var(--ds-heat-gap);
   --spacing-grid-hour: var(--ds-grid-hour-h);
   --spacing-grid-label: var(--ds-grid-label-w);
@@ -230,6 +234,7 @@
 
   --container-focus-notice: var(--ds-focus-notice-w);
   --container-modal: var(--ds-modal-w);
+  --container-panel: var(--ds-panel-w);
   --container-toast: var(--ds-toast-w);
   --container-content: var(--ds-page-max-w);
   --container-stats: var(--ds-stats-max-w);
@@ -373,35 +378,27 @@
     grid-template-columns: var(--ds-stats-cols-sm);
   }
 }
-@utility grid-analysis {
-  display: grid;
-  gap: var(--ds-card-gap);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  @media (width < 80rem) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 /* Hábitos: a cor do hábito vem de `--habit`; os níveis do heatmap derivam dela sobre `heat-0`. */
-@utility habit-amarelo {
-  --habit: var(--ds-habit-amarelo);
+@utility habit-ciano {
+  --habit: var(--ds-habit-ciano);
 }
-@utility habit-azul {
-  --habit: var(--ds-habit-azul);
+@utility habit-petroleo {
+  --habit: var(--ds-habit-petroleo);
 }
-@utility habit-verde {
-  --habit: var(--ds-habit-verde);
+@utility habit-gelo {
+  --habit: var(--ds-habit-gelo);
 }
-@utility habit-laranja {
-  --habit: var(--ds-habit-laranja);
+@utility habit-lilas {
+  --habit: var(--ds-habit-lilas);
+}
+@utility habit-fucsia {
+  --habit: var(--ds-habit-fucsia);
 }
 @utility habit-rosa {
   --habit: var(--ds-habit-rosa);
 }
-@utility habit-violeta {
-  --habit: var(--ds-habit-violeta);
-}
-@utility habit-turquesa {
-  --habit: var(--ds-habit-turquesa);
+@utility habit-cinza {
+  --habit: var(--ds-habit-cinza);
 }
 @utility habit-text {
   color: var(--habit);
@@ -472,16 +469,21 @@
   outline: var(--ds-border-w) solid var(--ds-color-fg);
   outline-offset: 0;
 }
+/* Dia de descanso: listras neutras (não é falta nem cumprimento). */
+@utility heat-rest {
+  background-color: var(--ds-color-heat-off);
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--ds-color-rest) 0 var(--ds-rest-stripe),
+    transparent var(--ds-rest-stripe) calc(var(--ds-rest-stripe) * 2)
+  );
+}
 @utility heat-off {
   background-color: var(--ds-color-heat-off);
 }
 /* Célula do mapa de calor: `--heat` (0–1) vai de `--ds-heat-min` até opacidade total. */
 @utility heat-cell {
   fill-opacity: calc(var(--ds-heat-min) + (1 - var(--ds-heat-min)) * var(--heat));
-}
-/* Hachurado dos blocos planejados. */
-@utility bg-hatch {
-  background-image: var(--ds-hatch-planned);
 }
 /* Gradiente da água. */
 @utility bg-water {

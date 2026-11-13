@@ -6,6 +6,7 @@ import {
   habitLogSchema,
   habitSchema,
   preferencesSchema,
+  restDaySchema,
   studyEventSchema,
   subjectSchema,
   waterLogSchema,
@@ -14,7 +15,9 @@ import {
   type FocusSession,
   type Habit,
   type HabitLog,
+  type Onboarding,
   type Preferences,
+  type RestDay,
   type StudyEvent,
   type Subject,
   type WaterLog,
@@ -36,14 +39,21 @@ export interface StorageLike {
   removeItem(key: string): void;
 }
 
-export const STORAGE_KEY = 'daily:v3';
+export const STORAGE_KEY = 'daily:v4';
 /** Chaves dos formatos anteriores: lidas uma vez na migração e nunca mais alteradas. */
+export const LEGACY_V3_KEY = 'daily:v3';
 export const LEGACY_V2_KEY = 'daily:v2';
 export const LEGACY_KEY = 'daily:v1';
 /** Cópia do dado v1 feita ANTES de migrar. */
 export const PRE_MIGRATION_KEY = `${LEGACY_KEY}:pre-v2`;
 /** Cópia do dado v2 feita ANTES de migrar para o v3. */
 export const PRE_V3_KEY = `${LEGACY_V2_KEY}:pre-v3`;
+/** Cópia do dado v3 feita ANTES de migrar para o v4. */
+export const PRE_V4_KEY = `${LEGACY_V3_KEY}:pre-v4`;
+/** Quando a migração v3 → v4 rodou (epoch ms): marca o prazo de limpeza das chaves v3. */
+export const MIGRATED_AT_KEY = `${STORAGE_KEY}:migrated-at`;
+/** Dias que `daily:v3` e `daily:v3:pre-v4` ficam guardados depois da migração. */
+export const LEGACY_RETENTION_DAYS = 30;
 export const BACKUP_KEY = `${STORAGE_KEY}:backup`;
 export const CORRUPT_KEY = `${STORAGE_KEY}:corrupt`;
 /** Sessão de foco ativa (fora do snapshot e do backup; chave histórica, não mudou na v3). */
@@ -116,6 +126,8 @@ export class LocalStorageRepository implements DataRepository {
   readonly habitLogs: EntityRepository<HabitLog>;
   readonly waterLogs: EntityRepository<WaterLog>;
   readonly focusSessions: EntityRepository<FocusSession>;
+  readonly restDays: EntityRepository<RestDay>;
+  readonly onboarding: DataRepository['onboarding'];
   readonly preferences: DataRepository['preferences'];
   readonly focusActive: DataRepository['focusActive'];
   issue: LoadIssue | null = null;
@@ -133,7 +145,8 @@ export class LocalStorageRepository implements DataRepository {
     this.load();
 
     const collection = <T extends { id: string }>(
-      key: 'subjects' | 'events' | 'habits' | 'habitLogs' | 'waterLogs' | 'focusSessions',
+      key:
+        'subjects' | 'events' | 'habits' | 'habitLogs' | 'waterLogs' | 'focusSessions' | 'restDays',
       schema: Parser<T>,
     ) =>
       new Collection<T>(
@@ -148,6 +161,15 @@ export class LocalStorageRepository implements DataRepository {
     this.habitLogs = collection<HabitLog>('habitLogs', habitLogSchema);
     this.waterLogs = collection<WaterLog>('waterLogs', waterLogSchema);
     this.focusSessions = collection<FocusSession>('focusSessions', focusSessionSchema);
+    this.restDays = collection<RestDay>('restDays', restDaySchema);
+    this.onboarding = {
+      get: () => this.state.onboarding,
+      update: (patch) => {
+        const next: Onboarding = { ...this.state.onboarding, ...patch };
+        this.commit({ ...this.state, onboarding: next });
+        return next;
+      },
+    };
 
     this.preferences = {
       get: () => this.state.preferences,
@@ -210,7 +232,17 @@ export class LocalStorageRepository implements DataRepository {
 
   private load(): void {
     const current = this.storage.getItem(STORAGE_KEY);
-    if (current !== null) return this.loadRaw(current, null);
+    if (current !== null) {
+      this.loadRaw(current, null);
+      this.cleanupLegacy();
+      return;
+    }
+    const v3 = this.storage.getItem(LEGACY_V3_KEY);
+    if (v3 !== null) {
+      this.loadRaw(v3, PRE_V4_KEY);
+      this.writeSafely(MIGRATED_AT_KEY, String(this.now().getTime()));
+      return;
+    }
     const v2 = this.storage.getItem(LEGACY_V2_KEY);
     if (v2 !== null) return this.loadRaw(v2, PRE_V3_KEY);
     const v1 = this.storage.getItem(LEGACY_KEY);
@@ -238,6 +270,25 @@ export class LocalStorageRepository implements DataRepository {
       message: result.error,
       hasBackup: backup !== null && parseEnvelope(backup, this.now()).ok,
     };
+  }
+
+  /**
+   * Limpeza: `daily:v3` e `daily:v3:pre-v4` ficam {@link LEGACY_RETENTION_DAYS} dias depois da
+   * migração (recuperação manual e o “rebase” da sincronização) e então são removidos.
+   */
+  private cleanupLegacy(): void {
+    const raw = this.storage.getItem(MIGRATED_AT_KEY);
+    const migratedAt = raw === null ? Number.NaN : Number(raw);
+    if (!Number.isFinite(migratedAt)) return;
+    const ageMs = this.now().getTime() - migratedAt;
+    if (ageMs < LEGACY_RETENTION_DAYS * 24 * 60 * 60 * 1000) return;
+    try {
+      this.storage.removeItem(LEGACY_V3_KEY);
+      this.storage.removeItem(PRE_V4_KEY);
+      this.storage.removeItem(MIGRATED_AT_KEY);
+    } catch {
+      /* tenta de novo na próxima abertura */
+    }
   }
 
   private writeSafely(key: string, value: string): void {

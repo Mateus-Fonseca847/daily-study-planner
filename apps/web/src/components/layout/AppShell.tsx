@@ -18,7 +18,6 @@ import { Fab } from './Fab';
 import { FocusLockGuard, FocusRuntime } from './FocusRuntime';
 import { MoreSheet, MORE_ITEMS } from './MoreSheet';
 import { PhoneTopbar } from './PhoneTopbar';
-import { ShellContext } from './shell-context';
 import { Sidebar } from './Sidebar';
 import { SidebarOverlay } from './SidebarOverlay';
 import { StorageNotices } from './StorageNotices';
@@ -35,7 +34,6 @@ export function AppShell() {
   // O sheet "Mais" fecha sozinho ao navegar: ele só está aberto na página em que foi aberto.
   const [moreFor, setMoreFor] = useState<string | null>(null);
   const moreOpen = moreFor === pathname;
-  const [subjectId, setSubjectId] = useState('all');
   const events = useData((s) => s.events);
   const locked = travado(useData((s) => s.focusActive));
   useUpdateOffer();
@@ -57,7 +55,7 @@ export function AppShell() {
   };
 
   return (
-    <ShellContext.Provider value={{ subjectId }}>
+    <>
       <FocusRuntime />
       <FocusLockGuard locked={locked} />
       <div
@@ -77,12 +75,7 @@ export function AppShell() {
           </>
         )}
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          {!locked &&
-            (phone ? (
-              <PhoneTopbar subjectId={subjectId} onSubjectChange={setSubjectId} />
-            ) : (
-              <Topbar subjectId={subjectId} onSubjectChange={setSubjectId} />
-            ))}
+          {!locked && (phone ? <PhoneTopbar /> : <Topbar />)}
           <StorageNotices />
           <Outlet />
         </main>
@@ -104,6 +97,6 @@ export function AppShell() {
       <ConflictDialog />
       <ModalHost />
       <ToastRegion />
-    </ShellContext.Provider>
+    </>
   );
 }

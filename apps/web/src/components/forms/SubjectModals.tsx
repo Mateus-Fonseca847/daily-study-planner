@@ -21,7 +21,7 @@ export function SubjectFormModal({
   const count = useData((s) => s.subjects.length);
   const [name, setName] = useState(subject?.name ?? '');
   const [color, setColor] = useState<SubjectColor>(
-    subject?.color ?? SUBJECT_COLORS[count % SUBJECT_COLORS.length] ?? 'azul',
+    subject?.color ?? SUBJECT_COLORS[count % SUBJECT_COLORS.length] ?? 'ciano',
   );
   const [error, setError] = useState<string | undefined>();
 

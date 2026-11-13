@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { parseISO } from 'date-fns';
-import { isOpen, isTask, type Habit, type StudyEvent } from '@daily/shared';
+import { isOpen, type Habit, type StudyEvent } from '@daily/shared';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { cn } from '../../../lib/cn';
 import { useData } from '../../../lib/data/app-store';
 import { formatCountdown } from '../../../lib/data/countdown';
-import { isDone, isScheduled, type HabitContext } from '../../../lib/habits';
+import { isDone, isRestDay, isScheduled, type HabitContext } from '../../../lib/habits';
 import { describeRepeat, formatTimeOfDay } from '../../../lib/habits/repeat';
 import { examPrep, nextExam } from '../../../lib/stats/derive';
 import { HabitControl } from '../../habits/HabitControl';
@@ -32,7 +32,9 @@ function DayHabits({
   habits,
   ctx,
 }: Pick<DayPanelProps, 'date' | 'now' | 'habits' | 'ctx'>) {
-  const list = habits.filter((habit) => isScheduled(habit, date, ctx));
+  const list = habits.filter(
+    (habit) => isScheduled(habit, date) && !isRestDay(ctx, habit.id, date),
+  );
   return (
     <section aria-labelledby="day-habits-title" className={CARD}>
       <h3 id="day-habits-title" className={TITLE}>
@@ -115,11 +117,11 @@ function NextExam({ events, now }: Pick<DayPanelProps, 'events' | 'now'>) {
   );
 }
 
-/** Entregas pendentes do dia e as atrasadas, com caixa de seleção para concluir. */
+/** Tarefas pendentes do dia e as atrasadas, com caixa de seleção para concluir. */
 function DayTasks({ date, today, events }: Pick<DayPanelProps, 'date' | 'today' | 'events'>) {
   const setStatus = useData((s) => s.setEventStatus);
   const tasks = events
-    .filter(isTask)
+    .filter((event) => event.type === 'tarefa')
     .filter((task) => isOpen(task))
     .filter((task) => {
       const day = task.start.slice(0, 10);
@@ -132,7 +134,7 @@ function DayTasks({ date, today, events }: Pick<DayPanelProps, 'date' | 'today' 
         Tarefas do dia
       </h3>
       {tasks.length === 0 ? (
-        <p className="mt-3 text-sm text-muted">Nenhuma entrega pendente. Dia livre!</p>
+        <p className="mt-3 text-sm text-muted">Nenhuma tarefa pendente. Dia livre!</p>
       ) : (
         <ul className="mt-3 flex flex-col gap-2">
           {tasks.map((task) => {

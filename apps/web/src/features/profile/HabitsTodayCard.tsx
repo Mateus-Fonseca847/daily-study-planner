@@ -2,9 +2,10 @@ import { Pencil } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Habit } from '@daily/shared';
 import { cn } from '../../lib/cn';
-import { isDone, scheduledToday, type HabitContext } from '../../lib/habits';
+import { isDone, scheduledToday, streaks, type HabitContext } from '../../lib/habits';
 import { percentOf } from '../../lib/stats/format';
 import { HabitControl } from '../habits/HabitControl';
+import { StreakFlame } from '../habits/StreakFlame';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../habits/habit-icons';
 import { StatCard } from './StatCard';
 
@@ -14,7 +15,7 @@ interface HabitsTodayCardProps {
   now: Date;
 }
 
-/** Hábitos de hoje: os agendados, com o mesmo controle da página de hábitos, barra e “% concluído”. */
+/** Hábitos de hoje: os agendados, com a chama de cada um, o controle da página e “% concluído”. */
 export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
   const today = ctx.today;
   const list = scheduledToday(habits, ctx);
@@ -63,6 +64,7 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
                     {habit.name}
                   </span>
                 </span>
+                <StreakFlame days={streaks(habit, ctx).current} />
                 <HabitControl habit={habit} date={today} ctx={ctx} now={now} />
               </li>
             );

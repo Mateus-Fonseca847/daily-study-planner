@@ -4,6 +4,28 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Alterado (tarefas, subtarefas, tipos e status; Perfil)
+
+- **Tipos:** Tarefa (padrão), Prova e Especial. Revisão, Entrega e Bloco de estudo deixaram de existir (os dados migram para Tarefa).
+- **Status:** Pendente, Concluído e Cancelado, com cores reservadas (amarelo, verde e vermelho), ícone e texto. “Em andamento” vira Pendente.
+- **Subtarefas** em qualquer compromisso (os conteúdos das provas migram sem perder estado; numa prova a lista continua se chamando “Conteúdos”).
+- **Painel de tarefa** único para criar, ver e editar: lateral no desktop, tela cheia no celular; criação simples (título, tipo, prazo, subtarefas e notas) com o resto em “Mais opções”; edição direta, status em 3 opções, progresso pelas subtarefas, reordenar por botões. Criar pela grade do calendário traz data e hora do clique, já em Tarefa; botão “+ Nova tarefa”; menu Criar com Tarefa, Prova, Especial, Hábito e Matéria.
+- **Concluir com um clique** em todo chip e linha (Mês, Semana, Dia, agenda de hoje, Tarefas), com “Desfazer”; cancelar fica no menu “…”.
+- **Página Tarefas** nova: cartões-resumo, Atrasadas, Hoje, Próximas (todas as futuras, sem limite de 7 dias, em Amanhã / Esta semana / Mais tarde) e Concluídas dos últimos 30 dias; “Ver no calendário”. O contador da sidebar soma as tarefas pendentes e atrasadas.
+- **Filtro por tipo** (multisseleção, “Todos” e “Limpar”) no lugar do filtro por matéria, no calendário e em Tarefas, salvo entre sessões.
+- **Cores:** paleta de matérias e hábitos sem vermelho, verde, amarelo e laranja (ciano, petróleo, gelo, lilás, fúcsia, rosa e cinza), verificada por ΔE2000 e contraste AA; as escolhas antigas são remapeadas.
+- **Hábitos:** “Água” criado automaticamente no primeiro uso (uma vez; não volta se excluído; nunca numa conta que já tem dados); **dias de descanso** pelo popover do dia (este hábito ou todos, também os próximos 29 dias), que não quebram a sequência; **chama** com a sequência de cada hábito; formulário no mesmo padrão do painel de tarefa.
+- **Estatísticas viram Perfil** (`/perfil`; `/estatisticas` redireciona): foto da conta Google ou iniciais e nome; cartões “Tempo de foco” (cronômetro + **registro manual** com data, duração e nota, também no Modo Foco), Preparação, Água, Hábitos de hoje e Agenda; estatísticas pessoais e Consistência.
+- **Dados:** formato v4 (`daily:v4`) com migração idempotente a partir do v3 (cópia em `daily:v3:pre-v4`, removida 30 dias depois). Exportar gera v4; importar aceita v1 a v4.
+- **Sincronização:** dados da nuvem em versão anterior são migrados ao baixar (a nuvem só é reescrita numa edição real); o ponto de sincronia é “rebaseado” depois da migração (sem conflito falso); “só o hábito de água” conta como dispositivo vazio; um app antigo nunca sobrescreve dados v4.
+- CSP: `img-src` aceita `https://lh3.googleusercontent.com` (foto da conta).
+
+### Removido
+
+- Blocos de estudo (página, item do menu, criação, meta automática, fonte `blocos`); `/blocos` redireciona para o calendário.
+- Seção “Análises” (gráficos, seletor de período) e o cartão “Sequência”.
+- Filtro por matéria.
+
 ### Adicionado (água editável e hábitos reordenáveis)
 
 - **Água editável:** tocar no valor do cartão "Água" (Estatísticas) ou do hábito "Água" abre um painel (popover no desktop, folha inferior no celular) com total, meta e progresso, a lista dos registros de hoje (editar e excluir, com "Desfazer"), quantidade personalizada (`300`, `300 ml`, `0,3 l`, `1,5L`), atalhos **+ copo** e **− último** e **Definir o total do dia** (aumentar acrescenta a diferença; diminuir pede confirmação e remove ou reduz os registros mais recentes). Limites: 1 a 5000 ml por registro e 20 L por dia. O novo total é anunciado a leitores de tela.

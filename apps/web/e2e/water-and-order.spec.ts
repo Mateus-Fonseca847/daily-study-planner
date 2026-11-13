@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { manualHabit, seedSnapshot } from './helpers';
 
 /** Quarta-feira, 11/11/2026. */
 const NOW = new Date('2026-11-11T10:30:00');
@@ -7,9 +8,9 @@ const habitCard = (page: Page, name: string) => page.getByRole('region', { name,
 const cell = (page: Page, name: string, date: string) =>
   habitCard(page, name).locator(`[data-date="${date}"]`);
 
-/** Abre o painel de água pelo valor no cartão de Estatísticas. */
+/** Abre o painel de água pelo valor no cartão do Perfil. */
 async function openWaterPanel(page: Page) {
-  await page.goto('/estatisticas');
+  await page.goto('/perfil');
   await page.getByRole('button', { name: /^Água de hoje: .*Editar/ }).click();
   const panel = page.getByRole('dialog', { name: 'Água de hoje' });
   await expect(panel).toBeVisible();
@@ -24,9 +25,9 @@ async function addCustom(panel: ReturnType<Page['getByRole']>, text: string) {
 test.describe('Água editável', () => {
   test.beforeEach(async ({ page }) => {
     await page.clock.install({ time: NOW });
-    // A “Hidratação” lê a água do dia: o heatmap muda junto com os registros.
+    // O hábito “Água” (criado sozinho) lê a água do dia: o heatmap muda junto com os registros.
     await page.goto('/habitos');
-    await page.getByRole('button', { name: 'Hidratação' }).click();
+    await expect(habitCard(page, 'Água')).toBeVisible();
   });
 
   test('quantidade personalizada: total e heatmap mudam; erro em pt-BR sem alterar nada', async ({
@@ -48,7 +49,7 @@ test.describe('Água editável', () => {
     await expect(page.getByRole('button', { name: /^Água de hoje: .*Editar/ })).toBeFocused();
 
     await page.goto('/habitos');
-    await expect(cell(page, 'Hidratação', '2026-11-11')).toHaveAttribute(
+    await expect(cell(page, 'Água', '2026-11-11')).toHaveAttribute(
       'aria-label',
       /300 ml de 2000 ml/,
     );
@@ -94,7 +95,7 @@ test.describe('Água editável', () => {
 
   test('corrigir um dia passado pelo heatmap e recarregar: tudo persiste', async ({ page }) => {
     await page.goto('/habitos');
-    await cell(page, 'Hidratação', '2026-11-09').click();
+    await cell(page, 'Água', '2026-11-09').click();
     const panel = page.getByRole('dialog', { name: /^Água de (?!hoje)/ });
     await expect(panel.getByText('Nenhum registro.')).toBeVisible();
     await addCustom(panel, '1,5 l');
@@ -104,11 +105,11 @@ test.describe('Água editável', () => {
     await page.keyboard.press('Escape');
 
     await page.reload();
-    await cell(page, 'Hidratação', '2026-11-09').click();
+    await cell(page, 'Água', '2026-11-09').click();
     const again = page.getByRole('dialog', { name: /^Água de (?!hoje)/ });
     await expect(again.getByText('1500 ml', { exact: true })).toBeVisible();
     // Dia futuro não existe no heatmap.
-    await expect(cell(page, 'Hidratação', '2026-11-12')).toHaveCount(0);
+    await expect(cell(page, 'Água', '2026-11-12')).toHaveCount(0);
   });
 });
 
@@ -117,14 +118,12 @@ test.describe('Hábitos reordenáveis', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.clock.install({ time: NOW });
+    // Hábitos semeados (criar pelo formulário já é coberto em habits.spec): o tempo do teste vai
+    // para o que ele verifica — reordenar e conferir a ordem em várias telas.
+    await seedSnapshot(page, {
+      habits: NAMES.map((name, order) => manualHabit(name.toLowerCase(), name, order)),
+    });
     await page.goto('/habitos');
-    for (const name of NAMES) {
-      await page.getByRole('button', { name: 'Novo hábito' }).first().click();
-      const dialog = page.getByRole('dialog', { name: 'Novo hábito' });
-      await dialog.getByLabel('Nome').fill(name);
-      await dialog.getByRole('button', { name: 'Criar hábito' }).click();
-      await expect(dialog).toHaveCount(0);
-    }
   });
 
   /** Nomes na ordem em que aparecem no texto da página (DOM). */
@@ -143,10 +142,14 @@ test.describe('Hábitos reordenáveis', () => {
       .evaluateAll((els) => els.map((el) => el.getAttribute('aria-label')));
   };
 
+  /**
+   * A ordem é a mesma em Hábitos, Perfil, Semana e Dia. Cada `goto` é um carregamento completo a
+   * partir do armazenamento, então isto também verifica que a ordem persistiu.
+   */
   async function expectSameOrderEverywhere(page: Page, expected: string[]) {
     await page.goto('/habitos');
     expect(await habitsPageOrder(page)).toEqual(expected);
-    await page.goto('/estatisticas');
+    await page.goto('/perfil');
     await expect(page.getByRole('heading', { name: 'Hábitos de hoje' })).toBeVisible();
     expect(await orderIn(page)).toEqual(expected);
     await page.goto('/calendario?visao=semana&data=2026-11-11');
@@ -175,8 +178,6 @@ test.describe('Hábitos reordenáveis', () => {
     await page.keyboard.press('Escape');
     expect(await habitsPageOrder(page)).toEqual(['Beta', 'Alfa', 'Gama']);
 
-    await expectSameOrderEverywhere(page, ['Beta', 'Alfa', 'Gama']);
-    await page.reload();
     await expectSameOrderEverywhere(page, ['Beta', 'Alfa', 'Gama']);
   });
 

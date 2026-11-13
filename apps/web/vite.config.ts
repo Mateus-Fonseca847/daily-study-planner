@@ -61,8 +61,8 @@ export default defineConfig({
             icons: [{ src: '/icons/daily-192.png', sizes: '192x192' }],
           },
           {
-            name: 'Estatísticas',
-            url: '/estatisticas',
+            name: 'Perfil',
+            url: '/perfil',
             icons: [{ src: '/icons/daily-192.png', sizes: '192x192' }],
           },
         ],

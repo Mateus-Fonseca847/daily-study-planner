@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -7,9 +7,9 @@ import type { StudyEvent, Subject } from '@daily/shared';
 import { CREATE_ITEMS } from '../../components/layout/CreateMenu';
 import { Menu } from '../../components/ui/Menu';
 import { cn } from '../../lib/cn';
-import { EVENT_TYPE_META } from '../../lib/event-meta';
+import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
 import { AGENDA_HOURS, layoutAgenda, nowOffsetHours } from '../../lib/stats/agenda';
-import { EventPopover } from '../calendar/components/EventPopover';
+import { openEventForm } from '../../lib/ui-store';
 import { eventTimeRange } from '../calendar/lib/format';
 import { StatCard } from './StatCard';
 
@@ -25,10 +25,8 @@ interface AgendaCardProps {
 /** Agenda de hoje: linha do tempo 06h–23h, cartões flutuantes escalonados e linha de “agora”. */
 export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [selection, setSelection] = useState<{ id: string; anchor: HTMLElement } | null>(null);
   const items = layoutAgenda(events, today);
   const nowOffset = nowOffsetHours(now);
-  const selected = events.find((e) => e.id === selection?.id);
 
   // Rola até a hora atual ao abrir (e quando o dia vira).
   useEffect(() => {
@@ -110,17 +108,17 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
 
           {items.map(({ event, offsetHours, column }) => {
             const meta = EVENT_TYPE_META[event.type];
+            const style = chipStyle(event);
             const subject = subjects.find((s) => s.id === event.subjectId);
             return (
               <button
                 key={event.id}
                 type="button"
-                aria-expanded={selected?.id === event.id}
                 aria-label={`${meta.label}: ${event.title}, ${eventTimeRange(event)}`}
-                onClick={(e) => setSelection({ id: event.id, anchor: e.currentTarget })}
+                onClick={() => openEventForm({ event })}
                 className={cn(
                   'absolute z-20 flex h-agenda-card-h w-agenda-card-w max-w-[calc(100%-var(--ds-agenda-label-w))] flex-col justify-center gap-0.5 rounded-card-sm border-l-stripe bg-bg px-4 text-left shadow-popover transition-[filter] hover:brightness-125',
-                  meta.chip.split(' ').find((c) => c.startsWith('border-')),
+                  style.chip.split(' ').find((c) => c.startsWith('border-')),
                   event.status === 'concluido' && 'opacity-done',
                 )}
                 style={{
@@ -136,7 +134,7 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
                 >
                   {event.title}
                 </span>
-                <span className={cn('truncate text-xs', meta.text)}>
+                <span className={cn('truncate text-xs', style.text)}>
                   {subject ? `${subject.name} · ` : ''}
                   {meta.label}
                 </span>
@@ -165,14 +163,6 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
           )}
         />
       </div>
-
-      {selected && selection && (
-        <EventPopover
-          event={selected}
-          anchor={selection.anchor}
-          onClose={() => setSelection(null)}
-        />
-      )}
     </StatCard>
   );
 }

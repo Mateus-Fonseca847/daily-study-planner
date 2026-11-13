@@ -24,7 +24,8 @@ const session = (
   status,
   subjectId: null,
   examId: null,
-  blockId: null,
+  origin: 'cronometro' as const,
+  note: '',
 });
 
 describe('topFocusDays', () => {

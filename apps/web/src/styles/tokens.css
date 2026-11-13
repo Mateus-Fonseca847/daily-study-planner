@@ -26,50 +26,70 @@
   --ds-color-white-pill: #ffffff;
   --ds-color-white-pill-fg: #0b0b0c;
 
-  /* Cores de evento (cheia + fundo a 15 %) */
-  --ds-event-chip-alpha: 10%;
-  --ds-color-event-prova: #ff4d5e;
-  --ds-color-event-estudo: #3b82f6;
-  --ds-color-event-entrega: #ff9f1c;
-  --ds-color-event-revisao: #2fd16b;
-  --ds-color-event-especial: #e23fd8;
-  --ds-color-event-prova-soft: color-mix(
+  /*
+   * Status (cores reservadas: nunca usadas na paleta de matérias e hábitos). Cada status também
+   * tem ícone e texto — a cor nunca é o único sinal.
+   */
+  --ds-event-chip-alpha: 14%;
+  --ds-color-status-pendente: #f2c94c;
+  --ds-color-status-concluido: #3dd68c;
+  --ds-color-status-cancelado: #ff6b78;
+  /* Tipos: a Tarefa usa a cor do status; Prova e Especial têm cor própria. */
+  --ds-color-type-prova: #5c97ff;
+  --ds-color-type-especial: #b48cff;
+  --ds-color-status-pendente-soft: color-mix(
     in srgb,
-    var(--ds-color-event-prova) var(--ds-event-chip-alpha),
+    var(--ds-color-status-pendente) var(--ds-event-chip-alpha),
     transparent
   );
-  --ds-color-event-estudo-soft: color-mix(
+  --ds-color-status-concluido-soft: color-mix(
     in srgb,
-    var(--ds-color-event-estudo) var(--ds-event-chip-alpha),
+    var(--ds-color-status-concluido) var(--ds-event-chip-alpha),
     transparent
   );
-  --ds-color-event-entrega-soft: color-mix(
+  --ds-color-status-cancelado-soft: color-mix(
     in srgb,
-    var(--ds-color-event-entrega) var(--ds-event-chip-alpha),
+    var(--ds-color-status-cancelado) var(--ds-event-chip-alpha),
     transparent
   );
-  --ds-color-event-revisao-soft: color-mix(
+  --ds-color-type-prova-soft: color-mix(
     in srgb,
-    var(--ds-color-event-revisao) var(--ds-event-chip-alpha),
+    var(--ds-color-type-prova) var(--ds-event-chip-alpha),
     transparent
   );
-  --ds-color-event-especial-soft: color-mix(
+  --ds-color-type-especial-soft: color-mix(
     in srgb,
-    var(--ds-color-event-especial) var(--ds-event-chip-alpha),
+    var(--ds-color-type-especial) var(--ds-event-chip-alpha),
     transparent
   );
+  /* Chama de sequência: a única exceção laranja documentada; cinza com sequência zero. */
+  --ds-color-streak: #ff8a3d;
+  --ds-color-streak-off: var(--ds-color-fg-subtle);
+  /* Dia de descanso no heatmap (listras neutras). */
+  --ds-color-rest: rgb(255 255 255 / 0.22);
+  --ds-rest-stripe: 2px;
 
   --ds-color-danger: #ff6b78;
 
-  /* Paleta fixa de matérias */
-  --ds-color-subject-vermelho: #ff4d5e;
-  --ds-color-subject-laranja: #ff9f1c;
-  --ds-color-subject-amarelo: #f5e94b;
-  --ds-color-subject-verde: #2fd16b;
-  --ds-color-subject-turquesa: #1fc8c0;
-  --ds-color-subject-azul: #3b82f6;
-  --ds-color-subject-violeta: #9b7bff;
-  --ds-color-subject-rosa: #ff5fb0;
+  /*
+   * Paleta de matérias e hábitos (v4): sem vermelho, verde, amarelo e laranja e sem repetir o azul
+   * da Prova e o roxo do Especial. Verificada por `scripts/palette-check.mjs` (ΔE2000 ≥ 15 e
+   * contraste ≥ 4.5:1 sobre a superfície).
+   */
+  --ds-palette-ciano: #2beeee;
+  --ds-palette-petroleo: #53a9c6;
+  --ds-palette-gelo: #c6dfec;
+  --ds-palette-lilas: #e2c6ec;
+  --ds-palette-fucsia: #de2bee;
+  --ds-palette-rosa: #d279a6;
+  --ds-palette-cinza: #a3998f;
+  --ds-color-subject-ciano: var(--ds-palette-ciano);
+  --ds-color-subject-petroleo: var(--ds-palette-petroleo);
+  --ds-color-subject-gelo: var(--ds-palette-gelo);
+  --ds-color-subject-lilas: var(--ds-palette-lilas);
+  --ds-color-subject-fucsia: var(--ds-palette-fucsia);
+  --ds-color-subject-rosa: var(--ds-palette-rosa);
+  --ds-color-subject-cinza: var(--ds-palette-cinza);
 
   /* Água (índigo/roxo) e gráficos do dashboard */
   --ds-color-water: #5b4fe0;
@@ -83,11 +103,6 @@
   --ds-color-water-button: rgb(255 255 255 / 0.2);
   --ds-color-chart-track: rgb(255 255 255 / 0.1);
   --ds-color-chart-track-strong: rgb(255 255 255 / 0.16);
-  --ds-hatch-planned: repeating-linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--ds-color-water) 70%, transparent) 0 2px,
-    color-mix(in srgb, var(--ds-color-water) 25%, transparent) 2px 5px
-  );
 
   /* Cartões glass do dashboard */
   --ds-glass-bg: linear-gradient(145deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.025));
@@ -138,14 +153,14 @@
   --ds-heat-mix-2: 52%;
   --ds-heat-mix-3: 76%;
   --ds-heat-mix-4: 100%;
-  /* Paleta dos hábitos (7 cores; o amarelo é o do Daily). */
-  --ds-habit-amarelo: var(--ds-color-accent);
-  --ds-habit-azul: #4d8dff;
-  --ds-habit-verde: #2fd16b;
-  --ds-habit-laranja: #ff9f1c;
-  --ds-habit-rosa: #ff5cb8;
-  --ds-habit-violeta: #a78bfa;
-  --ds-habit-turquesa: #2dd4bf;
+  /* Paleta dos hábitos: a mesma das matérias. */
+  --ds-habit-ciano: var(--ds-palette-ciano);
+  --ds-habit-petroleo: var(--ds-palette-petroleo);
+  --ds-habit-gelo: var(--ds-palette-gelo);
+  --ds-habit-lilas: var(--ds-palette-lilas);
+  --ds-habit-fucsia: var(--ds-palette-fucsia);
+  --ds-habit-rosa: var(--ds-palette-rosa);
+  --ds-habit-cinza: var(--ds-palette-cinza);
   --ds-heat-min: 0.4;
   --ds-color-focus-frac: var(--ds-color-fg-muted);
   --ds-color-focus-sub: var(--ds-color-fg-soft);
@@ -258,6 +273,15 @@
   --ds-segment-min-w: 4.875rem;
   --ds-search-w: 18rem;
   --ds-modal-w: 32rem;
+  /* Painel lateral (tarefa e hábito) no tablet e no desktop. */
+  --ds-panel-w: 34rem;
+  --ds-panel-label-w: 8rem;
+  /* Largura mínima do popover do filtro por tipo. */
+  --ds-filter-w: 14rem;
+  /* Foto/iniciais no cabeçalho do Perfil. */
+  --ds-profile-avatar: 4rem;
+  /* Botão de concluir com um clique: alvo mínimo (24 px; 44 px no toque via `coarse:`). */
+  --ds-check-target: 1.5rem;
   --ds-modal-max-h: 90dvh;
   --ds-menu-w: 13rem;
   --ds-toast-w: 26rem;
@@ -274,7 +298,6 @@
   --ds-stats-cols-md: repeat(2, minmax(0, 1fr));
   --ds-stats-cols-sm: minmax(0, 1fr);
   --ds-stats-row1-h: 20rem;
-  --ds-stats-pill-h: 4.5rem;
   --ds-ring-size: 9.5rem;
   --ds-ring-stroke: 9;
   --ds-bar-w: 1.25rem;
@@ -291,7 +314,6 @@
   --ds-agenda-stagger: 3.5rem;
   --ds-agenda-card-w: 17rem;
   --ds-agenda-card-h: 3.5rem;
-  --ds-chart-h: 8rem;
   --ds-card-pad: 1.5rem;
   --ds-card-gap: 1rem;
   /* Modo Foco: dígitos grandes, painel lateral e pílulas */

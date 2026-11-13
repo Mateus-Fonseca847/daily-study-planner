@@ -1,10 +1,10 @@
 # Daily
 
-Organizador de estudos (PWA) para estudantes, pensado para ficar aberto o dia todo numa segunda
+App de disciplina e desenvolvimento pessoal (PWA), nascido como organizador de estudos, pensado para ficar aberto o dia todo numa segunda
 tela do PC. Projeto de portfólio: TypeScript estrito, código limpo, documentação e testes bem
 escolhidos. Idioma da UI: **pt-BR**. Viewport-alvo: desktop 1440×900 (aceitável a partir de 1280 px).
 
-Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v3`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
+Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v4`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
 
 ## Stack
 
@@ -54,12 +54,14 @@ listada no `.gitignore`, porque é material de processo e de divulgação, não 
 
 - Entidades e relações: `docs/data-model.md`; schemas zod em `packages/shared`.
 - UI → `useData` (Zustand, `lib/data/app-store.ts`) → `DataRepository` → `LocalStorageRepository`. **Componentes nunca acessam `localStorage`.**
-- Regras de domínio ficam em funções puras (`lib/data/rules.ts`, `selectors.ts`, `task-filters.ts`, `countdown.ts`), com teste.
+- Regras de domínio ficam em funções puras (`lib/data/rules.ts`, `selectors.ts`, `subtasks.ts`, `countdown.ts`, `lib/tasks/sections.ts`), com teste.
+- Compromissos: tipos `tarefa | prova | especial` e status `pendente | concluido | cancelado`; cores de status reservadas e chips por `chipStyle` (`lib/event-meta.ts`). Criar/ver/editar = `features/tasks/TaskPanel` (abre por `openEventForm`). Filtro global por tipo em `lib/tasks/type-filter-store.ts`.
 - Mudou o formato salvo? Suba `DATA_VERSION`, escreva a migração em `envelope.ts` e atualize o histórico em `docs/data-model.md`.
 - Modo Foco: lógica pura em `lib/focus` (`session.ts` = máquina de estados por timestamps, `hold.ts`, `time-input.ts`, `format.ts`, `top-days.ts`); efeitos em `controller.ts`; a sessão ativa fica numa chave própria (`daily:v2:focus`), fora do backup. O relógio é injetável: as funções recebem `nowMs`.
-- Hábitos: lógica pura em `lib/habits` (`repeat.ts` = repetição reaproveitável, `engine.ts`, `matrix.ts`, `aggregate.ts`, `edit.ts`, `form.ts`); fontes automáticas leem água, foco e blocos via `HabitContext`. Editar repetição/meta/horário cria uma **regra nova a partir de hoje** (nunca reescreva o passado). As classes `habit-<cor>` precisam aparecer **literalmente** no código (`HABIT_COLOR_CLASS`).
+- Hábitos: lógica pura em `lib/habits` (`repeat.ts` = repetição reaproveitável, `engine.ts`, `matrix.ts`, `aggregate.ts`, `edit.ts`, `form.ts`); fontes automáticas leem água e foco via `HabitContext`; dias de descanso (`restDays`) contam como não agendados. Editar repetição/meta/horário cria uma **regra nova a partir de hoje** (nunca reescreva o passado). As classes `habit-<cor>` precisam aparecer **literalmente** no código (`HABIT_COLOR_CLASS`).
 - Calendário: a visão e a data vivem na URL (`?visao=dia|semana|mes|ano&data=yyyy-MM-dd`, `features/calendar/lib/views.ts`); a grade de horas (`TimeGrid`) posiciona blocos por **porcentagem** do intervalo, e o layout de simultâneos é a função pura `layoutSobreposicoes` (`lib/time-layout.ts`). Nunca monte classes do Tailwind por template: use mapas literais (`HABIT_COLOR_CLASS`, `DENSITY_CLASS`) ou variáveis CSS de tokens.
 - Responsivo: breakpoints num só lugar (`lib/responsive/breakpoints.ts`, espelhado em `styles/index.css`, com teste). Use as variantes `phone:`, `short:` e `coarse:` (e `md:`/`lg:`/`xl:`); JavaScript (`useBreakpoint`, `usePhone`) só quando a árvore muda. O desktop (≥ 1280 px) não pode mudar: confira com `node apps/web/scripts/desktop-regression.mjs compare` (a linha de base fica em `apps/web/.reports/`, fora do Git). Nada depende de hover; controles principais ≥ 44 px (`--ds-touch`), densos ≥ 24 px com `data-touch="dense"` e um equivalente maior; áreas que rolam na horizontal levam `data-scroll-x`; campos de texto ≥ 16 px. Popover, Modal e Menu já viram sheet/tela cheia no celular: use-os em vez de criar overlays novos.
+- Paleta de matérias e hábitos: `PALETTE_COLORS` (sem vermelho, verde, amarelo e laranja); confira com `node apps/web/scripts/palette-check.mjs` e `src/styles/palette.test.ts`.
 - Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
 
 ## Fixture visual

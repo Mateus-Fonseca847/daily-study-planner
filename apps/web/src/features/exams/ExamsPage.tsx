@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { FileCheck2, Pencil, Plus } from 'lucide-react';
-import { examProgress, isExam, type Exam } from '@daily/shared';
+import { isExam, subtaskProgress, type Exam } from '@daily/shared';
 import { PageShell } from '../../components/layout/PageShell';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -24,7 +24,7 @@ const TABS = [
 
 function ExamRow({ exam, now }: { exam: Exam; now: Date }) {
   const subject = useData((s) => s.subjects.find((x) => x.id === exam.subjectId));
-  const progress = examProgress(exam.contents);
+  const progress = subtaskProgress(exam.subtasks);
   const start = parseISO(exam.start);
   return (
     <li className="flex flex-col gap-3 rounded-xl border-hair bg-surface p-4">

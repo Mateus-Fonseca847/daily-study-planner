@@ -1,4 +1,4 @@
-import { isExam, type ContentItem, type DataSnapshot, type StudyEvent } from '@daily/shared';
+import type { DataSnapshot, StudyEvent } from '@daily/shared';
 import type { Draft } from './repository';
 
 export type SubjectDeletion =
@@ -9,26 +9,13 @@ export const eventsOfSubject = (
   subjectId: string,
 ): StudyEvent[] => snapshot.events.filter((event) => event.subjectId === subjectId);
 
-/**
- * Remove eventos. Blocos de estudo e sessões de foco que apontavam para eles
- * perdem o vínculo (nada fica pendurado).
- */
+/** Remove eventos. Sessões de foco que apontavam para eles perdem o vínculo. */
 export function removeEvents(snapshot: DataSnapshot, ids: ReadonlySet<string>): DataSnapshot {
   const drop = (id: string | null): string | null => (id !== null && ids.has(id) ? null : id);
   return {
     ...snapshot,
-    events: snapshot.events
-      .filter((event) => !ids.has(event.id))
-      .map((event) =>
-        event.type === 'estudo' && event.examId !== null && ids.has(event.examId)
-          ? { ...event, examId: null }
-          : event,
-      ),
-    focusSessions: snapshot.focusSessions.map((s) => ({
-      ...s,
-      examId: drop(s.examId),
-      blockId: drop(s.blockId),
-    })),
+    events: snapshot.events.filter((event) => !ids.has(event.id)),
+    focusSessions: snapshot.focusSessions.map((s) => ({ ...s, examId: drop(s.examId) })),
   };
 }
 
@@ -75,14 +62,19 @@ export function applySubjectDeletion(
   };
 }
 
-/** Cópia do evento: título “(cópia)”, pendente e, nas provas, conteúdos desmarcados. */
-export function duplicateEventDraft(event: StudyEvent, newId: () => string): Draft<StudyEvent> {
+/** Cópia do evento: título “(cópia)”, pendente, subtarefas novas e desmarcadas. */
+export function duplicateEventDraft(
+  event: StudyEvent,
+  newId: () => string,
+  createdAt: string,
+): Draft<StudyEvent> {
   const { id: _id, ...rest } = event;
   void _id;
-  const copy = { ...rest, title: `${event.title} (cópia)`, status: 'pendente' as const };
-  if (isExam(event)) {
-    const contents: ContentItem[] = event.contents.map((c) => ({ ...c, id: newId(), done: false }));
-    return { ...copy, type: 'prova', contents } as Draft<StudyEvent>;
-  }
-  return copy as Draft<StudyEvent>;
+  return {
+    ...rest,
+    title: `${event.title} (cópia)`,
+    status: 'pendente',
+    subtasks: event.subtasks.map((c) => ({ ...c, id: newId(), done: false })),
+    createdAt,
+  };
 }

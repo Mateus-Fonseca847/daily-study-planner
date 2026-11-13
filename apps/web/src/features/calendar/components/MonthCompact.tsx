@@ -15,10 +15,8 @@ const WEEKDAY_INITIALS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'] as const;
 
 /** Classes literais dos pontos de cada tipo (o Tailwind só gera o que aparece por extenso). */
 const DOT_CLASS: Record<EventType, string> = {
+  tarefa: 'bg-pendente',
   prova: 'bg-prova',
-  estudo: 'bg-estudo',
-  entrega: 'bg-entrega',
-  revisao: 'bg-revisao',
   especial: 'bg-especial',
 };
 

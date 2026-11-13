@@ -41,6 +41,7 @@ export function monthLabels(columns: readonly (readonly string[])[]): (string | 
 const STATE_TEXT: Record<DayState, string> = {
   futuro: 'dia futuro',
   'nao-agendado': 'não agendado',
+  descanso: 'descanso',
   feito: 'feito',
   parcial: 'parcial',
   perdido: 'não feito',
@@ -72,7 +73,7 @@ export function monthlySummary(
   const months = new Map<string, MonthSummary>();
   for (const date of dates) {
     const state = dayState(habit, date, ctx);
-    if (state === 'futuro' || state === 'nao-agendado') continue;
+    if (state === 'futuro' || state === 'nao-agendado' || state === 'descanso') continue;
     const key = date.slice(0, 7);
     const entry = months.get(key) ?? {
       month: key,

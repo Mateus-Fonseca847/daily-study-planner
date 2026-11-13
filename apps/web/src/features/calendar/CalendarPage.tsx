@@ -1,19 +1,19 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { parseISO } from 'date-fns';
 import { useSearchParams } from 'react-router-dom';
-import { CalendarPlus, FileCheck2 } from 'lucide-react';
+import { CalendarPlus, ListTodo } from 'lucide-react';
 import type { StudyEvent } from '@daily/shared';
-import { useShell } from '../../components/layout/shell-context';
+import { filterByType } from '../../lib/tasks/sections';
+import { useTypeFilter } from '../../lib/tasks/type-filter-store';
 import { usePhone } from '../../lib/responsive/use-media';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { useData } from '../../lib/data/app-store';
 import { dayKey } from '../../lib/dates';
 import { appNow } from '../../lib/fixture';
-import { openEventForm } from '../../lib/ui-store';
+import { openEventForm, useUi } from '../../lib/ui-store';
 import { sampleSnapshot } from '../../mocks/events';
 import { CalendarControls } from './components/CalendarControls';
-import { EventPopover } from './components/EventPopover';
 import { MonthGrid } from './components/MonthGrid';
 import { DayView } from './components/DayView';
 import { WeekView } from './components/WeekView';
@@ -27,13 +27,8 @@ import {
   type CalendarView,
 } from './lib/views';
 
-interface Selection {
-  eventId: string;
-  anchor: HTMLElement;
-}
-
 export function CalendarPage() {
-  const { subjectId } = useShell();
+  const types = useTypeFilter((s) => s.types);
   const today = useMemo(() => appNow(), []);
   const todayKey = dayKey(today);
   const [params, setParams] = useSearchParams();
@@ -43,25 +38,20 @@ export function CalendarPage() {
   // No celular o ano inteiro não cabe: Mês é o padrão e a visão Ano some.
   const view = viewForScreen(parsed.view, phone);
   const month = useMemo(() => parseISO(`${date}T00:00:00`), [date]);
-  const [selection, setSelection] = useState<Selection | null>(null);
   const allEvents = useData((s) => s.events);
   const subjectCount = useData((s) => s.subjects.length);
   const replaceAll = useData((s) => s.replaceAll);
 
-  const events = useMemo(
-    () => (subjectId === 'all' ? allEvents : allEvents.filter((e) => e.subjectId === subjectId)),
-    [allEvents, subjectId],
-  );
+  const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
 
-  const selected = events.find((e) => e.id === selection?.eventId);
-  const select = (event: StudyEvent, anchor: HTMLElement) =>
-    setSelection({ eventId: event.id, anchor });
-  const closePopover = useCallback(() => setSelection(null), []);
+  // O clique num compromisso abre o painel de tarefa (ver, editar, concluir).
+  const select = (event: StudyEvent) => openEventForm({ event });
+  // Destaca o compromisso aberto no painel.
+  const openId = useUi((s) => (s.modal?.kind === 'event' ? s.modal.eventId : undefined));
 
   /** Cada mudança de visão ou de data é uma entrada do histórico (voltar funciona). */
   const go = useCallback(
     (next: { view?: CalendarView; date?: string }) => {
-      setSelection(null);
       // Preserva os outros parâmetros da URL (ex.: `fixture` em desenvolvimento).
       const merged = new URLSearchParams(params);
       const wanted = new URLSearchParams(
@@ -99,11 +89,11 @@ export function CalendarPage() {
           <EmptyState
             icon={CalendarPlus}
             title="Seu calendário está vazio"
-            description="Crie sua primeira prova ou carregue dados de exemplo para ver como o Daily funciona."
+            description="Crie sua primeira tarefa ou carregue dados de exemplo para ver como o Daily funciona."
           >
-            <Button onClick={() => openEventForm({ type: 'prova' })}>
-              <FileCheck2 aria-hidden strokeWidth={1.5} className="size-icon" />
-              Criar prova
+            <Button onClick={() => openEventForm({ type: 'tarefa' })}>
+              <ListTodo aria-hidden strokeWidth={1.5} className="size-icon" />
+              Criar tarefa
             </Button>
             <Button variant="secondary" onClick={() => replaceAll(sampleSnapshot(today))}>
               Carregar dados de exemplo
@@ -116,7 +106,7 @@ export function CalendarPage() {
           month={month}
           events={events}
           today={today}
-          selectedId={selected?.id ?? null}
+          selectedId={openId ?? null}
           onSelect={select}
           onCreate={(day) => openEventForm({ date: day })}
           onOpenDay={(day) => go({ view: 'dia', date: day })}
@@ -127,9 +117,9 @@ export function CalendarPage() {
         <WeekView
           date={date}
           events={events}
-          selectedId={selected?.id ?? null}
+          selectedId={openId ?? null}
           onSelect={select}
-          onCreateAt={(day, time) => openEventForm({ type: 'estudo', date: day, time })}
+          onCreateAt={(day, time) => openEventForm({ type: 'tarefa', date: day, time })}
           onCreateDay={(day) => openEventForm({ date: day })}
         />
       )}
@@ -137,9 +127,9 @@ export function CalendarPage() {
         <DayView
           date={date}
           events={events}
-          selectedId={selected?.id ?? null}
+          selectedId={openId ?? null}
           onSelect={select}
-          onCreateAt={(day, time) => openEventForm({ type: 'estudo', date: day, time })}
+          onCreateAt={(day, time) => openEventForm({ type: 'tarefa', date: day, time })}
           onStep={step}
         />
       )}
@@ -151,9 +141,6 @@ export function CalendarPage() {
           onOpenDay={(day) => go({ view: 'dia', date: day })}
           onOpenMonth={(day) => go({ view: 'mes', date: day })}
         />
-      )}
-      {selected && selection && (
-        <EventPopover event={selected} anchor={selection.anchor} onClose={closePopover} />
       )}
     </>
   );

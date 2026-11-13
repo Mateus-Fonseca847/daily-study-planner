@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { openFocusLog } from '../../lib/ui-store';
 import { cn } from '../../lib/cn';
 import { appNow } from '../../lib/fixture';
 import { formatDayTotal, formatSessionCount, formatShortDay } from '../../lib/focus/format';
@@ -57,12 +58,21 @@ export function TopFocusDays() {
         </ol>
       )}
 
-      <Link
-        to="/estatisticas"
-        className="inline-flex self-start rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline coarse:min-h-touch coarse:items-center"
-      >
-        Ver estatísticas
-      </Link>
+      <div className="flex flex-wrap items-center gap-4">
+        <button
+          type="button"
+          onClick={() => openFocusLog()}
+          className="inline-flex rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline coarse:min-h-touch coarse:items-center"
+        >
+          Registrar tempo
+        </button>
+        <Link
+          to="/perfil"
+          className="inline-flex rounded-sm text-sm text-muted underline-offset-4 hover:text-fg hover:underline coarse:min-h-touch coarse:items-center"
+        >
+          Ver no perfil
+        </Link>
+      </div>
     </section>
   );
 }

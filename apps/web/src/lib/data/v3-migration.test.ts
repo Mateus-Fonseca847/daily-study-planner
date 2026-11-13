@@ -114,9 +114,10 @@ describe('migração v2 → v3', () => {
       unit: 'ml',
     });
     expect(habits.find((h) => h.id === 'goal-water')?.rules[0]?.target).toBe(2500); // meta de água das preferências
+    // auto-estudo → fonte `blocos` (v3) → manual de check (v4).
     expect(habits.find((h) => h.id === 'goal-study')).toMatchObject({
       type: 'check',
-      source: 'blocos',
+      source: 'manual',
     });
   });
 
@@ -139,7 +140,7 @@ describe('migração v2 → v3', () => {
   it('é idempotente: migrar o resultado de novo não muda nada', () => {
     const first = migrated().snapshot;
     const again = parseEnvelope(
-      JSON.stringify({ app: 'daily', version: 3, savedAt: 'x', data: first }),
+      JSON.stringify({ app: 'daily', version: 4, savedAt: 'x', data: first }),
       FIXED_NOW,
     );
     expect(again.ok && again.snapshot).toEqual(first);
@@ -155,8 +156,8 @@ describe('migração v2 → v3', () => {
   });
 });
 
-describe('repositório: do v2 salvo para o v3', () => {
-  it('migra ao abrir, guarda o v2 original em daily:v2:pre-v3 e regrava em daily:v3', () => {
+describe('repositório: do v2 salvo para o atual', () => {
+  it('migra ao abrir, guarda o v2 original em daily:v2:pre-v3 e regrava na chave atual', () => {
     const storage = new MemoryStorage();
     storage.setItem(LEGACY_V2_KEY, v2Raw);
     const repo = new LocalStorageRepository(storage, { now: () => FIXED_NOW });
@@ -164,7 +165,7 @@ describe('repositório: do v2 salvo para o v3', () => {
     expect(repo.habits.list()).toHaveLength(4);
     expect(storage.getItem(PRE_V3_KEY)).toBe(v2Raw);
     expect(storage.getItem(LEGACY_V2_KEY)).toBe(v2Raw); // o v2 nunca é alterado
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(3);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(4);
   });
 
   it('com o v3 presente, o v2 é ignorado', () => {
@@ -197,7 +198,7 @@ describe('importação v1, v2 e v3', () => {
             id: 'h',
             name: 'X',
             icon: 'target',
-            color: 'azul',
+            color: 'ciano',
             type: 'quantidade',
             unit: 'ml',
             source: 'manual',

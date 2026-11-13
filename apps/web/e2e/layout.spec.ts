@@ -8,10 +8,9 @@ const ROUTES = [
   ['provas', '/provas?fixture=views'],
   ['tarefas', '/tarefas?fixture=views'],
   ['matérias', '/materias?fixture=views'],
-  ['blocos', '/blocos?fixture=views'],
   ['hábitos', '/habitos?fixture=habits'],
   ['foco', '/foco?fixture=focus'],
-  ['estatísticas', '/estatisticas?fixture=stats'],
+  ['perfil', '/perfil?fixture=stats'],
 ] as const;
 
 /** Os quatro tamanhos pedidos e os equivalentes em CSS px de zoom 67 % e 150 % do navegador. */

@@ -1,5 +1,7 @@
 # Modelo de dados
 
+> **v4 (prompt 11):** tipos `tarefa | prova | especial`, status `pendente | concluido | cancelado`, subtarefas em qualquer compromisso, dias de descanso, tempo de foco manual, marca `onboarding` e paleta nova. Chave `daily:v4` (seção “Entidades da versão 4”, no fim). O que está acima dessa seção descreve as versões anteriores.
+>
 > **v3 (v0.5.0):** as metas viraram **hábitos** (`habits`, `habitLogs`; seção “Entidades da versão 3”, no fim), a chave passou a `daily:v3` e `goals`/`goalLogs` saíram do snapshot (os schemas ficam em `legacy-goals.ts` só para migrar e importar).
 >
 > **v2 (v0.3.0):** o snapshot ganhou `preferences`, `goals`, `goalLogs`, `waterLogs` e `focusSessions` (seção “Entidades da versão 2”, no fim). O restante deste documento continua valendo.
@@ -56,9 +58,10 @@ Regras (em `apps/web/src/lib/data/rules.ts`):
 
 | Chave                                | Conteúdo                                                               |
 | ------------------------------------ | ---------------------------------------------------------------------- |
-| `daily:v3`                           | Envelope `{ app: "daily", version: 3, savedAt, data }` (formato atual) |
-| `daily:v3:backup`                    | Último estado **válido** anterior à gravação mais recente              |
-| `daily:v3:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
+| `daily:v4`                           | Envelope `{ app: "daily", version: 4, savedAt, data }` (formato atual) |
+| `daily:v3`, `daily:v3:pre-v4`        | Formato anterior e cópia antes de migrar; removidos 30 dias depois     |
+| `daily:v4:backup`                    | Último estado **válido** anterior à gravação mais recente              |
+| `daily:v4:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
 | `daily:v2`, `daily:v1`               | Formatos antigos: lidos uma vez na migração e **nunca alterados**      |
 | `daily:v2:pre-v3`, `daily:v1:pre-v2` | Cópia do original feita **antes** de migrar                            |
 | `daily:v2:focus`                     | Sessão de foco ativa (fora do snapshot e do backup; chave histórica)   |
@@ -76,7 +79,7 @@ A chave leva a versão do formato; o campo `version` do envelope dispara as migr
 ### Fluxo de carregamento
 
 ```
-getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
+getItem(daily:v4) ─ null ─▶ getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
         │ (v2 ou v1 presentes: guarda o original em :pre-v3 / :pre-v2, migra e grava em daily:v3)
         │
         ▼ parseEnvelope (JSON → versão → migração → zod)
@@ -174,3 +177,66 @@ Local-first: o `localStorage` continua sendo a fonte usada pela UI; a nuvem é u
 ### Sincronização entre abas
 
 O evento `storage` (disparado só nas **outras** abas) chama `reload()` no store. **Limitação:** última escrita vence; não há mesclagem de edições simultâneas. Duas abas que finalizam a mesma sessão de foco gravam um único registro (`upsert` pelo `id`).
+
+## Entidades da versão 4
+
+### Compromisso (`StudyEvent`, `packages/shared/src/event.ts`)
+
+Um objeto só (deixou de ser união discriminada):
+
+| Campo       | Tipo                                     | Observação                                          |
+| ----------- | ---------------------------------------- | --------------------------------------------------- |
+| `id`        | string                                   |                                                     |
+| `type`      | `tarefa` \| `prova` \| `especial`        | Tarefa é o padrão                                   |
+| `title`     | 1–120                                    |                                                     |
+| `start`     | ISO local                                | prazo/início                                        |
+| `end`       | ISO local, ≥ `start`                     | término; igual ao início = pontual                  |
+| `subjectId` | `Subject.id` \| null                     | matéria opcional                                    |
+| `status`    | `pendente` \| `concluido` \| `cancelado` | cores reservadas (design system, seção 16)          |
+| `notes`     | ≤ 2000                                   | “Descrição” no painel                               |
+| `subtasks`  | `Subtask[]`                              | qualquer tipo; a UI chama de “Conteúdos” numa prova |
+| `createdAt` | ISO local                                | “Criada em”; dados migrados usam o início           |
+
+`Subtask`: `id`, `title` (1–120), `done`, `order` (o antigo `ContentItem`). Progresso = concluídas ÷ total (`subtaskProgress`).
+
+### Outras mudanças
+
+| Entidade            | Mudança                                                                                                                                                                           |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FocusSession`      | sai `blockId`; entram `origin: 'cronometro' \| 'manual'` (padrão `cronometro`) e `note` (≤ 200). Registro manual: concluída, `plannedSec = actualSec`, `startedAt` = dia às 12:00 |
+| `FocusLink` ativo   | sai `blockId` (o zod descarta a chave antiga ao ler `daily:v2:focus`)                                                                                                             |
+| `Habit`             | fontes `manual` \| `agua` \| `foco` (sai `blocos`); cores da paleta nova                                                                                                          |
+| `Subject`           | cores da paleta nova (`ciano, petroleo, gelo, lilas, fucsia, rosa, cinza`)                                                                                                        |
+| `RestDay` (novo)    | `{ id, habitId \| null, date }`; `null` = todos os hábitos; id determinístico `rest:<habitId\|*>:<data>`                                                                          |
+| `onboarding` (novo) | `{ waterHabitCreated }`: o hábito “Água” automático já foi criado (ou a conta já tinha dados). Sincroniza, para nunca recriar                                                     |
+
+Integridade nova: subtarefas sem id repetido; descanso aponta para hábito existente (ou `null`) e não se repete por (hábito, data). Excluir um hábito remove os descansos dele.
+
+### Derivados (v4)
+
+- **Descanso** conta como não agendado: não quebra a sequência nem entra na taxa; cumprir num dia de descanso conta como feito. Estado do dia `descanso`; o calendário e os painéis do dia não listam o hábito.
+- **Chama por hábito** = `streaks(habit).current`.
+- **Tempo de foco** por dia = soma das sessões do cronômetro e dos registros manuais (`focusSecondsByDay`).
+- **Página Tarefas** (`lib/tasks/sections.ts`): Atrasadas (prazo < agora), Hoje, Próximas (todas as futuras, sem limite, em Amanhã / Esta semana / Mais tarde) e Concluídas (últimos 30 dias). Prazo = `end`.
+- **Perfil** (`lib/stats/profile.ts`): tarefas concluídas, foco na semana e total, melhor sequência entre os hábitos e dias ativos.
+
+### Migração v3 → v4
+
+1. Primeiro acesso a `daily:v4` vazio com `daily:v3` presente: o v3 é copiado para `daily:v3:pre-v4` e `daily:v3` **nunca é reescrito** (uma aba antiga que ainda escute essa chave não lê um formato que não entende). A data da migração fica em `daily:v4:migrated-at`.
+2. Conversões: `entrega`, `estudo` e `revisao` → `tarefa`; `em-andamento` → `pendente`; `contents` da prova → `subtasks` (mesmos ids, ordem e estado); `examId` dos blocos sai; `blockId` sai das sessões (`origin: 'cronometro'`, `note: ''`); hábito `blocos` → manual de check (o histórico dele começa vazio: era derivado dos blocos, não havia registros); cores remapeadas; `restDays: []`; `onboarding.waterHabitCreated = true` se houver qualquer dado.
+3. Idempotente: só roda sobre envelopes `version: 3`, e a função é estável sobre a própria saída. Dado ilegível segue o fluxo de corrupção (nada é inventado).
+4. **Limpeza:** `daily:v3` e `daily:v3:pre-v4` são removidos 30 dias depois da migração (na abertura do app).
+5. Exportar grava v4; importar aceita v1 a v4.
+6. Uma aba antiga que grave em `daily:v3` depois da atualização dispara um aviso (“feche-a e recarregue”); o que ela gravar não é mesclado.
+
+| Versão | Mudança                                                                                               |
+| ------ | ----------------------------------------------------------------------------------------------------- |
+| 4      | tipos e status novos, subtarefas, descansos, foco manual, `onboarding`, paleta nova; chave `daily:v4` |
+
+### Sincronização com o v4
+
+- A linha da nuvem com `version` < 4 passa pela mesma cadeia de migrações antes de ser validada; ela só é reescrita (já em v4) no próximo envio normal, isto é, numa edição de verdade.
+- `version` > a do app continua bloqueando o envio (fase `outdated`, “Atualize o app”); o envio é compare-and-set por `revision`, então um app antigo que leu antes de o v4 gravar recebe conflito, relê e para.
+- **Rebase do ponto de sincronia:** `daily:sync:<userId>` ganhou `version`. Se a meta é de um formato anterior e o local antigo (`daily:v3:pre-v4`) é exatamente o que foi sincronizado, o novo hash é o do local antigo migrado; sem essa cópia, o primeiro ciclo usa a nuvem como referência quando a revisão não mudou. Assim, atualizar o app não gera conflito falso.
+- **Local vazio** é um predicado (`isPristineSnapshot`): o estado inicial ou só o hábito de água automático sem registros. Um dispositivo novo continua baixando a nuvem no primeiro login.
+- A cópia de segurança antes de substituir o local passou a `daily:v4:pre-sync`.

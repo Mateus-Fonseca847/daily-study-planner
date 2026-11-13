@@ -1,16 +1,15 @@
 import {
-  BarChart3,
   CalendarDays,
   CircleHelp,
   FileCheck2,
   Focus,
   Gift,
   Keyboard,
-  LayoutGrid,
   Library,
   ListChecks,
   Repeat,
   Settings,
+  UserRound,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -30,10 +29,9 @@ export const MENU_ITEMS: readonly NavItem[] = [
   { to: '/provas', label: 'Provas', icon: FileCheck2, counter: 'provas' },
   { to: '/tarefas', label: 'Tarefas', icon: ListChecks, counter: 'tarefas' },
   { to: '/materias', label: 'Matérias', icon: Library },
-  { to: '/blocos', label: 'Blocos de estudo', icon: LayoutGrid },
   { to: '/habitos', label: 'Hábitos', icon: Repeat, counter: 'habitos' },
   { to: '/foco', label: 'Modo Foco', icon: Focus, badgeNew: true },
-  { to: '/estatisticas', label: 'Estatísticas', icon: BarChart3 },
+  { to: '/perfil', label: 'Perfil', icon: UserRound },
 ];
 
 export const SETTINGS_ITEMS: readonly NavItem[] = [

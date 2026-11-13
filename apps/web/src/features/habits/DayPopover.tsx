@@ -10,6 +10,7 @@ import { usePhone } from '../../lib/responsive/use-media';
 import { canEditDay } from '../../lib/habits/edit';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../lib/habits';
 import { formatAmount, formatLongDay, stateText } from '../../lib/habits/summary';
+import { RestDayActions } from './RestDayActions';
 
 interface DayPopoverProps {
   habit: Habit;
@@ -24,7 +25,10 @@ interface DayPopoverProps {
   onClose: () => void;
 }
 
-/** Popover do dia no heatmap: edita dias passados de hábitos manuais; nos demais só informa. */
+/**
+ * Popover do dia no heatmap: edita dias passados de hábitos manuais (nos demais só informa) e
+ * marca/desfaz dias de descanso.
+ */
 export function DayPopover({
   habit,
   date,
@@ -96,11 +100,14 @@ export function DayPopover({
           )}
         </div>
 
-        {habit.type === 'quantidade' && state !== 'nao-agendado' && state !== 'futuro' && (
-          <p className="text-md tabular-nums">
-            {formatAmount(value, habit.unit)} de {formatAmount(target, habit.unit)}
-          </p>
-        )}
+        {habit.type === 'quantidade' &&
+          state !== 'nao-agendado' &&
+          state !== 'futuro' &&
+          state !== 'descanso' && (
+            <p className="text-md tabular-nums">
+              {formatAmount(value, habit.unit)} de {formatAmount(target, habit.unit)}
+            </p>
+          )}
         {state === 'nao-agendado' && (
           <p className="text-sm text-muted">Este hábito não estava agendado neste dia.</p>
         )}
@@ -131,6 +138,9 @@ export function DayPopover({
             </label>
             <Button type="submit">Salvar</Button>
           </form>
+        )}
+        {state !== 'nao-agendado' && (
+          <RestDayActions habit={habit} date={date} ctx={ctx} onDone={onClose} />
         )}
       </div>
     </Popover>

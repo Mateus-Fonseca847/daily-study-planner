@@ -180,9 +180,9 @@ export function CalendarControls({
           value={year}
           onChange={(e) => onDateChange(dayKey(setYear(current, Number(e.target.value))))}
         />
-        <Button onClick={() => openEventForm({ type: 'prova' })}>
+        <Button onClick={() => openEventForm({ type: 'tarefa' })}>
           <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
-          Nova Prova
+          Nova tarefa
         </Button>
       </div>
     </div>

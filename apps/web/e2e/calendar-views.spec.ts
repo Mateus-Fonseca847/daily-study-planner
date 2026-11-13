@@ -70,16 +70,16 @@ test.describe('Visões do calendário', () => {
     page,
   }) => {
     await page.goto(`${BASE}&visao=semana&data=2026-10-29`);
-    await page.getByRole('button', { name: 'Nova Prova' }).click();
-    await page.getByLabel('Título').fill('sdm');
-    await expect(page.getByLabel('Título')).toHaveValue('sdm');
+    await page.getByRole('button', { name: 'Nova tarefa' }).click();
+    await page.getByLabel('Título', { exact: true }).fill('sdm');
+    await expect(page.getByLabel('Título', { exact: true })).toHaveValue('sdm');
     await expect(view(page, 'Semana')).toBeChecked();
     await page.keyboard.press('Escape');
     await page.keyboard.press('m');
     await expect(view(page, 'Mês')).toBeChecked();
   });
 
-  test('clicar num horário vazio da Semana cria o evento com data e hora corretas', async ({
+  test('clicar num horário vazio da Semana cria uma Tarefa com data e hora corretas', async ({
     page,
   }) => {
     await page.goto(`${BASE}&visao=semana&data=2026-10-29`);
@@ -87,13 +87,15 @@ test.describe('Visões do calendário', () => {
     // 20:00: o evento que cruza a meia-noite expande a grade para 00h–24h (72 px por hora).
     await friday.click({ position: { x: 20, y: 20 * 72 + 10 } });
 
-    const dialog = page.getByRole('dialog');
-    await expect(dialog.getByLabel('Data')).toHaveValue('2026-10-30');
-    await expect(dialog.getByLabel('Início')).toHaveValue('20:00');
-    await dialog.getByLabel('Título').fill('Estudo noturno');
-    await dialog.getByRole('button', { name: 'Salvar' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Nova tarefa' });
+    await expect(dialog.getByRole('radio', { name: 'Tarefa' })).toBeChecked();
+    await expect(dialog.getByLabel('Data do prazo')).toHaveValue('2026-10-30');
+    await expect(dialog.getByLabel('Hora do prazo')).toHaveValue('20:00');
+    await expect(dialog.getByLabel('Título', { exact: true })).toBeFocused();
+    await dialog.getByLabel('Título', { exact: true }).fill('Estudo noturno');
+    await dialog.getByRole('button', { name: 'Criar tarefa' }).click();
 
-    const block = page.getByRole('button', { name: /Estudo noturno, 20:00 – 21:00/ });
+    const block = page.getByRole('button', { name: /^Tarefa: Estudo noturno, 20:00 – 21:00/ });
     await expect(block).toBeVisible();
   });
 

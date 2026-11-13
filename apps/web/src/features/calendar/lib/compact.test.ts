@@ -9,23 +9,23 @@ describe('compactDayMarks', () => {
   it('um ponto por tipo, na ordem do horário', () => {
     const marks = compactDayMarks([
       ev('c', 'prova', '2026-10-29T15:00:00'),
-      ev('a', 'estudo', '2026-10-29T09:00:00'),
-      ev('b', 'estudo', '2026-10-29T10:00:00'),
+      ev('a', 'tarefa', '2026-10-29T09:00:00'),
+      ev('b', 'tarefa', '2026-10-29T10:00:00'),
     ]);
-    expect(marks.types).toEqual(['estudo', 'prova']);
-    expect(marks.extra).toBe(1); // o segundo “estudo” não ganha ponto próprio
+    expect(marks.types).toEqual(['tarefa', 'prova']);
+    expect(marks.extra).toBe(1); // a segunda “tarefa” não ganha ponto próprio
     expect(marks.total).toBe(3);
   });
 
-  it('no máximo três pontos; o resto vira contagem', () => {
+  it('no máximo três pontos (um por tipo); o resto vira contagem', () => {
     const marks = compactDayMarks([
-      ev('1', 'estudo', '2026-10-29T08:00:00'),
+      ev('1', 'tarefa', '2026-10-29T08:00:00'),
       ev('2', 'prova', '2026-10-29T09:00:00'),
-      ev('3', 'entrega', '2026-10-29T10:00:00'),
-      ev('4', 'revisao', '2026-10-29T11:00:00'),
-      ev('5', 'especial', '2026-10-29T12:00:00'),
+      ev('3', 'especial', '2026-10-29T10:00:00'),
+      ev('4', 'tarefa', '2026-10-29T11:00:00'),
+      ev('5', 'prova', '2026-10-29T12:00:00'),
     ]);
-    expect(marks.types).toEqual(['estudo', 'prova', 'entrega']);
+    expect(marks.types).toEqual(['tarefa', 'prova', 'especial']);
     expect(marks.extra).toBe(2);
   });
 
@@ -37,7 +37,7 @@ describe('compactDayMarks', () => {
 describe('dayAgenda', () => {
   it('ordena por horário sem alterar a lista original', () => {
     const list = [
-      ev('b', 'estudo', '2026-10-29T10:00:00'),
+      ev('b', 'tarefa', '2026-10-29T10:00:00'),
       ev('a', 'prova', '2026-10-29T08:00:00'),
     ];
     expect(dayAgenda(list).map((e) => e.id)).toEqual(['a', 'b']);

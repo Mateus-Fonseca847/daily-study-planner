@@ -14,43 +14,51 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
   await subjectDialog.getByRole('button', { name: 'Salvar' }).click();
   await expect(subjectDialog).toBeHidden();
 
-  // 2. Prova com 3 conteúdos.
-  await page.getByRole('button', { name: 'Nova Prova' }).click();
+  // 2. Prova com 3 conteúdos, pelo painel (“+ Nova tarefa” e o tipo Prova).
+  await page.getByRole('button', { name: 'Nova tarefa' }).click();
+  await page
+    .getByRole('dialog', { name: 'Nova tarefa' })
+    .getByRole('radio', { name: 'Prova' })
+    .click();
+  // O painel acompanha o tipo escolhido.
   const form = page.getByRole('dialog', { name: 'Nova prova' });
-  await form.getByLabel('Título').fill('Prova de Cálculo');
-  await form
-    .getByRole('combobox', { name: 'Matéria', exact: true })
-    .selectOption({ label: 'Cálculo' });
-  for (const [i, title] of ['Limites', 'Derivadas', 'Integrais'].entries()) {
-    await form.getByRole('button', { name: 'Adicionar conteúdo' }).click();
-    await form.getByRole('textbox', { name: `Conteúdo ${i + 1}`, exact: true }).fill(title);
+  await expect(form).toBeVisible();
+  await form.getByLabel('Título', { exact: true }).fill('Prova de Cálculo');
+  await form.getByRole('button', { name: 'Mais opções' }).click();
+  await form.getByLabel('Matéria').selectOption({ label: 'Cálculo' });
+  for (const title of ['Limites', 'Derivadas', 'Integrais']) {
+    await form.getByLabel('Novo conteúdo').fill(title);
+    await form.getByLabel('Novo conteúdo').press('Enter');
   }
-  await form.getByRole('button', { name: 'Salvar' }).click();
+  await form.getByRole('button', { name: 'Criar prova' }).click();
   await expect(form).toBeHidden();
 
   // 3. Aparece no calendário; marca 2 conteúdos.
   const chip = page.getByRole('button', { name: /^Prova: Prova de Cálculo/ });
   await expect(chip).toBeVisible();
   await chip.click();
-  const popover = page.getByRole('dialog', { name: 'Detalhes: Prova de Cálculo' });
-  await expect(popover.getByText('0/3')).toBeVisible();
-  await popover.getByText('Limites').click();
-  await popover.getByText('Derivadas').click();
-  await expect(popover.getByText('2/3')).toBeVisible();
-  await expect(popover.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '67');
+  const panel = page.getByRole('dialog', { name: 'Prova de Cálculo' });
+  const heading = panel.getByRole('heading', { name: /Conteúdos/ });
+  await expect(heading).toContainText('0 de 3');
+  await panel.getByRole('checkbox', { name: 'Marcar “Limites”' }).click();
+  await panel.getByRole('checkbox', { name: 'Marcar “Derivadas”' }).click();
+  await expect(heading).toContainText('2 de 3');
+  await expect(panel.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '67');
 
   // 4. Persistência: recarrega a página.
   await page.reload();
   await page.getByRole('button', { name: /^Prova: Prova de Cálculo/ }).click();
-  const reopened = page.getByRole('dialog', { name: 'Detalhes: Prova de Cálculo' });
-  await expect(reopened.getByText('2/3')).toBeVisible();
-  await expect(reopened.getByText('Cálculo', { exact: true })).toBeVisible();
+  const reopened = page.getByRole('dialog', { name: 'Prova de Cálculo' });
+  await expect(reopened.getByRole('heading', { name: /Conteúdos/ })).toContainText('2 de 3');
+  await reopened.getByRole('button', { name: 'Mais opções' }).click();
+  await expect(reopened.getByLabel('Matéria').locator('option:checked')).toHaveText('Cálculo');
 
-  // 5. Excluir e desfazer.
-  await reopened.getByRole('button', { name: 'Excluir evento' }).click();
+  // 5. Excluir (menu “…”) e desfazer.
+  await reopened.getByRole('button', { name: 'Ações de Prova de Cálculo' }).click();
+  await page.getByRole('menuitem', { name: 'Excluir' }).click();
   await expect(page.getByRole('button', { name: /^Prova: Prova de Cálculo/ })).toHaveCount(0);
-  const toast = page.getByRole('status');
-  await expect(toast).toContainText('excluído');
+  const toast = page.getByRole('status').filter({ hasText: 'excluído' });
+  await expect(toast).toBeVisible();
   await toast.getByRole('button', { name: 'Desfazer' }).click();
   await expect(page.getByRole('button', { name: /^Prova: Prova de Cálculo/ })).toBeVisible();
 
@@ -62,7 +70,7 @@ test('criar matéria → prova com 3 conteúdos → calendário → marcar 2 →
 test('dado corrompido no armazenamento não quebra o app', async ({ page }) => {
   await page.addInitScript(() => {
     if (!sessionStorage.getItem('seeded')) {
-      localStorage.setItem('daily:v3', '{isto não é json');
+      localStorage.setItem('daily:v4', '{isto não é json');
       sessionStorage.setItem('seeded', '1');
     }
   });
@@ -71,6 +79,8 @@ test('dado corrompido no armazenamento não quebra o app', async ({ page }) => {
   const notice = page.getByRole('alert');
   await expect(notice).toContainText('corrompidos');
   await expect(page.getByRole('grid', { name: 'Calendário mensal' })).toBeVisible();
+  // Nada é gravado por cima antes de o usuário decidir (nem o hábito de água automático).
+  expect(await page.evaluate(() => localStorage.getItem('daily:v4'))).toBe('{isto não é json');
 
   await notice.getByRole('button', { name: 'Começar do zero' }).click();
   await expect(notice).toBeHidden();

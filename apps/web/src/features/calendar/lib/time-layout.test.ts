@@ -48,12 +48,12 @@ describe('corte por dia', () => {
     expect(segmentOnDay('a', start, '2026-10-30T00:00:00', '2026-10-30')).toBeNull();
   });
 
-  it('duração mínima visual de 30 min (entrega sem duração e eventos curtos)', () => {
+  it('duração mínima visual de 30 min (tarefa pontual e eventos curtos)', () => {
     const delivery = segmentOnDay('e', '2026-10-29T23:00:00', '2026-10-29T23:00:00', '2026-10-29');
     expect(delivery).toMatchObject({ startMin: h(23), endMin: h(23, 30), realMin: 0 });
     const short = segmentOnDay('e', '2026-10-29T10:00:00', '2026-10-29T10:10:00', '2026-10-29');
     expect(short?.endMin).toBe(h(10, 30));
-    // Entrega às 23:59 cabe no fim do dia sem estourar as 24h.
+    // Tarefa às 23:59 cabe no fim do dia sem estourar as 24h.
     const late = segmentOnDay('e', '2026-10-29T23:59:00', '2026-10-29T23:59:00', '2026-10-29');
     expect(late && late.endMin - late.startMin).toBe(30);
     expect(late?.endMin).toBe(h(24));

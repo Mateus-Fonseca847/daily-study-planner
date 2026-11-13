@@ -6,6 +6,21 @@ export interface AccountUser {
   id: string;
   email: string;
   name: string;
+  /** Foto da conta Google (só `https://lh3.googleusercontent.com`, liberado na CSP); senão null. */
+  avatarUrl: string | null;
+}
+
+/** Aceita só a foto servida pelo Google (o mesmo host liberado em `img-src`). */
+export function safeAvatarUrl(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && url.hostname === 'lh3.googleusercontent.com'
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export type AuthState =
@@ -23,11 +38,21 @@ interface AuthActions {
 const fromSession = (session: Session | null): AuthState => {
   if (!session) return { status: 'visitor' };
   const { user } = session;
-  const meta = user.user_metadata as { full_name?: string; name?: string };
+  const meta = user.user_metadata as {
+    full_name?: string;
+    name?: string;
+    avatar_url?: unknown;
+    picture?: unknown;
+  };
   const email = user.email ?? '';
   return {
     status: 'signed-in',
-    user: { id: user.id, email, name: meta.full_name ?? meta.name ?? email.split('@')[0] ?? '' },
+    user: {
+      id: user.id,
+      email,
+      name: meta.full_name ?? meta.name ?? email.split('@')[0] ?? '',
+      avatarUrl: safeAvatarUrl(meta.avatar_url ?? meta.picture),
+    },
   };
 };
 

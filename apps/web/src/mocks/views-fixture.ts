@@ -25,25 +25,25 @@ export function viewsSnapshot(now: Date = VIEWS_NOW): DataSnapshot {
   const extra: [string, number, string, number, number, number, number, string, string, string][] =
     [
       // [id, dia, tipo, hora início, min início, hora fim, min fim, título, status, matéria]
-      ['a', -3, 'estudo', 9, 0, 10, 30, 'Lista de derivadas', 'concluido', 'mat'],
-      ['b', -3, 'revisao', 14, 0, 15, 0, 'Revisão de Física', 'concluido', 'fis'],
+      ['a', -3, 'tarefa', 9, 0, 10, 30, 'Lista de derivadas', 'concluido', 'mat'],
+      ['b', -3, 'tarefa', 14, 0, 15, 0, 'Revisão de Física', 'concluido', 'fis'],
       // Terça: três simultâneos e um encadeado.
-      ['c', -2, 'estudo', 9, 0, 11, 0, 'Resolução de exercícios', 'concluido', 'mat'],
-      ['d', -2, 'revisao', 9, 30, 10, 30, 'Revisar fichamento', 'concluido', 'his'],
-      ['e', -2, 'estudo', 10, 0, 12, 0, 'Laboratório de química', 'concluido', 'qui'],
-      ['f', -2, 'estudo', 11, 30, 12, 30, 'Leitura de biologia', 'pendente', 'bio'],
-      ['g', -2, 'entrega', 18, 0, 18, 0, 'Entregar relatório', 'pendente', 'qui'],
+      ['c', -2, 'tarefa', 9, 0, 11, 0, 'Resolução de exercícios', 'concluido', 'mat'],
+      ['d', -2, 'tarefa', 9, 30, 10, 30, 'Revisar fichamento', 'concluido', 'his'],
+      ['e', -2, 'tarefa', 10, 0, 12, 0, 'Laboratório de química', 'concluido', 'qui'],
+      ['f', -2, 'tarefa', 11, 30, 12, 30, 'Leitura de biologia', 'pendente', 'bio'],
+      ['g', -2, 'tarefa', 18, 0, 18, 0, 'Entregar relatório', 'pendente', 'qui'],
       // Quarta: prova e um evento que cruza a meia-noite.
       ['h', -1, 'prova', 8, 0, 10, 0, 'Prova de Física', 'pendente', 'fis'],
-      ['i', -1, 'estudo', 10, 30, 12, 0, 'Correção da prova', 'pendente', 'fis'],
+      ['i', -1, 'tarefa', 10, 30, 12, 0, 'Correção da prova', 'pendente', 'fis'],
       ['j', -1, 'especial', 22, 0, 25, 30, 'Maratona de redação', 'pendente', 'red'],
       // Hoje: simultâneos à tarde (os das 10h e 11h vêm da base).
-      ['k', 0, 'estudo', 15, 0, 16, 0, 'Grupo de estudos', 'pendente', 'mat'],
-      ['l', 0, 'revisao', 15, 0, 16, 0, 'Revisão de História', 'pendente', 'his'],
-      ['m', 0, 'estudo', 15, 30, 17, 0, 'Simulado', 'pendente', 'bio'],
+      ['k', 0, 'tarefa', 15, 0, 16, 0, 'Grupo de estudos', 'pendente', 'mat'],
+      ['l', 0, 'tarefa', 15, 0, 16, 0, 'Revisão de História', 'pendente', 'his'],
+      ['m', 0, 'tarefa', 15, 30, 17, 0, 'Simulado', 'pendente', 'bio'],
       // Sexta: fora do intervalo padrão (05h) e uma entrega no fim do dia.
-      ['n', 1, 'estudo', 5, 0, 6, 30, 'Estudo antes do trabalho', 'pendente', 'mat'],
-      ['o', 1, 'entrega', 23, 59, 23, 59, 'Entregar redação', 'pendente', 'red'],
+      ['n', 1, 'tarefa', 5, 0, 6, 30, 'Estudo antes do trabalho', 'pendente', 'mat'],
+      ['o', 1, 'tarefa', 23, 59, 23, 59, 'Entregar redação', 'pendente', 'red'],
     ];
   const events = extra.map(([id, offset, type, sh, sm, eh, em, title, status, subjectId]) => {
     const day = week(offset);
@@ -57,7 +57,7 @@ export function viewsSnapshot(now: Date = VIEWS_NOW): DataSnapshot {
       notes: '',
       start: at(day, sh, sm),
       end: crosses ? at(shiftDay(day, 1), eh - 24, em) : at(day, eh, em),
-      ...(type === 'prova' ? { contents: [] } : {}),
+      createdAt: at(day, sh, sm),
     });
   });
   // Um hábito manual sem horário (aparece na faixa “Hábitos” da Semana e pode ser marcado dali).
@@ -65,7 +65,7 @@ export function viewsSnapshot(now: Date = VIEWS_NOW): DataSnapshot {
     id: 'fx-v-meditation',
     name: 'Meditação',
     icon: 'heart',
-    color: 'turquesa',
+    color: 'ciano',
     type: 'check',
     unit: '',
     source: 'manual',

@@ -1,7 +1,7 @@
 import { addMinutes, parseISO } from 'date-fns';
 import type { Habit, StudyEvent } from '@daily/shared';
 import { toLocalIso } from '../../../lib/dates';
-import { isScheduled, ruleOn, type HabitContext } from '../../../lib/habits';
+import { isRestDay, isScheduled, ruleOn, type HabitContext } from '../../../lib/habits';
 import {
   eventSegments,
   hourRange,
@@ -24,7 +24,7 @@ export interface GridColumn {
   items: PlacedItem[];
 }
 
-/** Hábitos agendados no dia com horário: viram segmentos da grade (cortados na meia-noite). */
+/** Hábitos agendados no dia com horário (fora dos descansos): viram segmentos da grade. */
 export function timedHabitSegments(
   habits: readonly Habit[],
   day: string,
@@ -32,7 +32,7 @@ export function timedHabitSegments(
 ): GridItem[] {
   return habits.flatMap((habit) => {
     const time = ruleOn(habit, day)?.time;
-    if (!time || !isScheduled(habit, day, ctx)) return [];
+    if (!time || !isScheduled(habit, day) || isRestDay(ctx, habit.id, day)) return [];
     const start = `${day}T${time.start}:00`;
     const end = toLocalIso(addMinutes(parseISO(start), time.durationMin));
     const segment = segmentOnDay(`h:${habit.id}`, start, end, day);
@@ -40,9 +40,12 @@ export function timedHabitSegments(
   });
 }
 
-/** Hábitos agendados no dia **sem** horário (vão para a faixa “Hábitos”). */
+/** Hábitos agendados no dia **sem** horário (vão para a faixa “Hábitos”). Descanso fica de fora. */
 export const untimedHabits = (habits: readonly Habit[], day: string, ctx: HabitContext): Habit[] =>
-  habits.filter((habit) => isScheduled(habit, day, ctx) && !ruleOn(habit, day)?.time);
+  habits.filter(
+    (habit) =>
+      isScheduled(habit, day) && !isRestDay(ctx, habit.id, day) && !ruleOn(habit, day)?.time,
+  );
 
 /**
  * Colunas da grade (um dia cada), já com o layout de sobreposição, e o intervalo de horas comum a

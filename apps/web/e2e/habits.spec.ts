@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { seedSnapshot, withoutAutoWater } from './helpers';
 
 /** Quarta-feira: dia agendado da “Musculação” (seg, qua e sex). */
 const NOW = new Date('2026-11-11T10:30:00');
@@ -16,6 +17,7 @@ async function createGym(page: Page) {
   for (const day of ['dom', 'ter', 'qui', 'sáb']) {
     await dialog.getByRole('button', { name: day, exact: true }).click();
   }
+  await dialog.getByRole('button', { name: 'Mais opções' }).click();
   await dialog.getByLabel('Início', { exact: true }).fill('2026-11-01');
   await dialog.getByRole('button', { name: 'Criar hábito' }).click();
   await expect(dialog).toHaveCount(0);
@@ -33,6 +35,7 @@ test.describe('Hábitos', () => {
   });
 
   test('criar “Musculação” (seg, qua e sex): cartão, resumo e heatmap', async ({ page }) => {
+    await withoutAutoWater(page);
     await page.goto('/habitos');
     await expect(page.getByText('Nenhum hábito ainda')).toBeVisible();
     await createGym(page);
@@ -86,30 +89,29 @@ test.describe('Hábitos', () => {
     await expect(cell(page, 'Musculação', '2026-11-13')).toHaveCount(0);
   });
 
-  test('Hidratação reflete o copo de água adicionado em Estatísticas', async ({ page }) => {
+  test('o hábito “Água” é criado sozinho e reflete o copo adicionado', async ({ page }) => {
     await page.goto('/habitos');
-    await page.getByRole('button', { name: 'Hidratação' }).click();
-    const card = habitCard(page, 'Hidratação');
+    const card = habitCard(page, 'Água');
     await expect(card).toContainText('Automático: água do dia');
-    await expect(cell(page, 'Hidratação', '2026-11-11')).toHaveAttribute('aria-label', /pendente/);
+    await expect(cell(page, 'Água', '2026-11-11')).toHaveAttribute('aria-label', /pendente/);
 
-    await page.goto('/estatisticas');
+    await page.goto('/perfil');
     await page.getByRole('button', { name: /^Adicionar um copo/ }).click();
 
     await page.goto('/habitos');
-    await expect(cell(page, 'Hidratação', '2026-11-11')).toHaveAttribute(
+    await expect(cell(page, 'Água', '2026-11-11')).toHaveAttribute(
       'aria-label',
       /250 ml de 2000 ml/,
     );
-    // Em Estatísticas o hábito aparece em “Hábitos de hoje”.
-    await page.goto('/estatisticas');
+    // No Perfil o hábito aparece em “Hábitos de hoje”.
+    await page.goto('/perfil');
     await expect(page.getByRole('heading', { name: 'Hábitos de hoje' })).toBeVisible();
-    await expect(page.getByText('Hidratação').first()).toBeVisible();
+    await expect(page.getByText('Água', { exact: true }).first()).toBeVisible();
   });
 
   test('metas salvas no formato v2 viram hábitos, sem perder registros', async ({ page }) => {
     await page.addInitScript(() => {
-      if (localStorage.getItem('daily:v3')) return;
+      if (localStorage.getItem('daily:v4')) return;
       const goal = (id: string, title: string, kind: string, order: number) => ({
         id,
         title,
@@ -149,10 +151,72 @@ test.describe('Hábitos', () => {
     await expect(cell(page, 'Dormir 7h', '2026-11-09')).toHaveAttribute('aria-label', /: feito/);
 
     const keys = await page.evaluate(() => ({
-      v3: localStorage.getItem('daily:v3') !== null,
+      v4: localStorage.getItem('daily:v4') !== null,
       backup: localStorage.getItem('daily:v2:pre-v3') !== null,
     }));
-    expect(keys).toEqual({ v3: true, backup: true });
+    expect(keys).toEqual({ v4: true, backup: true });
+    // Conta que já tinha dados: o hábito de água automático não é criado.
+    await expect(habitCard(page, 'Água')).toHaveCount(0);
+  });
+
+  test('marcar um dia de descanso não quebra a sequência e pode ser desfeito', async ({ page }) => {
+    // Leitura todo dia desde 01/11; feita de 01 a 10, exceto 05 (hoje é 11/11).
+    const days = ['01', '02', '03', '04', '06', '07', '08', '09', '10'].map((d) => `2026-11-${d}`);
+    await seedSnapshot(page, {
+      habits: [
+        {
+          id: 'leitura',
+          name: 'Leitura',
+          icon: 'book-open',
+          color: 'ciano',
+          type: 'check',
+          unit: '',
+          source: 'manual',
+          rules: [
+            {
+              since: '2026-11-01',
+              repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+              target: null,
+              time: null,
+            },
+          ],
+          createdAt: '2026-11-01T08:00:00',
+          archivedAt: null,
+          endsOn: null,
+          order: 0,
+        },
+      ],
+      habitLogs: days.map((date) => ({
+        id: `leitura:${date}`,
+        habitId: 'leitura',
+        date,
+        value: 1,
+        updatedAt: `${date}T09:00:00`,
+      })),
+    });
+    await page.goto('/habitos');
+    const card = habitCard(page, 'Leitura');
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
+    await expect(card.getByRole('img', { name: 'Sequência: 5 dias' })).toBeVisible();
+
+    await cell(page, 'Leitura', '2026-11-05').click();
+    const day = page.getByRole('dialog', { name: /^Leitura, / });
+    await day.getByRole('button', { name: 'Só este hábito' }).click();
+
+    await expect(cell(page, 'Leitura', '2026-11-05')).toHaveAttribute('aria-label', /descanso/);
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('9 dias');
+    await expect(card.getByRole('img', { name: 'Sequência: 9 dias' })).toBeVisible();
+
+    // Persiste ao recarregar…
+    await page.reload();
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('9 dias');
+    // …e dá para desfazer pelo próprio dia.
+    await cell(page, 'Leitura', '2026-11-05').click();
+    await page
+      .getByRole('dialog', { name: /^Leitura, / })
+      .getByRole('button', { name: 'Desfazer descanso' })
+      .click();
+    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
   });
 
   test('o heatmap se navega pelo teclado: setas movem entre dias e Enter abre o dia', async ({

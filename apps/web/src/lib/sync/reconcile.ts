@@ -4,6 +4,11 @@
 export interface SyncMeta {
   revision: number;
   hash: string;
+  /**
+   * Versão do formato em que `hash` foi calculado. Ausente = gravado por um app v3: depois da
+   * migração local o hash precisa ser “rebaseado” (ver `createSyncEngine`).
+   */
+  version?: number;
 }
 
 export interface RemoteInfo {
@@ -23,13 +28,16 @@ export type Decision =
 
 export interface ReconcileInput {
   localHash: string;
-  /** Hash do estado inicial vazio: local “virgem”, nada a perder. */
-  pristineHash: string;
+  /**
+   * Local “virgem”: nada a perder (estado inicial ou só o hábito de água automático, ver
+   * `isPristineSnapshot`). Um hash não serve: o hábito automático tem id e data próprios.
+   */
+  localPristine: boolean;
   remote: RemoteInfo | null;
   meta: SyncMeta | null;
 }
 
-export function reconcile({ localHash, pristineHash, remote, meta }: ReconcileInput): Decision {
+export function reconcile({ localHash, localPristine, remote, meta }: ReconcileInput): Decision {
   if (remote === null) {
     // Nuvem vazia: sobe o que existir. (Se `meta` existir, a nuvem foi apagada: sobe de novo.)
     return { kind: 'push', expectedRevision: null };
@@ -41,7 +49,7 @@ export function reconcile({ localHash, pristineHash, remote, meta }: ReconcileIn
 
   if (meta === null) {
     // Primeiro login neste dispositivo: local virgem aceita a nuvem; senão, os dois têm dados.
-    return localHash === pristineHash ? { kind: 'pull' } : { kind: 'conflict' };
+    return localPristine ? { kind: 'pull' } : { kind: 'conflict' };
   }
 
   const localChanged = localHash !== meta.hash;

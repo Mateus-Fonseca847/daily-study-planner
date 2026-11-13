@@ -2,12 +2,11 @@ import type { ReactNode } from 'react';
 import { createBrowserRouter, Navigate, RouterProvider, type RouteObject } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 import { MENU_ITEMS, SETTINGS_ITEMS } from './components/layout/nav';
-import { BlocksPage } from './features/blocks/BlocksPage';
 import { CalendarPage } from './features/calendar/CalendarPage';
 import { ExamsPage } from './features/exams/ExamsPage';
 import { HabitsPage } from './features/habits/HabitsPage';
 import { FocusPage } from './features/focus/FocusPage';
-import { StatsPage } from './features/stats/StatsPage';
+import { ProfilePage } from './features/profile/ProfilePage';
 import { PreferencesPage } from './features/preferences/PreferencesPage';
 import { SubjectsPage } from './features/subjects/SubjectsPage';
 import { TasksPage } from './features/tasks/TasksPage';
@@ -24,10 +23,9 @@ const PAGES: Record<string, ReactNode> = {
   '/provas': <ExamsPage />,
   '/tarefas': <TasksPage />,
   '/materias': <SubjectsPage />,
-  '/blocos': <BlocksPage />,
   '/habitos': <HabitsPage />,
   '/foco': <FocusPage />,
-  '/estatisticas': <StatsPage />,
+  '/perfil': <ProfilePage />,
   '/preferencias': <PreferencesPage />,
 };
 
@@ -44,6 +42,10 @@ const routes: RouteObject[] = [
         path: item.to,
         element: PAGES[item.to] ?? <PlaceholderPage item={item} />,
       })),
+      // Blocos de estudo saíram na v4: a rota antiga leva ao calendário.
+      { path: '/blocos', element: <Navigate to={CALENDAR_PATH} replace /> },
+      // Estatísticas viraram o Perfil na v4.
+      { path: '/estatisticas', element: <Navigate to="/perfil" replace /> },
       { path: '*', element: <Navigate to={CALENDAR_PATH} replace /> },
     ],
   },

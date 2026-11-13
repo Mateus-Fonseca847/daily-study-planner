@@ -100,7 +100,7 @@ describe('máquina de estados do cronômetro', () => {
 
 describe('finalizar e encerrar', () => {
   it('finalizar salva como concluída com a duração planejada e o vínculo', () => {
-    const link = { subjectId: 'mat', examId: 'e1', blockId: null };
+    const link = { subjectId: 'mat', examId: 'e1', origin: 'cronometro' as const, note: '' };
     const record = finalizar(iniciar(idle(25, { link }), T0));
     expect(record).toEqual({
       id: 's1',
@@ -110,7 +110,8 @@ describe('finalizar e encerrar', () => {
       status: 'concluida',
       subjectId: 'mat',
       examId: 'e1',
-      blockId: null,
+      origin: 'cronometro' as const,
+      note: '',
     });
   });
 

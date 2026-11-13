@@ -4,12 +4,13 @@ import type { Habit } from '@daily/shared';
 import { Menu, type MenuItem } from '../../components/ui/Menu';
 import { deleteHabitWithUndo } from '../../lib/data/actions';
 import { useData } from '../../lib/data/app-store';
-import { isScheduled, rate, ruleOn, streaks, type HabitContext } from '../../lib/habits';
+import { dayState, isScheduled, rate, ruleOn, streaks, type HabitContext } from '../../lib/habits';
 import { describeRepeat, formatTimeOfDay } from '../../lib/habits/repeat';
 import { formatAmount } from '../../lib/habits/summary';
 import { openHabitForm } from '../../lib/ui-store';
 import { DayPopover } from './DayPopover';
 import { HabitControl } from './HabitControl';
+import { StreakFlame } from './StreakFlame';
 import { cn } from '../../lib/cn';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from './habit-icons';
 import { HabitHeatmap } from './HabitHeatmap';
@@ -53,7 +54,8 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
 
   const stats = useMemo(() => streaks(habit, ctx), [habit, ctx]);
   const rate90 = useMemo(() => rate(habit, ctx, 90), [habit, ctx]);
-  const scheduledToday = isScheduled(habit, ctx.today, ctx);
+  const restToday = dayState(habit, ctx.today, ctx) === 'descanso';
+  const scheduledToday = isScheduled(habit, ctx.today) && !restToday;
   // Quantidade, fonte automática e “não agendado hoje” têm um controle largo: ganham uma linha própria no celular.
   const wideControl = habit.type === 'quantidade' || habit.source !== 'manual' || !scheduledToday;
 
@@ -81,7 +83,10 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
           <Icon aria-hidden strokeWidth={1.5} className="size-icon" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="truncate text-card-title font-normal max-lg:text-lg">{habit.name}</h2>
+          <h2 className="flex min-w-0 items-center gap-2 text-card-title font-normal max-lg:text-lg">
+            <span className="truncate">{habit.name}</span>
+            <StreakFlame days={stats.current} />
+          </h2>
           <p className="truncate text-sm text-muted max-lg:line-clamp-2 max-lg:whitespace-normal">
             {habitSummary(habit, ctx.today)}
           </p>
@@ -126,7 +131,9 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
           {scheduledToday ? (
             <HabitControl habit={habit} date={ctx.today} ctx={ctx} now={now} />
           ) : (
-            <span className="text-xs text-muted">Não agendado hoje</span>
+            <span className="text-xs text-muted">
+              {restToday ? 'Descanso hoje' : 'Não agendado hoje'}
+            </span>
           )}
           <Menu
             label={`Ações de ${habit.name}`}

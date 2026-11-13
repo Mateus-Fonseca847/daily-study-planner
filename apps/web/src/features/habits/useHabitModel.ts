@@ -29,12 +29,12 @@ export function useHabitModel(): HabitModel {
   const habitLogs = useData((s) => s.habitLogs);
   const waterLogs = useData((s) => s.waterLogs);
   const focusSessions = useData((s) => s.focusSessions);
-  const events = useData((s) => s.events);
+  const restDays = useData((s) => s.restDays);
 
   const ordered = useMemo(() => sortHabits(habits), [habits]);
   const ctx = useMemo(
-    () => buildHabitContext({ habitLogs, waterLogs, focusSessions, events }, today),
-    [habitLogs, waterLogs, focusSessions, events, today],
+    () => buildHabitContext({ habitLogs, waterLogs, focusSessions, restDays }, today),
+    [habitLogs, waterLogs, focusSessions, restDays, today],
   );
   return { now, today, habits: ordered, ctx };
 }

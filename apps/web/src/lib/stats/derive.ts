@@ -5,11 +5,10 @@ import {
   type Habit,
   type HabitLog,
   type Preferences,
-  type StudyBlock,
   type StudyEvent,
   type WaterLog,
 } from '@daily/shared';
-import { minutesBetween, parseDayKey, shiftDay, toLocalIso } from '../dates';
+import { parseDayKey, shiftDay, toLocalIso } from '../dates';
 import { percentOf } from './format';
 
 export interface StatsData {
@@ -26,22 +25,13 @@ export interface StatsIndex {
   data: StatsData;
   /** ml por dia. */
   water: Map<string, number>;
-  /** Blocos de estudo (não cancelados) por dia. */
-  blocks: Map<string, StudyBlock[]>;
 }
 
 export function buildIndex(data: StatsData): StatsIndex {
   const water = new Map<string, number>();
   for (const log of data.waterLogs) water.set(log.date, (water.get(log.date) ?? 0) + log.ml);
 
-  const blocks = new Map<string, StudyBlock[]>();
-  for (const event of data.events) {
-    if (event.type !== 'estudo' || event.status === 'cancelado') continue;
-    const key = event.start.slice(0, 10);
-    blocks.set(key, [...(blocks.get(key) ?? []), event]);
-  }
-
-  return { data, water, blocks };
+  return { data, water };
 }
 
 /* ───────────── Semana ───────────── */
@@ -53,36 +43,10 @@ export function weekDays(today: string): string[] {
   return Array.from({ length: 7 }, (_, i) => shiftDay(monday, i));
 }
 
-export interface DayHours {
-  day: string;
-  plannedMin: number;
-  doneMin: number;
-}
-
-/** Horas planejadas e concluídas por dia, contando blocos de estudo e revisões (não cancelados). */
-export function studyHoursByDay(
-  events: readonly StudyEvent[],
-  days: readonly string[],
-): DayHours[] {
-  const map = new Map<string, DayHours>(
-    days.map((day) => [day, { day, plannedMin: 0, doneMin: 0 }]),
-  );
-  for (const event of events) {
-    if ((event.type !== 'estudo' && event.type !== 'revisao') || event.status === 'cancelado')
-      continue;
-    const entry = map.get(event.start.slice(0, 10));
-    if (!entry) continue;
-    const minutes = minutesBetween(event.start, event.end);
-    entry.plannedMin += minutes;
-    if (event.status === 'concluido') entry.doneMin += minutes;
-  }
-  return days.map((day) => map.get(day) as DayHours);
-}
-
 export const sumBy = <T>(items: readonly T[], pick: (item: T) => number): number =>
   items.reduce((total, item) => total + pick(item), 0);
 
-/** Soma do tempo de foco (segundos) por dia de início. */
+/** Soma do tempo de foco (segundos) por dia de início: cronômetro e registros manuais. */
 export function focusSecondsByDay(
   sessions: readonly FocusSession[],
   days: readonly string[],
@@ -123,8 +87,8 @@ export interface ExamPrep {
 }
 
 export function examPrep(exam: Exam): ExamPrep {
-  const total = exam.contents.length;
-  const done = exam.contents.filter((c) => c.done).length;
+  const total = exam.subtasks.length;
+  const done = exam.subtasks.filter((c) => c.done).length;
   return {
     exam,
     done,

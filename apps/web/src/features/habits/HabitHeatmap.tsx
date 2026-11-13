@@ -26,7 +26,13 @@ interface HabitHeatmapProps {
 export function habitCellLabel(habit: Habit, date: string, ctx: HabitContext): string {
   const state = dayState(habit, date, ctx);
   const base = `${formatLongDay(date)} — ${habit.name}: ${stateText(state)}`;
-  if (habit.type !== 'quantidade' || state === 'futuro' || state === 'nao-agendado') return base;
+  if (
+    habit.type !== 'quantidade' ||
+    state === 'futuro' ||
+    state === 'nao-agendado' ||
+    state === 'descanso'
+  )
+    return base;
   const value = valueOn(habit, date, ctx);
   return `${base} (${formatAmount(value, habit.unit)} de ${formatAmount(targetOn(habit, date), habit.unit)})`;
 }
@@ -48,7 +54,13 @@ export function HabitHeatmap({ habit, ctx, from, to, onDay }: HabitHeatmapProps)
   const cell = (date: string): CellView => {
     const state = dayState(habit, date, ctx);
     const kind =
-      state === 'futuro' ? 'future' : state === 'nao-agendado' ? 'off' : levelOn(habit, date, ctx);
+      state === 'futuro'
+        ? 'future'
+        : state === 'nao-agendado'
+          ? 'off'
+          : state === 'descanso'
+            ? 'rest'
+            : levelOn(habit, date, ctx);
     return { kind, label: habitCellLabel(habit, date, ctx) };
   };
 

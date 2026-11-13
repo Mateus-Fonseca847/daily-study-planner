@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { StudyEvent } from '@daily/shared';
 import { densidadePorDia, describeDensity, grade12Meses } from './year';
 
-const ev = (id: string, day: string, type = 'estudo', status = 'pendente'): StudyEvent =>
+const ev = (id: string, day: string, type = 'tarefa', status = 'pendente'): StudyEvent =>
   ({ id, type, status, start: `${day}T09:00:00`, end: `${day}T10:00:00`, title: id }) as StudyEvent;
 
 describe('grade12Meses', () => {
@@ -40,7 +40,7 @@ describe('densidadePorDia', () => {
         ev('d', '2026-10-31'),
         ev('e', '2026-10-31'),
         ev('f', '2026-10-31', 'prova'),
-        ev('g', '2026-10-31', 'entrega'),
+        ev('g', '2026-10-31', 'especial'),
       ],
       2026,
     );
@@ -56,7 +56,7 @@ describe('densidadePorDia', () => {
         ev('a', '2028-02-29'),
         ev('b', '2027-12-31'),
         ev('c', '2028-01-01'),
-        ev('x', '2028-02-29', 'estudo', 'cancelado'),
+        ev('x', '2028-02-29', 'tarefa', 'cancelado'),
       ],
       2028,
     );

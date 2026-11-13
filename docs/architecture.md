@@ -7,11 +7,11 @@ O Daily é um front-end estático (React + Vite) que guarda os dados no navegado
 ```mermaid
 flowchart TB
   subgraph UI["UI (React, Tailwind, tokens)"]
-    Pages["features/* (calendário, hábitos, foco, estatísticas…)"]
+    Pages["features/* (calendário, tarefas, hábitos, foco, perfil…)"]
     Layout["components/layout e components/ui"]
   end
   subgraph Domain["Domínio (funções puras, com teste)"]
-    Rules["lib/data (rules, selectors, countdown)"]
+    Rules["lib/data (rules, selectors, countdown) e lib/tasks"]
     Habits["lib/habits (engine, matrix, edit)"]
     Focus["lib/focus (session, hold, top-days)"]
     Cal["features/calendar/lib (views, time-layout, year)"]
@@ -23,7 +23,7 @@ flowchart TB
   subgraph Persistence["Persistência"]
     Repo["DataRepository (interface)"]
     LS["LocalStorageRepository (envelope, migração, validação zod)"]
-    Storage[("localStorage daily:v3")]
+    Storage[("localStorage daily:v4")]
   end
   subgraph Cloud["Conta e nuvem (opcional)"]
     Auth["lib/auth (Supabase Auth, login com Google, PKCE)"]
@@ -68,7 +68,7 @@ flowchart TB
 
 1. O componente chama uma ação do store (`useData.getState().createEvent(...)`).
 2. O store valida a regra de domínio (funções puras), grava pelo `DataRepository` e atualiza o estado.
-3. O `LocalStorageRepository` serializa num envelope versionado (`daily:v3`), mantém uma cópia do último estado válido e, se a gravação falhar, o estado continua em memória e a UI avisa.
+3. O `LocalStorageRepository` serializa num envelope versionado (`daily:v4`), mantém uma cópia do último estado válido e, se a gravação falhar, o estado continua em memória e a UI avisa.
 4. O evento `storage` mantém várias abas sincronizadas (a última escrita vence).
 5. Com conta, o `lib/sync` observa o store: `reconcile()` (puro) decide enviar, baixar, adotar ou pedir ao usuário que resolva um conflito; o envio usa concorrência otimista (`revision`) e a comparação é pelo hash do JSON canônico. Sem conta (ou sem as variáveis `VITE_SUPABASE_*`) nada disso roda.
 
@@ -86,6 +86,9 @@ flowchart TB
 | Altura numa camada só (`--ds-viewport-h`)                | O AppShell preenche a janela e é o único que rola; o documento nunca rola (corrigido na v0.5.1).                                                             |
 | PWA com `registerType: 'prompt'`                         | O usuário decide quando atualizar, e a oferta some enquanto há sessão de foco rodando, pausada ou travada.                                                   |
 | CSP sem `unsafe-inline` e sem `unsafe-eval`              | Superfície mínima; o JIT do zod é desligado porque usa `new Function`.                                                                                       |
+| Um painel para criar, ver e editar compromissos          | Menos telas e um só lugar para subtarefas, status e tipo; no celular vira tela cheia.                                                                        |
+| Migração v3 → v4 em chave nova (`daily:v4`)              | Uma aba antiga nunca lê um formato que não entende (e não envia um estado vazio à nuvem).                                                                    |
+| Rebase do ponto de sincronia após migrar                 | Atualizar o app não vira conflito falso; a nuvem só é reescrita numa edição real.                                                                            |
 | Fixtures só em desenvolvimento                           | `import.meta.env.DEV` vira `false` no build e remove as fixtures do bundle de produção.                                                                      |
 
 ## Testes

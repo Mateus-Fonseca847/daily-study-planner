@@ -22,7 +22,7 @@ const TODAY = '2026-11-10';
 const draft = (patch: Partial<HabitDraft> = {}): HabitDraft => ({
   name: 'Musculação',
   icon: 'dumbbell',
-  color: 'laranja',
+  color: 'rosa',
   type: 'check',
   unit: '',
   source: 'manual',
@@ -42,9 +42,9 @@ describe('regra versionada ao editar', () => {
   const base = habitSchema.parse({ ...newHabit(draft(), new Date(2026, 9, 1), 0), id: 'h' });
 
   it('nome e cor mudam direto, sem criar regra', () => {
-    expect(applyHabitEdit(base, { name: 'Peso', color: 'azul' }, TODAY)).toEqual({
+    expect(applyHabitEdit(base, { name: 'Peso', color: 'ciano' }, TODAY)).toEqual({
       name: 'Peso',
-      color: 'azul',
+      color: 'ciano',
     });
   });
 
@@ -237,7 +237,7 @@ describe('resumos de texto', () => {
         ],
         waterLogs: [],
         focusSessions: [],
-        events: [],
+        restDays: [],
       },
       TODAY,
     );

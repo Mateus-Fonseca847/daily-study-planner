@@ -4,19 +4,14 @@ import { cn } from '../../lib/cn';
 import { AccountMenu } from '../../features/account/AccountMenu';
 import { Button } from '../ui/Button';
 import { OfflineBadge } from './OfflineBadge';
-import { SubjectSelect } from './SubjectSelect';
+import { TypeFilter } from './TypeFilter';
 
-interface TopbarProps {
-  subjectId: string;
-  onSubjectChange: (id: string) => void;
-}
-
-export function Topbar({ subjectId, onSubjectChange }: TopbarProps) {
+export function Topbar() {
   const navigate = useNavigate();
   const onFocusPage = useLocation().pathname === '/foco';
   return (
     <header className="flex h-topbar shrink-0 items-center pt-3 justify-between border-b-hair px-page">
-      <SubjectSelect value={subjectId} onChange={onSubjectChange} />
+      <TypeFilter />
       <div className="flex items-center gap-2">
         <OfflineBadge />
         <Button variant="icon" aria-label="Buscar">

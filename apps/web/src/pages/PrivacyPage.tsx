@@ -18,7 +18,10 @@ export function PrivacyPage() {
     <main className="readable h-full overflow-y-auto bg-bg safe-frame">
       <div className="mx-auto flex w-full max-w-content flex-col gap-6 px-page py-10">
         <header>
-          <Link to="/" className="inline-flex text-sm text-muted underline coarse:min-h-touch coarse:items-center">
+          <Link
+            to="/"
+            className="inline-flex text-sm text-muted underline coarse:min-h-touch coarse:items-center"
+          >
             ← Voltar ao Daily
           </Link>
           <h1 className="mt-3 text-xl font-semibold tracking-tighter">Política de privacidade</h1>
@@ -73,7 +76,13 @@ export function PrivacyPage() {
             Você pode acessar, exportar (Preferências → Backup), corrigir e excluir seus dados a
             qualquer momento, e pedir esclarecimentos sobre o tratamento. Para dúvidas ou pedidos,
             abra uma{' '}
-            <a href={REPO_ISSUES} data-touch="inline" className="underline" rel="noreferrer" target="_blank">
+            <a
+              href={REPO_ISSUES}
+              data-touch="inline"
+              className="underline"
+              rel="noreferrer"
+              target="_blank"
+            >
               issue no repositório do projeto
             </a>{' '}
             (sem colocar dados pessoais) e retornaremos o contato.

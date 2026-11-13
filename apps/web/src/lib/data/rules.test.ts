@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { dataSnapshotSchema } from '@daily/shared';
 import { applySubjectDeletion, duplicateEventDraft, eventsOfSubject, removeEvents } from './rules';
-import { block, exam, makeSnapshot, snapshot, subject, task } from './test-utils';
+import { timedTask, exam, makeSnapshot, snapshot, subject, task } from './test-utils';
 
 describe('applySubjectDeletion', () => {
   it('exclui direto uma matéria sem eventos, sem exigir resolução', () => {
@@ -13,15 +13,14 @@ describe('applySubjectDeletion', () => {
     expect(() => applySubjectDeletion(snapshot(), 'mat')).toThrow(/escolha/);
   });
 
-  it('“apagar eventos” remove os eventos e desvincula blocos de provas removidas', () => {
+  it('“apagar eventos” remove só os eventos da matéria', () => {
     const base = makeSnapshot({
       subjects: [subject('mat'), subject('fis')],
-      events: [exam('e1', 'mat'), block('b1', 'fis', 'e1'), task('t1', { subjectId: 'mat' })],
+      events: [exam('e1', 'mat'), timedTask('b1', 'fis'), task('t1', { subjectId: 'mat' })],
     });
     const result = applySubjectDeletion(base, 'mat', { kind: 'delete-events' });
     expect(result.subjects.map((s) => s.id)).toEqual(['fis']);
     expect(result.events.map((e) => e.id)).toEqual(['b1']);
-    expect(result.events[0]).toMatchObject({ examId: null });
     expect(dataSnapshotSchema.safeParse(result).success).toBe(true);
   });
 
@@ -31,7 +30,7 @@ describe('applySubjectDeletion', () => {
       toSubjectId: 'fis',
     });
     expect(result.subjects.map((s) => s.id)).toEqual(['fis']);
-    expect(eventsOfSubject(result, 'fis')).toHaveLength(3);
+    expect(eventsOfSubject(result, 'fis')).toHaveLength(2);
     expect(dataSnapshotSchema.safeParse(result).success).toBe(true);
   });
 
@@ -46,19 +45,27 @@ describe('applySubjectDeletion', () => {
 });
 
 describe('removeEvents', () => {
-  it('apagar uma prova desvincula os blocos que apontavam para ela', () => {
+  it('remove só os eventos pedidos', () => {
     const result = removeEvents(snapshot(), new Set(['e1']));
-    expect(result.events.find((e) => e.id === 'b1')).toMatchObject({ examId: null });
-    expect(result.events.some((e) => e.id === 'e1')).toBe(false);
+    expect(result.events.map((e) => e.id)).toEqual(['t1']);
   });
 });
 
 describe('duplicateEventDraft', () => {
-  it('copia a prova com novos ids de conteúdo, desmarcados e pendente', () => {
+  it('copia com novas subtarefas desmarcadas, pendente e com nova data de criação', () => {
     let n = 0;
-    const draft = duplicateEventDraft(exam('e1', 'mat', { status: 'concluido' }), () => `n-${++n}`);
-    expect(draft).toMatchObject({ title: 'Prova e1 (cópia)', status: 'pendente', type: 'prova' });
-    expect(draft.type === 'prova' && draft.contents.map((c) => [c.id, c.done])).toEqual([
+    const draft = duplicateEventDraft(
+      exam('e1', 'mat', { status: 'concluido' }),
+      () => `n-${++n}`,
+      '2026-11-20T10:00:00',
+    );
+    expect(draft).toMatchObject({
+      title: 'Prova e1 (cópia)',
+      status: 'pendente',
+      type: 'prova',
+      createdAt: '2026-11-20T10:00:00',
+    });
+    expect(draft.subtasks.map((c) => [c.id, c.done])).toEqual([
       ['n-1', false],
       ['n-2', false],
     ]);
@@ -75,19 +82,19 @@ describe('sessões de foco vinculadas', () => {
     status: 'concluida' as const,
     subjectId: null,
     examId: null,
-    blockId: null,
+    origin: 'cronometro' as const,
+    note: '',
     ...patch,
   });
 
-  it('excluir uma prova ou bloco desfaz o vínculo da sessão (nada fica pendurado)', () => {
+  it('excluir uma prova desfaz o vínculo da sessão (nada fica pendurado)', () => {
     const base = makeSnapshot({
       ...snapshot(),
-      focusSessions: [session({ examId: 'e1', blockId: 'b1', subjectId: 'mat' })],
+      focusSessions: [session({ examId: 'e1', subjectId: 'mat' })],
     });
-    const result = removeEvents(base, new Set(['e1', 'b1']));
+    const result = removeEvents(base, new Set(['e1']));
     expect(result.focusSessions[0]).toMatchObject({
       examId: null,
-      blockId: null,
       subjectId: 'mat',
     });
     expect(dataSnapshotSchema.safeParse(result).success).toBe(true);
