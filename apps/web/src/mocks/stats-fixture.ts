@@ -207,7 +207,7 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
       (back >= OLD_RUN_START && back < OLD_RUN_START + OLD_RUN_LENGTH);
     const goodDay = forcedFull || random() < 0.55;
 
-    // Blocos de estudo concluídos (ou não) — também alimentam a meta "auto-estudo".
+    // Sessões de estudo do passado: concluídas ou, quando não aconteceram, canceladas.
     {
       const blocks = random() < 0.8 ? 1 + Math.floor(random() * 2) : 0;
       for (let b = 0; b < blocks; b += 1) {
@@ -218,11 +218,11 @@ export function statsSnapshot(now: Date = STATS_NOW): DataSnapshot {
         pushEvent({
           id: id('fx-h'),
           type: 'tarefa',
-          title: 'Bloco de estudo',
+          title: 'Sessão de estudo',
           subjectId,
           start: at(day, hour),
           end: at(day, hour + Math.floor(minutes / 60), minutes % 60),
-          status: doneBlock ? 'concluido' : 'pendente',
+          status: doneBlock ? 'concluido' : 'cancelado',
         });
       }
     }
