@@ -4,9 +4,9 @@
 
 # Daily
 
-**Organizador de estudos para estudantes, feito para ficar aberto na segunda tela.**
+**App de disciplina e desenvolvimento pessoal, feito para ficar aberto na segunda tela.**
 
-Calendário em quatro visões, provas com contagem regressiva, hábitos com heatmap, Modo Foco e estatísticas. Instala como app, funciona offline e guarda tudo no seu navegador.
+Calendário em quatro visões, tarefas com subtarefas, provas com contagem regressiva, hábitos com heatmap, Modo Foco e perfil. Instala como app, funciona offline e guarda tudo no seu navegador.
 
 [![CI](https://github.com/Mateus-Fonseca847/daily-study-planner/actions/workflows/ci.yml/badge.svg)](https://github.com/Mateus-Fonseca847/daily-study-planner/actions/workflows/ci.yml)
 [![Versão](https://img.shields.io/github/v/tag/Mateus-Fonseca847/daily-study-planner?label=vers%C3%A3o&style=flat-square&labelColor=0B0B0C&color=F5E94B)](CHANGELOG.md)
@@ -28,7 +28,7 @@ O **Daily** nasceu de uma necessidade pessoal: ter um painel que fique aberto o 
 
 - **Provas** com contagem regressiva e progresso calculado a partir dos conteúdos já estudados
 - **Conteúdos como mini tarefas**: cada prova é dividida em matérias/assuntos que podem ser marcados como concluídos
-- **Blocos de estudo** com horário marcado
+- **Tarefas, provas e especiais** com subtarefas, prazo e status (pendente, concluído, cancelado)
 - **Modo Foco**, uma visão em tela cheia para a segunda tela, com o que importa agora
 - **Gratuito e hospedável**, sem dependência de serviços pagos
 
@@ -38,24 +38,25 @@ O projeto também é um estudo de engenharia de software: monorepo, TypeScript e
 
 A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](https://dailystudyplanner.vercel.app). Sem conta, os dados ficam só no navegador; com o login opcional do Google, eles são sincronizados na nuvem (Supabase) entre os seus dispositivos. O app é usável em **celular e tablet**, além do desktop.
 
-| Marco                   | Escopo                                                                 | Status    |
-| ----------------------- | ---------------------------------------------------------------------- | --------- |
-| **0. Fundação visual**  | Monorepo, design system, calendário mensal                             | Concluído |
-| **1. Dados locais**     | `localStorage` versionado, CRUD, páginas, backup                       | Concluído |
-| **2. Estudos**          | Provas, conteúdos, blocos de estudo, hábitos, Estatísticas e Modo Foco | Concluído |
-| **3. App**              | Visões do calendário, PWA instalável e offline, deploy                 | Concluído |
-| **4. Nuvem**            | Login opcional com Google e sincronização (Supabase)                   | Concluído |
-| **5. Celular e tablet** | Layout responsivo, toque, sheets e gestos                              | Concluído |
-| **6. Notificações**     | Lembretes de provas, blocos e hábitos                                  | Planejado |
+| Marco                   | Escopo                                                       | Status    |
+| ----------------------- | ------------------------------------------------------------ | --------- |
+| **0. Fundação visual**  | Monorepo, design system, calendário mensal                   | Concluído |
+| **1. Dados locais**     | `localStorage` versionado, CRUD, páginas, backup             | Concluído |
+| **2. Estudos**          | Provas, conteúdos, hábitos, Perfil e Modo Foco               | Concluído |
+| **2.1 Tarefas**         | Tipos e status novos, subtarefas, descansos, chamas e Perfil | Concluído |
+| **3. App**              | Visões do calendário, PWA instalável e offline, deploy       | Concluído |
+| **4. Nuvem**            | Login opcional com Google e sincronização (Supabase)         | Concluído |
+| **5. Celular e tablet** | Layout responsivo, toque, sheets e gestos                    | Concluído |
+| **6. Notificações**     | Lembretes de provas, blocos e hábitos                        | Planejado |
 
 ## Telas
 
-|                                                                                                                                          |                                                                                                                                       |
-| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Calendário (Mês)**: provas, estudos e entregas, com popover de evento e filtro por matéria.<br>![Mês](docs/images/calendario-mes.webp) | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)      |
-| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                               | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                             |
-| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                             | **Estatísticas**: horas, preparação para provas, água, hábitos e dias de mais foco.<br>![Estatísticas](docs/images/estatisticas.webp) |
-| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                              | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                       |
+|                                                                                                                    |                                                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp) | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                             |
+| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)         | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                                    |
+| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)       | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Estatísticas](docs/images/estatisticas.webp) |
+| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)        | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                              |
 
 ## Funcionalidades
 
@@ -63,19 +64,18 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 
 - [x] **Calendário com 4 visões — Dia, Semana, Mês e Ano** (`/calendario?visao=semana&data=2026-10-29`): visão e data na URL, botão "Hoje" ao lado das setas (volta ao período atual na visão em que se está), atalhos de teclado (`←` `→` `T` `D` `S` `M` `A`)
 - [x] Dia atual destacado e dias de outros meses esmaecidos
-- [x] Chips de evento por tipo (prova, estudo, entrega, revisão, especial) com "+N mais" em dias cheios
-- [x] Popover de evento com data, horário, matéria, tipo e status
+- [x] Três tipos de compromisso (**Tarefa**, **Prova**, **Especial**) e três status (**Pendente**, **Concluído**, **Cancelado**) com cores reservadas: a tarefa fica amarela, verde ou vermelha; prova e especial mantêm a cor do tipo
+- [x] **Painel de tarefa** único para criar, ver e editar (lateral no desktop, tela cheia no celular), com **subtarefas** em qualquer tipo, progresso e “Mais opções”; **concluir com um clique** em todo chip e linha, com “Desfazer”
 - [x] Checklist de conteúdos da prova com barra de progresso
-- [x] Filtro do calendário por matéria
+- [x] **Filtro por tipo** (multisseleção) no calendário e na página Tarefas, salvo entre sessões
 - [x] Sidebar recolhível e interface em pt-BR
 - [x] Design system documentado, com tokens centralizados em CSS
 - [x] **Dados salvos no navegador** (`localStorage` versionado, com validação, migração e backup)
-- [x] **Criar, editar, duplicar e excluir** provas, tarefas, blocos de estudo e matérias, com "Desfazer" por 6 s
+- [x] **Criar, editar, duplicar e excluir** tarefas, provas, especiais e matérias, com "Desfazer" por 6 s
 - [x] Conteúdos da prova como mini tarefas (adicionar, renomear, remover, reordenar, marcar) com progresso
-- [x] Páginas **Provas** (contagem regressiva), **Tarefas** (filtros e criação rápida), **Matérias** (cores) e **Blocos de estudo** (semana)
-- [x] Estados do evento: pendente, em andamento, concluído e cancelado
+- [x] Páginas **Provas** (contagem regressiva), **Tarefas** (resumo, Atrasadas, Hoje, Próximas sem limite de dias e Concluídas) e **Matérias** (cores)
 - [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
-- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1, v2 e v3)
+- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 a v4)
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)

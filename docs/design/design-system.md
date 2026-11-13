@@ -1,4 +1,4 @@
-# Daily — Design System (v0.9)
+# Daily — Design System (v1.1)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
@@ -165,6 +165,8 @@ Acessibilidade: botões só com ícone **exigem** `aria-label` (garantido pelo t
 
 ### Lista de conteúdos (`forms/ContentsEditor`)
 
+> **v4:** substituída pela lista de subtarefas do painel de tarefa (`features/tasks/SubtaskList`); ver a seção 16.
+
 - Linha: input (`h-select`) + três botões `tile` `xs` (subir, descer, remover) com `gap-1`; “Adicionar conteúdo” em `secondary`. Enter na última linha cria outra.
 - Acessibilidade: cada controle tem `aria-label` com o número (“Mover conteúdo 2 para cima”); subir/descer ficam `disabled` nas pontas; reordenar não exige arrastar.
 - No popover (`EventPopover`): checkbox por conteúdo (riscado e `muted` quando concluído), contador `done/total`, `ProgressBar` (`role="progressbar"`, `aria-valuenow`) e input “Adicionar conteúdo” de 24 px (`h-field`) com botão `tile`.
@@ -176,6 +178,8 @@ Acessibilidade: botões só com ícone **exigem** `aria-label` (garantido pelo t
 
 ### Estados de evento (`concluído` e `cancelado`)
 
+> **v4:** os status agora têm cores reservadas; ver a seção 16.
+
 | Estado                 | Chip (calendário e listas)                              | Token                      |
 | ---------------------- | ------------------------------------------------------- | -------------------------- |
 | pendente, em andamento | normal                                                  | —                          |
@@ -186,6 +190,8 @@ Acessibilidade: botões só com ícone **exigem** `aria-label` (garantido pelo t
 O estado nunca depende só da cor/opacidade: o status aparece por extenso no popover, nas listas e no formulário.
 
 ### Cores de matéria
+
+> **v4:** a paleta mudou (sem vermelho, verde, amarelo e laranja); ver a seção 16.
 
 Paleta fixa de 8 cores (`--ds-color-subject-vermelho … rosa`); aparece como ponto de `--ds-dot` (10 px) nas listas e como seletor de `--ds-swatch` (28 px) no formulário (`role="radiogroup"`, cada cor com `aria-label` e `aria-checked`).
 
@@ -275,6 +281,8 @@ Alturas: linha 1 ≈ 288 px na imagem (≈ 20 rem no app); linha 2 ≈ 230 px (�
 `--ds-radius-card`, `--ds-radius-card-sm`, `--ds-card-pad`, `--ds-card-gap`, `--ds-glass-bg`, `--ds-glass-highlight`, `--ds-glow-accent`, `--ds-color-water`, `--ds-color-water-deep`, `--ds-color-water-wave`, `--ds-water-gradient`, `--ds-color-chart-track`, `--ds-color-chart-track-strong`, `--ds-hatch-planned`, `--ds-text-display`, `--ds-text-card-title`, `--ds-text-stat`.
 
 ### 9.1 Implementação (v0.6) e “Análises”
+
+> **v4:** a seção “Análises” e o cartão “Sequência” foram removidos; a página virou o **Perfil** (`/perfil`).
 
 - **Página** (`features/stats`): saudação, seção “Hoje” (grid de 4 colunas a partir de 80 rem; 2 colunas abaixo) e seção “Análises”; rola na vertical, com conteúdo de até `--ds-container-stats`.
 - **Análises (v0.7: 5 cartões):** `surface-glass` em 2 colunas (1 abaixo de 80 rem); o cartão “Metas” ocupa as duas colunas da última linha, sem buraco. A água fica **só** em “Hoje”. Gráficos em **SVG próprio** (`features/stats/charts.tsx`): barras (trilha `chart-track-strong` = planejado, amarelo = realizado), barras horizontais na cor da matéria e mapa de calor de 12 semanas (opacidade do amarelo de `--ds-heat-min` a 1, ∝ % de metas). Alturas por tokens (`h-chart`, `h-stat-bar`).
@@ -453,3 +461,70 @@ Variantes do Tailwind: `phone:` (celular), `short:` (paisagem baixa com toque) e
 - **Cartão levantado** (`drag-lifted`): `scale: var(--ds-drag-scale)` (1.02), sombra `shadow-popover`, contorno tracejado de destaque (`--ds-drag-outline-w`, 2 px) e `z-index` acima dos vizinhos. Os vizinhos deslizam para abrir o lugar de destino.
 - **Movimento:** só no eixo vertical; rolagem automática perto das bordas. Com `prefers-reduced-motion` a regra global zera as transições (o cartão só troca de lugar).
 - Tokens novos: `--ds-drag-scale`, `--ds-drag-outline-w`.
+
+## 16. Tarefas, status, tipos e paleta (v4)
+
+### Status (cores reservadas)
+
+| Status    | Token                         | Cor       | Ícone (lucide) | Texto     |
+| --------- | ----------------------------- | --------- | -------------- | --------- |
+| Pendente  | `--ds-color-status-pendente`  | `#f2c94c` | `CircleDashed` | Pendente  |
+| Concluído | `--ds-color-status-concluido` | `#3dd68c` | `CircleCheck`  | Concluído |
+| Cancelado | `--ds-color-status-cancelado` | `#ff6b78` | `CircleX`      | Cancelado |
+
+Cada status aparece sempre com ícone e texto (controle de 3 opções no painel); a cor nunca é o único sinal. Amarelo, verde e vermelho ficam **reservados** a status: não entram na paleta de matérias e hábitos. O amarelo de marca (`--ds-color-accent`) continua em botões e navegação.
+
+### Tipos
+
+| Tipo     | Token                      | Cor                 |
+| -------- | -------------------------- | ------------------- |
+| Tarefa   | —                          | usa a cor do status |
+| Prova    | `--ds-color-type-prova`    | `#5c97ff` (azul)    |
+| Especial | `--ds-color-type-especial` | `#b48cff` (roxo)    |
+
+### Chips (`lib/event-meta.ts` → `chipStyle`)
+
+- **Tarefa:** pendente = amarelo; concluída = verde, título riscado; cancelada = vermelho, título riscado e esmaecido (60 %).
+- **Prova e Especial:** mantêm a cor do tipo; o status aparece por ícone, risco e opacidade, sem mudar a cor.
+- Fundo do chip = cor a `--ds-event-chip-alpha` (14 %); faixa lateral e rótulo na cor cheia. Classes sempre literais (mapas em `event-meta.ts`).
+- **Concluir com um clique** (`features/tasks/CompleteButton`): círculo de 24 px (`--ds-check-target`), 44 px no toque (`coarse:size-touch`); concluído = círculo verde com check escuro.
+
+### Paleta de matérias e hábitos (`--ds-palette-*`)
+
+Uma paleta só para matérias e hábitos, **sem vermelho, verde, amarelo e laranja** (e vizinhos), e sem repetir o azul da Prova e o roxo do Especial:
+
+| Chave      | Cor       | Contraste sobre `surface` |
+| ---------- | --------- | ------------------------- |
+| `ciano`    | `#2beeee` | 11,9:1                    |
+| `petroleo` | `#53a9c6` | 6,4:1                     |
+| `gelo`     | `#c6dfec` | 12,4:1                    |
+| `lilas`    | `#e2c6ec` | 11,1:1                    |
+| `fucsia`   | `#de2bee` | 4,7:1                     |
+| `rosa`     | `#d279a6` | 5,8:1                     |
+| `cinza`    | `#a3998f` | 6,2:1 (cinza quente)      |
+
+**Verificação** (`node apps/web/scripts/palette-check.mjs`, e o teste `src/styles/palette.test.ts`, que confere se `tokens.css` bate com o script): CIEDE2000 ≥ 15 entre todas as cores da paleta e entre a paleta e as cores reservadas (status, tipos, marca, chama). Os pares mais próximos: rosa × cancelado 16,0; petróleo × Prova 16,3; fúcsia × Especial 17,3. As cores da paleta só aparecem junto de texto/ícone (nome da matéria, nome do hábito), nunca sozinhas como informação.
+
+Remapeamento v3 → v4 (migração): vermelho → fúcsia, laranja → cinza, amarelo → ciano, verde → gelo, turquesa → ciano, azul → petróleo, violeta → lilás, rosa → rosa; se a cor já foi usada por outro item e ainda há cor livre, usa a primeira livre.
+
+### Chama de sequência (a exceção laranja)
+
+`--ds-color-streak` (`#ff8a3d`) com sequência > 0 e `--ds-color-streak-off` (cinza) com zero, sempre com o número ao lado (`features/habits/StreakFlame`). É a **única** exceção documentada à regra de não usar laranja. Substitui a pílula amarela “Sequência”.
+
+### Dia de descanso
+
+Célula do heatmap listrada (`heat-rest`: `--ds-color-rest` em listras de `--ds-rest-stripe`), com `aria-label` “descanso”. Não é falta nem cumprimento.
+
+### Contraste AA (testado em `src/styles/palette.test.ts`)
+
+- Rótulo colorido de cada status/tipo sobre o próprio chip (fundo `bg` e `surface`): ≥ 4,5:1 (o azul da Prova subiu de `#4d8dff` para `#5c97ff` para passar de 4,44 para 6,0:1).
+- Título branco sobre qualquer chip: ≥ 4,5:1; cancelado esmaecido: ≥ 3:1 (texto em negrito do chip).
+- Paleta, status, tipos e chama como texto sobre `bg` e `surface`: ≥ 4,5:1.
+- Check escuro sobre o verde de concluído: ≥ 4,5:1.
+
+### Painel de tarefa e de hábito
+
+- `Modal variant="side"`: painel alto à direita no tablet e no desktop (`--ds-panel-w` = 34 rem), tela cheia no celular (o comportamento do `Modal`).
+- Título grande (`text-display`), linhas de metadado com ícone e rótulo (`ui/MetaRow`, largura do rótulo `--ds-panel-label-w`), descrição em cartão e “Mais opções” recolhido (`MoreOptionsToggle`).
+- Filtro por tipo: popover com checkboxes (`--ds-filter-w`), “Todos” e “Limpar”; vira sheet no celular.
+- Perfil: foto ou iniciais em `--ds-profile-avatar` (4 rem).
