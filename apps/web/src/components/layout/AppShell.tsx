@@ -11,6 +11,7 @@ import { useHabitModel } from '../../features/habits/useHabitModel';
 import { pendingToday } from '../../lib/habits';
 import { usePersistOnFirstData, useUpdateOffer } from '../../lib/pwa/use-pwa';
 import { ConflictDialog } from '../../features/account/ConflictDialog';
+import { AchievementsNavigator } from '../../features/profile/achievements/AchievementsNavigator';
 import { ModalHost } from '../forms/ModalHost';
 import { ToastRegion } from '../ui/ToastRegion';
 import { BottomBar } from './BottomBar';
@@ -101,6 +102,7 @@ export function AppShell() {
       <ConflictDialog />
       <ModalHost />
       <ToastRegion />
+      <AchievementsNavigator />
     </>
   );
 }

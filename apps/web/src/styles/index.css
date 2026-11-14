@@ -67,6 +67,14 @@
   --color-prova-soft: var(--ds-color-type-prova-soft);
   --color-especial-soft: var(--ds-color-type-especial-soft);
   --color-streak: var(--ds-color-streak);
+  --color-tier-bronze: var(--ds-tier-bronze);
+  --color-tier-silver: var(--ds-tier-silver);
+  --color-tier-gold: var(--ds-tier-gold);
+  --color-tier-single: var(--ds-tier-single);
+  --color-tier-bronze-soft: var(--ds-tier-bronze-soft);
+  --color-tier-silver-soft: var(--ds-tier-silver-soft);
+  --color-tier-gold-soft: var(--ds-tier-gold-soft);
+  --color-tier-single-soft: var(--ds-tier-single-soft);
   --color-streak-off: var(--ds-color-streak-off);
   --color-rest: var(--ds-color-rest);
 
@@ -181,6 +189,8 @@
   --spacing-bar-h: var(--ds-bar-h);
   --spacing-stat-bar: var(--ds-stat-bar-h);
   --spacing-goal-icon: var(--ds-goal-icon);
+  --spacing-medal: var(--ds-medal);
+  --spacing-medal-lg: var(--ds-medal-lg);
   --spacing-goal-check: var(--ds-goal-check);
   --spacing-fab: var(--ds-fab);
   --spacing-wave: var(--ds-wave-h);
@@ -345,6 +355,10 @@
 }
 @utility border-t-hair {
   border-top-width: var(--ds-border-w);
+}
+/* Anel do nível da medalha. */
+@utility border-medal {
+  border-width: var(--ds-medal-ring);
 }
 @utility border-l-stripe {
   border-left-width: var(--ds-border-accent-w);

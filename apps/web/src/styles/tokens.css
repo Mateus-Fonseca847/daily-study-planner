@@ -68,6 +68,27 @@
     var(--ds-color-type-especial) var(--ds-event-chip-alpha),
     transparent
   );
+  /*
+   * Níveis de medalha (bronze, prata, ouro): anel e tinta do nível, e um fundo suave. Sempre com
+   * ícone e texto do nível. A medalha de nível único usa a tinta da marca.
+   */
+  --ds-tier-bronze: #e09a6a;
+  --ds-tier-silver: #c3cad4;
+  --ds-tier-gold: #ecc94b;
+  --ds-tier-single: var(--ds-color-accent-ink);
+  --ds-tier-soft-mix: 16%;
+  --ds-tier-bronze-soft: color-mix(
+    in srgb,
+    var(--ds-tier-bronze) var(--ds-tier-soft-mix),
+    transparent
+  );
+  --ds-tier-silver-soft: color-mix(
+    in srgb,
+    var(--ds-tier-silver) var(--ds-tier-soft-mix),
+    transparent
+  );
+  --ds-tier-gold-soft: color-mix(in srgb, var(--ds-tier-gold) var(--ds-tier-soft-mix), transparent);
+  --ds-tier-single-soft: var(--ds-color-accent-soft);
   /* Chama de sequência: a única exceção laranja documentada; cinza com sequência zero. */
   --ds-color-streak: #ff8a3d;
   /* Marca desenhada sobre um preenchimento de status (o check sobre o verde de concluído). */
@@ -307,6 +328,10 @@
   --ds-profile-avatar: 4rem;
   /* Botão de concluir com um clique: alvo mínimo (24 px; 44 px no toque via `coarse:`). */
   --ds-check-target: 1.5rem;
+  /* Medalha: disco do cartão, da vitrine e do detalhe, e a espessura do anel do nível. */
+  --ds-medal: 3.5rem;
+  --ds-medal-lg: 5rem;
+  --ds-medal-ring: 3px;
   --ds-modal-max-h: 90dvh;
   --ds-menu-w: 13rem;
   --ds-toast-w: 26rem;
@@ -420,6 +445,12 @@
   --ds-color-type-prova-soft: #e1e9fc;
   --ds-color-type-especial-soft: #ece4fb;
   --ds-color-on-status: #ffffff;
+  --ds-tier-bronze: #8e4c1c;
+  --ds-tier-silver: #56606c;
+  --ds-tier-gold: #7d5f00;
+  --ds-tier-bronze-soft: #f7e5d8;
+  --ds-tier-silver-soft: #e8ecf1;
+  --ds-tier-gold-soft: #f8edc4;
   --ds-color-streak: #b04f09;
   --ds-color-rest: rgb(0 0 0 / 0.2);
   --ds-color-danger: #c22a3b;
