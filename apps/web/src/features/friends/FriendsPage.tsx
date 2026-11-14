@@ -83,7 +83,7 @@ function FriendsContent({ onSearch }: { onSearch: () => void }) {
 
   const incoming = lists.incoming.length;
   const tabs = [
-    { value: 'amigos' as const, label: `Amigos (${lists.friends.length})` },
+    { value: 'amigos' as const, label: 'Amigos' },
     {
       value: 'solicitacoes' as const,
       label: incoming > 0 ? `Solicitações (${incoming})` : 'Solicitações',
@@ -102,7 +102,7 @@ function FriendsContent({ onSearch }: { onSearch: () => void }) {
 
   return (
     <>
-      <Tabs tabs={tabs} value={tab} onChange={setTab} aria-label="Amigos e pedidos">
+      <Tabs tabs={tabs} value={tab} onChange={setTab} aria-label="Amigos e pedidos" fillOnPhone>
         {tab === 'amigos' &&
           (lists.friends.length === 0 ? (
             <EmptyState
@@ -113,17 +113,22 @@ function FriendsContent({ onSearch }: { onSearch: () => void }) {
               <Button onClick={onSearch}>Buscar pessoas</Button>
             </EmptyState>
           ) : (
-            <ul aria-label="Amigos" className="flex flex-col">
-              {lists.friends.map((f) => (
-                <PersonRow
-                  key={f.id}
-                  displayName={f.displayName}
-                  username={f.username}
-                  avatarUrl={avatars[f.id] ?? null}
-                  menu={menuFor(f, { friend: f })}
-                />
-              ))}
-            </ul>
+            <>
+              <p className="text-sm text-muted">
+                {lists.friends.length === 1 ? '1 amigo' : `${lists.friends.length} amigos`}
+              </p>
+              <ul aria-label="Amigos" className="flex flex-col">
+                {lists.friends.map((f) => (
+                  <PersonRow
+                    key={f.id}
+                    displayName={f.displayName}
+                    username={f.username}
+                    avatarUrl={avatars[f.id] ?? null}
+                    menu={menuFor(f, { friend: f })}
+                  />
+                ))}
+              </ul>
+            </>
           ))}
 
         {tab === 'solicitacoes' && (
@@ -139,6 +144,7 @@ function FriendsContent({ onSearch }: { onSearch: () => void }) {
                       displayName={r.displayName}
                       username={r.username}
                       menu={menuFor(r)}
+                      stackOnPhone
                     >
                       <Button
                         aria-label={`Aceitar o pedido de @${r.username}`}

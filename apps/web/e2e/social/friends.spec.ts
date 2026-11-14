@@ -91,7 +91,7 @@ test.describe('Amizades', () => {
     await expect(page.getByText('Agora você e @bia são amigos')).toBeVisible();
     expect(state.friends.friends).toEqual([BIA.id]);
 
-    await page.getByRole('tab', { name: 'Amigos (1)' }).click();
+    await page.getByRole('tab', { name: 'Amigos', exact: true }).click();
     const friends = page.getByRole('list', { name: 'Amigos' });
     await expect(friends).toContainText('Bia Souza');
     // A foto chega por link assinado e aparece por blob:.

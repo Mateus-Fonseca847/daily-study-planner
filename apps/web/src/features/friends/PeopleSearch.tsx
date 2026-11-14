@@ -140,7 +140,9 @@ export function PeopleSearch({ autoFocus = false }: { autoFocus?: boolean }) {
           <Search aria-hidden strokeWidth={1.5} className="size-icon shrink-0 text-muted" />
           <input
             id={inputId}
-            type="search"
+            type="text"
+            inputMode="search"
+            role="searchbox"
             // Formulário de busca: o teclado do celular não corrige nem capitaliza o @.
             autoCapitalize="none"
             autoCorrect="off"
