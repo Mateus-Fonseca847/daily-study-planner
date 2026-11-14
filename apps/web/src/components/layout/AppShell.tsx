@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useData } from '../../lib/data/app-store';
 import { navCounts } from '../../lib/data/selectors';
+import { useFriends } from '../../lib/social/friends-store';
 import { travado } from '../../lib/focus/session';
 import { appNow } from '../../lib/fixture';
 import { readSidebarCollapsed, saveSidebarCollapsed } from '../../lib/layout-prefs';
@@ -42,9 +43,10 @@ export function AppShell() {
   const habitModel = useHabitModel();
   const pendingHabits = pendingToday(habitModel.habits, habitModel.ctx).length;
   const exceptions = useData((s) => s.exceptions);
+  const friendRequests = useFriends((s) => s.incomingCount);
   const counts = useMemo(
-    () => navCounts(events, appNow(), pendingHabits, exceptions),
-    [events, pendingHabits, exceptions],
+    () => ({ ...navCounts(events, appNow(), pendingHabits, exceptions), amigos: friendRequests }),
+    [events, pendingHabits, exceptions, friendRequests],
   );
 
   const phone = layout === 'phone';

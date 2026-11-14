@@ -87,7 +87,7 @@ test.describe('Perfil social', () => {
     await wizard(page).getByRole('button', { name: 'Continuar' }).click();
 
     // Revisão.
-    await expect(wizard(page)).toContainText('Ninguém além de você vê seu perfil por enquanto.');
+    await expect(wizard(page)).toContainText('Só amigos que você aceitar veem sua foto.');
     await expect(wizard(page)).toContainText('@ana.lima');
     await wizard(page).getByRole('button', { name: 'Ativar perfil' }).click();
     await expect(wizard(page)).toBeHidden();
@@ -97,7 +97,7 @@ test.describe('Perfil social', () => {
         birth_date: '2000-05-10',
         chosen_username: 'ana.lima',
         chosen_display_name: 'Ana Lima',
-        consent_version: 'perfil-social-2026-11',
+        consent_version: 'perfil-social-2026-11b',
       }),
     ]);
     // A foto enviada é WebP (nunca o PNG original) e cabe no limite do servidor.
@@ -220,7 +220,7 @@ test.describe('Perfil social', () => {
     await expect(again.getByRole('button', { name: 'Reativar' })).toBeDisabled();
     await again.getByRole('checkbox', { name: /Li e concordo/ }).check({ force: true });
     await again.getByRole('button', { name: 'Reativar' }).click();
-    await expect(s).toContainText('Ninguém além de você');
+    await expect(s).toContainText('Só amigos que você aceitar veem sua foto.');
 
     // Excluir: só com o @ digitado.
     await s.getByRole('button', { name: 'Excluir perfil social' }).click();

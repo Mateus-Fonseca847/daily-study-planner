@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useFocusScope } from '../../lib/use-focus-scope';
-import type { NavCounts } from '../../lib/data/selectors';
+import type { ShellCounts } from './nav';
 import { Sidebar } from './Sidebar';
 
 interface SidebarOverlayProps {
-  counts: NavCounts;
+  counts: ShellCounts;
   onClose: () => void;
 }
 

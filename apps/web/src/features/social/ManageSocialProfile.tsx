@@ -11,7 +11,7 @@ import { appNow } from '../../lib/fixture';
 import { SocialError } from '../../lib/social/errors';
 import type { SocialProfile } from '../../lib/social/repository';
 import { useSocial } from '../../lib/social/social-store';
-import { CONSENT_CHECKBOX, ONLY_YOU } from '../../lib/social/texts';
+import { CONSENT_CHECKBOX, WHO_SEES } from '../../lib/social/texts';
 import { useToasts } from '../../lib/toast-store';
 import { AvatarPicker } from './AvatarPicker';
 import { SocialAvatar } from './SocialAvatar';
@@ -70,7 +70,7 @@ export function ManageSocialProfile({ profile }: { profile: SocialProfile }) {
           <p className="truncate text-lg font-semibold">{profile.displayName}</p>
           <p className="truncate text-md text-soft">@{profile.username}</p>
           <p className="text-sm text-muted">
-            {disabled ? 'Desativado: oculto, com os dados guardados.' : ONLY_YOU}
+            {disabled ? 'Desativado: oculto, com os dados guardados.' : WHO_SEES}
           </p>
         </div>
       </div>
@@ -245,7 +245,7 @@ function ReactivateDialog({
     >
       <div className="flex flex-col gap-3 pb-2">
         <p className="text-md text-soft">
-          Para reativar, aceite de novo o termo do perfil social. {ONLY_YOU}
+          Para reativar, aceite de novo o termo do perfil social. {WHO_SEES}
         </p>
         <Checkbox
           plain

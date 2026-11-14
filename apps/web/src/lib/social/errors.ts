@@ -21,6 +21,17 @@ export type SocialErrorKind =
   | 'sem_perfil'
   | 'foto_pendente'
   | 'foto_invalida'
+  // Amizades (Prompt 16). `nao_encontrado` cobre, de propósito, inexistência, outra faixa de
+  // idade, bloqueio e perfil desativado ou suspenso: a mensagem nunca diz qual.
+  | 'nao_encontrado'
+  | 'ja_amigos'
+  | 'limite_pendentes'
+  | 'limite_diario'
+  | 'limite_amigos'
+  | 'limite_amigos_outro'
+  | 'termo_invalido'
+  | 'desativado'
+  | 'suspenso'
   | 'desconhecido';
 
 export const SOCIAL_MESSAGES: Record<SocialErrorKind, string> = {
@@ -42,6 +53,16 @@ export const SOCIAL_MESSAGES: Record<SocialErrorKind, string> = {
   sem_perfil: 'Você ainda não ativou o perfil social.',
   foto_pendente: 'Não foi possível apagar a foto. Tente de novo.',
   foto_invalida: 'Esta imagem não pode ser usada.',
+  nao_encontrado: 'Não foi possível encontrar esta pessoa.',
+  ja_amigos: 'Vocês já são amigos.',
+  limite_pendentes: 'Você tem 20 pedidos aguardando resposta. Cancele algum para enviar outro.',
+  limite_diario: 'Você atingiu o limite de pedidos de hoje. Tente de novo amanhã.',
+  limite_amigos: 'Você chegou ao limite de 200 amigos.',
+  // Genérica: não revela quantos amigos a outra pessoa tem.
+  limite_amigos_outro: 'Não foi possível adicionar esta pessoa agora.',
+  termo_invalido: 'Digite pelo menos 3 caracteres do @.',
+  desativado: 'Seu perfil social está desativado. Reative em Preferências para usar amigos.',
+  suspenso: 'Seu perfil social está suspenso. Amigos e busca ficam indisponíveis.',
   desconhecido: 'Algo deu errado. Tente de novo.',
 };
 

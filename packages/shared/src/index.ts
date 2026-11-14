@@ -12,3 +12,4 @@ export * from './legacy-v3';
 export * from './recurrence';
 export * from './achievement';
 export * from './social';
+export * from './friends';

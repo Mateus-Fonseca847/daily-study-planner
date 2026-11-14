@@ -1,3 +1,4 @@
+import type { NavCounts } from '../../lib/data/selectors';
 import {
   CalendarDays,
   CircleHelp,
@@ -10,10 +11,19 @@ import {
   Repeat,
   Settings,
   UserRound,
+  UsersRound,
   type LucideIcon,
 } from 'lucide-react';
 
-export type CounterKey = 'provas' | 'tarefas' | 'habitos';
+/** Contadores da navegação: os dos estudos e os pedidos de amizade recebidos. */
+export type ShellCounts = NavCounts & { amigos: number };
+export type CounterKey = keyof ShellCounts;
+
+/** Texto lido pelo leitor de tela no distintivo (só onde o número sozinho não basta). */
+export function counterLabel(key: CounterKey, count: number): string | undefined {
+  if (key !== 'amigos') return undefined;
+  return count === 1 ? '1 solicitação recebida' : `${count} solicitações recebidas`;
+}
 
 export interface NavItem {
   to: string;
@@ -32,6 +42,7 @@ export const MENU_ITEMS: readonly NavItem[] = [
   { to: '/habitos', label: 'Hábitos', icon: Repeat, counter: 'habitos' },
   { to: '/foco', label: 'Modo Foco', icon: Focus, badgeNew: true },
   { to: '/perfil', label: 'Perfil', icon: UserRound },
+  { to: '/amigos', label: 'Amigos', icon: UsersRound, counter: 'amigos' },
 ];
 
 export const SETTINGS_ITEMS: readonly NavItem[] = [

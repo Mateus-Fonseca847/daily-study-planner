@@ -12,6 +12,8 @@ interface TabsProps<T extends string> {
   onChange: (value: T) => void;
   'aria-label': string;
   children: ReactNode;
+  /** No celular, as abas ocupam a largura toda (rótulos mais longos cabem sem quebrar). */
+  fillOnPhone?: boolean;
 }
 
 /** Abas com setas esquerda/direita; o painel ativo vem em `children`. */
@@ -21,6 +23,7 @@ export function Tabs<T extends string>({
   onChange,
   children,
   'aria-label': ariaLabel,
+  fillOnPhone = false,
 }: TabsProps<T>) {
   const base = useId();
   const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -38,7 +41,10 @@ export function Tabs<T extends string>({
       <div
         role="tablist"
         aria-label={ariaLabel}
-        className="inline-flex h-control items-center gap-1 self-start rounded-full bg-surface p-1 coarse:h-segment-touch"
+        className={cn(
+          'inline-flex h-control items-center gap-1 self-start rounded-full bg-surface p-1 coarse:h-segment-touch',
+          fillOnPhone && 'phone:self-stretch',
+        )}
       >
         {tabs.map((tab, index) => {
           const active = tab.value === value;
@@ -55,6 +61,8 @@ export function Tabs<T extends string>({
               onKeyDown={(e) => onKeyDown(e, index)}
               className={cn(
                 'h-full min-w-segment rounded-full px-4 text-md font-medium transition-colors',
+                fillOnPhone &&
+                  'phone:min-w-0 phone:flex-auto phone:px-2 phone:text-sm phone:whitespace-nowrap',
                 active ? 'bg-accent font-semibold text-accent-fg' : 'text-soft hover:text-fg',
               )}
             >

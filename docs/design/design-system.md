@@ -1,4 +1,4 @@
-# Daily — Design System (v1.5)
+# Daily — Design System (v1.6)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
@@ -658,3 +658,19 @@ Sem cores novas: usa os tokens existentes nos dois temas. Token novo só de tama
 | Gerenciar (escuro)                         | Assistente (claro)                                     | Celular                                          |
 | ------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------ |
 | ![Gerenciar](../images/perfil-social.webp) | ![Assistente](../images/perfil-social-assistente.webp) | ![Celular](../images/celular-perfil-social.webp) |
+
+## 21. Amigos (v1.6)
+
+Sem tokens novos: só os semânticos existentes, nos dois temas.
+
+- **Linha de pessoa** (`features/friends/PersonRow.tsx`): avatar (`SocialAvatar`, foto só de amigos; senão as iniciais), nome em `text-fg`, @ em `text-muted`, ações à direita e o menu “…” (`Menu`, que vira sheet no celular). Com várias ações (pedido recebido), no celular as ações descem para a linha de baixo (`stackOnPhone`).
+- **Busca** (`PeopleSearch` no `Modal` “Buscar pessoas”): campo com lupa, situação ao vivo (`aria-live`), resultados sem foto; ação por relação: “Adicionar” (secundário), “Aceitar” (primário), “Pendente” (`text-muted` com relógio) e “Amigos” (`text-concluido` com check).
+- **Página Amigos:** `Tabs` com `fillOnPhone` (no celular as abas ocupam a largura, em `text-sm`, sem quebrar); estados vazios com `EmptyState`; carregamento com `Loader2` (`motion-safe:animate-spin`).
+- **Confirmações** (`ConfirmDialog`): desfazer amizade, bloquear e recusar; cancelar e desbloquear usam o toast com “Desfazer”.
+- **Denúncia** (`ReportDialog`): rádios `accent-accent-ink`, detalhe com contador `n/500`, “Bloquear também” (`Checkbox plain`) marcado.
+- **Distintivo:** o contador rosa existente (`Badge counter`) no item Amigos e no botão “Mais”, com texto só para leitor de tela (“N solicitações recebidas”).
+- **Contraste** (auditoria `--social`): escuro 4,81:1 e claro 5,07:1 no pior caso, no desktop e no celular, sem reprovações.
+
+| Pedidos (escuro)                 | Busca (claro)                         | Celular                                   |
+| -------------------------------- | ------------------------------------- | ----------------------------------------- |
+| ![Amigos](../images/amigos.webp) | ![Busca](../images/amigos-busca.webp) | ![Celular](../images/celular-amigos.webp) |

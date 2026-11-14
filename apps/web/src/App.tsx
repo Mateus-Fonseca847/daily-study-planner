@@ -4,6 +4,7 @@ import { AppShell } from './components/layout/AppShell';
 import { MENU_ITEMS, SETTINGS_ITEMS } from './components/layout/nav';
 import { CalendarPage } from './features/calendar/CalendarPage';
 import { ExamsPage } from './features/exams/ExamsPage';
+import { FriendsPage } from './features/friends/FriendsPage';
 import { HabitsPage } from './features/habits/HabitsPage';
 import { FocusPage } from './features/focus/FocusPage';
 import { ProfilePage } from './features/profile/ProfilePage';
@@ -26,6 +27,7 @@ const PAGES: Record<string, ReactNode> = {
   '/habitos': <HabitsPage />,
   '/foco': <FocusPage />,
   '/perfil': <ProfilePage />,
+  '/amigos': <FriendsPage />,
   '/preferencias': <PreferencesPage />,
 };
 

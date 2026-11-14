@@ -4,6 +4,21 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (amizades, busca, bloquear e denunciar)
+
+- **Amizade mútua com aceite:** enviar, cancelar (com “Desfazer”), aceitar e recusar pedidos; um pedido para quem já te pediu vira amizade na hora. Limites: 20 pedidos pendentes, 20 envios por dia e 200 amigos. Uma recusa nunca é avisada: quem enviou continua vendo “pendente” por até 7 dias e só pode pedir de novo depois de 30.
+- **Buscar pessoas pela lupa da topbar** (e em Amigos, no celular): pelo @, a partir de 3 caracteres, até 10 resultados, só perfis que ligaram “Aparecer na busca”, sem foto até serem amigos, com a ação conforme a relação (Adicionar, Pendente, Aceitar, Amigos).
+- **Página Amigos** (`/amigos`, no menu e no “Mais” do celular): abas Amigos, Solicitações (recebidas e enviadas) e Bloqueados; distintivo de pedidos recebidos na navegação (“N solicitações recebidas” para leitores de tela), atualizado ao abrir, ao voltar para a aba e a cada 60 s só com a aba visível.
+- **Bloquear e denunciar:** bloquear é imediato e nos dois sentidos (some da busca e das listas, desfaz a amizade e os pedidos; a pessoa não é avisada); denunciar tem 5 motivos, detalhe opcional de até 500 caracteres e “Bloquear também” marcado; 5 denúncias por dia. As denúncias só o dono do projeto lê, pelo painel (`docs/moderation.md`).
+- **Foto só para amigos:** o Storage passa a deixar amigos lerem a foto (sem bloqueio, perfis ativos e não suspensos), por links assinados de 120 s baixados sem cache e mostrados por `blob:`.
+- **Proteção de menores:** amizade só entre pessoas da mesma faixa (14 a 17 ou 18+); 14 a 17 não aparecem na busca, então ainda não recebem pedidos (convite por link fica para depois). Respostas entre faixas, para bloqueio e para quem não existe são idênticas.
+- **Moderação pelo dono:** suspensão de perfil (`suspended_at`/`suspended_reason`, só por SQL), com aviso e motivo para a pessoa suspensa; consultas prontas em `docs/moderation.md`.
+- **Banco (só arquivos, aplicados pelo dono depois das do Prompt 15):** 4 migrações aditivas com reversão (`supabase/migrations/202611160000*`), escritas e leituras só por funções `social_*` com limite de taxa, e 159 testes pgTAP novos no job `db`.
+
+### Alterado
+
+- **Termo do perfil social e política de privacidade** descrevem amigos, busca, bloqueio e denúncia (versões `perfil-social-2026-11b` e `privacidade-2026-11b`; quem já aceitou não precisa aceitar de novo). O interruptor “Aparecer na busca (quando a busca existir)” virou “Aparecer na busca por @”.
+
 ### Adicionado (perfil social: fundação)
 
 - **Perfil social visível só para a própria pessoa** (amigos chegam depois): @, nome de exibição, foto e interruptores de privacidade, em Preferências → Perfil social, com convite no Perfil.

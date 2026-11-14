@@ -1,3 +1,4 @@
+import { resetFriends } from '../social/friends-store';
 import { forgetSocial } from '../social/social-store';
 import type { DataSnapshot } from '@daily/shared';
 import { createInitialSnapshot } from '@daily/shared';
@@ -135,5 +136,6 @@ export async function signOutAndWipe(force = false): Promise<'ok' | 'unsynced'> 
   useData.getState().replaceAll(createInitialSnapshot());
   // Nada do perfil social fica no aparelho depois de sair.
   await forgetSocial(userId);
+  resetFriends();
   return 'ok';
 }

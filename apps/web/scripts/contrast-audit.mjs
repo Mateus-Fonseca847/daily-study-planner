@@ -25,8 +25,9 @@ const theme = /--theme=(light|dark)/.exec(process.argv.join(' '))?.[1] ?? 'dark'
  */
 const all = process.argv.includes('--all');
 /**
- * `--social`: mede as telas do perfil social (Preferências → Perfil social e o assistente) com uma
- * sessão e um Supabase simulados por interceptação (nunca um banco real).
+ * `--social`: mede as telas do perfil social (Preferências → Perfil social e o assistente) e das
+ * amizades (`/amigos`, a busca, os pedidos, os bloqueados e a denúncia) com uma sessão e um
+ * Supabase simulados por interceptação (nunca um banco real).
  */
 const social = process.argv.includes('--social');
 const SOCIAL_USER = '11111111-1111-4111-8111-111111111111';
@@ -73,6 +74,40 @@ async function socialContext(context, withProfile) {
     if (path === '/rest/v1/profile_private')
       return body(withProfile ? [{ birth_month: '2000-05-01' }] : []);
     if (path === '/rest/v1/rpc/social_username_status') return body('ok');
+    const pessoa = (id, username, nome) => ({ id, pessoa: id, username, nome });
+    const BIA = pessoa('22222222-2222-4222-8222-222222222222', 'bia', 'Bia Souza');
+    const CAIO = pessoa('33333333-3333-4333-8333-333333333333', 'caio', 'Caio Lima');
+    const DUDA = pessoa('44444444-4444-4444-8444-444444444444', 'duda', 'Duda Reis');
+    const EDU = pessoa('55555555-5555-4555-8555-555555555555', 'edu', 'Edu Alves');
+    const FRIENDS = {
+      '/rest/v1/rpc/social_listar_amigos': {
+        status: 'ok',
+        itens: [
+          { ...BIA, tem_foto: false, versao_foto: 0, desde: '2026-11-15T10:00:00Z' },
+          { ...EDU, tem_foto: false, versao_foto: 0, desde: '2026-11-15T10:00:00Z' },
+        ],
+      },
+      '/rest/v1/rpc/social_listar_solicitacoes': {
+        status: 'ok',
+        recebidas: [{ ...CAIO, id: 7, criada: '2026-11-15T09:00:00Z' }],
+        enviadas: [{ ...DUDA, id: 8, criada: '2026-11-15T09:00:00Z' }],
+      },
+      '/rest/v1/rpc/social_listar_bloqueados': {
+        status: 'ok',
+        itens: [{ id: 'z', username: 'zeca', nome: 'Zeca Dias', desde: '2026-11-15T10:00:00Z' }],
+      },
+      '/rest/v1/rpc/social_contar_solicitacoes_recebidas': { status: 'ok', total: 1 },
+      '/rest/v1/rpc/social_buscar_perfis': {
+        status: 'ok',
+        itens: [
+          { ...BIA, relacao: 'amigos' },
+          { ...pessoa('6', 'bianca', 'Bianca Melo'), relacao: 'nenhuma' },
+          { ...pessoa('7', 'bianor', 'Bianor Reis'), relacao: 'enviada' },
+          { ...pessoa('8', 'bibi', 'Bibi Luz'), relacao: 'recebida' },
+        ],
+      },
+    };
+    if (withProfile && FRIENDS[path]) return body(FRIENDS[path]);
     if (path === '/rest/v1/user_data') return body([]);
     return body({});
   });
@@ -121,6 +156,43 @@ const SOCIAL_STATES = [
     },
   ],
 ];
+SOCIAL_STATES.push(
+  ['/amigos#amigos', true, async (p) => p.getByRole('list', { name: 'Amigos' }).waitFor()],
+  [
+    '/amigos#solicitacoes',
+    true,
+    async (p) => p.getByRole('tab', { name: /Solicitações/ }).click(),
+  ],
+  ['/amigos#bloqueados', true, async (p) => p.getByRole('tab', { name: 'Bloqueados' }).click()],
+  ['/amigos#convite', false, async (p) => p.getByText('Ative seu perfil social').waitFor()],
+  [
+    '/amigos#busca',
+    true,
+    async (p) => {
+      await p.getByRole('button', { name: 'Buscar pessoas' }).first().click();
+      await p.getByLabel('Buscar pelo @').fill('bi');
+      await p.getByLabel('Buscar pelo @').fill('bia');
+      await p.getByRole('list', { name: 'Resultados da busca' }).waitFor();
+    },
+  ],
+  [
+    '/amigos#denunciar',
+    true,
+    async (p) => {
+      await p.getByRole('button', { name: 'Mais ações para @bia' }).click();
+      await p.getByRole('menuitem', { name: 'Denunciar' }).click();
+      await p.getByLabel('Assédio ou ameaça').check();
+    },
+  ],
+  [
+    '/amigos#bloquear',
+    true,
+    async (p) => {
+      await p.getByRole('button', { name: 'Mais ações para @bia' }).click();
+      await p.getByRole('menuitem', { name: 'Bloquear' }).click();
+    },
+  ],
+);
 const DESKTOP_STATES = [
   [
     '/calendario?visao=semana&data=2026-10-29&fixture=views#painel',

@@ -4,6 +4,8 @@ interface BadgeProps {
   /** `counter`: contador rosa; `new`: selo “NEW” amarelo. */
   variant: 'counter' | 'new';
   children: React.ReactNode;
+  /** Texto para leitor de tela no lugar do número (ex.: “3 solicitações recebidas”). */
+  label?: string | undefined;
 }
 
 const VARIANTS = {
@@ -11,7 +13,7 @@ const VARIANTS = {
   new: 'bg-accent-soft px-2 text-2xs font-bold uppercase text-accent-ink',
 } as const;
 
-export function Badge({ variant, children }: BadgeProps) {
+export function Badge({ variant, children, label }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -19,7 +21,14 @@ export function Badge({ variant, children }: BadgeProps) {
         VARIANTS[variant],
       )}
     >
-      {children}
+      {label ? (
+        <>
+          <span aria-hidden>{children}</span>
+          <span className="sr-only">{label}</span>
+        </>
+      ) : (
+        children
+      )}
     </span>
   );
 }

@@ -105,8 +105,9 @@ export function PrivacyPage() {
             menores de 18, o perfil começa e fica no mais privado.
           </p>
           <p>
-            <strong>Quem vê:</strong> hoje, só você. A foto não é analisada por sistemas
-            automáticos; no futuro, quando houver amigos, só será revisada se houver denúncia.
+            <strong>Quem vê:</strong> o seu @ e o seu nome aparecem na busca só se você ligar
+            “Aparecer na busca” (nunca para menores de 18); a foto, só os amigos que você aceitar. A
+            foto não é analisada por sistemas automáticos: só é revisada se houver denúncia.
             <strong> Retenção:</strong> enquanto o perfil social existir. Ao excluir, apagamos tudo
             do perfil social na hora, inclusive a foto; o @ fica bloqueado para outras pessoas por
             90 dias, sem ligação com você.
@@ -118,11 +119,38 @@ export function PrivacyPage() {
           </p>
         </Block>
 
+        <Block title="Amigos, bloqueios e denúncias">
+          <p>
+            <strong>O que guardamos:</strong> os pedidos de amizade (quem pediu, para quem, quando e
+            se foi recusado), as amizades (o par e a data), quem você bloqueou (com o @ e o nome
+            daquele momento, só para a sua lista) e as denúncias (quem denunciou, quem foi
+            denunciado, o @ e o nome naquele momento, o motivo, o detalhe opcional e a data). Os
+            dados de outras pessoas ficam só na memória do aplicativo enquanto ele está aberto: não
+            são gravados no seu aparelho e somem ao sair da conta.
+          </p>
+          <p>
+            <strong>Quem vê:</strong> pedidos e amizades, só as duas pessoas envolvidas. Quem recebe
+            um pedido recusado ou um bloqueio não é avisado. As denúncias não aparecem para ninguém
+            no aplicativo (nem para quem denunciou): só a equipe do Daily as lê, para moderar.
+            Amizade só entre pessoas da mesma faixa de idade (14 a 17 anos ou 18 anos ou mais).{' '}
+            <strong>Base legal:</strong> o seu consentimento para as amizades; para as denúncias, o
+            legítimo interesse de manter a comunidade segura (LGPD, art. 7º, IX).
+          </p>
+          <p>
+            <strong>Retenção e exclusão:</strong> recusar um pedido o mantém por 30 dias (para
+            ninguém insistir); bloqueios e amizades duram até você desfazer. Excluir o perfil social
+            apaga as suas amizades, os pedidos e os bloqueios que você fez. Excluir a conta apaga
+            tudo isso e desliga as denúncias de você: o conteúdo de uma denúncia é guardado por até
+            12 meses depois de resolvida, sem o vínculo com a conta, para a moderação não ser
+            burlada apagando a conta.
+          </p>
+        </Block>
+
         <Block title="Limites do serviço">
           <p>
             É um projeto sem garantia de disponibilidade. Mantenha um backup (Preferências →
             Exportar dados) dos estudos que importam. Esta política pode mudar; a data da última
-            revisão é <time dateTime="2026-11-15">15/11/2026</time> (versão {PRIVACY_POLICY_VERSION}
+            revisão é <time dateTime="2026-11-16">16/11/2026</time> (versão {PRIVACY_POLICY_VERSION}
             ).
           </p>
         </Block>
