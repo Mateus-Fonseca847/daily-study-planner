@@ -30,13 +30,6 @@ export interface TaskSections {
   perdidas: EventView[];
 }
 
-export interface TaskSummary {
-  concluidasSemana: number;
-  pendentes: number;
-  atrasadas: number;
-  proximasProvas: number;
-}
-
 /** O prazo do compromisso é o término (igual ao início num compromisso pontual). */
 export const dueOf = (event: StudyEvent): string => event.end;
 
@@ -156,28 +149,6 @@ export function pendingNow(
       return isOpen(e) && day >= overdueFrom && day <= todayKey;
     }),
   ];
-}
-
-/** Números dos cartões-resumo (contam ocorrências, não séries). */
-export function taskSummary(
-  events: readonly StudyEvent[],
-  now: Date,
-  exceptions: readonly OccurrenceException[] = [],
-): TaskSummary {
-  const nowIso = toLocalIso(now);
-  const weekStart = toLocalIso(addDays(startOfDay(weekEnd(now)), -6));
-  const weekLimit = toLocalIso(weekEnd(now));
-  const { oneOff, recent } = split(events, exceptions, now);
-  const pending = pendingNow(events, exceptions, now);
-  return {
-    concluidasSemana: [...oneOff, ...recent].filter(
-      (e) => e.status === 'concluido' && dueOf(e) >= weekStart && dueOf(e) <= weekLimit,
-    ).length,
-    pendentes: pending.length,
-    atrasadas: pending.filter((e) => dueOf(e) < nowIso).length,
-    proximasProvas: oneOff.filter((e) => isOpen(e) && e.type === 'prova' && e.start >= nowIso)
-      .length,
-  };
 }
 
 /** Filtro global por tipo: conjunto vazio = todos. */

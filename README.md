@@ -56,7 +56,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 | **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp)                                              | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                                        |
 | **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                                                      | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                                               |
 | **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                                                    | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Perfil](docs/images/perfil.webp)                        |
-| **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp)                                    | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)                         |
+| **Tarefas**: Atrasadas, Hoje e todas as Próximas, com concluir em um clique e o botão “Nova tarefa”.<br>![Tarefas](docs/images/tarefas.webp)                    | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)                         |
 | **Tarefas recorrentes**: repetir com atalhos ou personalizado, resumo e prévia das próximas datas.<br>![Repetir no painel](docs/images/recorrentes-painel.webp) | **Escopo**: editar ou excluir só esta ocorrência, esta e as próximas, ou todas.<br>![Escopo da edição](docs/images/recorrentes-escopo.webp)                             |
 | **Tema claro**: o mesmo app em fundo claro, com o seletor Sistema, Claro ou Escuro.<br>![Tema claro](docs/images/tema-claro-calendario.webp)                    | **Perfil no claro**: cartões brancos, tinta escura e as cores de significado com contraste AA.<br>![Perfil no tema claro](docs/images/tema-claro-perfil.webp)           |
 | **Conquistas**: medalhas com níveis, progresso e a data, agrupadas por categoria.<br>![Conquistas](docs/images/conquistas.webp)                                 | **Detalhe da medalha**: critério, data de cada nível e "Destacar no perfil".<br>![Detalhe da medalha](docs/images/medalha-detalhe.webp)                                 |
@@ -73,7 +73,6 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] Três tipos de compromisso (**Tarefa**, **Prova**, **Especial**) e três status (**Pendente**, **Concluído**, **Cancelado**) com cores reservadas: a tarefa fica amarela, verde ou vermelha; prova e especial mantêm a cor do tipo
 - [x] **Painel de tarefa** único para criar, ver e editar (lateral no desktop, tela cheia no celular), com **subtarefas** em qualquer tipo, progresso e “Mais opções”; **concluir com um clique** em todo chip e bloco do calendário (Dia, Semana, Mês e agenda de hoje), nas linhas de Tarefas e no painel, com “Desfazer” (a Prova se conclui pelos conteúdos)
 - [x] **Tarefas recorrentes** (Tarefa e Especial): todo dia, dias úteis, dias da semana, a cada N dias/semanas/meses/anos, dia do mês ou último dia, até uma data ou N vezes; cada ocorrência se conclui sozinha (subtarefas recomeçam), e editar/excluir pergunta “Somente esta / Esta e as próximas / Todas”
-- [x] **Entrada rápida em pt-BR** na página Tarefas (`Treinar toda segunda 19h`, `Aluguel todo dia 5`), mostrando o que entendeu antes de salvar
 - [x] Checklist de conteúdos da prova com barra de progresso
 - [x] **Filtro por tipo** (multisseleção) no calendário e na página Tarefas, salvo entre sessões
 - [x] Sidebar recolhível e interface em pt-BR
@@ -81,7 +80,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] **Dados salvos no navegador** (`localStorage` versionado, com validação, migração e backup)
 - [x] **Criar, editar, duplicar e excluir** tarefas, provas, especiais e matérias, com "Desfazer" por 6 s
 - [x] Conteúdos da prova como mini tarefas (adicionar, renomear, remover, reordenar, marcar) com progresso
-- [x] Páginas **Provas** (contagem regressiva), **Tarefas** (resumo, Atrasadas, Hoje, Próximas sem limite de dias e Concluídas) e **Matérias** (cores)
+- [x] Páginas **Provas** (contagem regressiva), **Tarefas** (Atrasadas, Hoje, Próximas sem limite de dias e Concluídas) e **Matérias** (cores)
 - [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
 - [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 a v5)
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)

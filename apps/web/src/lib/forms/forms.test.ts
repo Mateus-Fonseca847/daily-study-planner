@@ -5,7 +5,6 @@ import {
   validateEventForm,
   type EventFormValues,
 } from './event-form';
-import { quickTaskDraft } from './quick-create';
 import { exam, subject, task } from '../data/test-utils';
 
 const today = new Date(2026, 10, 10, 10, 0);
@@ -119,18 +118,5 @@ describe('validateEventForm', () => {
     });
     expect(values.subtasks.map((c) => c.title)).toEqual(['Limites', 'Derivadas']);
     expect(initialEventValues({ event: task('t') }, today).endTime).toBe('');
-  });
-});
-
-describe('criação rápida', () => {
-  it('tarefa: prazo hoje às 23:59', () => {
-    expect(quickTaskDraft('Ler capítulo', today)).toMatchObject({
-      type: 'tarefa',
-      start: '2026-11-10T23:59:00',
-      end: '2026-11-10T23:59:00',
-      status: 'pendente',
-      subtasks: [],
-      createdAt: '2026-11-10T10:00:00',
-    });
   });
 });

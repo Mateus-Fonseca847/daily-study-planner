@@ -1,32 +1,17 @@
-import { useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useId, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import {
-  AlarmClock,
-  CalendarDays,
-  CheckCheck,
-  ChevronDown,
-  FileCheck2,
-  ListTodo,
-  type LucideIcon,
-} from 'lucide-react';
+import { CalendarDays, ChevronDown, ListTodo, Plus } from 'lucide-react';
 import { subtaskProgress, subtaskListLabel, type StudyEvent } from '@daily/shared';
 import { PageShell } from '../../components/layout/PageShell';
+import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { cn } from '../../lib/cn';
 import { useData } from '../../lib/data/app-store';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
 import { appNow } from '../../lib/fixture';
-import { quickTaskDraft } from '../../lib/forms/quick-create';
-import { parseQuickEntry } from '../../lib/tasks/quick-parse';
-import {
-  dueOf,
-  filterByType,
-  taskSections,
-  taskSummary,
-  type UpcomingGroup,
-} from '../../lib/tasks/sections';
+import { dueOf, filterByType, taskSections, type UpcomingGroup } from '../../lib/tasks/sections';
 import { useTypeFilter } from '../../lib/tasks/type-filter-store';
 import { openEventForm } from '../../lib/ui-store';
 import { RecurrenceIcon } from '../../components/ui/RecurrenceIcon';
@@ -46,26 +31,6 @@ function dueText(iso: string): string {
   if (isToday(date)) return `Hoje, ${time}`;
   if (isTomorrow(date)) return `Amanhã, ${time}`;
   return format(date, "EEE, d 'de' MMM, HH:mm", { locale: ptBR });
-}
-
-function SummaryCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: number;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border-hair bg-surface p-4 phone:p-3">
-      <Icon aria-hidden strokeWidth={1.5} className="size-icon text-muted" />
-      <div className="min-w-0">
-        <p className="text-xl font-semibold tabular-nums">{value}</p>
-        <p className="text-sm leading-tight text-balance text-muted">{label}</p>
-      </div>
-    </div>
-  );
 }
 
 /** Linha em cartão: check, título, tipo, progresso das subtarefas, prazo e “Ver no calendário”. */
@@ -197,70 +162,29 @@ const List = ({
   </ul>
 );
 
-/** Página Tarefas: resumo, Atrasadas, Hoje, Próximas (todas as futuras) e Concluídas. */
+/** Página Tarefas: Atrasadas, Hoje, Próximas (todas as futuras) e Concluídas. */
 export function TasksPage() {
   const allEvents = useData((s) => s.events);
   const exceptions = useData((s) => s.exceptions);
-  const createEvent = useData((s) => s.createEvent);
   const types = useTypeFilter((s) => s.types);
-  const [title, setTitle] = useState('');
-  const quickHintId = useId();
   const now = useMemo(() => appNow(), []);
 
   const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
   const sections = useMemo(() => taskSections(events, now, exceptions), [events, now, exceptions]);
-  const summary = useMemo(() => taskSummary(events, now, exceptions), [events, now, exceptions]);
   const upcomingCount = sections.proximas.reduce((n, g) => n + g.items.length, 0);
   const nothingOpen =
     sections.atrasadas.length === 0 && sections.hoje.length === 0 && upcomingCount === 0;
 
-  // Entrada rápida: entende dia, hora e repetição em pt-BR e mostra antes de salvar.
-  const parsed = useMemo(() => parseQuickEntry(title, now), [title, now]);
-  const add = (e: FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
-    const { title: name, understood: _u, ...options } = parsed;
-    void _u;
-    createEvent(quickTaskDraft(name, now, options));
-    setTitle('');
-  };
-
   return (
     <PageShell
       title="Tarefas"
-      description="Tarefas, provas e especiais: o que está atrasado, o que vence hoje e tudo o que vem."
+      actions={
+        <Button onClick={() => openEventForm({ type: 'tarefa' })}>
+          <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
+          Nova tarefa
+        </Button>
+      }
     >
-      <form onSubmit={add}>
-        <input
-          aria-label="Nova tarefa"
-          aria-describedby={quickHintId}
-          placeholder="Nova tarefa — ex.: Treinar toda segunda 19h (Enter para adicionar)"
-          value={title}
-          maxLength={160}
-          onChange={(e) => setTitle(e.target.value)}
-          className="h-control w-full rounded-full border-hair bg-surface px-5 text-md text-fg placeholder:text-muted"
-        />
-        <p id={quickHintId} aria-live="polite" className="mt-2 min-h-5 px-5 text-sm text-muted">
-          {parsed.understood.length > 0 && (
-            <>
-              Entendi: <span className="font-medium text-fg">{parsed.title}</span> ·{' '}
-              {parsed.understood.join(' · ')}
-            </>
-          )}
-        </p>
-      </form>
-
-      <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2">
-        <SummaryCard
-          icon={CheckCheck}
-          label="Concluídas na semana"
-          value={summary.concluidasSemana}
-        />
-        <SummaryCard icon={ListTodo} label="Pendentes" value={summary.pendentes} />
-        <SummaryCard icon={AlarmClock} label="Atrasadas" value={summary.atrasadas} />
-        <SummaryCard icon={FileCheck2} label="Próximas provas" value={summary.proximasProvas} />
-      </div>
-
       {nothingOpen && (
         <EmptyState
           icon={ListTodo}
