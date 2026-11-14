@@ -4,6 +4,7 @@ import './styles/index.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { startAchievements } from './lib/achievements/start';
 import { startAuth } from './lib/auth/auth-store';
 import { setupPwa } from './lib/pwa/register';
 import { installVisualViewport } from './lib/responsive/visual-viewport';
@@ -15,6 +16,7 @@ setupPwa();
 installVisualViewport();
 startAuth();
 startSync();
+startAchievements();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Elemento #root não encontrado');
