@@ -4,7 +4,7 @@ import type { Habit } from '@daily/shared';
 import { Menu, type MenuItem } from '../../components/ui/Menu';
 import { deleteHabitWithUndo } from '../../lib/data/actions';
 import { useData } from '../../lib/data/app-store';
-import { dayState, isScheduled, rate, ruleOn, streaks, type HabitContext } from '../../lib/habits';
+import { dayState, isScheduled, ruleOn, streaks, type HabitContext } from '../../lib/habits';
 import { describeRepeat, formatTimeOfDay } from '../../lib/habits/repeat';
 import { formatAmount } from '../../lib/habits/summary';
 import { openHabitForm } from '../../lib/ui-store';
@@ -53,11 +53,10 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
   const Icon = HABIT_ICON_COMPONENT[habit.icon];
 
   const stats = useMemo(() => streaks(habit, ctx), [habit, ctx]);
-  const rate90 = useMemo(() => rate(habit, ctx, 90), [habit, ctx]);
   const restToday = dayState(habit, ctx.today, ctx) === 'descanso';
   const scheduledToday = isScheduled(habit, ctx.today) && !restToday;
-  // Quantidade, fonte automática e “não agendado hoje” têm um controle largo: ganham uma linha própria no celular.
-  const wideControl = habit.type === 'quantidade' || habit.source !== 'manual' || !scheduledToday;
+  // Quantidade e fonte automática têm um controle largo: ganham uma linha própria no celular.
+  const wideControl = scheduledToday && (habit.type === 'quantidade' || habit.source !== 'manual');
 
   const items: MenuItem[] = [
     { label: 'Editar', icon: Pencil, onSelect: () => openHabitForm(habit) },
@@ -92,32 +91,6 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
           </p>
         </div>
 
-        <dl className="flex items-center gap-6 text-sm max-lg:order-last max-lg:col-span-2 max-lg:grid max-lg:min-w-0 max-lg:grid-cols-3 max-lg:items-end max-lg:gap-2">
-          <div className="max-lg:min-w-0">
-            <dt className="text-muted max-lg:text-xs max-lg:leading-tight max-lg:text-balance">
-              Sequência
-            </dt>
-            <dd className="text-md font-semibold tabular-nums">
-              {stats.current} {stats.current === 1 ? 'dia' : 'dias'}
-            </dd>
-          </div>
-          <div className="max-lg:min-w-0">
-            <dt className="text-muted max-lg:text-xs max-lg:leading-tight max-lg:text-balance">
-              Melhor
-            </dt>
-            <dd className="text-md font-semibold tabular-nums">
-              {stats.best} {stats.best === 1 ? 'dia' : 'dias'}
-            </dd>
-          </div>
-          <div className="max-lg:min-w-0">
-            <dt className="text-muted max-lg:text-xs max-lg:leading-tight max-lg:text-balance">
-              Taxa (90 dias)
-            </dt>
-            <dd className="text-md font-semibold tabular-nums">
-              {rate90.percent === null ? '—' : `${rate90.percent}%`}
-            </dd>
-          </div>
-        </dl>
         <span className="max-lg:order-last max-lg:col-start-3 max-lg:justify-self-end lg:order-first">
           {sortable?.handle}
         </span>
@@ -128,13 +101,7 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
             wideControl && 'max-lg:col-span-3 max-lg:min-w-0 max-lg:justify-between',
           )}
         >
-          {scheduledToday ? (
-            <HabitControl habit={habit} date={ctx.today} ctx={ctx} now={now} />
-          ) : (
-            <span className="text-xs text-muted">
-              {restToday ? 'Descanso hoje' : 'Não agendado hoje'}
-            </span>
-          )}
+          {scheduledToday && <HabitControl habit={habit} date={ctx.today} ctx={ctx} now={now} />}
           <Menu
             label={`Ações de ${habit.name}`}
             align="end"

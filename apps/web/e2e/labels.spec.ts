@@ -9,7 +9,6 @@ const SIZES = [
 
 /** Rótulos fixos dos cartões (nunca conteúdo do usuário, que pode truncar com `title`). */
 const PAGES = [
-  { url: '/habitos?fixture=stats', labels: ['Sequência', 'Melhor', 'Taxa (90 dias)'] },
   {
     url: '/perfil?fixture=stats',
     labels: ['Automático: água do dia', 'Automático: tempo de foco', 'Concluído'],

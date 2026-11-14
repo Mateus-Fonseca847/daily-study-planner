@@ -71,7 +71,7 @@ test.describe('/habitos em celular e tablet', () => {
     expect(b.height).toBeGreaterThanOrEqual(44);
   });
 
-  test('cartão em duas linhas: nome, repetição, check e menu de 44 px sem encostar no texto; 3 colunas iguais', async ({
+  test('cartão em duas linhas: nome, repetição, check e menu de 44 px sem encostar no texto; sem as estatísticas', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 340, height: 740 });
@@ -87,11 +87,9 @@ test.describe('/habitos em celular e tablet', () => {
     expect(menu.x - (check.x + check.width)).toBeGreaterThanOrEqual(4); // com espaço entre eles
     expect(title.x + title.width).toBeLessThanOrEqual(check.x); // o texto não encosta nos botões
 
-    const columns = await card
-      .locator('dl > div')
-      .evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().width)));
-    expect(columns).toHaveLength(3);
-    expect(Math.max(...columns) - Math.min(...columns)).toBeLessThanOrEqual(2);
+    // O cartão não mostra mais Sequência, Melhor e Taxa (fica só a chama ao lado do nome).
+    await expect(card.locator('dl')).toHaveCount(0);
+    await expect(card.getByRole('img', { name: /^Sequência: / })).toBeVisible();
   });
 
   test('heatmap compacto: células de ~13 px, rótulos fora das células e começa na semana mais recente', async ({
