@@ -6,6 +6,7 @@ import { CalendarDays, Plus } from 'lucide-react';
 import type { EventType, StudyEvent } from '@daily/shared';
 import { Button } from '../../../components/ui/Button';
 import { EventChip } from '../../../components/ui/EventChip';
+import { ChipComplete } from '../../tasks/ChipComplete';
 import { cn } from '../../../lib/cn';
 import { useSwipe } from '../../../lib/responsive/use-swipe';
 import { compactDayMarks, dayAgenda, dayCellLabel } from '../lib/compact';
@@ -158,6 +159,7 @@ export function MonthCompact({
                   recurrence={recurrenceText(event)}
                   selected={selectedId === event.id}
                   onClick={(e) => onSelect(event, e.currentTarget)}
+                  trailing={<ChipComplete event={event} size="list" />}
                 />
               </li>
             ))}

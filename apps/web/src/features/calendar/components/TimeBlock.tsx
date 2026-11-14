@@ -11,6 +11,8 @@ import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icon
 import { blockLines } from '../lib/time-layout';
 import type { PlacedItem } from '../lib/grid-items';
 import { itemTime } from './TimeGrid';
+import { ChipComplete } from '../../tasks/ChipComplete';
+import { blockChipSize, statusSuffix } from '../../../lib/tasks/complete-control';
 
 interface EventBlockProps {
   item: Extract<PlacedItem, { kind: 'event' }>;
@@ -32,39 +34,46 @@ export function EventBlock({ item, selected, onSelect }: EventBlockProps) {
   const time = itemTime(item);
   const finished = event.status === 'concluido' || event.status === 'cancelado';
   return (
-    <button
-      type="button"
-      aria-label={`${meta.label}: ${event.title}, ${time}${rule ? `, repete: ${rule}` : ''}`}
-      title={`${event.title} · ${time}`}
-      aria-expanded={selected}
-      data-touch={narrow ? 'grid' : 'dense'}
-      onClick={(e) => onSelect(event, e.currentTarget)}
+    <div
       className={cn(
-        'flex size-full min-w-0 flex-col justify-start overflow-hidden rounded-sm border-l-stripe px-2 py-chip-y text-left phone:px-1 transition-[filter] hover:brightness-125',
+        'group/chip relative flex size-full min-w-0 items-start overflow-hidden rounded-sm border-l-stripe transition-[filter] hover:brightness-125',
         style.chip,
         finished && 'opacity-done',
         selected && 'brightness-150',
       )}
     >
-      {!narrow && lines === 3 && (
-        <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}>
-          <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
-          <span className="truncate">{meta.label}</span>
-          {rule && <RecurrenceIcon label={rule} decorative />}
-        </span>
-      )}
-      {!narrow && (
-        <span
-          className={cn(
-            'truncate text-sm font-semibold text-fg phone:text-xs',
-            finished && 'line-through',
-          )}
-        >
-          {event.title}
-        </span>
-      )}
-      {!narrow && lines >= 2 && <span className="truncate text-2xs text-soft">{time}</span>}
-    </button>
+      <button
+        type="button"
+        aria-label={`${meta.label}: ${event.title}, ${time}${rule ? `, repete: ${rule}` : ''}${statusSuffix(event.status)}`}
+        title={`${event.title} · ${time}`}
+        aria-expanded={selected}
+        data-touch={narrow ? 'grid' : 'dense'}
+        onClick={(e) => onSelect(event, e.currentTarget)}
+        className="flex min-w-0 flex-1 flex-col justify-start self-stretch overflow-hidden rounded-sm px-2 py-chip-y text-left phone:px-1"
+      >
+        {!narrow && lines === 3 && (
+          <span
+            className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}
+          >
+            <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
+            <span className="truncate">{meta.label}</span>
+            {rule && <RecurrenceIcon label={rule} decorative />}
+          </span>
+        )}
+        {!narrow && (
+          <span
+            className={cn(
+              'truncate text-sm font-semibold text-fg phone:text-xs',
+              finished && 'line-through',
+            )}
+          >
+            {event.title}
+          </span>
+        )}
+        {!narrow && lines >= 2 && <span className="truncate text-2xs text-soft">{time}</span>}
+      </button>
+      <ChipComplete event={event} size={blockChipSize(lines, item.columns, narrow)} />
+    </div>
   );
 }
 

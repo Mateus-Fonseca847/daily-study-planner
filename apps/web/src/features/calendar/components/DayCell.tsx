@@ -8,6 +8,7 @@ import { EventChip } from '../../../components/ui/EventChip';
 import { eventTimeRange } from '../lib/format';
 import type { GridDay } from '../lib/month-grid';
 import { DayListPopover } from './DayListPopover';
+import { ChipComplete } from '../../tasks/ChipComplete';
 
 /** Chips visíveis por dia antes de virar “+N mais”. */
 const MAX_VISIBLE = 2;
@@ -65,6 +66,7 @@ export function DayCell({ day, events, isToday, selectedId, onSelect, onCreate }
             selected={selectedId === event.id}
             data-touch="dense"
             onClick={(e) => onSelect(event, e.currentTarget)}
+            trailing={<ChipComplete event={event} size="compact" />}
           />
         ))}
       </div>
