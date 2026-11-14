@@ -14,7 +14,7 @@ import { openHabitForm } from '../../lib/ui-store';
 import { habitSummary } from './HabitCard';
 import { SortableHabits } from './SortableHabits';
 import { cn } from '../../lib/cn';
-import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from './habit-icons';
+import { habitColorClass, HABIT_ICON_COMPONENT } from './habit-icons';
 import { useHabitModel } from './useHabitModel';
 
 const LAST_12_MONTHS = 'ultimos-12-meses';
@@ -104,7 +104,7 @@ export function HabitsPage() {
                   key={habit.id}
                   className={cn(
                     'flex items-center gap-3 rounded-lg bg-surface px-4 py-3',
-                    HABIT_COLOR_CLASS[habit.color],
+                    habitColorClass(habit.color),
                   )}
                 >
                   <Icon aria-hidden strokeWidth={1.5} className="habit-text size-icon shrink-0" />

@@ -45,23 +45,5 @@ export const HABIT_ICON_LABEL: Record<HabitIcon, string> = {
   target: 'Alvo',
 };
 
-export const HABIT_COLOR_LABEL = {
-  ciano: 'Ciano',
-  petroleo: 'Petróleo',
-  gelo: 'Gelo',
-  lilas: 'Lilás',
-  fucsia: 'Fúcsia',
-  rosa: 'Rosa',
-  cinza: 'Cinza',
-} as const;
-
-/** Classes completas (o Tailwind só gera o que aparece literalmente no código). */
-export const HABIT_COLOR_CLASS = {
-  ciano: 'habit-ciano',
-  petroleo: 'habit-petroleo',
-  gelo: 'habit-gelo',
-  lilas: 'habit-lilas',
-  fucsia: 'habit-fucsia',
-  rosa: 'habit-rosa',
-  cinza: 'habit-cinza',
-} as const;
+/** Classes de cor dos hábitos: vivem em `lib/palette` (também usadas pelo seletor de cor). */
+export { HABIT_COLOR_CLASS, habitColorClass } from '../../lib/palette';

@@ -12,7 +12,7 @@ import { DayPopover } from './DayPopover';
 import { HabitControl } from './HabitControl';
 import { StreakFlame } from './StreakFlame';
 import { cn } from '../../lib/cn';
-import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from './habit-icons';
+import { habitColorClass, HABIT_ICON_COMPONENT } from './habit-icons';
 import { HabitHeatmap } from './HabitHeatmap';
 
 /** Ligações de um cartão ordenável (alça de arrastar, ref/estilo do arrasto e “Mover para…”). */
@@ -74,7 +74,7 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
       aria-label={habit.name}
       className={cn(
         'surface-glass flex flex-col gap-4 rounded-card p-card max-lg:gap-3 max-lg:rounded-card-sm max-lg:p-3',
-        HABIT_COLOR_CLASS[habit.color],
+        habitColorClass(habit.color),
         sortable?.dragging && 'drag-lifted',
       )}
     >

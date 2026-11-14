@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { localDateSchema, localDateTimeSchema } from './dates';
-import { PALETTE_COLORS } from './subject';
+import { PALETTE_COLORS, paletteKeySchema } from './subject';
 
 const id = z.string().min(1);
 
@@ -31,7 +31,8 @@ export const HABIT_TYPES = ['check', 'quantidade'] as const;
 export const HABIT_SOURCES = ['manual', 'agua', 'foco'] as const;
 
 export const habitIconSchema = z.enum(HABIT_ICONS);
-export const habitColorSchema = z.enum(HABIT_COLORS);
+/** Chave da paleta (aceita chaves desconhecidas; veja `paletteKeySchema`). */
+export const habitColorSchema = paletteKeySchema;
 export const habitTypeSchema = z.enum(HABIT_TYPES);
 export const habitSourceSchema = z.enum(HABIT_SOURCES);
 

@@ -1,7 +1,8 @@
 import { useId, useState, type FormEvent } from 'react';
-import { Check, Palette, Repeat, Shapes, Target } from 'lucide-react';
-import { HABIT_COLORS, HABIT_ICONS, type Habit, type HabitSource } from '@daily/shared';
+import { Palette, Repeat, Shapes, Target } from 'lucide-react';
+import { HABIT_ICONS, type Habit, type HabitSource } from '@daily/shared';
 import { Button } from '../../components/ui/Button';
+import { ColorPicker } from '../../components/ui/ColorPicker';
 import { SelectField, TextField } from '../../components/ui/Field';
 import { MetaRow, MoreOptionsToggle } from '../../components/ui/MetaRow';
 import { Modal } from '../../components/ui/Modal';
@@ -21,8 +22,6 @@ import {
 } from '../../lib/habits/form';
 import { WEEKDAY_LABELS } from '../../lib/habits/repeat';
 import {
-  HABIT_COLOR_CLASS,
-  HABIT_COLOR_LABEL,
   HABIT_ICON_COMPONENT,
   HABIT_ICON_LABEL,
 } from './habit-icons';
@@ -175,27 +174,11 @@ export function HabitFormModal({ habit, onClose }: HabitFormModalProps) {
           </MetaRow>
 
           <MetaRow icon={Palette} label="Cor">
-            <div role="radiogroup" aria-label="Cor" className="flex flex-wrap gap-2">
-              {HABIT_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  role="radio"
-                  aria-checked={form.color === color}
-                  aria-label={HABIT_COLOR_LABEL[color]}
-                  title={HABIT_COLOR_LABEL[color]}
-                  onClick={() => set('color', color)}
-                  className={cn(
-                    'habit-bg inline-flex size-control items-center justify-center rounded-full text-on-habit coarse:size-touch',
-                    HABIT_COLOR_CLASS[color],
-                  )}
-                >
-                  {form.color === color && (
-                    <Check aria-hidden strokeWidth={3} className="size-icon-sm" />
-                  )}
-                </button>
-              ))}
-            </div>
+            <ColorPicker
+              label="Cor do hábito"
+              value={form.color}
+              onChange={(color) => set('color', color)}
+            />
           </MetaRow>
 
           <MetaRow icon={Repeat} label="Repetição" htmlFor={ids.repeat}>
