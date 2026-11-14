@@ -26,6 +26,7 @@ export type FriendsGateState =
   | 'erro'
   | 'sem_perfil'
   | 'desativado'
+  | 'suspenso'
   | 'ok';
 
 /**
@@ -52,6 +53,7 @@ export function useFriendsGate(): FriendsGateState {
   if (phase === 'indisponivel') return 'indisponivel';
   if (phase === 'erro' || phase === 'sem_login') return 'erro';
   if (!profile) return 'sem_perfil';
+  if (profile.suspendedAt) return 'suspenso';
   if (profile.disabledAt) return 'desativado';
   return 'ok';
 }
@@ -62,6 +64,7 @@ export function FriendsGate({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const load = useSocial((s) => s.load);
   const error = useSocial((s) => s.error);
+  const suspendedReason = useSocial((s) => s.profile?.suspendedReason ?? null);
 
   switch (gate) {
     case 'ok':
@@ -130,6 +133,14 @@ export function FriendsGate({ children }: { children: ReactNode }) {
             Ativar perfil social
           </Button>
         </EmptyState>
+      );
+    case 'suspenso':
+      return (
+        <EmptyState
+          icon={TriangleAlert}
+          title="Perfil social suspenso"
+          description={`Seu perfil social foi suspenso pela moderação: amigos e busca ficam indisponíveis.${suspendedReason ? ` Motivo: ${suspendedReason}` : ''} O resto do Daily funciona normalmente.`}
+        />
       );
     case 'desativado':
       return (

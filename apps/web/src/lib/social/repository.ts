@@ -17,6 +17,9 @@ export interface SocialProfile {
   socialEnabledAt: string;
   disabledAt: string | null;
   usernameChangedAt: string | null;
+  /** Suspensão pela moderação (Prompt 16; ausente se a migração ainda não foi aplicada). */
+  suspendedAt: string | null;
+  suspendedReason: string | null;
   /** `aaaa-mm-01` (só ano e mês). */
   birthMonth: string | null;
 }
@@ -51,6 +54,8 @@ interface ProfileRow {
   social_enabled_at: string;
   disabled_at: string | null;
   username_changed_at: string | null;
+  suspended_at?: string | null;
+  suspended_reason?: string | null;
 }
 
 const toProfile = (row: ProfileRow, birthMonth: string | null): SocialProfile => ({
@@ -67,6 +72,8 @@ const toProfile = (row: ProfileRow, birthMonth: string | null): SocialProfile =>
   socialEnabledAt: row.social_enabled_at,
   disabledAt: row.disabled_at,
   usernameChangedAt: row.username_changed_at,
+  suspendedAt: row.suspended_at ?? null,
+  suspendedReason: row.suspended_reason ?? null,
   birthMonth,
 });
 

@@ -51,6 +51,8 @@ const profile = (patch: Partial<SocialProfile> = {}): SocialProfile => ({
   socialEnabledAt: '2026-11-15T10:00:00Z',
   disabledAt: null,
   usernameChangedAt: null,
+  suspendedAt: null,
+  suspendedReason: null,
   birthMonth: '2000-05-01',
   ...patch,
 });

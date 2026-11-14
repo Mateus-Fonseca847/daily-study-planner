@@ -262,6 +262,26 @@ test.describe('Amizades', () => {
     await expect(page).toHaveURL(/calendario/);
   });
 
+  test('perfil suspenso pela moderação: aviso com o motivo e nenhuma chamada de amizades', async ({
+    page,
+  }) => {
+    await signIn(page);
+    const state = await fakeSupabase(
+      page,
+      initialState({
+        profile: {
+          ...profileRow(),
+          suspended_at: '2026-11-15T09:00:00Z',
+          suspended_reason: 'Assédio.',
+        } as ReturnType<typeof profileRow>,
+      }),
+    );
+    await page.goto('/amigos');
+    await expect(page.getByText('Perfil social suspenso')).toBeVisible();
+    await expect(page.getByText('Motivo: Assédio.', { exact: false })).toBeVisible();
+    expect(friendsCalls(state).filter((r) => !r.includes('contar'))).toEqual([]);
+  });
+
   test('offline: aviso claro', async ({ page, context }) => {
     await setup(page, { friends: friendsState({ friends: [BIA.id] }) });
     await page.goto('/amigos');
