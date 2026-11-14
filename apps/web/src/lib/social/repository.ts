@@ -78,11 +78,11 @@ const PATCH_COLUMNS: Record<keyof ProfilePatch, string> = {
   showStats: 'show_stats',
 };
 
-const AVATAR_BUCKET = 'avatars';
+export const AVATAR_BUCKET = 'avatars';
 export const avatarPathOf = (userId: string) => `${userId}/avatar.webp`;
 
 /** Todas as chamadas: só logado e online; erros viram `SocialError` em pt-BR. */
-async function call<T>(run: () => PromiseLike<{ data: T; error: unknown }>): Promise<T> {
+export async function call<T>(run: () => PromiseLike<{ data: T; error: unknown }>): Promise<T> {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     throw new SocialError('offline');
   }
