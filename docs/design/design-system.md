@@ -491,54 +491,37 @@ Cada status aparece sempre com ícone e texto (controle de 3 opções no painel)
 
 ### Paleta de matérias e hábitos (`--ds-palette-*`, v5)
 
-**27 cores** para matérias e hábitos (Prompt 13.2), em 9 grupos por matiz, com todos os matizes e três neutros. As 7 da v4 (`ciano` a `cinza`) mantêm id e valor. Cada cor tem um valor no escuro e outro no claro (`:root[data-theme='light']`); a cor guardada é só a chave (`habits.color`, `subjects.color`).
+O seletor oferece **8 cores** (escolha do dono no Prompt 13.2), em **2 linhas × 4 colunas**, por matiz. Cada uma tem um valor no escuro e outro no claro (`:root[data-theme='light']`); a cor guardada é só a chave (`habits.color`, `subjects.color`).
 
-| Id          | Nome          | Escuro    | Menor razão do texto | Claro     | Menor razão do texto |
-| ----------- | ------------- | --------- | -------------------- | --------- | -------------------- |
-| `ciano`     | Ciano         | `#2beeee` | 11,93                | `#007d77` | 4,55                 |
-| `petroleo`  | Azul-petróleo | `#53a9c6` | 6,44                 | `#177692` | 4,73                 |
-| `gelo`      | Gelo          | `#c6dfec` | 12,42                | `#4c575e` | 6,75                 |
-| `lilas`     | Lilás         | `#e2c6ec` | 11,07                | `#7a5a86` | 5,26                 |
-| `fucsia`    | Fúcsia        | `#de2bee` | 4,66                 | `#9a1686` | 6,75                 |
-| `rosa`      | Rosa          | `#d279a6` | 5,75                 | `#bd3f71` | 4,65                 |
-| `cinza`     | Cinza         | `#a3998f` | 6,15                 | `#72685c` | 4,97                 |
-| `vermelho`  | Vermelho      | `#fc4f4e` | 5,21                 | `#cf1928` | 5,00                 |
-| `carmim`    | Carmim        | `#ff85ad` | 7,54                 | `#9d164b` | 7,21                 |
-| `coral`     | Coral         | `#ff9e7e` | 8,55                 | `#933f25` | 6,42                 |
-| `laranja`   | Laranja       | `#f27b00` | 6,23                 | `#b74c00` | 4,72                 |
-| `terracota` | Terracota     | `#b67d64` | 5,00                 | `#642c10` | 9,94                 |
-| `amarelo`   | Amarelo       | `#f4cc00` | 11,04                | `#866900` | 4,74                 |
-| `mostarda`  | Mostarda      | `#c09136` | 6,01                 | `#6d4500` | 7,64                 |
-| `lima`      | Lima          | `#a0d101` | 9,51                 | `#4e7000` | 5,25                 |
-| `verde`     | Verde         | `#00a749` | 5,42                 | `#00651b` | 6,64                 |
-| `oliva`     | Oliva         | `#95975c` | 5,62                 | `#4b4b0d` | 8,27                 |
-| `menta`     | Menta         | `#5ed5b0` | 9,52                 | `#02775d` | 5,03                 |
-| `celeste`   | Celeste       | `#7fc4ec` | 9,02                 | `#005a82` | 6,86                 |
-| `azul`      | Azul          | `#5793f6` | 5,66                 | `#2865cb` | 5,01                 |
-| `anil`      | Anil          | `#7a7ce8` | 4,81                 | `#4334b3` | 8,03                 |
-| `violeta`   | Violeta       | `#ae8cff` | 6,55                 | `#774bcc` | 5,22                 |
-| `roxo`      | Roxo          | `#d5a5f3` | 8,60                 | `#673083` | 8,21                 |
-| `vinho`     | Vinho         | `#af777b` | 4,71                 | `#7a2332` | 9,04                 |
-| `marrom`    | Marrom        | `#d5b092` | 8,56                 | `#44260a` | 11,72                |
-| `pedra`     | Pedra         | `#d2cabc` | 10,58                | `#4c463b` | 8,51                 |
-| `grafite`   | Grafite       | `#7d8d9d` | 5,05                 | `#303d4b` | 9,91                 |
+| Id         | Nome     | Escuro    | Menor razão do texto | Claro     | Menor razão do texto |
+| ---------- | -------- | --------- | -------------------- | --------- | -------------------- |
+| `vermelho` | Vermelho | `#fc4f4e` | 5,21                 | `#cf1928` | 5,00                 |
+| `laranja`  | Laranja  | `#f27b00` | 6,23                 | `#b74c00` | 4,72                 |
+| `amarelo`  | Amarelo  | `#f4cc00` | 11,04                | `#866900` | 4,74                 |
+| `lima`     | Lima     | `#a0d101` | 9,51                 | `#4e7000` | 5,25                 |
+| `verde`    | Verde    | `#00a749` | 5,42                 | `#00651b` | 6,64                 |
+| `ciano`    | Ciano    | `#2beeee` | 11,93                | `#007d77` | 4,55                 |
+| `azul`     | Azul     | `#5793f6` | 5,66                 | `#2865cb` | 5,01                 |
+| `fucsia`   | Fúcsia   | `#de2bee` | 4,66                 | `#9a1686` | 6,75                 |
 
-“Menor razão do texto” é a pior entre: a cor como texto sobre o fundo e a superfície; a marca sobre a cor sólida (texto escuro no escuro, branco no claro); e, no claro, o nome do hábito (cor com 20 % de tinta) sobre o bloco. Ícone sobre o círculo suave (só ícone, 3:1): mínimo de 3,69 no escuro e 4,13 no claro.
+“Menor razão do texto” é a pior entre: a cor como texto sobre o fundo e a superfície; a marca sobre a cor sólida (texto escuro no escuro, branco no claro); e, no claro, o nome do hábito (cor com 20 % de tinta) sobre o bloco. Ícone sobre o círculo suave (só ícone, 3:1): mínimo de 3,86 no escuro e 4,13 no claro.
+
+As cores da paleta da v4 que saíram do seletor (`petroleo`, `gelo`, `lilas`, `rosa`, `cinza`) **continuam como chaves conhecidas**, com os mesmos tokens: hábitos e matérias antigos desenham igual e só não aparecem marcados no seletor (escolher outra cor troca; não escolher mantém).
 
 **Regras (v5):**
 
-- **ΔE2000 ≥ 8** entre todas as cores da paleta, nos dois temas (pares mais próximos: rosa × carmim 9,1 no escuro; ciano × menta 8,3 no claro). As cores de status, tipos, marca e chama **ficam fora da conta**: o significado delas vem sempre de ícone e texto, nunca só da cor. Por isso a paleta pode ter vermelho, verde, amarelo e laranja.
+- **ΔE2000 ≥ 8** entre todas as cores conhecidas, nos dois temas. As cores de status, tipos, marca e chama **ficam fora da conta**: o significado delas vem sempre de ícone e texto, nunca só da cor. Por isso a paleta pode ter vermelho, verde, amarelo e laranja.
 - AA (4,5:1) como texto sobre fundo e superfície; marca sobre a cor sólida ≥ 4,5:1; nome do hábito sobre o bloco ≥ 4,5:1 no claro (`palette.test.ts`).
-- **Ids estáveis:** nunca renomeie nem reordene `PALETTE_COLORS`; cor nova entra no fim, com token nos dois temas, classes literais (`HABIT_COLOR_CLASS`, `SUBJECT_COLOR_CLASS` e `@utility habit-<cor>`), nome em `PALETTE_NAME` e lugar em `PALETTE_GROUPS`.
+- **Ids estáveis:** nunca renomeie nem reordene `PALETTE_COLORS`; cor nova entra no fim, com token nos dois temas, classes literais (`HABIT_COLOR_CLASS`, `SUBJECT_COLOR_CLASS` e `@utility habit-<cor>`), nome em `PALETTE_NAME` e, se for oferecida, em `PICKER_COLORS` (`lib/palette.ts`).
 - **Cor desconhecida** (de uma versão mais nova): o esquema aceita qualquer chave bem formada, o app desenha com a cor segura (`cinza`, `resolvePaletteColor`) e mantém o valor guardado ao salvar.
 
-**Seletor** (`components/ui/ColorPicker`, usado em hábitos e matérias): uma linha por grupo, swatch de 36 px (44 px no toque), a cor escolhida com anel `ring-fg` e check (`text-on-habit`); nome em pt-BR no `aria-label` e na dica. Teclado: Tab entra pela cor marcada e sai; ← → andam uma cor; ↑ ↓ trocam de grupo; Home e End; Enter e Espaço escolhem.
+**Seletor** (`components/ui/ColorPicker`, usado em hábitos e matérias): grade de 4 colunas, swatch de 36 px (44 px no toque), a cor escolhida com anel `ring-fg` e check (`text-on-habit`); nome em pt-BR no `aria-label` e na dica. Teclado: Tab entra pela cor marcada e sai; ← → andam uma cor; ↑ ↓ uma linha; Home e End; Enter e Espaço escolhem. Matéria nova sugere a cor em rodízio entre as 8.
 
 | Escuro                                             | Claro                                            | Celular                                              |
 | -------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------- |
 | ![Seletor no escuro](../images/paleta-escuro.webp) | ![Seletor no claro](../images/paleta-claro.webp) | ![Seletor no celular](../images/celular-paleta.webp) |
 
-**Verificação:** `node apps/web/scripts/palette-check.mjs`, `src/styles/palette.test.ts` e a auditoria `node apps/web/scripts/contrast-audit.mjs <rótulo> --palette --all --theme=dark|light` (semeia um hábito e uma matéria por cor).
+**Verificação:** `node apps/web/scripts/palette-check.mjs`, `src/styles/palette.test.ts` e a auditoria `node apps/web/scripts/contrast-audit.mjs <rótulo> --palette --all --theme=dark|light` (semeia um hábito e uma matéria por cor conhecida).
 
 Remapeamento v3 → v4 (migração, congelado em `PALETTE_V4`): vermelho → fúcsia, laranja → cinza, amarelo → ciano, verde → gelo, turquesa → ciano, azul → petróleo, violeta → lilás, rosa → rosa; se a cor já foi usada por outro item e ainda há cor livre, usa a primeira livre.
 
