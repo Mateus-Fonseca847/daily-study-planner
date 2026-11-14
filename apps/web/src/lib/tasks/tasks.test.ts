@@ -3,7 +3,7 @@ import { subtaskProgress, type EventType } from '@daily/shared';
 import { exam, task } from '../data/test-utils';
 import { moveSubtask } from '../data/subtasks';
 import { chipStyle } from '../event-meta';
-import { filterByType, pendingNow, taskSections, taskSummary } from './sections';
+import { filterByType, pendingNow, taskSections } from './sections';
 import { parseTypeFilter } from './type-filter-store';
 
 // Terça, 10/11/2026, 12:00 (semana de segunda 09 a domingo 15).
@@ -48,17 +48,6 @@ describe('taskSections', () => {
       ...sections.proximas.flatMap((g) => g.items),
     ];
     expect(ids(all)).not.toContain('cancelada');
-  });
-
-  it('cartões-resumo', () => {
-    expect(taskSummary(events, NOW)).toEqual({
-      concluidasSemana: 0,
-      pendentes: 8,
-      atrasadas: 2,
-      proximasProvas: 1,
-    });
-    const doneThisWeek = [due('x', '2026-11-09T10:00:00', { status: 'concluido' })];
-    expect(taskSummary(doneThisWeek, NOW).concluidasSemana).toBe(1);
   });
 });
 
@@ -183,11 +172,10 @@ describe('séries na página Tarefas', () => {
     expect(s.proximas.flatMap((g) => ids(g.items))).toEqual(['semanal@2026-11-18']);
   });
 
-  it('cartões e sidebar contam ocorrências (avulsas + pendentes até hoje, dentro de 7 dias)', () => {
+  it('o distintivo da sidebar conta ocorrências (avulsas + pendentes até hoje, dentro de 7 dias)', () => {
     const exceptions = [done('semanal@2026-11-09'), done('diaria@2026-11-10')];
-    const summary = taskSummary([daily, weekly, task('avulsa')], NOW, exceptions);
     // Diária: 03–09 pendentes (7); semanal: 04 pendente (1); avulsa (1, prazo hoje 23:59).
-    expect(summary).toMatchObject({ concluidasSemana: 2, pendentes: 9, atrasadas: 8 });
+    expect(pendingNow([daily, weekly, task('avulsa')], exceptions, NOW)).toHaveLength(9);
     expect(pendingNow([daily, weekly], exceptions, NOW)).toHaveLength(8);
   });
 });
