@@ -63,8 +63,23 @@ const DESKTOP_STATES = [
     '/habitos?fixture=habits#dia',
     async (p) => p.locator('[data-date="2026-11-09"]').first().click(),
   ],
+  [
+    '/perfil?fixture=stats#medalha',
+    async (p) => p.locator('[data-achievement="maos-a-obra"]').click(),
+  ],
+  [
+    '/perfil?fixture=stats#conquistas-filtro',
+    async (p) => {
+      await p.locator('#conquistas').scrollIntoViewIfNeeded();
+      await p.getByRole('radio', { name: 'Em andamento' }).click();
+    },
+  ],
 ];
 const PHONE_STATES = [
+  [
+    '/perfil?fixture=stats#medalha',
+    async (p) => p.locator('[data-achievement="maos-a-obra"]').tap(),
+  ],
   [
     '/calendario?visao=mes&data=2026-10-29&fixture=views#mais',
     async (p) => p.getByRole('button', { name: 'Mais', exact: true }).tap(),
