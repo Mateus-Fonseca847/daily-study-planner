@@ -10,3 +10,4 @@ export * from './snapshot';
 export * from './progress';
 export * from './legacy-v3';
 export * from './recurrence';
+export * from './achievement';
