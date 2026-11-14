@@ -14,9 +14,56 @@ const webRoot = path.resolve(here, '..');
 const outDir = path.resolve(webRoot, '.reports');
 process.env.VITE_SUPABASE_URL ??= 'http://localhost:54321';
 process.env.VITE_SUPABASE_ANON_KEY ??= 'test-key';
-const label = process.argv[2] ?? 'audit';
+const label = process.argv[2]?.startsWith('--') ? 'audit' : (process.argv[2] ?? 'audit');
 /** `--phone`: mede o layout de celular (390×844, toque), inclusive o sheet “Mais” e o menu Criar. */
 const phone = process.argv.includes('--phone');
+/** `--theme=light|dark`: o tema medido (pelo `prefers-color-scheme`; a instalação nova segue o sistema). */
+const theme = /--theme=(light|dark)/.exec(process.argv.join(' '))?.[1] ?? 'dark';
+/**
+ * `--all`: mede a página inteira (sidebar, topbar, painéis, menus e toasts, não só o `<main>`) e
+ * acrescenta estados abertos e de interação no desktop (foco, hover, selecionado, painel, menu, toast).
+ */
+const all = process.argv.includes('--all');
+const DESKTOP_STATES = [
+  [
+    '/calendario?visao=semana&data=2026-10-29&fixture=views#painel',
+    async (p) => p.getByRole('button', { name: 'Nova tarefa' }).first().click(),
+  ],
+  [
+    '/calendario?visao=mes&data=2026-10-29&fixture=views#menu-criar',
+    async (p) => p.getByRole('button', { name: 'Criar', exact: true }).first().click(),
+  ],
+  [
+    '/calendario?visao=mes&data=2026-10-29&fixture=views#foco-teclado',
+    async (p) => {
+      for (let i = 0; i < 6; i += 1) await p.keyboard.press('Tab');
+    },
+  ],
+  [
+    '/calendario?visao=mes&data=2026-10-29&fixture=views#hover',
+    async (p) =>
+      p
+        .getByRole('link', { name: /Provas/ })
+        .first()
+        .hover(),
+  ],
+  [
+    '/tarefas?fixture=views#toast',
+    async (p) =>
+      p
+        .getByRole('button', { name: /^Concluir/ })
+        .first()
+        .click(),
+  ],
+  [
+    '/perfil?fixture=stats#modal',
+    async (p) => p.getByRole('button', { name: 'Registrar tempo' }).first().click(),
+  ],
+  [
+    '/habitos?fixture=habits#dia',
+    async (p) => p.locator('[data-date="2026-11-09"]').first().click(),
+  ],
+];
 const PHONE_STATES = [
   [
     '/calendario?visao=mes&data=2026-10-29&fixture=views#mais',
@@ -67,22 +114,34 @@ try {
         '/privacidade',
         ...PHONE_STATES.map(([u]) => u),
       ]
-    : PAGES;
+    : all
+      ? [
+          ...PAGES,
+          '/provas?fixture=views',
+          '/tarefas?fixture=views',
+          '/materias?fixture=views',
+          '/preferencias?fixture=stats',
+          '/entrar',
+          '/privacidade',
+          ...DESKTOP_STATES.map(([u]) => u),
+        ]
+      : PAGES;
   for (const url of targets) {
-    const context = await browser.newContext(
-      phone
+    const context = await browser.newContext({
+      colorScheme: theme,
+      ...(phone
         ? {
             viewport: { width: 390, height: 844 },
             isMobile: true,
             hasTouch: true,
             deviceScaleFactor: 1,
           }
-        : { viewport: { width: 1920, height: 1080 } },
-    );
+        : { viewport: { width: 1920, height: 1080 } }),
+    });
     const page = await context.newPage();
     await page.goto(`http://localhost:5196${url}`);
     await page.waitForTimeout(600);
-    const state = PHONE_STATES.find(([u]) => u === url);
+    const state = (phone ? PHONE_STATES : DESKTOP_STATES).find(([u]) => u === url);
     if (state) {
       await state[1](page);
       await page.waitForTimeout(400);
@@ -90,16 +149,18 @@ try {
     // Mostra a página inteira para medir tudo de uma vez.
     const scroller = page.locator('main > div.overflow-y-auto');
     // Páginas com rolagem interna (calendário) são medidas na janela, sem expandir.
-    if ((await scroller.count()) > 0) {
+    // (Com um estado aberto, a janela fica como está: painéis e menus dependem dela.)
+    if (!state && (await scroller.count()) > 0) {
       const height = await scroller.evaluate((el) => el.scrollHeight);
       await page.setViewportSize({ width: phone ? 390 : 1920, height: height + 90 });
     }
     await page.waitForTimeout(300);
 
-    const items = await page.evaluate(() => {
+    const rootSelector = all ? 'body' : 'main';
+    const items = await page.evaluate((rootSelector) => {
       const out = [];
       const walker = document.createTreeWalker(
-        document.querySelector('main'),
+        document.querySelector(rootSelector),
         NodeFilter.SHOW_TEXT,
       );
       const seen = new Set();
@@ -147,7 +208,7 @@ try {
         });
       }
       return out;
-    });
+    }, rootSelector);
 
     // Fundo real: esconde todo o texto e amostra o centro de cada caixa.
     await page.addStyleTag({
@@ -181,7 +242,11 @@ try {
     );
 
     items.forEach((item, i) => {
-      const m = item.color.match(/[\d.]+/g).map(Number);
+      // `rgb(r g b / a)` (0–255) ou `color(srgb r g b / a)` (0–1, o que sai de um color-mix).
+      const nums = item.color.match(/[\d.]+/g).map(Number);
+      const m = item.color.startsWith('color(')
+        ? [...nums.slice(0, 3).map((v) => Math.round(v * 255)), ...nums.slice(3)]
+        : nums;
       const alpha = m[3] ?? 1;
       const eff = alpha * item.opacity;
       let worst = Infinity;
