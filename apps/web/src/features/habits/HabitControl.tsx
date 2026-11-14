@@ -39,7 +39,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
                 type="button"
                 aria-label={`${habit.name}: ${formatLiters(value)}. Editar a água`}
                 title="Editar a água"
-                className="rounded-md px-1 text-md font-medium tabular-nums text-fg hover:text-accent coarse:min-h-touch coarse:min-w-touch"
+                className="rounded-md px-1 text-md font-medium tabular-nums text-fg hover:text-accent-ink coarse:min-h-touch coarse:min-w-touch"
                 {...trigger}
               >
                 {formatLiters(value)}

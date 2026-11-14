@@ -63,7 +63,7 @@ export function Sidebar({ collapsed, onToggle, counts }: SidebarProps) {
       >
         {!collapsed && (
           <span className="text-logo font-bold tracking-tighter">
-            Daily<span className="text-accent">.</span>
+            Daily<span className="text-accent-ink">.</span>
           </span>
         )}
         <Button

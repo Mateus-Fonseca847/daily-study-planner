@@ -39,7 +39,7 @@ export function LoginPage() {
       <div className="flex w-full max-w-modal flex-col gap-6 rounded-xl border-hair bg-raised p-8">
         <div>
           <p className="text-logo font-bold tracking-tighter">
-            Daily<span className="text-accent">.</span>
+            Daily<span className="text-accent-ink">.</span>
           </p>
           <h1 className="mt-4 text-xl font-semibold tracking-tighter">
             Entre para não perder seus estudos

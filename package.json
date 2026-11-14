@@ -16,7 +16,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "e2e": "pnpm --filter @daily/web e2e",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "check:tokens": "node apps/web/scripts/check-tokens.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

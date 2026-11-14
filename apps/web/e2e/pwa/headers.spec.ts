@@ -24,7 +24,7 @@ test.describe('Cabeçalhos de produção (vercel.json)', () => {
     expect(route.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin');
     expect(route.headers()['permissions-policy']).toContain('camera=()');
 
-    for (const path of ['/sw.js', '/index.html', '/manifest.webmanifest']) {
+    for (const path of ['/sw.js', '/index.html', '/manifest.webmanifest', '/theme-init.js']) {
       const res = await request.get(path);
       expect(res.status(), path).toBe(200);
       expect(res.headers()['cache-control'], path).toContain('max-age=0');

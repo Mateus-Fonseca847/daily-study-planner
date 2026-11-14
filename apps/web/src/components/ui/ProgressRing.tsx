@@ -30,7 +30,7 @@ export function ProgressRing({ percent, children, 'aria-label': ariaLabel }: Pro
           pathLength={100}
           strokeLinecap="round"
           strokeDasharray={`${value} 100`}
-          className={value <= 0 ? 'stroke-ring opacity-0' : 'stroke-ring stroke-accent'}
+          className={value <= 0 ? 'stroke-ring opacity-0' : 'stroke-ring stroke-accent-ink'}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">

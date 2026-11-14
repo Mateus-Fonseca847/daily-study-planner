@@ -186,7 +186,7 @@ export function HabitFormModal({ habit, onClose }: HabitFormModalProps) {
                   title={HABIT_COLOR_LABEL[color]}
                   onClick={() => set('color', color)}
                   className={cn(
-                    'habit-bg inline-flex size-control items-center justify-center rounded-full text-accent-fg coarse:size-touch',
+                    'habit-bg inline-flex size-control items-center justify-center rounded-full text-on-habit coarse:size-touch',
                     HABIT_COLOR_CLASS[color],
                   )}
                 >
@@ -322,7 +322,7 @@ export function HabitFormModal({ habit, onClose }: HabitFormModalProps) {
                 type="checkbox"
                 checked={form.timeOn}
                 onChange={(e) => set('timeOn', e.target.checked)}
-                className="size-checkbox accent-accent"
+                className="size-checkbox accent-accent-ink"
               />
               Definir horário
             </label>

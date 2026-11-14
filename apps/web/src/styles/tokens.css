@@ -17,6 +17,12 @@
   --ds-color-accent: #f5e94b;
   --ds-color-accent-soft: color-mix(in srgb, var(--ds-color-accent) 15%, transparent);
   --ds-color-accent-fg: #0b0b0c;
+  /*
+   * Papéis separados (iguais no escuro): `accent` preenche (botões, pílulas, hoje); `accent-ink` é
+   * tinta sobre superfície (texto, ícone, borda, anel); `focus` é o anel de foco.
+   */
+  --ds-color-accent-ink: var(--ds-color-accent);
+  --ds-color-focus: var(--ds-color-accent);
   --ds-color-badge: #ff2d9b;
   --ds-color-badge-fg: #0b0b0c;
   --ds-color-fg: #ffffff;
@@ -64,6 +70,8 @@
   );
   /* Chama de sequência: a única exceção laranja documentada; cinza com sequência zero. */
   --ds-color-streak: #ff8a3d;
+  /* Marca desenhada sobre um preenchimento de status (o check sobre o verde de concluído). */
+  --ds-color-on-status: var(--ds-color-accent-fg);
   --ds-color-streak-off: var(--ds-color-fg-subtle);
   /* Dia de descanso no heatmap (listras neutras). */
   --ds-color-rest: rgb(255 255 255 / 0.22);
@@ -153,6 +161,13 @@
   --ds-heat-mix-2: 52%;
   --ds-heat-mix-3: 76%;
   --ds-heat-mix-4: 100%;
+  /* Fundo suave da cor do hábito (ícone do cartão) e do bloco do hábito na grade de horas. */
+  --ds-habit-soft-mix: 18%;
+  --ds-habit-block-mix: 14%;
+  /* Texto e ícones na cor do hábito: quanto da tinta (`fg`) entra na mistura (0 = a cor pura). */
+  --ds-habit-ink-mix: 0%;
+  /* Marca sobre a cor sólida do hábito (check do hábito feito, amostra escolhida). */
+  --ds-color-on-habit: var(--ds-color-accent-fg);
   /* Paleta dos hábitos: a mesma das matérias. */
   --ds-habit-ciano: var(--ds-palette-ciano);
   --ds-habit-petroleo: var(--ds-palette-petroleo);
@@ -359,11 +374,94 @@
   --ds-sheet-handle-h: 0.25rem;
   --ds-sheet-max-h: 92dvh;
   --ds-sheet-duration: 200ms;
+  /* Troca de tema: só as cores animam (desligado com prefers-reduced-motion). */
+  --ds-theme-transition: 200ms;
   --ds-bar-gap: 0.75rem;
   /* Altura da área visível com o teclado virtual aberto (a JS a atualiza; sem teclado = a janela). */
   --ds-vv-h: 100dvh;
   --ds-vv-top: 0px;
   --ds-text-input-touch: 1rem;
+}
+
+/*
+ * Tema claro: os mesmos tokens com valores próprios. Fundo cinza muito claro, cartões brancos com
+ * borda fina e sombra sutil, tinta escura. Os preenchimentos de marca (amarelo) não mudam; a tinta
+ * (`*-ink`, status, tipos, paleta, chama) escurece para AA sobre o branco, e os fundos de status
+ * viram tons suaves explícitos. Contrastes em docs/design/design-system.md → “Tema claro”.
+ */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --ds-color-bg: #f4f4f6;
+  --ds-color-surface: #ffffff;
+  --ds-color-surface-raised: #f7f7f9;
+  --ds-color-border: rgb(0 0 0 / 0.08);
+  --ds-color-border-strong: rgb(0 0 0 / 0.16);
+  --ds-color-hover: rgb(0 0 0 / 0.05);
+  --ds-color-scrim: rgb(0 0 0 / 0.3);
+  --ds-color-accent-soft: #fbf6c4;
+  --ds-color-accent-ink: #6b5d00;
+  --ds-color-focus: #6b5d00;
+  --ds-color-fg: #141416;
+  --ds-color-fg-soft: #45454d;
+  --ds-color-fg-muted: #5f5f68;
+  --ds-color-fg-subtle: #696972;
+  --ds-color-white-pill: #141416;
+  --ds-color-white-pill-fg: #ffffff;
+
+  --ds-color-status-pendente: #8a6100;
+  --ds-color-status-concluido: #16794a;
+  --ds-color-status-cancelado: #c22a3b;
+  --ds-color-type-prova: #2458c9;
+  --ds-color-type-especial: #7545d6;
+  --ds-color-status-pendente-soft: #fbf0c4;
+  --ds-color-status-concluido-soft: #dcf2e5;
+  --ds-color-status-cancelado-soft: #fbe2e5;
+  --ds-color-type-prova-soft: #e1e9fc;
+  --ds-color-type-especial-soft: #ece4fb;
+  --ds-color-on-status: #ffffff;
+  --ds-color-streak: #b04f09;
+  --ds-color-rest: rgb(0 0 0 / 0.2);
+  --ds-color-danger: #c22a3b;
+
+  /* Paleta clara: mesmas matizes, escuras o bastante para AA sobre o branco (ΔE ≥ 14). */
+  --ds-palette-ciano: #007d77;
+  --ds-palette-petroleo: #177692;
+  --ds-palette-gelo: #4c575e;
+  --ds-palette-lilas: #7a5a86;
+  --ds-palette-fucsia: #9a1686;
+  --ds-palette-rosa: #bd3f71;
+  --ds-palette-cinza: #72685c;
+
+  /* Água mais clara: o texto escuro do cartão lê sobre a onda em qualquer nível. */
+  --ds-color-water: #a49cf7;
+  --ds-color-water-deep: #8c83ef;
+  --ds-color-water-wave: #bcb6fb;
+  --ds-color-water-button: rgb(255 255 255 / 0.5);
+  --ds-color-chart-track: rgb(0 0 0 / 0.08);
+  --ds-color-chart-track-strong: rgb(0 0 0 / 0.14);
+
+  --ds-glass-bg: var(--ds-color-surface);
+  --ds-glass-highlight: 0 1px 2px rgb(0 0 0 / 0.06), 0 1px 1px rgb(0 0 0 / 0.03);
+  --ds-glow-accent: radial-gradient(
+    120% 90% at 100% 100%,
+    color-mix(in srgb, var(--ds-color-accent) 22%, transparent),
+    transparent 60%
+  );
+
+  --ds-color-now: var(--ds-color-accent-ink);
+  --ds-density-0: rgb(0 0 0 / 0.05);
+  --ds-density-1: color-mix(in srgb, var(--ds-color-accent-ink) 18%, transparent);
+  --ds-density-2: color-mix(in srgb, var(--ds-color-accent-ink) 34%, transparent);
+  --ds-density-3: color-mix(in srgb, var(--ds-color-accent-ink) 70%, transparent);
+  --ds-color-heat-0: rgb(0 0 0 / 0.09);
+  --ds-color-heat-off: rgb(0 0 0 / 0.04);
+  --ds-habit-soft-mix: 14%;
+  --ds-habit-block-mix: 8%;
+  --ds-habit-ink-mix: 20%;
+  --ds-color-on-habit: #ffffff;
+
+  --ds-shadow-popover: 0 12px 32px rgb(0 0 0 / 0.12), 0 0 0 1px rgb(0 0 0 / 0.08);
 }
 
 /*

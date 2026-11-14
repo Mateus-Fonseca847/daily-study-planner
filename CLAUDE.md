@@ -20,6 +20,14 @@ Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v4`) atrá
   `apps/web/src/styles/tokens.css`. Os tokens (`--ds-*`) são mapeados no tema do Tailwind em
   `styles/index.css`; componentes usam só utilitários derivados (`bg-surface`, `h-control`…).
   Novo valor visual → documente em `docs/design/design-system.md`, crie o token, mapeie no tema.
+- **Dois temas**: todo componente novo funciona no claro e no escuro e usa só tokens semânticos.
+  Os valores claros ficam em `:root[data-theme='light']` (mesmos nomes). Separe os papéis: cor de
+  **preenchimento** (`bg-accent`, `bg-concluido`) × **tinta** sobre superfície (`text-accent-ink`,
+  `text-concluido`) × **marca sobre preenchimento** (`text-accent-fg`, `text-on-status`,
+  `text-on-habit`); anel de foco = `focus-ring`. `pnpm check:tokens` (no CI) falha com cor
+  literal fora de `tokens.css`; o escuro é provado com `node apps/web/scripts/theme-regression.mjs
+compare dark` e o contraste com `node apps/web/scripts/contrast-audit.mjs <rótulo> --all
+--theme=light|dark`.
 - **Componentes pequenos e tipados**; primitivos em `components/ui`, estrutura em
   `components/layout`, features em `features/<nome>`. Sem lógica visual duplicada.
 - Tipos e schemas de domínio vivem em `packages/shared`; lógica pura (grid do mês, progresso) em `lib/` com teste.
@@ -39,6 +47,7 @@ pnpm e2e          # Playwright (1ª vez: pnpm --filter @daily/web exec playwrigh
 pnpm icons           # regenera os ícones do PWA (apps/web/public/icons/)
 pnpm verify:prod     # verifica o app publicado (rotas, manifest, service worker, offline)
 pnpm check:links     # confere os links relativos dos .md versionados
+pnpm check:tokens    # falha com cor literal fora de tokens.css
 pnpm format       # prettier --write
 ```
 
@@ -61,7 +70,8 @@ listada no `.gitignore`, porque é material de processo e de divulgação, não 
 - Hábitos: lógica pura em `lib/habits` (`repeat.ts` = repetição reaproveitável, `engine.ts`, `matrix.ts`, `aggregate.ts`, `edit.ts`, `form.ts`); fontes automáticas leem água e foco via `HabitContext`; dias de descanso (`restDays`) contam como não agendados. Editar repetição/meta/horário cria uma **regra nova a partir de hoje** (nunca reescreva o passado). As classes `habit-<cor>` precisam aparecer **literalmente** no código (`HABIT_COLOR_CLASS`).
 - Calendário: a visão e a data vivem na URL (`?visao=dia|semana|mes|ano&data=yyyy-MM-dd`, `features/calendar/lib/views.ts`); a grade de horas (`TimeGrid`) posiciona blocos por **porcentagem** do intervalo, e o layout de simultâneos é a função pura `layoutSobreposicoes` (`lib/time-layout.ts`). Nunca monte classes do Tailwind por template: use mapas literais (`HABIT_COLOR_CLASS`, `DENSITY_CLASS`) ou variáveis CSS de tokens.
 - Responsivo: breakpoints num só lugar (`lib/responsive/breakpoints.ts`, espelhado em `styles/index.css`, com teste). Use as variantes `phone:`, `short:` e `coarse:` (e `md:`/`lg:`/`xl:`); JavaScript (`useBreakpoint`, `usePhone`) só quando a árvore muda. O desktop (≥ 1280 px) não pode mudar: confira com `node apps/web/scripts/desktop-regression.mjs compare` (a linha de base fica em `apps/web/.reports/`, fora do Git). Nada depende de hover; controles principais ≥ 44 px (`--ds-touch`), densos ≥ 24 px com `data-touch="dense"` e um equivalente maior; áreas que rolam na horizontal levam `data-scroll-x`; campos de texto ≥ 16 px. Popover, Modal e Menu já viram sheet/tela cheia no celular: use-os em vez de criar overlays novos.
-- Paleta de matérias e hábitos: `PALETTE_COLORS` (sem vermelho, verde, amarelo e laranja); confira com `node apps/web/scripts/palette-check.mjs` e `src/styles/palette.test.ts`.
+- Paleta de matérias e hábitos: `PALETTE_COLORS` (sem vermelho, verde, amarelo e laranja); confira com `node apps/web/scripts/palette-check.mjs` e `src/styles/palette.test.ts` (os dois temas: ΔE ≥ 15 no escuro e ≥ 14 no claro).
+- Tema: lógica pura em `lib/theme` (`theme.ts` = escolha `sistema | claro | escuro` em `daily:theme`, por dispositivo e fora do snapshot e da sincronização; `apply.ts`; `theme-store.ts`). `public/theme-init.js` repete a resolução antes da 1ª pintura (a CSP não permite script inline) e o teste `theme.test.ts` o roda num contexto isolado: mude os dois juntos. Usuário com dados começa no Escuro; instalação nova, em Sistema. Os e2e rodam com `colorScheme: 'dark'`.
 - Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
 
 ## Fixture visual

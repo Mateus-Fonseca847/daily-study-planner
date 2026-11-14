@@ -13,6 +13,9 @@ const shared = {
   viewport: { width: 1440, height: 900 },
   locale: 'pt-BR',
   timezoneId: 'America/Sao_Paulo',
+  // O Playwright emula `light` por padrão; os testes rodam no tema escuro (o original), e
+  // `e2e/theme.spec.ts` troca com `page.emulateMedia`.
+  colorScheme: 'dark',
   trace: 'retain-on-failure',
 } as const;
 

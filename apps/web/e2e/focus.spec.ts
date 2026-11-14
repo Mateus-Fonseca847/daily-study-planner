@@ -199,8 +199,8 @@ test.describe('Dias de mais foco', () => {
     const rows = topDays(page).getByRole('listitem');
     await expect(rows).toHaveCount(7);
     await expect(rows.first()).toContainText('1º');
-    await expect(rows.first().locator('.text-accent')).toBeVisible();
-    await expect(rows.nth(1).locator('.text-accent')).toHaveCount(0);
+    await expect(rows.first().locator('.text-accent-ink')).toBeVisible();
+    await expect(rows.nth(1).locator('.text-accent-ink')).toHaveCount(0);
 
     // “2h15” / “45 min” → minutos, para conferir a ordem decrescente.
     const minutes = (await rows.locator('.font-semibold').allInnerTexts()).map((text) => {

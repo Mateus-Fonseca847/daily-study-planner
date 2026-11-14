@@ -2,7 +2,16 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { PALETTE_COLORS } from '@daily/shared';
-import { contrast, MIN_DELTA_E, PALETTE, report, RESERVED } from '../../scripts/palette-check.mjs';
+import {
+  contrast,
+  MIN_DELTA_E,
+  MIN_DELTA_E_LIGHT,
+  PALETTE,
+  PALETTE_LIGHT,
+  report,
+  RESERVED,
+  RESERVED_LIGHT,
+} from '../../scripts/palette-check.mjs';
 
 const tokens = readFileSync(fileURLToPath(new URL('./tokens.css', import.meta.url)), 'utf8');
 const token = (name: string): string => {
@@ -89,5 +98,109 @@ describe('contraste AA dos chips e estados novos', () => {
   it('cancelado esmaecido (opacidade 60 %) ainda tem título ≥ 3:1 (texto grande/negrito do chip)', () => {
     const chip = over(STATUS_AND_TYPES['status-cancelado'], ALPHA, BG);
     expect(contrast(over('#ffffff', 0.6, chip), chip)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+/** Bloco do tema claro em `tokens.css` (`:root[data-theme='light'] { … }`). */
+const lightBlock = /:root\[data-theme='light'\]\s*\{([\s\S]*?)\r?\n\}/.exec(tokens)![1]!;
+const light = (name: string): string => {
+  const match = new RegExp(`--ds-${name}:\\s*(#[0-9a-f]{6})`, 'i').exec(lightBlock);
+  if (!match) throw new Error(`token claro --ds-${name} não encontrado`);
+  return match[1]!.toLowerCase();
+};
+
+describe('tema claro (tokens.css × palette-check)', () => {
+  const L = {
+    bg: light('color-bg'),
+    surface: light('color-surface'),
+    raised: light('color-surface-raised'),
+    fg: light('color-fg'),
+  };
+  const CHIPS = {
+    'status-pendente': ['color-status-pendente', 'color-status-pendente-soft'],
+    'status-concluido': ['color-status-concluido', 'color-status-concluido-soft'],
+    'status-cancelado': ['color-status-cancelado', 'color-status-cancelado-soft'],
+    'tipo-prova': ['color-type-prova', 'color-type-prova-soft'],
+    'tipo-especial': ['color-type-especial', 'color-type-especial-soft'],
+  } as const;
+
+  it('os tokens claros batem com o verificador; o amarelo da marca (preenchimento) não muda', () => {
+    for (const key of PALETTE_COLORS) expect(light(`palette-${key}`)).toBe(PALETTE_LIGHT[key]);
+    for (const [name, [ink]] of Object.entries(CHIPS))
+      expect(light(ink)).toBe(RESERVED_LIGHT[name]);
+    expect(light('color-streak')).toBe(RESERVED_LIGHT.chama);
+    expect(light('color-accent-ink')).toBe(RESERVED_LIGHT.marca);
+    expect(lightBlock).not.toMatch(/--ds-color-accent:/);
+  });
+
+  it(`cores distintas: ΔE2000 ≥ ${MIN_DELTA_E_LIGHT} entre a paleta e contra status, tipos e marca`, () => {
+    expect(report('light').pairs.filter((p) => p.dE < MIN_DELTA_E_LIGHT)).toEqual([]);
+  });
+
+  it('texto principal e secundário ≥ 4,5:1 sobre fundo, superfície e superfície elevada', () => {
+    for (const text of ['color-fg', 'color-fg-soft', 'color-fg-muted', 'color-fg-subtle']) {
+      for (const base of [L.bg, L.surface, L.raised]) {
+        expect(contrast(light(text), base)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  it('paleta, status, tipos, chama, perigo, tinta da marca e foco ≥ 4,5:1 sobre fundo e superfície', () => {
+    const inks = [
+      ...Object.values(PALETTE_LIGHT),
+      ...Object.values(RESERVED_LIGHT),
+      light('color-danger'),
+      light('color-focus'),
+    ];
+    for (const ink of inks) {
+      expect(contrast(ink, L.bg)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(ink, L.surface)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it.each(Object.entries(CHIPS))(
+    '%s: rótulo colorido, título e horário sobre o fundo suave do chip ≥ 4,5:1',
+    (_name, [ink, soft]) => {
+      const chip = light(soft);
+      expect(contrast(light(ink), chip)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(L.fg, chip)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(light('color-fg-soft'), chip)).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+
+  it('marcas sobre preenchimentos: check branco no verde, pílula, texto no amarelo, tinta no amarelo suave', () => {
+    expect(
+      contrast(light('color-on-status'), light('color-status-concluido')),
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contrast(light('color-white-pill-fg'), light('color-white-pill')),
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(token('color-accent-fg'), token('color-accent'))).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(light('color-accent-ink'), light('color-accent-soft'))).toBeGreaterThanOrEqual(
+      4.5,
+    );
+  });
+
+  it('cor do hábito como texto (com a tinta) sobre o bloco do hábito; marca branca sobre a cor sólida', () => {
+    const pct = (name: string) =>
+      Number(new RegExp(`--ds-${name}:\\s*(\\d+)%`).exec(lightBlock)![1]) / 100;
+    const ink = pct('habit-ink-mix');
+    const block = pct('habit-block-mix');
+    for (const color of Object.values(PALETTE_LIGHT)) {
+      const text = over(L.fg, ink, color);
+      expect(contrast(text, over(color, block, L.bg))).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(light('color-on-habit'), color)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('texto escuro sobre a água (onda, preenchimento e fundo) ≥ 4,5:1', () => {
+    for (const water of ['color-water', 'color-water-deep', 'color-water-wave']) {
+      expect(contrast(L.fg, light(water))).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('cancelado esmaecido (opacidade 60 %) ainda tem título ≥ 3:1', () => {
+    const chip = light('color-status-cancelado-soft');
+    expect(contrast(over(L.fg, 0.6, chip), chip)).toBeGreaterThanOrEqual(3);
   });
 });

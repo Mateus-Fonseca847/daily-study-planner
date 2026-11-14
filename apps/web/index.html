@@ -11,8 +11,12 @@
       name="description"
       content="Organizador de estudos para ficar aberto o dia todo: calendário, provas, tarefas, hábitos com heatmap, Modo Foco e perfil. Funciona offline e guarda tudo no seu navegador."
     />
-    <meta name="theme-color" content="#131313" />
-    <meta name="color-scheme" content="dark" />
+    <!-- Cor das barras do sistema por tema; theme-init.js iguala as duas numa escolha manual. -->
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#131313" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f4f6" />
+    <meta name="color-scheme" content="dark light" />
+    <!-- Tema antes da primeira pintura (arquivo externo: a CSP não permite script inline). -->
+    <script src="/theme-init.js"></script>
     <!-- iOS: abre como app (sem a barra do Safari); a barra de status flutua sobre o conteúdo e a área segura (viewport-fit=cover) cuida do recuo. -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />

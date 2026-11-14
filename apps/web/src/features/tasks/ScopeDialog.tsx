@@ -56,7 +56,7 @@ export function ScopeDialog({
               key={o.value}
               className={cn(
                 'flex cursor-pointer items-start gap-3 rounded-card-sm border-hair p-3 coarse:min-h-touch',
-                scope === o.value && 'border-accent',
+                scope === o.value && 'border-accent-ink',
                 disabled && 'cursor-not-allowed opacity-50',
               )}
             >
@@ -67,7 +67,7 @@ export function ScopeDialog({
                 checked={scope === o.value}
                 disabled={disabled}
                 onChange={() => setScope(o.value)}
-                className="mt-1 size-checkbox accent-accent"
+                className="mt-1 size-checkbox accent-accent-ink"
               />
               <span className="flex flex-col">
                 <span className="text-md font-medium">{o.label}</span>

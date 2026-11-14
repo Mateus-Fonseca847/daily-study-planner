@@ -44,6 +44,10 @@
   --color-accent: var(--ds-color-accent);
   --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
+  --color-accent-ink: var(--ds-color-accent-ink);
+  --color-focus-ring: var(--ds-color-focus);
+  --color-on-status: var(--ds-color-on-status);
+  --color-on-habit: var(--ds-color-on-habit);
   --color-badge: var(--ds-color-badge);
   --color-badge-fg: var(--ds-color-badge-fg);
   --color-fg: var(--ds-color-fg);
@@ -416,13 +420,13 @@
   --habit: var(--ds-habit-cinza);
 }
 @utility habit-text {
-  color: var(--habit);
+  color: color-mix(in srgb, var(--habit), var(--ds-color-fg) var(--ds-habit-ink-mix));
 }
 @utility habit-bg {
   background-color: var(--habit);
 }
 @utility habit-bg-soft {
-  background-color: color-mix(in srgb, var(--habit) 18%, transparent);
+  background-color: color-mix(in srgb, var(--habit) var(--ds-habit-soft-mix), transparent);
 }
 /* Visão Ano: 4×3 a partir de 1600 px, 3×4 a partir do tablet (768 px) e 2×6 no celular. */
 @utility year-grid {
@@ -462,7 +466,7 @@
 /* Hábito com horário na grade: borda tracejada e fundo tingido na cor do hábito. */
 @utility habit-block {
   border: var(--ds-habit-block-border) dashed var(--habit);
-  background-color: color-mix(in srgb, var(--habit) 14%, transparent);
+  background-color: color-mix(in srgb, var(--habit) var(--ds-habit-block-mix), transparent);
 }
 @utility heat-lvl-0 {
   background-color: var(--ds-color-heat-0);
@@ -538,7 +542,7 @@
   z-index: 20;
   scale: var(--ds-drag-scale);
   box-shadow: var(--ds-shadow-popover);
-  outline: var(--ds-drag-outline-w) dashed var(--ds-color-accent);
+  outline: var(--ds-drag-outline-w) dashed var(--ds-color-focus);
   outline-offset: var(--ds-focus-offset);
 }
 /* Só a alça inicia o arrasto: sem rolagem/zoom do navegador sobre ela. */
@@ -580,7 +584,7 @@
     border-color: var(--ds-color-border);
   }
   :focus-visible {
-    outline: var(--ds-focus-w) solid var(--ds-color-accent);
+    outline: var(--ds-focus-w) solid var(--ds-color-focus);
     outline-offset: var(--ds-focus-offset);
   }
   button {
@@ -602,6 +606,18 @@
   [role='checkbox'] {
     touch-action: manipulation;
   }
+  /* Troca de tema: transição curta, só de cores, enquanto a classe estiver no <html> (200 ms). */
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-switching,
+    .theme-switching *,
+    .theme-switching ::before,
+    .theme-switching ::after {
+      transition-property:
+        background-color, border-color, color, fill, stroke, outline-color !important;
+      transition-duration: var(--ds-theme-transition) !important;
+      transition-timing-function: ease-out !important;
+    }
+  }
   /* Animações respeitam a preferência de menos movimento. */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -615,7 +631,7 @@
   }
   input[type='radio'],
   input[type='checkbox'] {
-    accent-color: var(--ds-color-accent);
+    accent-color: var(--ds-color-accent-ink);
   }
 }
 

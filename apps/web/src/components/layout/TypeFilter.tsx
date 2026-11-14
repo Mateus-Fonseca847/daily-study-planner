@@ -26,7 +26,7 @@ function TypeFilterOptions() {
             type="checkbox"
             checked={types.size === 0}
             onChange={clear}
-            className="size-checkbox accent-accent"
+            className="size-checkbox accent-accent-ink"
           />
           Todos
         </label>
@@ -42,7 +42,7 @@ function TypeFilterOptions() {
                 type="checkbox"
                 checked={types.has(type)}
                 onChange={() => toggle(type)}
-                className="size-checkbox accent-accent"
+                className="size-checkbox accent-accent-ink"
               />
               <Icon
                 aria-hidden
