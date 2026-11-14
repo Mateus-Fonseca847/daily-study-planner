@@ -4,6 +4,18 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (modo claro)
+
+- **Tema claro** com fundo cinza muito claro, cartões brancos com borda fina e sombra sutil, tinta escura. Status, tipos, chama, paleta de matérias e hábitos, heatmap, densidade do Ano, água, anel e barras com valores próprios; o amarelo da marca continua nos botões e na navegação. Contraste AA medido em todas as telas e estados (menor razão 4,73:1).
+- **Seletor de tema:** Preferências → Aparência (Sistema | Claro | Escuro) e atalho sol/lua na topbar e no sheet “Mais”. “Sistema” acompanha o aparelho em tempo real; a escolha vale por dispositivo (não sincroniza) e as outras abas acompanham.
+- **Padrões:** quem já usava o Daily continua no escuro; instalação nova começa em Sistema.
+- **Sem flash na abertura:** `theme-init.js` (externo, no `<head>`, sem relaxar a CSP) aplica o tema antes da primeira pintura; duas metas `theme-color` (barras do sistema) seguem o tema.
+- **`pnpm check:tokens`** no CI: falha se aparecer cor literal fora de `tokens.css`.
+
+### Alterado
+
+- O escuro não mudou: 146 capturas (14 rotas × 10 tamanhos + estados abertos) idênticas à linha de base, exceto o sheet “Mais”, que ganhou a linha do tema. Por baixo, os componentes passaram a usar o papel certo de cada cor (tinta × preenchimento: `accent-ink`, `focus`, `on-status`, `on-habit`).
+
 ### Adicionado (tarefas recorrentes)
 
 - **Repetir** em Tarefa e Especial (Prova nunca repete): atalhos de um toque (Não repete, Todo dia, Dias úteis, Toda semana, Todo mês, Todo ano) e **Personalizado** (a cada N dias/semanas/meses/anos, dias da semana, dia do mês ou último dia, término Nunca / Em data / Após N vezes), sempre com o resumo em texto (“Toda segunda e quarta, até 20/12”) e a prévia das próximas 5 datas. Também pelo menu “…” → “Repetir…”.

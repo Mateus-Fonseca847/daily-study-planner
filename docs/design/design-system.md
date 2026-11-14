@@ -1,4 +1,4 @@
-# Daily — Design System (v1.2)
+# Daily — Design System (v1.3)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
@@ -553,3 +553,68 @@ Sem tokens novos: tudo usa os existentes (chips de seleção, `MetaRow`, `Modal`
 | ------------------------------------------------------- | ------------------------------------------------------ |
 | ![Repetir no painel](../images/recorrentes-painel.webp) | ![Escopo da edição](../images/recorrentes-escopo.webp) |
 | ![Semana](../images/recorrentes-calendario.webp)        | ![Tarefas](../images/recorrentes-tarefas.webp)         |
+
+## 18. Tema claro (v1.3)
+
+Os dois temas usam **os mesmos tokens**. O escuro fica em `:root`; o claro sobrescreve os valores em `:root[data-theme='light']` (com `color-scheme: light`, para barras de rolagem e campos nativos). O atributo vem de `public/theme-init.js`, antes da primeira pintura, e de `lib/theme` depois. O escuro não mudou nenhum pixel: está provado por `scripts/theme-regression.mjs compare dark`.
+
+### Papéis de cor
+
+Uma cor clara serve de preenchimento e de texto no escuro; no claro, não serve (amarelo sobre branco tem 1,2:1). Por isso cada uso declara o seu papel:
+
+| Papel                     | Utilitários                                            | Escuro     | Claro             |
+| ------------------------- | ------------------------------------------------------ | ---------- | ----------------- |
+| Preenchimento da marca    | `bg-accent`                                            | `#f5e94b`  | `#f5e94b` (igual) |
+| Tinta da marca            | `text-/border-/stroke-/outline-/accent-accent-ink`     | = `accent` | `#6b5d00`         |
+| Anel de foco              | `outline-focus-ring`, foco global, contorno de arrasto | = `accent` | `#6b5d00`         |
+| Marca sobre o amarelo     | `text-accent-fg`                                       | `#0b0b0c`  | `#0b0b0c`         |
+| Marca sobre status sólido | `text-on-status` (check sobre o verde)                 | `#0b0b0c`  | `#ffffff`         |
+| Marca sobre hábito sólido | `text-on-habit`                                        | `#0b0b0c`  | `#ffffff`         |
+| Texto na cor do hábito    | `habit-text` (`habit-ink-mix` de tinta)                | 0 %        | 20 %              |
+
+### Tokens dos dois temas
+
+| Token                                                      | Escuro                                                                      | Claro                                                                       |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `bg` / `surface` / `surface-raised`                        | `#131313` / `#1b1b1d` / `#1e1f23`                                           | `#f4f4f6` / `#ffffff` / `#f7f7f9`                                           |
+| `border` / `border-strong` / `hover`                       | branco 8 % / 16 % / 6 %                                                     | preto 8 % / 16 % / 5 %                                                      |
+| `scrim`                                                    | preto 40 %                                                                  | preto 30 %                                                                  |
+| `fg` / `fg-soft` / `fg-muted` / `fg-subtle`                | `#fff` / `#b0b0b6` / `#8a8a93` / `#808089`                                  | `#141416` / `#45454d` / `#5f5f68` / `#696972`                               |
+| `accent-soft`                                              | amarelo 15 %                                                                | `#fbf6c4`                                                                   |
+| `white-pill` / `-fg` (Criar)                               | branco / `#0b0b0c`                                                          | `#141416` / branco                                                          |
+| `status-pendente` / `-soft`                                | `#f2c94c` / 14 %                                                            | `#8a6100` / `#fbf0c4`                                                       |
+| `status-concluido` / `-soft`                               | `#3dd68c` / 14 %                                                            | `#16794a` / `#dcf2e5`                                                       |
+| `status-cancelado` / `-soft`                               | `#ff6b78` / 14 %                                                            | `#c22a3b` / `#fbe2e5`                                                       |
+| `type-prova` / `-soft`                                     | `#5c97ff` / 14 %                                                            | `#2458c9` / `#e1e9fc`                                                       |
+| `type-especial` / `-soft`                                  | `#b48cff` / 14 %                                                            | `#7545d6` / `#ece4fb`                                                       |
+| `streak` (chama) / `danger`                                | `#ff8a3d` / `#ff6b78`                                                       | `#b04f09` / `#c22a3b`                                                       |
+| paleta (ciano, petróleo, gelo, lilás, fúcsia, rosa, cinza) | `#2beeee`, `#53a9c6`, `#c6dfec`, `#e2c6ec`, `#de2bee`, `#d279a6`, `#a3998f` | `#007d77`, `#177692`, `#4c575e`, `#7a5a86`, `#9a1686`, `#bd3f71`, `#72685c` |
+| `heat-0` / `heat-off` / `rest`                             | branco 12 % / 4 % / 22 %                                                    | preto 9 % / 4 % / 20 %                                                      |
+| `density-0…3` (Ano)                                        | branco 4 %, amarelo 22/38/85 %                                              | preto 5 %, `accent-ink` 18/34/70 %                                          |
+| `chart-track` / `-strong`                                  | branco 10 % / 16 %                                                          | preto 8 % / 14 %                                                            |
+| `water` / `-deep` / `-wave`                                | `#5b4fe0` / `#3b32a8` / `#7a70f0`                                           | `#a49cf7` / `#8c83ef` / `#bcb6fb` (texto escuro lê sobre a onda)            |
+| `habit-soft-mix` / `habit-block-mix`                       | 18 % / 14 %                                                                 | 14 % / 8 %                                                                  |
+| `glass-bg` / `glass-highlight`                             | gradiente branco / brilho interno                                           | `surface` / sombra `0 1px 2px` preto 6 %                                    |
+| `glow-accent`                                              | amarelo 28 %                                                                | amarelo 22 %                                                                |
+| `shadow-popover`                                           | preto 55 % + anel branco 8 %                                                | `0 12px 32px` preto 12 % + anel preto 8 %                                   |
+| `color-scheme`                                             | `dark`                                                                      | `light`                                                                     |
+
+### Regras
+
+- Componente novo funciona nos dois temas e usa só tokens semânticos; `pnpm check:tokens` (CI) recusa cor literal fora de `tokens.css`.
+- Cor de significado sempre com ícone e texto. No claro, status e tipos têm tinta escura e fundo suave próprio.
+- Paleta clara: AA (≥ 4,5:1) sobre o fundo e a superfície e **ΔE ≥ 14** (no escuro, ≥ 15). Com AA no fundo claro, o máximo possível para 7 cores ao lado das 7 reservadas fica perto de 14,5.
+- A troca de tema anima só cores, por 200 ms (`--ds-theme-transition`), e nada anima com `prefers-reduced-motion`.
+
+### Contraste medido (`scripts/contrast-audit.mjs --all`)
+
+Todas as rotas, a página inteira (sidebar, topbar, painéis) e os estados painel aberto, menu Criar, foco pelo teclado, hover, toast, modal e popover do dia, no desktop (1920×1080) e no celular (390×844):
+
+| Tema   | Textos medidos       | Abaixo de AA                                                                                                            | Menor razão                        |
+| ------ | -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Claro  | 2376 + 540 (celular) | 0                                                                                                                       | 4,73:1 (desktop), 4,79:1 (celular) |
+| Escuro | 2376 + 540 (celular) | 7 + 7, todos anteriores a este prompt: `fg-muted` sobre os cartões do Perfil e o número do menu Criar (ver o relatório) | 4,14:1 (`fg-muted` no Perfil)      |
+
+| Calendário no claro                                 | Perfil no claro                             | Celular                                       |
+| --------------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
+| ![Calendário](../images/tema-claro-calendario.webp) | ![Perfil](../images/tema-claro-perfil.webp) | ![Celular](../images/celular-tema-claro.webp) |

@@ -51,14 +51,15 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 
 ## Telas
 
-|                                                                                                                                                                 |                                                                                                                                                  |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp)                                              | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                 |
-| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                                                      | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                        |
-| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                                                    | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Perfil](docs/images/perfil.webp) |
-| **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp)                                    | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)  |
-| **Tarefas recorrentes**: repetir com atalhos ou personalizado, resumo e prévia das próximas datas.<br>![Repetir no painel](docs/images/recorrentes-painel.webp) | **Escopo**: editar ou excluir só esta ocorrência, esta e as próximas, ou todas.<br>![Escopo da edição](docs/images/recorrentes-escopo.webp)      |
-| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                                                     | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                  |
+|                                                                                                                                                                 |                                                                                                                                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp)                                              | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                              |
+| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                                                      | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                                     |
+| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                                                    | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Perfil](docs/images/perfil.webp)              |
+| **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp)                                    | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)               |
+| **Tarefas recorrentes**: repetir com atalhos ou personalizado, resumo e prévia das próximas datas.<br>![Repetir no painel](docs/images/recorrentes-painel.webp) | **Escopo**: editar ou excluir só esta ocorrência, esta e as próximas, ou todas.<br>![Escopo da edição](docs/images/recorrentes-escopo.webp)                   |
+| **Tema claro**: o mesmo app em fundo claro, com o seletor Sistema, Claro ou Escuro.<br>![Tema claro](docs/images/tema-claro-calendario.webp)                    | **Perfil no claro**: cartões brancos, tinta escura e as cores de significado com contraste AA.<br>![Perfil no tema claro](docs/images/tema-claro-perfil.webp) |
+| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                                                     | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                               |
 
 ## Funcionalidades
 
@@ -91,6 +92,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] **Login opcional com Google e sincronização na nuvem** (Supabase): local-first, com tela de entrada, menu da conta, resolução de conflito e exclusão da conta
 - [x] **Celular e tablet**: barra inferior com "Mais" e botão + no celular, trilho de ícones no tablet, popovers viram sheets, formulários em tela cheia, gestos (deslizar para mudar o dia ou o mês, toque longo para criar na grade) e alvos de toque de 44 px (veja "Usar no celular e no tablet")
 - [x] Armazenamento persistente solicitado ao navegador, com situação e espaço usado em Preferências, e indicador "Offline" na topbar
+- [x] **Tema claro e escuro**: Preferências → Aparência (Sistema, Claro ou Escuro) e atalho sol/lua na topbar e no "Mais"; "Sistema" acompanha o aparelho; a escolha vale por dispositivo e abre sem flash
 
 ### Em planejamento
 
@@ -191,6 +193,7 @@ O app sobe em **http://localhost:5173**. Viewport recomendado: 1440×900, com co
 | `pnpm e2e`                                 | Testes e2e com Playwright (app em dev e build de produção) (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`) |
 | `pnpm verify:prod`                         | Verifica o app publicado (rotas, manifest, service worker, offline e console)                                                             |
 | `pnpm check:links`                         | Confere os links relativos dos arquivos `.md` versionados                                                                                 |
+| `pnpm check:tokens`                        | Falha se aparecer cor literal (hex, `rgb()`, `bg-white`…) fora de `tokens.css`                                                            |
 | `node apps/web/scripts/contrast-audit.mjs` | Mede o contraste (WCAG AA) do texto renderizado nas telas principais; grava em `apps/web/.reports/`                                       |
 | `pnpm icons`                               | Regenera os ícones do PWA a partir do SVG                                                                                                 |
 
@@ -295,6 +298,8 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 
 ## Limitações conhecidas
 
+- **Tema e app instalado:** a tela de abertura do PWA instalado (splash) usa as cores fixas do manifest, que são as do escuro; o tema escolhido vale assim que o app abre. A cor das barras do sistema segue o tema (metas `theme-color`)
+- **Tema por dispositivo:** a escolha de tema não sincroniza com a conta (de propósito: um celular claro e um PC escuro não brigam)
 - **Testado apenas no Chromium** (Playwright e uso manual); Firefox e Safari não foram verificados, e os campos nativos de data e hora variam entre navegadores
 - Sem conta, os dados vivem **só neste navegador**: limpar os dados do site apaga tudo. Use Preferências → Exportar para guardar uma cópia (com conta Google, a nuvem guarda uma cópia sincronizada)
 - Com várias abas abertas, **a última escrita vence** (o evento `storage` recarrega a aba que não gravou; não há mesclagem de edições simultâneas)

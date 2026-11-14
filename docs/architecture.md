@@ -16,6 +16,7 @@ flowchart TB
     Recur["lib/recurrence (engine, expand, describe, presets) e lib/data/series"]
     Focus["lib/focus (session, hold, top-days)"]
     Cal["features/calendar/lib (views, time-layout, year)"]
+    Theme["lib/theme (escolha, resolução, theme-color) + public/theme-init.js"]
   end
   subgraph Store["Estado"]
     Zustand["useData (Zustand)"]
@@ -75,23 +76,24 @@ flowchart TB
 
 ## Decisões principais
 
-| Decisão                                                  | Motivo                                                                                                                                                       |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dados só no navegador atrás de um `Repository`           | Zero custo de hospedagem e privacidade total; a troca por uma API é trocar o adaptador. O `Repository` é síncrono hoje; uma API exigirá torná-lo assíncrono. |
-| Lógica de domínio em funções puras com relógio injetável | Testável sem mocks de tempo; as fixtures e os testes e2e usam datas fixas.                                                                                   |
-| Regras de hábito versionadas                             | Editar repetição, meta ou horário vale a partir de hoje; o histórico nunca é reescrito.                                                                      |
-| Tokens de design obrigatórios (`tokens.css`)             | Nenhum valor visual fora de um arquivo; o tema do Tailwind apenas mapeia os tokens.                                                                          |
-| Classes do Tailwind sempre literais                      | O Tailwind só gera o que aparece por extenso no código; cores e densidades usam mapas literais ou variáveis CSS.                                             |
-| Visão e data do calendário na URL                        | Recarregar, voltar e compartilhar preservam o estado.                                                                                                        |
-| Grade de horas em porcentagem do intervalo               | O layout acompanha a altura disponível; `layoutSobreposicoes` distribui simultâneos em colunas.                                                              |
-| Altura numa camada só (`--ds-viewport-h`)                | O AppShell preenche a janela e é o único que rola; o documento nunca rola (corrigido na v0.5.1).                                                             |
-| PWA com `registerType: 'prompt'`                         | O usuário decide quando atualizar, e a oferta some enquanto há sessão de foco rodando, pausada ou travada.                                                   |
-| CSP sem `unsafe-inline` e sem `unsafe-eval`              | Superfície mínima; o JIT do zod é desligado porque usa `new Function`.                                                                                       |
-| Um painel para criar, ver e editar compromissos          | Menos telas e um só lugar para subtarefas, status e tipo; no celular vira tela cheia.                                                                        |
-| Migração v3 → v4 em chave nova (`daily:v4`)              | Uma aba antiga nunca lê um formato que não entende (e não envia um estado vazio à nuvem).                                                                    |
-| Rebase do ponto de sincronia após migrar                 | Atualizar o app não vira conflito falso; a nuvem só é reescrita numa edição real.                                                                            |
-| Recorrência como regra + exceções por ocorrência         | Nada é materializado: a série guarda a regra e só o que difere em cada dia; o calendário expande só a janela visível e o passado nunca é reescrito.          |
-| Fixtures só em desenvolvimento                           | `import.meta.env.DEV` vira `false` no build e remove as fixtures do bundle de produção.                                                                      |
+| Decisão                                                  | Motivo                                                                                                                                                         |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dados só no navegador atrás de um `Repository`           | Zero custo de hospedagem e privacidade total; a troca por uma API é trocar o adaptador. O `Repository` é síncrono hoje; uma API exigirá torná-lo assíncrono.   |
+| Lógica de domínio em funções puras com relógio injetável | Testável sem mocks de tempo; as fixtures e os testes e2e usam datas fixas.                                                                                     |
+| Regras de hábito versionadas                             | Editar repetição, meta ou horário vale a partir de hoje; o histórico nunca é reescrito.                                                                        |
+| Tokens de design obrigatórios (`tokens.css`)             | Nenhum valor visual fora de um arquivo; o tema do Tailwind apenas mapeia os tokens.                                                                            |
+| Classes do Tailwind sempre literais                      | O Tailwind só gera o que aparece por extenso no código; cores e densidades usam mapas literais ou variáveis CSS.                                               |
+| Visão e data do calendário na URL                        | Recarregar, voltar e compartilhar preservam o estado.                                                                                                          |
+| Grade de horas em porcentagem do intervalo               | O layout acompanha a altura disponível; `layoutSobreposicoes` distribui simultâneos em colunas.                                                                |
+| Altura numa camada só (`--ds-viewport-h`)                | O AppShell preenche a janela e é o único que rola; o documento nunca rola (corrigido na v0.5.1).                                                               |
+| PWA com `registerType: 'prompt'`                         | O usuário decide quando atualizar, e a oferta some enquanto há sessão de foco rodando, pausada ou travada.                                                     |
+| CSP sem `unsafe-inline` e sem `unsafe-eval`              | Superfície mínima; o JIT do zod é desligado porque usa `new Function`.                                                                                         |
+| Um painel para criar, ver e editar compromissos          | Menos telas e um só lugar para subtarefas, status e tipo; no celular vira tela cheia.                                                                          |
+| Migração v3 → v4 em chave nova (`daily:v4`)              | Uma aba antiga nunca lê um formato que não entende (e não envia um estado vazio à nuvem).                                                                      |
+| Rebase do ponto de sincronia após migrar                 | Atualizar o app não vira conflito falso; a nuvem só é reescrita numa edição real.                                                                              |
+| Recorrência como regra + exceções por ocorrência         | Nada é materializado: a série guarda a regra e só o que difere em cada dia; o calendário expande só a janela visível e o passado nunca é reescrito.            |
+| Tema por atributo (`data-theme`) e tokens por papel      | Os mesmos nomes de token valem nos dois temas; `theme-init.js` aplica o tema antes da 1ª pintura sem script inline (CSP intacta); a escolha é por dispositivo. |
+| Fixtures só em desenvolvimento                           | `import.meta.env.DEV` vira `false` no build e remove as fixtures do bundle de produção.                                                                        |
 
 ## Testes
 
