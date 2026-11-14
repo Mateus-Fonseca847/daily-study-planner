@@ -15,6 +15,7 @@ import {
   type ProfilePatch,
   type SocialProfile,
   type SocialRepository,
+  type UsernameStatus,
 } from './repository';
 
 /**
@@ -43,6 +44,8 @@ interface SocialState {
   uploadAvatar(webp: Blob): Promise<void>;
   removeAvatar(): Promise<void>;
   deleteProfile(): Promise<void>;
+  /** Situação de um @ para a pessoa logada (com o limite de taxa do servidor). */
+  checkUsername(name: string): Promise<UsernameStatus>;
   /** Lê o cache do usuário logado (sem rede). */
   hydrate(): void;
 }
@@ -139,6 +142,8 @@ export const useSocial = create<SocialState>()((set, get) => {
         set({ phase: 'sem_login', profile: null });
         return;
       }
+      // Já carregando (ex.: o efeito roda duas vezes no modo estrito): não repete a requisição.
+      if (get().phase === 'loading') return;
       set({ phase: 'loading', error: null });
       try {
         await apply(id, r, await r.load());
@@ -161,6 +166,10 @@ export const useSocial = create<SocialState>()((set, get) => {
         await r.uploadAvatar(webp, get().profile?.avatarVersion ?? 0);
       }),
     removeAvatar: () => act((_id, r) => r.removeAvatar(get().profile?.avatarVersion ?? 0)),
+    async checkUsername(name) {
+      const { repo: r } = repo();
+      return r.usernameStatus(name);
+    },
     async deleteProfile() {
       await act(async (id, r) => {
         await r.deleteProfile();
@@ -196,4 +205,18 @@ export async function removeSocialPhotoBeforeAccountDeletion(id: string | null):
     const err = toSocialError(error);
     return err.kind === 'indisponivel' ? 'ok' : err.message;
   }
+}
+
+/** Liga o social à conta: ao entrar ou trocar de usuário, lê só o cache local (sem rede). */
+export function startSocial(): () => void {
+  let last: string | null = null;
+  const sync = () => {
+    const id = userId();
+    if (id === last) return;
+    last = id;
+    useSocial.setState({ phase: 'idle', profile: null, error: null, avatarUrl: showBlob(null) });
+    useSocial.getState().hydrate();
+  };
+  sync();
+  return useAuth.subscribe(sync);
 }

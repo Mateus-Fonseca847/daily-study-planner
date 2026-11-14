@@ -9,6 +9,7 @@ import { useData } from '../../lib/data/app-store';
 import { appNow } from '../../lib/fixture';
 import { useToasts } from '../../lib/toast-store';
 import { AccountSection } from '../account/AccountSection';
+import { SocialSection } from '../social/SocialSection';
 import { AppSection } from './AppSection';
 import { AppearanceSection } from './AppearanceSection';
 import { ProfileSection } from './ProfileSection';
@@ -56,6 +57,7 @@ export function PreferencesPage() {
   return (
     <PageShell title="Preferências" description="Perfil, Modo Foco e backup dos seus dados.">
       <AccountSection />
+      <SocialSection />
       <ProfileSection />
       <AppSection onExport={exportData} />
       <section

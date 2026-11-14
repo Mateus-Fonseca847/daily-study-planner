@@ -1,6 +1,8 @@
 import { LogIn, LogOut, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '../../components/ui/Avatar';
+import { useSocial } from '../../lib/social/social-store';
+import { SocialAvatar } from '../social/SocialAvatar';
 import { Button } from '../../components/ui/Button';
 import { Menu } from '../../components/ui/Menu';
 import { useAuth } from '../../lib/auth/auth-store';
@@ -11,6 +13,8 @@ import { useSignOut } from './useSignOut';
 /** Topbar: “Entrar” para visitantes; avatar com estado de sincronização para quem tem conta. */
 export function AccountMenu() {
   const auth = useAuth();
+  // Foto do perfil social do próprio usuário (do cache local; nenhuma requisição aqui).
+  const socialAvatar = useSocial((st) => st.avatarUrl);
   const phase = useSync((s) => s.phase);
   const navigate = useNavigate();
   const { signOut, dialog } = useSignOut();
@@ -51,7 +55,11 @@ export function AccountMenu() {
             title={user.email}
             {...props}
           >
-            <Avatar name={user.name || user.email} />
+            {socialAvatar ? (
+              <SocialAvatar url={socialAvatar} name={user.name || user.email} size="sm" />
+            ) : (
+              <Avatar name={user.name || user.email} />
+            )}
           </Button>
         )}
       />
