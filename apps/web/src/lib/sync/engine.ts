@@ -1,6 +1,7 @@
 import { dataSnapshotSchema, isPristineSnapshot, type DataSnapshot } from '@daily/shared';
+import { unionAchievements } from '../achievements/evaluate';
 import { DATA_VERSION, migrateData } from '../data/envelope';
-import { fingerprint as defaultFingerprint } from './canonical';
+import { canonicalJson, fingerprint as defaultFingerprint } from './canonical';
 import { reconcile, type SyncMeta } from './reconcile';
 
 export interface CloudRow {
@@ -301,17 +302,27 @@ export function createSyncEngine(deps: EngineDeps) {
         if (!stash) return;
         const { row, parsed } = stash;
         try {
+          // Medalha é permanente: qualquer que seja a escolha, as conquistas dos dois lados ficam.
+          const device = local.snapshot();
           if (choice === 'cloud') {
-            deps.saveSafetyCopy?.(local.snapshot());
-            applyRemote(parsed);
+            deps.saveSafetyCopy?.(device);
+            const merged = withAchievementsOf(parsed, device);
+            applyRemote(merged);
             meta.write({
               revision: row.revision,
               hash: await fingerprint(parsed),
               version: dataVersion,
             });
+            // Se o dispositivo tinha medalhas que a nuvem não tem, a união sobe no próximo ciclo.
+            if (merged !== parsed) {
+              blocked = false;
+              stash = null;
+              return cycle();
+            }
             return synced();
           }
-          const snap = local.snapshot();
+          const snap = withAchievementsOf(device, parsed);
+          if (snap !== device) applyRemote(snap);
           const result = await api.update(row.revision, snap, dataVersion);
           if (result === 'conflict') {
             // A nuvem mudou enquanto o usuário decidia: reavalia tudo.
@@ -333,3 +344,25 @@ export function createSyncEngine(deps: EngineDeps) {
 }
 
 export type SyncEngine = ReturnType<typeof createSyncEngine>;
+
+/**
+ * `preferred` com as medalhas unidas às de `other` (nível mais alto, data mais antiga; o destaque
+ * fica o de `preferred`) e a concessão retroativa pela marca mais antiga. Devolve o próprio
+ * `preferred` quando não há nada a acrescentar.
+ */
+export function withAchievementsOf(preferred: DataSnapshot, other: DataSnapshot): DataSnapshot {
+  const achievements = unionAchievements(preferred.achievements, other.achievements);
+  const seeds = [preferred.onboarding.achievementsSeededAt, other.onboarding.achievementsSeededAt]
+    .filter((d): d is string => d !== null)
+    .sort();
+  const seededAt = seeds[0] ?? null;
+  const same =
+    seededAt === preferred.onboarding.achievementsSeededAt &&
+    canonicalJson(achievements) === canonicalJson(preferred.achievements);
+  if (same) return preferred;
+  return {
+    ...preferred,
+    achievements,
+    onboarding: { ...preferred.onboarding, achievementsSeededAt: seededAt },
+  };
+}
