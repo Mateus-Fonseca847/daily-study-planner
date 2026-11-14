@@ -40,7 +40,11 @@ export function AppShell() {
   usePersistOnFirstData();
   const habitModel = useHabitModel();
   const pendingHabits = pendingToday(habitModel.habits, habitModel.ctx).length;
-  const counts = useMemo(() => navCounts(events, appNow(), pendingHabits), [events, pendingHabits]);
+  const exceptions = useData((s) => s.exceptions);
+  const counts = useMemo(
+    () => navCounts(events, appNow(), pendingHabits, exceptions),
+    [events, pendingHabits, exceptions],
+  );
 
   const phone = layout === 'phone';
   const tablet = layout === 'tablet';

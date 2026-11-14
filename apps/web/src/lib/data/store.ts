@@ -10,7 +10,9 @@ import {
   type FocusSession,
   type Habit,
   type HabitLog,
+  type OccurrenceException,
   type Onboarding,
+  type Recurrence,
   type Preferences,
   type RestDay,
   type StudyEvent,
@@ -31,6 +33,15 @@ import { waterHabitDraft } from '../habits/suggestions';
 import { manualFocusSession, type ManualFocusEntry } from '../focus/manual';
 import { moveSubtask, type MoveDirection } from './subtasks';
 import {
+  applyOccurrenceEdit,
+  deleteOccurrence,
+  seriesOf,
+  setOccurrenceStatus,
+  setRecurrence,
+  toggleOccurrenceSubtask,
+  type EditScope,
+} from './series';
+import {
   applySubjectDeletion,
   duplicateEventDraft,
   removeEvents,
@@ -48,6 +59,8 @@ export interface DataState {
   waterLogs: WaterLog[];
   focusSessions: FocusSession[];
   restDays: RestDay[];
+  /** Exceções por ocorrência das séries (status, subtarefas e mudanças pontuais). */
+  exceptions: OccurrenceException[];
   onboarding: Onboarding;
   /** Sessão de foco em andamento (fora do snapshot/backup). */
   focusActive: ActiveFocus | null;
@@ -65,8 +78,16 @@ export interface DataActions {
   updateEvent(event: StudyEvent): void;
   deleteEvent(id: string): void;
   duplicateEvent(id: string, now: Date): StudyEvent | undefined;
+  /** Num id de ocorrência (`serie@data`), vale só para aquela ocorrência (nunca pergunta escopo). */
   setEventStatus(id: string, status: EventStatus): void;
+  /** Edita uma ocorrência de série com o escopo escolhido. */
+  editOccurrence(id: string, scope: EditScope, draft: Draft<StudyEvent>, now: Date): void;
+  /** Exclui uma ocorrência de série com o escopo escolhido. */
+  deleteOccurrence(id: string, scope: EditScope): void;
+  /** Define ou tira a repetição (“Repetir…”). */
+  setRecurrence(eventId: string, recurrence: Recurrence | null): void;
   addSubtask(eventId: string, title: string): void;
+  /** Num id de ocorrência, marca só naquela ocorrência. */
   toggleSubtask(eventId: string, subtaskId: string): void;
   renameSubtask(eventId: string, subtaskId: string, title: string): void;
   deleteSubtask(eventId: string, subtaskId: string): void;
@@ -135,6 +156,7 @@ export function createDataStore(
       habitLogs: repo.habitLogs.list(),
       waterLogs: repo.waterLogs.list(),
       focusSessions: repo.focusSessions.list(),
+      exceptions: repo.snapshot().exceptions,
       restDays: repo.restDays.list(),
       onboarding: repo.onboarding.get(),
       focusActive: repo.focusActive.get(),
@@ -187,7 +209,22 @@ export function createDataStore(
             ? repo.events.create(duplicateEventDraft(event, newId, toLocalIso(now)))
             : undefined;
         }),
-      setEventStatus: (id, status) => void run(() => repo.events.update(id, { status })),
+      setEventStatus: (id, status) =>
+        void run(() =>
+          seriesOf(repo.snapshot(), id)
+            ? repo.replaceAll(setOccurrenceStatus(repo.snapshot(), id, status))
+            : repo.events.update(id, { status }),
+        ),
+      editOccurrence: (id, scope, draft, now) =>
+        void run(() =>
+          repo.replaceAll(
+            applyOccurrenceEdit(repo.snapshot(), id, scope, draft, newId, toLocalIso(now)),
+          ),
+        ),
+      deleteOccurrence: (id, scope) =>
+        void run(() => repo.replaceAll(deleteOccurrence(repo.snapshot(), id, scope))),
+      setRecurrence: (eventId, recurrence) =>
+        void run(() => repo.replaceAll(setRecurrence(repo.snapshot(), eventId, recurrence))),
       addSubtask: (eventId, title) =>
         void run(() => {
           const event = eventById(eventId);
@@ -200,6 +237,10 @@ export function createDataStore(
         }),
       toggleSubtask: (eventId, subtaskId) =>
         void run(() => {
+          if (seriesOf(repo.snapshot(), eventId)) {
+            repo.replaceAll(toggleOccurrenceSubtask(repo.snapshot(), eventId, subtaskId));
+            return;
+          }
           const event = eventById(eventId);
           if (!event) return;
           repo.events.update(eventId, {

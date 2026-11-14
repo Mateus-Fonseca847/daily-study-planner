@@ -39,8 +39,9 @@ export interface StorageLike {
   removeItem(key: string): void;
 }
 
-export const STORAGE_KEY = 'daily:v4';
+export const STORAGE_KEY = 'daily:v5';
 /** Chaves dos formatos anteriores: lidas uma vez na migração e nunca mais alteradas. */
+export const LEGACY_V4_KEY = 'daily:v4';
 export const LEGACY_V3_KEY = 'daily:v3';
 export const LEGACY_V2_KEY = 'daily:v2';
 export const LEGACY_KEY = 'daily:v1';
@@ -50,10 +51,35 @@ export const PRE_MIGRATION_KEY = `${LEGACY_KEY}:pre-v2`;
 export const PRE_V3_KEY = `${LEGACY_V2_KEY}:pre-v3`;
 /** Cópia do dado v3 feita ANTES de migrar para o v4. */
 export const PRE_V4_KEY = `${LEGACY_V3_KEY}:pre-v4`;
-/** Quando a migração v3 → v4 rodou (epoch ms): marca o prazo de limpeza das chaves v3. */
+/** Cópia do dado v4 feita ANTES de migrar para o v5. */
+export const PRE_V5_KEY = `${LEGACY_V4_KEY}:pre-v5`;
+/**
+ * Cópia feita antes de migrar a partir de cada versão (`daily:vN:pre-vN+1`): o que o app daquela
+ * versão tinha salvo. Usada no “rebase” da sincronização.
+ */
+export const PRE_MIGRATION_KEYS: Readonly<Record<number, string>> = {
+  1: PRE_MIGRATION_KEY,
+  2: PRE_V3_KEY,
+  3: PRE_V4_KEY,
+  4: PRE_V5_KEY,
+};
+/** Quando a última migração de formato rodou (epoch ms): marca o prazo de limpeza. */
 export const MIGRATED_AT_KEY = `${STORAGE_KEY}:migrated-at`;
-/** Dias que `daily:v3` e `daily:v3:pre-v4` ficam guardados depois da migração. */
+/** Dias que as chaves dos formatos anteriores ficam guardadas depois da migração. */
 export const LEGACY_RETENTION_DAYS = 30;
+/** O que a limpeza remove: formatos v3 e v4, cópias pré-migração e marcas/backup antigos. */
+const LEGACY_CLEANUP_KEYS = [
+  LEGACY_V4_KEY,
+  PRE_V5_KEY,
+  `${LEGACY_V4_KEY}:backup`,
+  `${LEGACY_V4_KEY}:corrupt`,
+  `${LEGACY_V4_KEY}:migrated-at`,
+  `${LEGACY_V4_KEY}:pre-sync`,
+  LEGACY_V3_KEY,
+  PRE_V4_KEY,
+] as const;
+/** Chaves de formatos anteriores que uma aba antiga ainda aberta pode gravar. */
+export const LEGACY_TAB_KEYS: readonly string[] = [LEGACY_V4_KEY, LEGACY_V3_KEY];
 export const BACKUP_KEY = `${STORAGE_KEY}:backup`;
 export const CORRUPT_KEY = `${STORAGE_KEY}:corrupt`;
 /** Sessão de foco ativa (fora do snapshot e do backup; chave histórica, não mudou na v3). */
@@ -237,11 +263,16 @@ export class LocalStorageRepository implements DataRepository {
       this.cleanupLegacy();
       return;
     }
-    const v3 = this.storage.getItem(LEGACY_V3_KEY);
-    if (v3 !== null) {
-      this.loadRaw(v3, PRE_V4_KEY);
-      this.writeSafely(MIGRATED_AT_KEY, String(this.now().getTime()));
-      return;
+    for (const [key, preKey] of [
+      [LEGACY_V4_KEY, PRE_V5_KEY],
+      [LEGACY_V3_KEY, PRE_V4_KEY],
+    ] as const) {
+      const raw = this.storage.getItem(key);
+      if (raw !== null) {
+        this.loadRaw(raw, preKey);
+        this.writeSafely(MIGRATED_AT_KEY, String(this.now().getTime()));
+        return;
+      }
     }
     const v2 = this.storage.getItem(LEGACY_V2_KEY);
     if (v2 !== null) return this.loadRaw(v2, PRE_V3_KEY);
@@ -273,8 +304,9 @@ export class LocalStorageRepository implements DataRepository {
   }
 
   /**
-   * Limpeza: `daily:v3` e `daily:v3:pre-v4` ficam {@link LEGACY_RETENTION_DAYS} dias depois da
-   * migração (recuperação manual e o “rebase” da sincronização) e então são removidos.
+   * Limpeza: as chaves dos formatos v3 e v4 e as cópias pré-migração ficam
+   * {@link LEGACY_RETENTION_DAYS} dias depois da migração (recuperação manual e o “rebase” da
+   * sincronização) e então são removidas.
    */
   private cleanupLegacy(): void {
     const raw = this.storage.getItem(MIGRATED_AT_KEY);
@@ -283,8 +315,7 @@ export class LocalStorageRepository implements DataRepository {
     const ageMs = this.now().getTime() - migratedAt;
     if (ageMs < LEGACY_RETENTION_DAYS * 24 * 60 * 60 * 1000) return;
     try {
-      this.storage.removeItem(LEGACY_V3_KEY);
-      this.storage.removeItem(PRE_V4_KEY);
+      for (const key of LEGACY_CLEANUP_KEYS) this.storage.removeItem(key);
       this.storage.removeItem(MIGRATED_AT_KEY);
     } catch {
       /* tenta de novo na próxima abertura */

@@ -13,6 +13,7 @@ flowchart TB
   subgraph Domain["Domínio (funções puras, com teste)"]
     Rules["lib/data (rules, selectors, countdown) e lib/tasks"]
     Habits["lib/habits (engine, matrix, edit)"]
+    Recur["lib/recurrence (engine, expand, describe, presets) e lib/data/series"]
     Focus["lib/focus (session, hold, top-days)"]
     Cal["features/calendar/lib (views, time-layout, year)"]
   end
@@ -23,7 +24,7 @@ flowchart TB
   subgraph Persistence["Persistência"]
     Repo["DataRepository (interface)"]
     LS["LocalStorageRepository (envelope, migração, validação zod)"]
-    Storage[("localStorage daily:v4")]
+    Storage[("localStorage daily:v5")]
   end
   subgraph Cloud["Conta e nuvem (opcional)"]
     Auth["lib/auth (Supabase Auth, login com Google, PKCE)"]
@@ -89,6 +90,7 @@ flowchart TB
 | Um painel para criar, ver e editar compromissos          | Menos telas e um só lugar para subtarefas, status e tipo; no celular vira tela cheia.                                                                        |
 | Migração v3 → v4 em chave nova (`daily:v4`)              | Uma aba antiga nunca lê um formato que não entende (e não envia um estado vazio à nuvem).                                                                    |
 | Rebase do ponto de sincronia após migrar                 | Atualizar o app não vira conflito falso; a nuvem só é reescrita numa edição real.                                                                            |
+| Recorrência como regra + exceções por ocorrência         | Nada é materializado: a série guarda a regra e só o que difere em cada dia; o calendário expande só a janela visível e o passado nunca é reescrito.          |
 | Fixtures só em desenvolvimento                           | `import.meta.env.DEV` vira `false` no build e remove as fixtures do bundle de produção.                                                                      |
 
 ## Testes

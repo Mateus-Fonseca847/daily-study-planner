@@ -3,7 +3,7 @@ import { subtaskProgress, type EventType } from '@daily/shared';
 import { exam, task } from '../data/test-utils';
 import { moveSubtask } from '../data/subtasks';
 import { chipStyle } from '../event-meta';
-import { filterByType, taskSections, taskSummary } from './sections';
+import { filterByType, pendingNow, taskSections, taskSummary } from './sections';
 import { parseTypeFilter } from './type-filter-store';
 
 // Terça, 10/11/2026, 12:00 (semana de segunda 09 a domingo 15).
@@ -118,5 +118,76 @@ describe('cores dos chips', () => {
     expect(chipStyle({ type: 'tarefa', status: 'cancelado' }).title).toBe(
       'line-through opacity-60',
     );
+  });
+});
+
+describe('séries na página Tarefas', () => {
+  // Terça 10/11/2026, 12:00. Série diária às 09:00 desde 01/11 e semanal (seg/qua) às 19h.
+  const daily = task('diaria', {
+    title: 'Ler',
+    start: '2026-11-01T09:00:00',
+    end: '2026-11-01T09:00:00',
+    recurrence: { freq: 'diaria', interval: 1, end: { kind: 'nunca' } },
+  });
+  const weekly = task('semanal', {
+    title: 'Treino',
+    start: '2026-11-02T19:00:00',
+    end: '2026-11-02T20:00:00',
+    recurrence: { freq: 'semanal', interval: 1, weekdays: [1, 3], end: { kind: 'nunca' } },
+  });
+  const done = (id: string, status: 'concluido' | 'cancelado' = 'concluido') => {
+    const [eventId, originalDate] = id.split('@') as [string, string];
+    return { id, eventId, originalDate, kind: 'alterada' as const, status };
+  };
+  const ids = (list: readonly { id: string }[]) => list.map((e) => e.id);
+
+  it('hoje mostra as ocorrências do dia; atrasadas só dos últimos 7 dias; o resto é perdido', () => {
+    const s = taskSections([daily, weekly], NOW, [done('diaria@2026-11-09')]);
+    // Hoje às 09:00 já passou (12:00): vai para atrasadas, como uma tarefa avulsa.
+    expect(ids(s.hoje)).toEqual([]);
+    expect(ids(s.atrasadas)).toEqual([
+      'diaria@2026-11-03',
+      'diaria@2026-11-04',
+      'semanal@2026-11-04',
+      'diaria@2026-11-05',
+      'diaria@2026-11-06',
+      'diaria@2026-11-07',
+      'diaria@2026-11-08',
+      'semanal@2026-11-09',
+      'diaria@2026-11-10',
+    ]);
+    expect(ids(s.perdidas)).toEqual([
+      'diaria@2026-11-01',
+      'diaria@2026-11-02',
+      'semanal@2026-11-02',
+    ]);
+    expect(ids(s.concluidas)).toEqual(['diaria@2026-11-09']);
+  });
+
+  it('próximas: só a próxima ocorrência de cada série, com “+N nesta semana”', () => {
+    const s = taskSections([daily, weekly], NOW, []);
+    const items = s.proximas.flatMap((g) => g.items.map((i) => [i.id, i.moreThisWeek]));
+    // Semana de segunda a domingo: até 15/11. Diária: 11 (+4: 12–15). Semanal: 11 (+0).
+    expect(items).toEqual([
+      ['diaria@2026-11-11', 4],
+      ['semanal@2026-11-11', 0],
+    ]);
+    expect(s.proximas[0]?.group).toBe('amanha');
+  });
+
+  it('próxima ocorrência pendente pula as concluídas e as puladas', () => {
+    const s = taskSections([weekly], NOW, [
+      done('semanal@2026-11-11'),
+      { id: 'semanal@2026-11-16', eventId: 'semanal', originalDate: '2026-11-16', kind: 'pulada' },
+    ]);
+    expect(s.proximas.flatMap((g) => ids(g.items))).toEqual(['semanal@2026-11-18']);
+  });
+
+  it('cartões e sidebar contam ocorrências (avulsas + pendentes até hoje, dentro de 7 dias)', () => {
+    const exceptions = [done('semanal@2026-11-09'), done('diaria@2026-11-10')];
+    const summary = taskSummary([daily, weekly, task('avulsa')], NOW, exceptions);
+    // Diária: 03–09 pendentes (7); semanal: 04 pendente (1); avulsa (1, prazo hoje 23:59).
+    expect(summary).toMatchObject({ concluidasSemana: 2, pendentes: 9, atrasadas: 8 });
+    expect(pendingNow([daily, weekly], exceptions, NOW)).toHaveLength(8);
   });
 });

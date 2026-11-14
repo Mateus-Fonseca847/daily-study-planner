@@ -9,3 +9,4 @@ export * from './focus';
 export * from './snapshot';
 export * from './progress';
 export * from './legacy-v3';
+export * from './recurrence';

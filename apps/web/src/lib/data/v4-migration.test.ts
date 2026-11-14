@@ -217,7 +217,11 @@ describe('importação', () => {
   it('aceita v4 e recusa versões mais novas que a do app', () => {
     const v4 = JSON.stringify({ app: 'daily', version: 4, data: migrated().snapshot });
     expect(readBackupFile(v4).ok).toBe(true);
-    const future = JSON.stringify({ app: 'daily', version: 5, data: migrated().snapshot });
+    const future = JSON.stringify({
+      app: 'daily',
+      version: DATA_VERSION + 1,
+      data: migrated().snapshot,
+    });
     const result = readBackupFile(future);
     expect(result.ok).toBe(false);
   });
@@ -236,7 +240,7 @@ describe('repositório: do v3 salvo para o v4', () => {
     expect(repo.events.list()).toHaveLength(5);
     expect(storage.getItem(PRE_V4_KEY)).toBe(v3Raw);
     expect(storage.getItem(LEGACY_V3_KEY)).toBe(v3Raw);
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(4);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(5);
     expect(storage.getItem(MIGRATED_AT_KEY)).toBe(String(FIXED_NOW.getTime()));
   });
 

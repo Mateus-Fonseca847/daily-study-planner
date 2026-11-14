@@ -8,8 +8,10 @@ import {
   type EventType,
   type StudyEvent,
   type Subject,
+  type Recurrence,
   type Subtask,
 } from '@daily/shared';
+import { validateRule } from '../recurrence/presets';
 import { z } from 'zod';
 import type { Draft } from '../data/repository';
 
@@ -37,6 +39,8 @@ export interface EventFormValues {
   status: EventStatus;
   notes: string;
   subtasks: SubtaskRow[];
+  /** Repetição (só Tarefa e Especial); `null` = não repete. */
+  recurrence: Recurrence | null;
 }
 
 export type EventFormField = keyof EventFormValues;
@@ -77,6 +81,7 @@ export function initialEventValues(
       status: event.status,
       notes: event.notes,
       subtasks: sortedSubtasks(event.subtasks).map(({ id, title, done }) => ({ id, title, done })),
+      recurrence: event.recurrence ?? null,
     };
   }
   const type = init.type ?? DEFAULT_EVENT_TYPE;
@@ -92,6 +97,7 @@ export function initialEventValues(
     status: 'pendente',
     notes: '',
     subtasks: [],
+    recurrence: null,
   };
 }
 
@@ -144,6 +150,13 @@ export function validateEventForm(
     }
   }
   const rows = values.subtasks.filter((c) => c.title.trim() !== '');
+  if (values.recurrence) {
+    const problem =
+      values.type === 'prova'
+        ? 'Prova não se repete.'
+        : validateRule(values.recurrence, values.date);
+    if (problem) errors.recurrence = problem;
+  }
   if (rows.some((c) => c.title.trim().length > 120)) {
     errors.subtasks = 'Cada item pode ter no máximo 120 caracteres.';
   }
@@ -174,6 +187,7 @@ export function validateEventForm(
     notes: v.notes,
     subtasks,
     createdAt,
+    ...(values.recurrence && v.type !== 'prova' ? { recurrence: values.recurrence } : {}),
   };
 
   // Rede de segurança: o schema do domínio é a palavra final.

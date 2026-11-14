@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { isExam, studyEventSchema } from './event';
+import { isExam, occurrenceExceptionSchema, studyEventSchema } from './event';
+import { occurrenceId } from './recurrence';
 import { focusSessionSchema } from './focus';
 import { habitLogSchema, habitSchema, restDaySchema } from './habits';
 import { DEFAULT_PREFERENCES, preferencesSchema } from './preferences';
@@ -14,7 +15,7 @@ export const onboardingSchema = z.object({
 
 export type Onboarding = z.infer<typeof onboardingSchema>;
 
-/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 4. */
+/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 5. */
 export const dataSnapshotSchema = z
   .object({
     subjects: z.array(subjectSchema),
@@ -25,6 +26,8 @@ export const dataSnapshotSchema = z
     waterLogs: z.array(waterLogSchema),
     focusSessions: z.array(focusSessionSchema),
     restDays: z.array(restDaySchema).default([]),
+    /** Exceções por ocorrência das séries (v5). */
+    exceptions: z.array(occurrenceExceptionSchema).default([]),
     onboarding: onboardingSchema.default({ waterHabitCreated: false }),
   })
   .superRefine((snapshot, ctx) => {
@@ -45,6 +48,7 @@ export const dataSnapshotSchema = z
       ['waterLogs', snapshot.waterLogs, ids(snapshot.waterLogs), 'registros de água'],
       ['focusSessions', snapshot.focusSessions, ids(snapshot.focusSessions), 'sessões de foco'],
       ['restDays', snapshot.restDays, ids(snapshot.restDays), 'dias de descanso'],
+      ['exceptions', snapshot.exceptions, ids(snapshot.exceptions), 'exceções de ocorrência'],
     ];
     for (const [key, items, unique, label] of collections) {
       if (unique.size !== items.length) issue(`Há ${label} com ids repetidos.`, [key]);
@@ -62,6 +66,17 @@ export const dataSnapshotSchema = z
     snapshot.habitLogs.forEach((log, index) => {
       if (!habitIds.has(log.habitId)) {
         issue('O registro aponta para um hábito que não existe.', ['habitLogs', index, 'habitId']);
+      }
+    });
+    const recurringIds = new Set(
+      snapshot.events.filter((e) => e.recurrence !== undefined).map((e) => e.id),
+    );
+    snapshot.exceptions.forEach((ex, index) => {
+      if (!recurringIds.has(ex.eventId)) {
+        issue('A exceção aponta para uma série que não existe.', ['exceptions', index, 'eventId']);
+      }
+      if (ex.id !== occurrenceId(ex.eventId, ex.originalDate)) {
+        issue('O id da exceção não corresponde à ocorrência.', ['exceptions', index, 'id']);
       }
     });
     const restKeys = new Set<string>();
@@ -101,6 +116,7 @@ export function createInitialSnapshot(): DataSnapshot {
     waterLogs: [],
     focusSessions: [],
     restDays: [],
+    exceptions: [],
     onboarding: { waterHabitCreated: false },
   };
 }
@@ -126,6 +142,7 @@ export function isPristineSnapshot(snapshot: DataSnapshot): boolean {
     snapshot.waterLogs.length === 0 &&
     snapshot.focusSessions.length === 0 &&
     snapshot.restDays.length === 0 &&
+    snapshot.exceptions.length === 0 &&
     onlyAutoWater &&
     defaultPrefs
   );

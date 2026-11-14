@@ -19,6 +19,7 @@ import { useData } from '../../lib/data/app-store';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
 import { appNow } from '../../lib/fixture';
 import { quickTaskDraft } from '../../lib/forms/quick-create';
+import { parseQuickEntry } from '../../lib/tasks/quick-parse';
 import {
   dueOf,
   filterByType,
@@ -28,6 +29,8 @@ import {
 } from '../../lib/tasks/sections';
 import { useTypeFilter } from '../../lib/tasks/type-filter-store';
 import { openEventForm } from '../../lib/ui-store';
+import { RecurrenceIcon } from '../../components/ui/RecurrenceIcon';
+import { recurrenceText } from '../../lib/recurrence/view';
 import { buildCalendarSearch } from '../calendar/lib/views';
 import { CompleteButton } from './CompleteButton';
 
@@ -66,7 +69,16 @@ function SummaryCard({
 }
 
 /** Linha em cartão: check, título, tipo, progresso das subtarefas, prazo e “Ver no calendário”. */
-function TaskRow({ task, overdue = false }: { task: StudyEvent; overdue?: boolean }) {
+function TaskRow({
+  task,
+  overdue = false,
+  moreThisWeek = 0,
+}: {
+  task: StudyEvent;
+  overdue?: boolean;
+  moreThisWeek?: number;
+}) {
+  const rule = recurrenceText(task);
   const meta = EVENT_TYPE_META[task.type];
   const style = chipStyle(task);
   const progress = subtaskProgress(task.subtasks);
@@ -88,6 +100,13 @@ function TaskRow({ task, overdue = false }: { task: StudyEvent; overdue?: boolea
             <TypeIcon aria-hidden strokeWidth={1.5} className="size-icon-sm" />
             {meta.label}
           </span>
+          {rule && (
+            <span className="inline-flex items-center gap-1">
+              <RecurrenceIcon label={rule} decorative />
+              <span>{rule}</span>
+              {moreThisWeek > 0 && <span>· +{moreThisWeek} nesta semana</span>}
+            </span>
+          )}
           {progress.total > 0 && (
             <span>
               {progress.done} de {progress.total} {subtaskListLabel(task.type).toLowerCase()}
@@ -159,10 +178,21 @@ function Section({
   );
 }
 
-const List = ({ items, overdue }: { items: readonly StudyEvent[]; overdue?: boolean }) => (
+const List = ({
+  items,
+  overdue,
+}: {
+  items: readonly (StudyEvent & { moreThisWeek?: number })[];
+  overdue?: boolean;
+}) => (
   <ul className="flex flex-col gap-2">
     {items.map((task) => (
-      <TaskRow key={task.id} task={task} {...(overdue ? { overdue } : {})} />
+      <TaskRow
+        key={task.id}
+        task={task}
+        moreThisWeek={task.moreThisWeek ?? 0}
+        {...(overdue ? { overdue } : {})}
+      />
     ))}
   </ul>
 );
@@ -170,23 +200,28 @@ const List = ({ items, overdue }: { items: readonly StudyEvent[]; overdue?: bool
 /** Página Tarefas: resumo, Atrasadas, Hoje, Próximas (todas as futuras) e Concluídas. */
 export function TasksPage() {
   const allEvents = useData((s) => s.events);
+  const exceptions = useData((s) => s.exceptions);
   const createEvent = useData((s) => s.createEvent);
   const types = useTypeFilter((s) => s.types);
   const [title, setTitle] = useState('');
+  const quickHintId = useId();
   const now = useMemo(() => appNow(), []);
 
   const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
-  const sections = useMemo(() => taskSections(events, now), [events, now]);
-  const summary = useMemo(() => taskSummary(events, now), [events, now]);
+  const sections = useMemo(() => taskSections(events, now, exceptions), [events, now, exceptions]);
+  const summary = useMemo(() => taskSummary(events, now, exceptions), [events, now, exceptions]);
   const upcomingCount = sections.proximas.reduce((n, g) => n + g.items.length, 0);
   const nothingOpen =
     sections.atrasadas.length === 0 && sections.hoje.length === 0 && upcomingCount === 0;
 
+  // Entrada rápida: entende dia, hora e repetição em pt-BR e mostra antes de salvar.
+  const parsed = useMemo(() => parseQuickEntry(title, now), [title, now]);
   const add = (e: FormEvent) => {
     e.preventDefault();
-    const value = title.trim();
-    if (!value) return;
-    createEvent(quickTaskDraft(value, now));
+    if (!title.trim()) return;
+    const { title: name, understood: _u, ...options } = parsed;
+    void _u;
+    createEvent(quickTaskDraft(name, now, options));
     setTitle('');
   };
 
@@ -198,12 +233,21 @@ export function TasksPage() {
       <form onSubmit={add}>
         <input
           aria-label="Nova tarefa"
-          placeholder="Nova tarefa (prazo hoje) — Enter para adicionar"
+          aria-describedby={quickHintId}
+          placeholder="Nova tarefa — ex.: Treinar toda segunda 19h (Enter para adicionar)"
           value={title}
-          maxLength={120}
+          maxLength={160}
           onChange={(e) => setTitle(e.target.value)}
           className="h-control w-full rounded-full border-hair bg-surface px-5 text-md text-fg placeholder:text-muted"
         />
+        <p id={quickHintId} aria-live="polite" className="mt-2 min-h-5 px-5 text-sm text-muted">
+          {parsed.understood.length > 0 && (
+            <>
+              Entendi: <span className="font-medium text-fg">{parsed.title}</span> ·{' '}
+              {parsed.understood.join(' · ')}
+            </>
+          )}
+        </p>
       </form>
 
       <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2">

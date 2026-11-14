@@ -58,10 +58,12 @@ Regras (em `apps/web/src/lib/data/rules.ts`):
 
 | Chave                                | Conteúdo                                                               |
 | ------------------------------------ | ---------------------------------------------------------------------- |
-| `daily:v4`                           | Envelope `{ app: "daily", version: 4, savedAt, data }` (formato atual) |
-| `daily:v3`, `daily:v3:pre-v4`        | Formato anterior e cópia antes de migrar; removidos 30 dias depois     |
-| `daily:v4:backup`                    | Último estado **válido** anterior à gravação mais recente              |
-| `daily:v4:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
+| `daily:v5`                           | Envelope `{ app: "daily", version: 5, savedAt, data }` (formato atual) |
+| `daily:v4`, `daily:v4:pre-v5`        | Formato anterior e cópia antes de migrar; removidos 30 dias depois     |
+| `daily:v3`, `daily:v3:pre-v4`        | Formato v3 e cópia antes de migrar; removidos 30 dias depois           |
+| `daily:v5:backup`                    | Último estado **válido** anterior à gravação mais recente              |
+| `daily:v5:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
+| `daily:v5:migrated-at`               | Quando a última migração rodou (marca o prazo da limpeza)              |
 | `daily:v2`, `daily:v1`               | Formatos antigos: lidos uma vez na migração e **nunca alterados**      |
 | `daily:v2:pre-v3`, `daily:v1:pre-v2` | Cópia do original feita **antes** de migrar                            |
 | `daily:v2:focus`                     | Sessão de foco ativa (fora do snapshot e do backup; chave histórica)   |
@@ -79,7 +81,7 @@ A chave leva a versão do formato; o campo `version` do envelope dispara as migr
 ### Fluxo de carregamento
 
 ```
-getItem(daily:v4) ─ null ─▶ getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
+getItem(daily:v5) ─ null ─▶ getItem(daily:v4) ─ null ─▶ getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
         │ (v2 ou v1 presentes: guarda o original em :pre-v3 / :pre-v2, migra e grava em daily:v3)
         │
         ▼ parseEnvelope (JSON → versão → migração → zod)
@@ -239,4 +241,72 @@ Integridade nova: subtarefas sem id repetido; descanso aponta para hábito exist
 - `version` > a do app continua bloqueando o envio (fase `outdated`, “Atualize o app”); o envio é compare-and-set por `revision`, então um app antigo que leu antes de o v4 gravar recebe conflito, relê e para.
 - **Rebase do ponto de sincronia:** `daily:sync:<userId>` ganhou `version`. Se a meta é de um formato anterior e o local antigo (`daily:v3:pre-v4`) é exatamente o que foi sincronizado, o novo hash é o do local antigo migrado; sem essa cópia, o primeiro ciclo usa a nuvem como referência quando a revisão não mudou. Assim, atualizar o app não gera conflito falso.
 - **Local vazio** é um predicado (`isPristineSnapshot`): o estado inicial ou só o hábito de água automático sem registros. Um dispositivo novo continua baixando a nuvem no primeiro login.
-- A cópia de segurança antes de substituir o local passou a `daily:v4:pre-sync`.
+- A cópia de segurança antes de substituir o local passou a `daily:v4:pre-sync` (hoje `daily:v5:pre-sync`).
+
+## Entidades da versão 5 (tarefas recorrentes)
+
+### Regra de repetição (`Recurrence`, `packages/shared/src/recurrence.ts`)
+
+Campo opcional `recurrence` do compromisso (ausente = não repete; Prova nunca tem). Nomes de campo em inglês, valores em pt-BR, como no resto do modelo.
+
+| Campo      | Tipo                                                                                | Observação                                           |
+| ---------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `freq`     | `diaria` \| `semanal` \| `mensal` \| `anual`                                        |                                                      |
+| `interval` | 1–99                                                                                | “a cada N”                                           |
+| `weekdays` | `0–6[]` (0 = domingo), ordenado e sem repetição                                     | só em `semanal`; ausente = o dia da semana do início |
+| `monthDay` | 1–31 \| `ultimo`                                                                    | só em `mensal`; ausente = o dia do início            |
+| `end`      | `{kind:'nunca'}` \| `{kind:'em', date}` (inclusiva) \| `{kind:'apos', count 1–999}` | a data final não pode ser antes do início            |
+
+O compromisso com `recurrence` é a **série**: `start`/`end` são a primeira ocorrência (a âncora) e definem horário e duração de todas; `status` e `subtasks` são o modelo de cada ocorrência.
+
+### Exceção de ocorrência (`OccurrenceException`, `exceptions[]`)
+
+| Campo          | Tipo                                         | Observação                                 |
+| -------------- | -------------------------------------------- | ------------------------------------------ |
+| `id`           | `serieId@aaaa-mm-dd`                         | determinístico (uma por ocorrência)        |
+| `eventId`      | id da série                                  | precisa existir e ser recorrente           |
+| `originalDate` | `aaaa-mm-dd`                                 | o dia que a regra gerou                    |
+| `kind`         | `pulada` \| `alterada`                       | pulada = excluída “somente esta”           |
+| `changes`      | parcial de `title`, `start`, `end`, `notes`  | edição “somente esta”                      |
+| `status`       | `concluido` \| `cancelado`                   | ausente = pendente                         |
+| `doneSubtasks` | ids das subtarefas marcadas nesta ocorrência | as subtarefas recomeçam em cada ocorrência |
+
+Só o que difere da série é salvo. Excluir a série remove as exceções dela.
+
+### Regras de borda (`lib/recurrence/engine.ts`, com teste)
+
+- Datas locais (`aaaa-mm-dd`), sem fuso; a hora vem da série.
+- A semana começa no domingo; “a cada 2 semanas” conta semanas a partir da semana da âncora.
+- Dia 29–31 num mês mais curto cai no último dia; 29/02 anual cai em 28/02 nos anos comuns.
+- “Até” é inclusivo; “após N” conta todas as ocorrências geradas, inclusive as puladas.
+- Expansão só na janela pedida (fórmula fechada por frequência, sem iterar desde a âncora); no máximo 1000 ocorrências por janela; a próxima ocorrência é procurada até 730 dias à frente.
+
+### Derivados (v5)
+
+- **Calendário:** `expandEvents(events, exceptions, janela)` gera `EventView` (o compromisso + `seriesId`, `originalDate`) com id `serie@data` só para a janela visível de cada visão.
+- **Tarefas:** “Próximas” mostra a próxima ocorrência pendente de cada série e “+N nesta semana”; “Atrasadas” inclui ocorrências perdidas só dos últimos 7 dias (`OVERDUE_WINDOW_DAYS`; avulsos não têm limite). O contador da sidebar soma avulsos pendentes vencidos e ocorrências pendentes até hoje nessa janela.
+- **Perfil:** tarefas concluídas contam as ocorrências concluídas.
+
+### Escopo de edição e exclusão (`lib/data/series.ts`)
+
+| Escopo             | Editar                                                                                                                                                 | Excluir                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| Somente esta       | exceção `alterada` com as mudanças (só título, horário e notas)                                                                                        | exceção `pulada`                                  |
+| Esta e as próximas | a série antiga termina na véspera; uma série nova começa nesta data (dias e “após N” restantes calculados); as exceções dali em diante passam para ela | a série termina na véspera (ou some, se for a 1ª) |
+| Todas              | muda a série (a data da âncora fica)                                                                                                                   | remove a série e as exceções                      |
+
+### Migração v4 → v5
+
+1. Mesmo padrão do v4: `daily:v4` é copiado para `daily:v4:pre-v5` e **nunca reescrito**; a data vai para `daily:v5:migrated-at`; `daily:v4`, `daily:v4:pre-v5` e as chaves auxiliares do v4 (e o que restar do v3) são removidos 30 dias depois.
+2. Conversão: só acrescenta `exceptions: []` (nenhum compromisso antigo repete).
+3. Idempotente; exportar grava v5; importar aceita v1 a v5.
+
+| Versão | Mudança                                                        |
+| ------ | -------------------------------------------------------------- |
+| 5      | `recurrence` no compromisso e `exceptions[]`; chave `daily:v5` |
+
+### Sincronização com o v5
+
+- Sem mudança no esquema do Supabase: a linha continua sendo um envelope JSON (agora `version: 5`).
+- Um app v4 em cache que leia uma linha v5 bloqueia o envio (fase `outdated`, “Atualize o app”); o envio é compare-and-set por `revision`, então ele nunca sobrescreve dados v5.
+- O rebase do ponto de sincronia ficou genérico: a meta guarda a `version`, e a cópia pré-migração daquela versão (`daily:vN:pre-vN+1`) é a referência. Testes em `lib/sync/engine-v5.test.ts`.

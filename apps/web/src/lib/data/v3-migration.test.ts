@@ -140,7 +140,7 @@ describe('migração v2 → v3', () => {
   it('é idempotente: migrar o resultado de novo não muda nada', () => {
     const first = migrated().snapshot;
     const again = parseEnvelope(
-      JSON.stringify({ app: 'daily', version: 4, savedAt: 'x', data: first }),
+      JSON.stringify({ app: 'daily', version: 5, savedAt: 'x', data: first }),
       FIXED_NOW,
     );
     expect(again.ok && again.snapshot).toEqual(first);
@@ -165,7 +165,7 @@ describe('repositório: do v2 salvo para o atual', () => {
     expect(repo.habits.list()).toHaveLength(4);
     expect(storage.getItem(PRE_V3_KEY)).toBe(v2Raw);
     expect(storage.getItem(LEGACY_V2_KEY)).toBe(v2Raw); // o v2 nunca é alterado
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(4);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(5);
   });
 
   it('com o v3 presente, o v2 é ignorado', () => {

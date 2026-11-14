@@ -51,13 +51,14 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 
 ## Telas
 
-|                                                                                                                              |                                                                                                                                                  |
-| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp)           | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                 |
-| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                   | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                        |
-| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                 | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Perfil](docs/images/perfil.webp) |
-| **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp) | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)  |
-| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                  | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                  |
+|                                                                                                                                                                 |                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Calendário (Mês)**: tarefas, provas e especiais, com filtro por tipo.<br>![Mês](docs/images/calendario-mes.webp)                                              | **Semana**: grade de horas, eventos simultâneos lado a lado e faixa de hábitos.<br>![Semana](docs/images/calendario-semana.webp)                 |
+| **Dia**: agenda com painel de hábitos, próxima prova e tarefas.<br>![Dia](docs/images/calendario-dia.webp)                                                      | **Ano**: 12 mini-meses com a densidade de eventos de cada dia.<br>![Ano](docs/images/calendario-ano.webp)                                        |
+| **Hábitos**: heatmap de contribuições, sequências e taxa por hábito.<br>![Hábitos](docs/images/habitos.webp)                                                    | **Perfil** (antes Estatísticas): tempo de foco, preparação, água, hábitos de hoje e estatísticas pessoais.<br>![Perfil](docs/images/perfil.webp) |
+| **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp)                                    | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)  |
+| **Tarefas recorrentes**: repetir com atalhos ou personalizado, resumo e prévia das próximas datas.<br>![Repetir no painel](docs/images/recorrentes-painel.webp) | **Escopo**: editar ou excluir só esta ocorrência, esta e as próximas, ou todas.<br>![Escopo da edição](docs/images/recorrentes-escopo.webp)      |
+| **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                                                     | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                  |
 
 ## Funcionalidades
 
@@ -67,6 +68,8 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] Dia atual destacado e dias de outros meses esmaecidos
 - [x] Três tipos de compromisso (**Tarefa**, **Prova**, **Especial**) e três status (**Pendente**, **Concluído**, **Cancelado**) com cores reservadas: a tarefa fica amarela, verde ou vermelha; prova e especial mantêm a cor do tipo
 - [x] **Painel de tarefa** único para criar, ver e editar (lateral no desktop, tela cheia no celular), com **subtarefas** em qualquer tipo, progresso e “Mais opções”; **concluir com um clique** em todo chip e linha, com “Desfazer”
+- [x] **Tarefas recorrentes** (Tarefa e Especial): todo dia, dias úteis, dias da semana, a cada N dias/semanas/meses/anos, dia do mês ou último dia, até uma data ou N vezes; cada ocorrência se conclui sozinha (subtarefas recomeçam), e editar/excluir pergunta “Somente esta / Esta e as próximas / Todas”
+- [x] **Entrada rápida em pt-BR** na página Tarefas (`Treinar toda segunda 19h`, `Aluguel todo dia 5`), mostrando o que entendeu antes de salvar
 - [x] Checklist de conteúdos da prova com barra de progresso
 - [x] **Filtro por tipo** (multisseleção) no calendário e na página Tarefas, salvo entre sessões
 - [x] Sidebar recolhível e interface em pt-BR
@@ -76,7 +79,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] Conteúdos da prova como mini tarefas (adicionar, renomear, remover, reordenar, marcar) com progresso
 - [x] Páginas **Provas** (contagem regressiva), **Tarefas** (resumo, Atrasadas, Hoje, Próximas sem limite de dias e Concluídas) e **Matérias** (cores)
 - [x] Clique num dia vazio cria evento; "+N mais" abre a lista completa do dia
-- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 a v4)
+- [x] Exportar e importar dados em JSON (validado, com confirmação; aceita arquivos v1 a v5)
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
@@ -92,7 +95,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 ### Em planejamento
 
 - [ ] Notificações e lembretes periódicos
-- [ ] Recorrência de eventos, arrastar e redimensionar na grade, eventos de vários dias
+- [ ] Arrastar e redimensionar na grade, eventos de vários dias
 - [ ] Página de atalhos de teclado
 
 O detalhamento está nas [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues) e nos [milestones](https://github.com/Mateus-Fonseca847/daily-study-planner/milestones).
@@ -298,8 +301,8 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - O `Repository` é síncrono (adequado ao `localStorage`); uma API exigirá torná-lo assíncrono
 - Busca e notificações ainda são apenas visuais
 - Atalhos, FAQ e Convidar amigos são páginas placeholder
-- Calendário: nas visões Dia e Semana não dá para arrastar nem redimensionar eventos, não há eventos de vários dias (os que cruzam a meia-noite são cortados em cada dia) nem recorrência de eventos; clicar num espaço vazio é uma ação de mouse (o teclado cria pelo botão do dia no cabeçalho da Semana e pelo "Nova Prova")
-- Hábitos: os registros ficam no navegador (e na nuvem, com conta); correções retroativas só para hábitos manuais e até 366 dias atrás; a regra de repetição ainda não vale para eventos do calendário (recorrência de eventos fica para depois); mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
+- Calendário: nas visões Dia e Semana não dá para arrastar nem redimensionar eventos, não há eventos de vários dias (os que cruzam a meia-noite são cortados em cada dia); clicar num espaço vazio é uma ação de mouse (o teclado cria pelo botão do dia no cabeçalho da Semana e pelo "Nova Prova")
+- Hábitos: os registros ficam no navegador (e na nuvem, com conta); correções retroativas só para hábitos manuais e até 366 dias atrás; mudar repetição, meta ou horário vale a partir de hoje (o histórico não muda)
 - Estatísticas: a água é registrada no navegador (e na nuvem, com conta); as análises usam os blocos de estudo e as sessões de foco registradas (sem dados, mostram “Ainda não há dados neste período”)
 - Matérias sem cor própria no calendário: os chips usam a cor do **tipo** de evento, e a cor da matéria aparece nas listas
 - Os chips têm ~44 px em vez dos ~56 px do design de referência: ele equivale a 1440×1080, e em 900 px de altura só assim cabem 2 chips completos mais o "+N mais" (detalhes em [`design-system.md`](docs/design/design-system.md))
@@ -309,6 +312,7 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - **Celular e tablet:** testado em emulação do Chromium (celular, tablet e paisagem) e no Chrome; Safari/iOS não foi testado em aparelho real. No iPhone não há tela cheia e o login com Google no app instalado pode não voltar para o app (a sessão do Safari não é a do app instalado); use o Daily numa aba do Safari para entrar
 - Modo Foco no toque: o teclado numérico não tem ":", então a duração digitada vale em minutos (`25`); para `1:30:00` use um teclado completo
 - Na Semana e no Dia, os blocos de eventos simultâneos ficam estreitos no celular (toque no bloco para abrir os detalhes, ou use a agenda do Mês)
+- Tarefas recorrentes: Prova não repete; mudar a lista de subtarefas de uma ocorrência muda o modelo da série (marcar é por ocorrência); “Somente esta” vale para título, horário e notas (tipo, matéria e repetição mudam a série); as ocorrências perdidas aparecem em Atrasadas só por 7 dias; o calendário mostra até 1000 ocorrências por janela e a busca da próxima ocorrência vai até 2 anos à frente
 - A fixture `?fixture=reference` só existe em desenvolvimento (`pnpm dev`) e usa dados em memória, sem tocar nos seus dados
 
 ## Roadmap
@@ -320,7 +324,7 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 - [x] **Marco 4 (nuvem):** login opcional com Google e sincronização (Supabase)
 - [x] **Marco 5:** celular e tablet (layout responsivo, toque, sheets e gestos)
 - [ ] **Marco 6:** notificações e lembretes
-- [ ] **Depois:** recorrência de eventos, arrastar e redimensionar, eventos de vários dias, testes em Firefox e Safari, teste visual automatizado
+- [ ] **Depois:** arrastar e redimensionar, eventos de vários dias, testes em Firefox e Safari, teste visual automatizado
 
 O acompanhamento detalhado fica nas [issues](https://github.com/Mateus-Fonseca847/daily-study-planner/issues) e nos [milestones](https://github.com/Mateus-Fonseca847/daily-study-planner/milestones). Histórico de versões no [CHANGELOG](CHANGELOG.md).
 

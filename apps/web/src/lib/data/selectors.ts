@@ -1,5 +1,12 @@
 import { addDays } from 'date-fns';
-import { isExam, isOpen, type Exam, type StudyEvent } from '@daily/shared';
+import {
+  isExam,
+  isOpen,
+  type Exam,
+  type OccurrenceException,
+  type StudyEvent,
+} from '@daily/shared';
+import { pendingNow } from '../tasks/sections';
 import { toLocalIso } from '../dates';
 
 /** Janela dos “próximos” da sidebar (dias). */
@@ -19,14 +26,15 @@ export function upcomingExams(events: readonly StudyEvent[], now: Date): Exam[] 
   return events.filter(isExam).filter((e) => isOpen(e) && e.end >= nowIso && e.start <= limit);
 }
 
-/** Tarefas pendentes, inclusive as atrasadas (provas têm contador próprio). */
-export const openTasks = (events: readonly StudyEvent[]): StudyEvent[] =>
-  events.filter((e) => e.type === 'tarefa' && isOpen(e));
-
-export function navCounts(events: readonly StudyEvent[], now: Date, habitos = 0): NavCounts {
+export function navCounts(
+  events: readonly StudyEvent[],
+  now: Date,
+  habitos = 0,
+  exceptions: readonly OccurrenceException[] = [],
+): NavCounts {
   return {
     provas: upcomingExams(events, now).length,
-    tarefas: openTasks(events).length,
+    tarefas: pendingNow(events, exceptions, now).filter((e) => e.type === 'tarefa').length,
     habitos,
   };
 }

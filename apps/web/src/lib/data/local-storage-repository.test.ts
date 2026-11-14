@@ -55,8 +55,8 @@ describe('LocalStorageRepository — persistência e versão', () => {
     const { repo, storage } = memoryRepo();
     repo.replaceAll(snapshot());
     const saved = JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}');
-    expect(STORAGE_KEY).toBe('daily:v4');
-    expect(saved).toMatchObject({ app: 'daily', version: 4 });
+    expect(STORAGE_KEY).toBe('daily:v5');
+    expect(saved).toMatchObject({ app: 'daily', version: 5 });
 
     const reopened = new LocalStorageRepository(storage);
     expect(reopened.snapshot()).toEqual(snapshot());
@@ -107,7 +107,7 @@ describe('LocalStorageRepository — persistência e versão', () => {
     // Vermelho (v0 → v1) vira fúcsia na paleta v4.
     expect(repo.subjects.list()[0]?.color).toBe('fucsia');
     // Regravado já na versão atual, com o original guardado como backup.
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(4);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(5);
     expect(JSON.parse(storage.getItem(BACKUP_KEY) ?? '{}').version).toBe(0);
   });
 

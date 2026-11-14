@@ -68,7 +68,7 @@ export interface EngineDeps {
    * `{ version, data }`. Usado uma vez para “rebasear” o ponto de sincronia: se era exatamente o
    * que tinha sido sincronizado, o local migrado também está sincronizado (sem conflito falso).
    */
-  legacySynced?(): { version: number; data: unknown } | null;
+  legacySynced?(version: number): { version: number; data: unknown } | null;
   /** Cópia de segurança do estado local antes de ele ser substituído pela nuvem. */
   saveSafetyCopy?(snapshot: DataSnapshot): void;
   /** Impressão digital do estado (padrão: SHA-256); injetável para testes determinísticos. */
@@ -122,7 +122,8 @@ export function createSyncEngine(deps: EngineDeps) {
     const current = meta.read();
     if (!current || (current.version ?? 3) >= dataVersion) return;
     let hash = current.hash;
-    const legacy = deps.legacySynced?.() ?? null;
+    // A meta guarda em que formato o hash foi calculado (ausente = v3, antes de existir o campo).
+    const legacy = deps.legacySynced?.(current.version ?? 3) ?? null;
     if (legacy && (await fingerprint(legacy.data)) === current.hash) {
       const parsed = dataSnapshotSchema.safeParse(migrateData(legacy.version, legacy.data));
       if (parsed.success) hash = await fingerprint(parsed.data);

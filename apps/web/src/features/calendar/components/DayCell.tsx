@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { recurrenceText } from '../../../lib/recurrence/view';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { StudyEvent } from '@daily/shared';
@@ -60,6 +61,7 @@ export function DayCell({ day, events, isToday, selectedId, onSelect, onCreate }
             title={event.title}
             time={eventTimeRange(event)}
             status={event.status}
+            recurrence={recurrenceText(event)}
             selected={selectedId === event.id}
             data-touch="dense"
             onClick={(e) => onSelect(event, e.currentTarget)}
