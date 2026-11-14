@@ -92,9 +92,9 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
           </p>
         </div>
 
-        <dl className="flex items-center gap-6 text-sm max-lg:order-last max-lg:col-span-2 max-lg:grid max-lg:min-w-0 max-lg:grid-cols-3 max-lg:gap-2">
+        <dl className="flex items-center gap-6 text-sm max-lg:order-last max-lg:col-span-2 max-lg:grid max-lg:min-w-0 max-lg:grid-cols-3 max-lg:items-end max-lg:gap-2">
           <div className="max-lg:min-w-0">
-            <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
+            <dt className="text-muted max-lg:text-xs max-lg:leading-tight max-lg:text-balance">
               Sequência
             </dt>
             <dd className="text-md font-semibold tabular-nums">
@@ -102,7 +102,7 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
             </dd>
           </div>
           <div className="max-lg:min-w-0">
-            <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
+            <dt className="text-muted max-lg:text-xs max-lg:leading-tight max-lg:text-balance">
               Melhor
             </dt>
             <dd className="text-md font-semibold tabular-nums">
@@ -110,7 +110,7 @@ export function HabitCard({ habit, ctx, now, from, to, sortable }: HabitCardProp
             </dd>
           </div>
           <div className="max-lg:min-w-0">
-            <dt className="text-muted max-lg:truncate max-lg:text-xs max-lg:leading-tight">
+            <dt className="text-muted max-lg:text-xs max-lg:leading-tight max-lg:text-balance">
               Taxa (90 dias)
             </dt>
             <dd className="text-md font-semibold tabular-nums">

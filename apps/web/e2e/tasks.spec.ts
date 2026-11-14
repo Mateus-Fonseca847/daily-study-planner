@@ -81,7 +81,7 @@ test.describe('Tarefas', () => {
   }) => {
     await page.goto('/calendario?visao=dia&data=2026-11-10');
     const chip = page.getByRole('button', { name: /^Tarefa: Ler capítulo 3/ });
-    await expect(chip).toHaveClass(/bg-pendente-soft/);
+    await expect(chip.locator('..')).toHaveClass(/bg-pendente-soft/);
 
     await chip.click();
     const panel = page.getByRole('dialog', { name: 'Ler capítulo 3' });
@@ -91,13 +91,13 @@ test.describe('Tarefas', () => {
       'true',
     );
     await page.keyboard.press('Escape');
-    await expect(chip).toHaveClass(/bg-concluido-soft/);
+    await expect(chip.locator('..')).toHaveClass(/bg-concluido-soft/);
 
     await chip.click();
     await panel.getByRole('button', { name: 'Ações de Ler capítulo 3' }).click();
     await page.getByRole('menuitem', { name: 'Cancelar' }).click();
     await page.keyboard.press('Escape');
-    await expect(chip).toHaveClass(/bg-cancelado-soft/);
+    await expect(chip.locator('..')).toHaveClass(/bg-cancelado-soft/);
     await expect(chip.getByText('Ler capítulo 3')).toHaveClass(/line-through/);
   });
 

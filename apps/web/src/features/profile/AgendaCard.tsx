@@ -5,6 +5,8 @@ import { ptBR } from 'date-fns/locale';
 import { CalendarDays, Plus } from 'lucide-react';
 import type { StudyEvent, Subject } from '@daily/shared';
 import { CREATE_ITEMS } from '../../components/layout/CreateMenu';
+import { ChipComplete } from '../tasks/ChipComplete';
+import { statusSuffix } from '../../lib/tasks/complete-control';
 import { Menu } from '../../components/ui/Menu';
 import { cn } from '../../lib/cn';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
@@ -82,11 +84,13 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
             <div
               key={hour}
               aria-hidden
-              className="flex h-hour items-start border-t-hair border-dashed"
+              className="flex h-hour items-start"
             >
-              <span className="w-agenda-label -translate-y-2.5 pr-3 text-md text-muted tabular-nums">
+              <span className="w-agenda-label shrink-0 -translate-y-2.5 pr-3 text-md text-muted tabular-nums">
                 {String(hour).padStart(2, '0')}h
               </span>
+              {/* O tracejado começa depois do rótulo: passar por trás da hora tirava contraste. */}
+              <span className="flex-1 border-t-hair border-dashed" />
             </div>
           ))}
 
@@ -114,13 +118,10 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
             const rule = recurrenceText(event);
             const subject = subjects.find((s) => s.id === event.subjectId);
             return (
-              <button
+              <div
                 key={event.id}
-                type="button"
-                aria-label={`${meta.label}: ${event.title}, ${eventTimeRange(event)}${rule ? `, repete: ${rule}` : ''}`}
-                onClick={() => openEventForm({ event })}
                 className={cn(
-                  'absolute z-20 flex h-agenda-card-h w-agenda-card-w max-w-[calc(100%-var(--ds-agenda-label-w))] flex-col justify-center gap-0.5 rounded-card-sm border-l-stripe bg-bg px-4 text-left shadow-popover transition-[filter] hover:brightness-125',
+                  'group/chip absolute z-20 flex h-agenda-card-h w-agenda-card-w max-w-[calc(100%-var(--ds-agenda-label-w))] items-center rounded-card-sm border-l-stripe bg-bg shadow-popover transition-[filter] hover:brightness-125',
                   style.chip.split(' ').find((c) => c.startsWith('border-')),
                   event.status === 'concluido' && 'opacity-done',
                 )}
@@ -129,20 +130,28 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
                   left: `calc(var(--ds-agenda-label-w) + ${column} * var(--ds-agenda-stagger))`,
                 }}
               >
-                <span
-                  className={cn(
-                    'truncate text-md font-medium',
-                    event.status === 'concluido' && 'line-through',
-                  )}
+                <button
+                  type="button"
+                  aria-label={`${meta.label}: ${event.title}, ${eventTimeRange(event)}${rule ? `, repete: ${rule}` : ''}${statusSuffix(event.status)}`}
+                  onClick={() => openEventForm({ event })}
+                  className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 self-stretch rounded-card-sm px-4 text-left"
                 >
-                  {event.title}
-                </span>
-                <span className={cn('truncate text-xs', style.text)}>
-                  {subject ? `${subject.name} · ` : ''}
-                  {meta.label}
-                  {rule && <RecurrenceIcon label={rule} decorative className="ml-1 inline" />}
-                </span>
-              </button>
+                  <span
+                    className={cn(
+                      'truncate text-md font-medium',
+                      event.status === 'concluido' && 'line-through',
+                    )}
+                  >
+                    {event.title}
+                  </span>
+                  <span className={cn('truncate text-xs', style.text)}>
+                    {subject ? `${subject.name} · ` : ''}
+                    {meta.label}
+                    {rule && <RecurrenceIcon label={rule} decorative className="ml-1 inline" />}
+                  </span>
+                </button>
+                <ChipComplete event={event} size="list" />
+              </div>
             );
           })}
         </div>

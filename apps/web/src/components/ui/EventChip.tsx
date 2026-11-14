@@ -1,7 +1,8 @@
-import type { ButtonHTMLAttributes, Ref } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 import type { EventStatus, EventType } from '@daily/shared';
 import { cn } from '../../lib/cn';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
+import { statusSuffix } from '../../lib/tasks/complete-control';
 import { RecurrenceIcon } from './RecurrenceIcon';
 
 interface EventChipProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'title'> {
@@ -14,10 +15,18 @@ interface EventChipProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, '
   selected?: boolean;
   /** Texto da regra numa ocorrência de série (mostra o ícone de repetição). */
   recurrence?: string | null;
+  /**
+   * Controle irmão do botão principal (o “concluir com um clique”). Fica fora do `<button>` que
+   * abre o painel: nunca um botão dentro de outro.
+   */
+  trailing?: ReactNode;
   ref?: Ref<HTMLButtonElement>;
 }
 
-/** Chip de 3 linhas: tipo (minúsculo, colorido), título e horário. */
+/**
+ * Chip de 3 linhas: tipo (minúsculo, colorido), título e horário. O contêiner tem duas áreas
+ * irmãs: o botão principal (abre o painel) e, opcionalmente, o controle de concluir.
+ */
 export function EventChip({
   eventType,
   title,
@@ -25,6 +34,7 @@ export function EventChip({
   status,
   selected,
   recurrence,
+  trailing,
   className,
   ref,
   ...rest
@@ -34,30 +44,35 @@ export function EventChip({
   const style = chipStyle({ type: eventType, status: status ?? 'pendente' });
   const finished = status === 'concluido' || status === 'cancelado';
   return (
-    <button
-      ref={ref}
-      type="button"
-      aria-label={`${meta.label}: ${title}, ${time}${recurrence ? `, repete: ${recurrence}` : ''}`}
-      title={title}
-      aria-expanded={selected}
+    <div
       className={cn(
-        'flex w-full flex-col rounded-sm border-l-stripe px-2 py-chip-y text-left transition-[filter] hover:brightness-125',
+        'group/chip relative flex w-full items-center rounded-sm border-l-stripe transition-[filter] hover:brightness-125',
         style.chip,
         finished && 'opacity-done',
         selected && 'brightness-150',
         className,
       )}
-      {...rest}
     >
-      <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}>
-        <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
-        <span className="truncate">{meta.label}</span>
-        {recurrence && <RecurrenceIcon label={recurrence} decorative />}
-      </span>
-      <span className={cn('truncate text-sm font-semibold text-fg', finished && 'line-through')}>
-        {title}
-      </span>
-      <span className="truncate text-2xs text-soft">{time}</span>
-    </button>
+      <button
+        ref={ref}
+        type="button"
+        aria-label={`${meta.label}: ${title}, ${time}${recurrence ? `, repete: ${recurrence}` : ''}${statusSuffix(status)}`}
+        title={title}
+        aria-expanded={selected}
+        className="flex min-w-0 flex-1 flex-col self-stretch rounded-sm px-2 py-chip-y text-left"
+        {...rest}
+      >
+        <span className={cn('flex items-center gap-1 text-2xs font-medium lowercase', style.text)}>
+          <Icon aria-hidden strokeWidth={1.5} className="size-icon-sm shrink-0" />
+          <span className="truncate">{meta.label}</span>
+          {recurrence && <RecurrenceIcon label={recurrence} decorative />}
+        </span>
+        <span className={cn('truncate text-sm font-semibold text-fg', finished && 'line-through')}>
+          {title}
+        </span>
+        <span className="truncate text-2xs text-soft">{time}</span>
+      </button>
+      {trailing}
+    </div>
   );
 }

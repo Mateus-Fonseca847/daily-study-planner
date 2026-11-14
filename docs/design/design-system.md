@@ -13,25 +13,25 @@ Tema: **somente escuro** (a referência não tem tema claro).
 
 ## 1. Paleta
 
-| Token                       | Valor          | Status                                                                                | Antes (v0.1)       |
-| --------------------------- | -------------- | ------------------------------------------------------------------------------------- | ------------------ |
-| `--ds-color-bg`             | `#131313`      | ajustado — a tela da referência é `#131313`; `#0C0C0C` é só a moldura                 | `#0B0B0C`          |
-| `--ds-color-surface`        | `#1B1B1D`      | ajustado (trilho do segmentado, selects, botões de ícone)                             | `#141416`          |
-| `--ds-color-surface-raised` | `#1E1F23`      | ajustado (popover; amostra `#1E1F23`)                                                 | `#1C1C1F`          |
-| `--ds-color-border`         | branco a 8 %   | ajustado (linha do grid `#262626` sobre `#131313` = 8 %)                              | igual              |
-| `--ds-color-border-strong`  | branco a 16 %  | estimado                                                                              | —                  |
-| `--ds-color-hover`          | branco a 6 %   | ajustado (item ativo `#222124`, campo do popover `#2B2C30`)                           | igual              |
-| `--ds-color-accent`         | `#F5E94B`      | estimado                                                                              | —                  |
-| `--ds-color-accent-soft`    | amarelo a 15 % | ajustado (selo “NEW” é amarelo translúcido com texto amarelo)                         | novo               |
-| `--ds-color-accent-fg`      | `#0B0B0C`      | estimado                                                                              | —                  |
-| `--ds-color-badge`          | `#FF2D9B`      | estimado                                                                              | —                  |
-| `--ds-color-badge-fg`       | `#0B0B0C`      | ajustado (texto escuro sobre rosa na referência; contraste 5,72:1)                    | `#FFFFFF` (3,44:1) |
-| `--ds-color-fg`             | `#FFFFFF`      | ajustado                                                                              | —                  |
-| `--ds-color-fg-soft`        | `#B0B0B6`      | ajustado — itens de menu, números dos dias, selects (referência `#A0A0A0`–`#E1E1E1`)  | novo               |
-| `--ds-color-fg-muted`       | `#8A8A93`      | ajustado — mantido: 5,43:1 sobre o fundo (a referência usa `#7A7A7A`, que reprova AA) | —                  |
-| `--ds-color-fg-subtle`      | `#808089`      | ajustado por contraste (dias de outros meses): 4,75:1                                 | `#55555C` (2,51:1) |
-| `--ds-color-white-pill`     | `#FFFFFF`      | estimado (botão “Criar”, texto `#0B0B0C`)                                             | —                  |
-| `--ds-event-chip-alpha`     | 10 %           | ajustado (fundos de chip na referência equivalem a ~9–10 %)                           | 15 %               |
+| Token                       | Valor          | Status                                                                               | Antes (v0.1)       |
+| --------------------------- | -------------- | ------------------------------------------------------------------------------------ | ------------------ |
+| `--ds-color-bg`             | `#131313`      | ajustado — a tela da referência é `#131313`; `#0C0C0C` é só a moldura                | `#0B0B0C`          |
+| `--ds-color-surface`        | `#1B1B1D`      | ajustado (trilho do segmentado, selects, botões de ícone)                            | `#141416`          |
+| `--ds-color-surface-raised` | `#1E1F23`      | ajustado (popover; amostra `#1E1F23`)                                                | `#1C1C1F`          |
+| `--ds-color-border`         | branco a 8 %   | ajustado (linha do grid `#262626` sobre `#131313` = 8 %)                             | igual              |
+| `--ds-color-border-strong`  | branco a 16 %  | estimado                                                                             | —                  |
+| `--ds-color-hover`          | branco a 6 %   | ajustado (item ativo `#222124`, campo do popover `#2B2C30`)                          | igual              |
+| `--ds-color-accent`         | `#F5E94B`      | estimado                                                                             | —                  |
+| `--ds-color-accent-soft`    | amarelo a 15 % | ajustado (selo “NEW” é amarelo translúcido com texto amarelo)                        | novo               |
+| `--ds-color-accent-fg`      | `#0B0B0C`      | estimado                                                                             | —                  |
+| `--ds-color-badge`          | `#FF3DA3`      | estimado; clareado na 13.1 (`#FF2D9B` caía a 4,48:1 sob a sombra do menu Criar)      | —                  |
+| `--ds-color-badge-fg`       | `#0B0B0C`      | ajustado (texto escuro sobre rosa na referência; contraste 5,72:1)                   | `#FFFFFF` (3,44:1) |
+| `--ds-color-fg`             | `#FFFFFF`      | ajustado                                                                             | —                  |
+| `--ds-color-fg-soft`        | `#B0B0B6`      | ajustado — itens de menu, números dos dias, selects (referência `#A0A0A0`–`#E1E1E1`) | novo               |
+| `--ds-color-fg-muted`       | `#92929B`      | ajustado; clareado na 13.1 (`#8A8A93` ia a 4,14:1 nos cartões do Perfil): 6,02:1     | —                  |
+| `--ds-color-fg-subtle`      | `#808089`      | ajustado por contraste (dias de outros meses): 4,75:1                                | `#55555C` (2,51:1) |
+| `--ds-color-white-pill`     | `#FFFFFF`      | estimado (botão “Criar”, texto `#0B0B0C`)                                            | —                  |
+| `--ds-event-chip-alpha`     | 10 %           | ajustado (fundos de chip na referência equivalem a ~9–10 %)                          | 15 %               |
 
 Cores de evento (chip = cor a 10 % no fundo + borda esquerda de 2 px na cor cheia), todas estimadas: prova `#FF4D5E`, estudo `#3B82F6`, entrega `#FF9F1C`, revisão `#2FD16B`, especial `#E23FD8`. Contraste do rótulo colorido sobre o fundo do chip: 4,55:1 (estudo, o mínimo) a 7,87:1.
 
@@ -39,10 +39,10 @@ Cores de evento (chip = cor a 10 % no fundo + borda esquerda de 2 px na cor chei
 
 | Par                                   | Razão            | Resultado                      |
 | ------------------------------------- | ---------------- | ------------------------------ |
-| `fg-muted` sobre `bg` / `raised`      | 5,43 / 4,81      | passa                          |
+| `fg-muted` sobre `bg` / `raised`      | 6,02 / 5,34      | passa                          |
 | `fg-soft` sobre `bg`                  | 8,61             | passa                          |
 | `fg-subtle` sobre `bg`                | 4,75             | passa (antes 2,51 — reprovava) |
-| texto escuro sobre `accent` / `badge` | 15,59 / 5,72     | passa                          |
+| texto escuro sobre `accent` / `badge` | 15,59 / 6,04     | passa                          |
 | anel de foco `accent` sobre `bg`      | 14,72 (mín. 3:1) | passa                          |
 
 Exceção documentada: chips de **dias de outros meses** têm `opacity-dimmed` (0,45) — é estado “inativo”, que o WCAG isenta de contraste mínimo.
@@ -579,7 +579,7 @@ Uma cor clara serve de preenchimento e de texto no escuro; no claro, não serve 
 | `bg` / `surface` / `surface-raised`                        | `#131313` / `#1b1b1d` / `#1e1f23`                                           | `#f4f4f6` / `#ffffff` / `#f7f7f9`                                           |
 | `border` / `border-strong` / `hover`                       | branco 8 % / 16 % / 6 %                                                     | preto 8 % / 16 % / 5 %                                                      |
 | `scrim`                                                    | preto 40 %                                                                  | preto 30 %                                                                  |
-| `fg` / `fg-soft` / `fg-muted` / `fg-subtle`                | `#fff` / `#b0b0b6` / `#8a8a93` / `#808089`                                  | `#141416` / `#45454d` / `#5f5f68` / `#696972`                               |
+| `fg` / `fg-soft` / `fg-muted` / `fg-subtle`                | `#fff` / `#b0b0b6` / `#92929b` / `#808089`                                  | `#141416` / `#45454d` / `#5f5f68` / `#696972`                               |
 | `accent-soft`                                              | amarelo 15 %                                                                | `#fbf6c4`                                                                   |
 | `white-pill` / `-fg` (Criar)                               | branco / `#0b0b0c`                                                          | `#141416` / branco                                                          |
 | `status-pendente` / `-soft`                                | `#f2c94c` / 14 %                                                            | `#8a6100` / `#fbf0c4`                                                       |
@@ -610,10 +610,10 @@ Uma cor clara serve de preenchimento e de texto no escuro; no claro, não serve 
 
 Todas as rotas, a página inteira (sidebar, topbar, painéis) e os estados painel aberto, menu Criar, foco pelo teclado, hover, toast, modal e popover do dia, no desktop (1920×1080) e no celular (390×844):
 
-| Tema   | Textos medidos       | Abaixo de AA                                                                                                            | Menor razão                        |
-| ------ | -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| Claro  | 2376 + 540 (celular) | 0                                                                                                                       | 4,73:1 (desktop), 4,79:1 (celular) |
-| Escuro | 2376 + 540 (celular) | 7 + 7, todos anteriores a este prompt: `fg-muted` sobre os cartões do Perfil e o número do menu Criar (ver o relatório) | 4,14:1 (`fg-muted` no Perfil)      |
+| Tema   | Textos medidos       | Abaixo de AA                                                                                      | Menor razão                        |
+| ------ | -------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Claro  | 2549 + 715 (celular) | 0                                                                                                 | 4,73:1 (desktop), 4,79:1 (celular) |
+| Escuro | 2549 + 715 (celular) | 0 (desde a 13.1: `fg-muted` `#92929B`, contador `#FF3DA3` e o tracejado da agenda depois da hora) | 4,59:1 (desktop e celular)         |
 
 | Calendário no claro                                 | Perfil no claro                             | Celular                                       |
 | --------------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
@@ -674,3 +674,18 @@ Sem tokens novos: só os semânticos existentes, nos dois temas.
 | Pedidos (escuro)                 | Busca (claro)                         | Celular                                   |
 | -------------------------------- | ------------------------------------- | ----------------------------------------- |
 | ![Amigos](../images/amigos.webp) | ![Busca](../images/amigos-busca.webp) | ![Celular](../images/celular-amigos.webp) |
+
+## 22. Concluir pelo chip (v1.7)
+
+Sem tokens novos. O chip e o bloco do calendário viram um **contêiner com duas áreas irmãs**: o botão principal (abre o painel; o rótulo tem tipo, título, horário, regra e “concluída” ou “cancelada”) e o controle de concluir (`ChipComplete` → `CompleteButton`, com `aria-pressed` e “Concluir/Reabrir “título””). Nunca um botão dentro do outro. Tab vai do principal ao controle; Espaço e Enter funcionam nos dois.
+
+| Onde                                                      | Tamanho (`ChipSize`) | Como aparece                                                                            |
+| --------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
+| Lista “+N mais”, agenda do Mês no celular, agenda de hoje | `list`               | Sempre (24 px no mouse, 44 px no toque)                                                 |
+| Bloco de Dia/Semana com 2 ou 3 linhas e a coluna inteira  | `block`              | Sempre com mouse; no toque some (conclui-se pelo painel)                                |
+| Chip da grade do Mês; bloco de 1 linha ou dividido        | `compact`            | Ao passar o mouse ou focar pelo teclado, por cima do canto (`bg-raised`); some no toque |
+| Bloco reduzido à faixa (simultâneos no celular)           | `tiny`               | Não existe                                                                              |
+
+- **Prova** nunca ganha o controle (prepara-se pelos conteúdos). **Cancelada** mostra um “×” (`text-cancelado`) onde há folga, sem ação; reabrir fica no painel.
+- **Ocorrência de série** conclui só a si mesma (id `serie@data`), sem perguntar escopo.
+- Toast “Desfazer” (`toggleDoneWithUndo`) e medalhas avaliadas como em qualquer conclusão. O Ano não tem chips (só densidade).

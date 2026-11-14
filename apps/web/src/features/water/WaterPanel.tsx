@@ -10,10 +10,12 @@ interface WaterPanelProps {
   /** Dia editado (`yyyy-MM-dd`); padrão: hoje. */
   date?: string;
   onClose: () => void;
+  /** Ações extras abaixo do editor (no heatmap do hábito “Água”: “Marcar descanso”). */
+  footer?: ReactNode;
 }
 
 /** Painel de água ancorado no gatilho (popover no desktop; sheet no celular). */
-export function WaterPanel({ anchor, date, onClose }: WaterPanelProps) {
+export function WaterPanel({ anchor, date, onClose, footer }: WaterPanelProps) {
   const day = date ?? dayKey(appNow());
   const today = dayKey(appNow());
   return (
@@ -23,6 +25,7 @@ export function WaterPanel({ anchor, date, onClose }: WaterPanelProps) {
       aria-label={day === today ? 'Água de hoje' : `Água de ${formatLongDay(day)}`}
     >
       <WaterDayEditor date={day} />
+      {footer}
     </Popover>
   );
 }

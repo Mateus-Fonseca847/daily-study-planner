@@ -3,6 +3,7 @@ import { recurrenceText } from '../../../lib/recurrence/view';
 import { EventChip } from '../../../components/ui/EventChip';
 import { Popover } from '../../../components/ui/Popover';
 import { eventTimeRange } from '../lib/format';
+import { ChipComplete } from '../../tasks/ChipComplete';
 
 interface DayListPopoverProps {
   anchor: HTMLElement;
@@ -36,6 +37,7 @@ export function DayListPopover({
               recurrence={recurrenceText(event)}
               selected={selectedId === event.id}
               onClick={() => onSelect(event)}
+              trailing={<ChipComplete event={event} size="list" />}
             />
           </li>
         ))}

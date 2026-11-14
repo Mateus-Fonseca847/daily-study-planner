@@ -62,7 +62,7 @@ function SummaryCard({
       <Icon aria-hidden strokeWidth={1.5} className="size-icon text-muted" />
       <div className="min-w-0">
         <p className="text-xl font-semibold tabular-nums">{value}</p>
-        <p className="truncate text-sm text-muted">{label}</p>
+        <p className="text-sm leading-tight text-balance text-muted">{label}</p>
       </div>
     </div>
   );

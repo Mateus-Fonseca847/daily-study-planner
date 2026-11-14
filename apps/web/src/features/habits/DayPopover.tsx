@@ -63,7 +63,20 @@ export function DayPopover({
   }
 
   if (habit.source === 'agua') {
-    return <WaterPanel anchor={anchor} date={date} onClose={onClose} />;
+    // A água segue a mesma regra de descanso dos outros hábitos (por dia, desfazível, sem
+    // quebrar a sequência); a meta do dia continua valendo se a pessoa beber mesmo assim.
+    return (
+      <WaterPanel
+        anchor={anchor}
+        date={date}
+        onClose={onClose}
+        footer={
+          state !== 'nao-agendado' && (
+            <RestDayActions habit={habit} date={date} ctx={ctx} onDone={onClose} />
+          )
+        }
+      />
+    );
   }
 
   return (

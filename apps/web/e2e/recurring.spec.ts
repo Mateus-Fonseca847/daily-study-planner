@@ -89,8 +89,8 @@ test.describe('Tarefas recorrentes', () => {
     const wednesdayBlock = page
       .getByRole('gridcell', { name: '2026-11-18' })
       .getByRole('button', { name: /^Tarefa: Treino/ });
-    await expect(mondayBlock).toHaveClass(/bg-concluido-soft/);
-    await expect(wednesdayBlock).toHaveClass(/bg-pendente-soft/);
+    await expect(mondayBlock.locator('..')).toHaveClass(/bg-concluido-soft/);
+    await expect(wednesdayBlock.locator('..')).toHaveClass(/bg-pendente-soft/);
 
     const wednesday = await openOn(page, '2026-11-18');
     await expect(wednesday.getByRole('checkbox', { name: 'Marcar “Aquecer”' })).toHaveAttribute(
@@ -99,7 +99,7 @@ test.describe('Tarefas recorrentes', () => {
     );
     await page.keyboard.press('Escape');
     await page.reload();
-    await expect(mondayBlock).toHaveClass(/bg-concluido-soft/);
+    await expect(mondayBlock.locator('..')).toHaveClass(/bg-concluido-soft/);
   });
 
   test('editar “somente esta”, “esta e as próximas” e “todas”', async ({ page }) => {

@@ -71,7 +71,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] **Calendário com 4 visões — Dia, Semana, Mês e Ano** (`/calendario?visao=semana&data=2026-10-29`): visão e data na URL, botão "Hoje" ao lado das setas (volta ao período atual na visão em que se está), atalhos de teclado (`←` `→` `T` `D` `S` `M` `A`)
 - [x] Dia atual destacado e dias de outros meses esmaecidos
 - [x] Três tipos de compromisso (**Tarefa**, **Prova**, **Especial**) e três status (**Pendente**, **Concluído**, **Cancelado**) com cores reservadas: a tarefa fica amarela, verde ou vermelha; prova e especial mantêm a cor do tipo
-- [x] **Painel de tarefa** único para criar, ver e editar (lateral no desktop, tela cheia no celular), com **subtarefas** em qualquer tipo, progresso e “Mais opções”; **concluir com um clique** em todo chip e linha, com “Desfazer”
+- [x] **Painel de tarefa** único para criar, ver e editar (lateral no desktop, tela cheia no celular), com **subtarefas** em qualquer tipo, progresso e “Mais opções”; **concluir com um clique** em todo chip e bloco do calendário (Dia, Semana, Mês e agenda de hoje), nas linhas de Tarefas e no painel, com “Desfazer” (a Prova se conclui pelos conteúdos)
 - [x] **Tarefas recorrentes** (Tarefa e Especial): todo dia, dias úteis, dias da semana, a cada N dias/semanas/meses/anos, dia do mês ou último dia, até uma data ou N vezes; cada ocorrência se conclui sozinha (subtarefas recomeçam), e editar/excluir pergunta “Somente esta / Esta e as próximas / Todas”
 - [x] **Entrada rápida em pt-BR** na página Tarefas (`Treinar toda segunda 19h`, `Aluguel todo dia 5`), mostrando o que entendeu antes de salvar
 - [x] Checklist de conteúdos da prova com barra de progresso
@@ -87,7 +87,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] **Modo Foco** (`/foco`): anel minimalista com tempo editável por digitação (1 min a 3 h), histórico de sessões e **travamento do app** (veja abaixo)
 - [x] Preferências do perfil: nome, meta de água, copo, duração padrão do foco e "travar por padrão"
 - [x] Várias abas/janelas ficam sincronizadas (evento `storage`)
-- [x] **Hábitos recorrentes** (`/habitos`): dias da semana ou a cada N dias, horário opcional, tipo check ou quantidade, fontes automáticas (água, foco, blocos de estudo), **calendário de contribuições** por hábito (estilo GitHub), sequência, melhor sequência e taxa; as antigas metas migram para hábitos; **reordene arrastando pela alça** (mouse, toque ou teclado) ou pelo menu "..."
+- [x] **Hábitos recorrentes** (`/habitos`): dias da semana ou a cada N dias, horário opcional, tipo check ou quantidade, fontes automáticas (água, foco, blocos de estudo), **calendário de contribuições** por hábito (estilo GitHub), sequência, melhor sequência e taxa; **dias de descanso** (inclusive na água) que não quebram a sequência; as antigas metas migram para hábitos; **reordene arrastando pela alça** (mouse, toque ou teclado) ou pelo menu "..."
 - [x] **Água editável**: toque no valor da água (cartão e hábito) para editar, excluir (com Desfazer), definir o total do dia ou digitar uma quantidade (`300 ml`, `0,3 l`); dias anteriores pelo heatmap do hábito (até 366 dias)
 - [x] **Estatísticas** (`/estatisticas`): painel “Hoje” (horas da semana, preparação para a próxima prova, sequência, água, hábitos de hoje e agenda) e “Análises” (semana, mês ou 90 dias) com cinco gráficos em SVG próprio e o heatmap de consistência dos hábitos
 
@@ -189,19 +189,20 @@ O app sobe em **http://localhost:5173**. Viewport recomendado: 1440×900, com co
 
 ### Scripts
 
-| Comando                                    | O que faz                                                                                                                                 |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`                                 | Servidor de desenvolvimento                                                                                                               |
-| `pnpm build`                               | Build de produção                                                                                                                         |
-| `pnpm lint`                                | ESLint em todo o monorepo                                                                                                                 |
-| `pnpm typecheck`                           | Checagem de tipos                                                                                                                         |
-| `pnpm test`                                | Testes com Vitest                                                                                                                         |
-| `pnpm e2e`                                 | Testes e2e com Playwright (app em dev e build de produção) (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`) |
-| `pnpm verify:prod`                         | Verifica o app publicado (rotas, manifest, service worker, offline e console)                                                             |
-| `pnpm check:links`                         | Confere os links relativos dos arquivos `.md` versionados                                                                                 |
-| `pnpm check:tokens`                        | Falha se aparecer cor literal (hex, `rgb()`, `bg-white`…) fora de `tokens.css`                                                            |
-| `node apps/web/scripts/contrast-audit.mjs` | Mede o contraste (WCAG AA) do texto renderizado nas telas principais; grava em `apps/web/.reports/`                                       |
-| `pnpm icons`                               | Regenera os ícones do PWA a partir do SVG                                                                                                 |
+| Comando                                                | O que faz                                                                                                                                 |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                                             | Servidor de desenvolvimento                                                                                                               |
+| `pnpm build`                                           | Build de produção                                                                                                                         |
+| `pnpm lint`                                            | ESLint em todo o monorepo                                                                                                                 |
+| `pnpm typecheck`                                       | Checagem de tipos                                                                                                                         |
+| `pnpm test`                                            | Testes com Vitest                                                                                                                         |
+| `pnpm e2e`                                             | Testes e2e com Playwright (app em dev e build de produção) (na primeira vez: `pnpm --filter @daily/web exec playwright install chromium`) |
+| `pnpm verify:prod`                                     | Verifica o app publicado (rotas, manifest, service worker, offline e console)                                                             |
+| `pnpm check:links`                                     | Confere os links relativos dos arquivos `.md` versionados                                                                                 |
+| `pnpm check:tokens`                                    | Falha se aparecer cor literal (hex, `rgb()`, `bg-white`…) fora de `tokens.css`                                                            |
+| `node apps/web/scripts/contrast-audit.mjs`             | Mede o contraste (WCAG AA) do texto renderizado nas telas principais; grava em `apps/web/.reports/`                                       |
+| `node apps/web/scripts/desktop-regression.mjs compare` | Compara o desktop com a linha de base visual (`capture` a regenera; pasta `apps/web/.reports/`, fora do Git)                              |
+| `pnpm icons`                                           | Regenera os ícones do PWA a partir do SVG                                                                                                 |
 
 ## Estrutura do repositório
 

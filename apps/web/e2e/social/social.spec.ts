@@ -230,7 +230,7 @@ test.describe('Perfil social', () => {
     await del.getByLabel('Digite @ana.nova para confirmar').fill('ana.nova');
     await confirm.click();
     await expect(s.getByRole('button', { name: 'Ativar perfil social' })).toBeVisible();
-    expect(state.profile).toBeNull();
+    await expect.poll(() => state.profile).toBeNull();
     await page.goto('/perfil');
     await expect(page.getByRole('link', { name: 'Ativar perfil social' })).toBeVisible();
   });
