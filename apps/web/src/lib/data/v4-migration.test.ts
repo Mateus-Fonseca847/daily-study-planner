@@ -184,7 +184,7 @@ describe('migração v3 → v4', () => {
   it('cria descansos vazios e marca a água como criada quando já há dados', () => {
     const { snapshot } = migrated();
     expect(snapshot.restDays).toEqual([]);
-    expect(snapshot.onboarding).toEqual({ waterHabitCreated: true });
+    expect(snapshot.onboarding).toEqual({ waterHabitCreated: true, achievementsSeededAt: null });
     const empty = parseEnvelope(
       JSON.stringify({
         version: 3,
@@ -192,7 +192,7 @@ describe('migração v3 → v4', () => {
       }),
       FIXED_NOW,
     );
-    expect(empty.ok && empty.snapshot.onboarding).toEqual({ waterHabitCreated: false });
+    expect(empty.ok && empty.snapshot.onboarding).toEqual({ waterHabitCreated: false, achievementsSeededAt: null });
   });
 
   it('é idempotente: rodar sobre a saída não muda nada', () => {
@@ -240,7 +240,7 @@ describe('repositório: do v3 salvo para o v4', () => {
     expect(repo.events.list()).toHaveLength(5);
     expect(storage.getItem(PRE_V4_KEY)).toBe(v3Raw);
     expect(storage.getItem(LEGACY_V3_KEY)).toBe(v3Raw);
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(5);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(DATA_VERSION);
     expect(storage.getItem(MIGRATED_AT_KEY)).toBe(String(FIXED_NOW.getTime()));
   });
 

@@ -82,15 +82,15 @@ describe('migração v4 → v5', () => {
     expect(repo.issue).toBeNull();
     expect(storage.getItem(PRE_V5_KEY)).toBe(raw);
     expect(storage.getItem(LEGACY_V4_KEY)).toBe(raw);
-    expect(JSON.parse(storage.getItem(STORAGE_KEY)!).version).toBe(5);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY)!).version).toBe(DATA_VERSION);
   });
 
-  it('importa v1 a v5 e recusa v6', () => {
+  it('importa v1 a v6 e recusa v7', () => {
     expect(readBackupFile(raw).ok).toBe(true);
     expect(readBackupFile(JSON.stringify({ app: 'daily', version: 5, data: base() })).ok).toBe(
       true,
     );
-    expect(readBackupFile(JSON.stringify({ app: 'daily', version: 6, data: base() })).ok).toBe(
+    expect(readBackupFile(JSON.stringify({ app: 'daily', version: 7, data: base() })).ok).toBe(
       false,
     );
     expect(

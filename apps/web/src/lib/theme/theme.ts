@@ -12,7 +12,7 @@ export type Theme = 'light' | 'dark';
 
 export const THEME_KEY = 'daily:theme';
 /** Chaves de dados do app: se alguma existe, quem abre é um usuário antigo (fica no escuro). */
-export const DATA_KEYS = ['daily:v5', 'daily:v4', 'daily:v3', 'daily:v2', 'daily:v1'] as const;
+export const DATA_KEYS = ['daily:v6', 'daily:v5', 'daily:v4', 'daily:v3', 'daily:v2', 'daily:v1'] as const;
 /** Cor da barra do sistema e do fundo (`--ds-color-bg` de cada tema; o teste confere com `tokens.css`). */
 export const THEME_COLOR: Readonly<Record<Theme, string>> = {
   dark: '#131313', // check-tokens: permitido — theme-color antes do CSS; igual a --ds-color-bg

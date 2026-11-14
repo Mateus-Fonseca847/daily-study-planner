@@ -41,6 +41,11 @@ export const studyEventSchema = z
     /** Quando foi criado (ISO local). Dados migrados usam o início. */
     createdAt: localDateTime,
     /**
+     * Só em Prova (v6): quando todos os conteúdos ficaram prontos, ANTES do início. Some se um
+     * conteúdo for desmarcado antes da prova; depois do início não muda mais (medalha “Preparado”).
+     */
+    preparedAt: localDateTime.optional(),
+    /**
      * Repetição (só Tarefa e Especial). Numa série, `status` e o `done` das subtarefas não valem:
      * o estado é de cada ocorrência (coleção `exceptions`); as subtarefas são o modelo.
      */

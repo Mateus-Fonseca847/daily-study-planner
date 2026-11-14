@@ -16,6 +16,7 @@ flowchart TB
     Recur["lib/recurrence (engine, expand, describe, presets) e lib/data/series"]
     Focus["lib/focus (session, hold, top-days)"]
     Cal["features/calendar/lib (views, time-layout, year)"]
+    Achv["lib/achievements (catálogo, fatos, avaliação, união, runner)"]
     Theme["lib/theme (escolha, resolução, theme-color) + public/theme-init.js"]
   end
   subgraph Store["Estado"]
@@ -93,6 +94,7 @@ flowchart TB
 | Rebase do ponto de sincronia após migrar                 | Atualizar o app não vira conflito falso; a nuvem só é reescrita numa edição real.                                                                              |
 | Recorrência como regra + exceções por ocorrência         | Nada é materializado: a série guarda a regra e só o que difere em cada dia; o calendário expande só a janela visível e o passado nunca é reescrito.            |
 | Tema por atributo (`data-theme`) e tokens por papel      | Os mesmos nomes de token valem nos dois temas; `theme-init.js` aplica o tema antes da 1ª pintura sem script inline (CSP intacta); a escolha é por dispositivo. |
+| Medalhas gravadas, progresso calculado                   | A conquista é permanente, com data e nível estáveis (perfil público no futuro); o progresso sai dos dados a cada vez e nunca é gravado.                        |
 | Fixtures só em desenvolvimento                           | `import.meta.env.DEV` vira `false` no build e remove as fixtures do bundle de produção.                                                                        |
 
 ## Testes

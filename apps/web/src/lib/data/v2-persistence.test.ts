@@ -1,3 +1,4 @@
+import { DATA_VERSION } from './envelope';
 import { describe, expect, it } from 'vitest';
 import type { ActiveFocus } from '@daily/shared';
 import { createBackupFile, readBackupFile } from './backup';
@@ -65,7 +66,7 @@ describe('migração v1 → atual', () => {
 
     expect(storage.getItem(PRE_MIGRATION_KEY)).toBe(v1Raw); // backup feito antes de migrar
     expect(storage.getItem(LEGACY_KEY)).toBe(v1Raw); // o v1 nunca é alterado
-    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(5);
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? '{}').version).toBe(DATA_VERSION);
   });
 
   it('só migra uma vez: com a chave atual presente, o v1 é ignorado', () => {
@@ -95,7 +96,7 @@ describe('importar/exportar com v1, v2, v3 e v4', () => {
 
   it('exporta v4 e valida com zod (hábito inexistente é rejeitado)', () => {
     const file = createBackupFile(snapshot(), FIXED_NOW);
-    expect(JSON.parse(file.content).version).toBe(5);
+    expect(JSON.parse(file.content).version).toBe(DATA_VERSION);
     expect(readBackupFile(file.content).ok).toBe(true);
 
     const broken = JSON.parse(file.content);

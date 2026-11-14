@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { achievementSchema } from './achievement';
 import { isExam, occurrenceExceptionSchema, studyEventSchema } from './event';
 import { occurrenceId } from './recurrence';
 import { focusSessionSchema } from './focus';
@@ -11,11 +12,16 @@ import { waterLogSchema } from './water';
 export const onboardingSchema = z.object({
   /** O hábito “Água” automático já foi criado (ou a conta já tinha dados): nunca recriar. */
   waterHabitCreated: z.boolean().default(false),
+  /**
+   * Quando a concessão retroativa de medalhas rodou (v6). `null` = ainda não: a próxima avaliação
+   * concede o que o histórico já merece, com um único aviso.
+   */
+  achievementsSeededAt: z.iso.datetime({ local: true }).nullable().default(null),
 });
 
 export type Onboarding = z.infer<typeof onboardingSchema>;
 
-/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 5. */
+/** Todos os dados do usuário (o que é salvo, exportado e importado). Formato da versão 6. */
 export const dataSnapshotSchema = z
   .object({
     subjects: z.array(subjectSchema),
@@ -28,7 +34,9 @@ export const dataSnapshotSchema = z
     restDays: z.array(restDaySchema).default([]),
     /** Exceções por ocorrência das séries (v5). */
     exceptions: z.array(occurrenceExceptionSchema).default([]),
-    onboarding: onboardingSchema.default({ waterHabitCreated: false }),
+    /** Medalhas conquistadas (v6): permanentes; o progresso nunca é gravado. */
+    achievements: z.array(achievementSchema).default([]),
+    onboarding: onboardingSchema.default({ waterHabitCreated: false, achievementsSeededAt: null }),
   })
   .superRefine((snapshot, ctx) => {
     const issue = (message: string, path: (string | number)[]) =>
@@ -49,6 +57,7 @@ export const dataSnapshotSchema = z
       ['focusSessions', snapshot.focusSessions, ids(snapshot.focusSessions), 'sessões de foco'],
       ['restDays', snapshot.restDays, ids(snapshot.restDays), 'dias de descanso'],
       ['exceptions', snapshot.exceptions, ids(snapshot.exceptions), 'exceções de ocorrência'],
+      ['achievements', snapshot.achievements, ids(snapshot.achievements), 'medalhas'],
     ];
     for (const [key, items, unique, label] of collections) {
       if (unique.size !== items.length) issue(`Há ${label} com ids repetidos.`, [key]);
@@ -117,7 +126,8 @@ export function createInitialSnapshot(): DataSnapshot {
     focusSessions: [],
     restDays: [],
     exceptions: [],
-    onboarding: { waterHabitCreated: false },
+    achievements: [],
+    onboarding: { waterHabitCreated: false, achievementsSeededAt: null },
   };
 }
 
@@ -143,6 +153,7 @@ export function isPristineSnapshot(snapshot: DataSnapshot): boolean {
     snapshot.focusSessions.length === 0 &&
     snapshot.restDays.length === 0 &&
     snapshot.exceptions.length === 0 &&
+    snapshot.achievements.length === 0 &&
     onlyAutoWater &&
     defaultPrefs
   );

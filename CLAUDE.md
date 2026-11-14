@@ -4,7 +4,7 @@ App de disciplina e desenvolvimento pessoal (PWA), nascido como organizador de e
 tela do PC. Projeto de portfólio: TypeScript estrito, código limpo, documentação e testes bem
 escolhidos. Idioma da UI: **pt-BR**. Viewport-alvo: desktop 1440×900 (aceitável a partir de 1280 px).
 
-Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v4`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
+Estado atual: só front-end; os dados ficam no `localStorage` (`daily:v6`) atrás de um `Repository`. Mocks (`apps/web/src/mocks`) só servem ao botão “Carregar dados de exemplo”, à fixture e aos testes. `apps/api` é apenas um README.
 
 ## Stack
 
@@ -72,6 +72,7 @@ listada no `.gitignore`, porque é material de processo e de divulgação, não 
 - Responsivo: breakpoints num só lugar (`lib/responsive/breakpoints.ts`, espelhado em `styles/index.css`, com teste). Use as variantes `phone:`, `short:` e `coarse:` (e `md:`/`lg:`/`xl:`); JavaScript (`useBreakpoint`, `usePhone`) só quando a árvore muda. O desktop (≥ 1280 px) não pode mudar: confira com `node apps/web/scripts/desktop-regression.mjs compare` (a linha de base fica em `apps/web/.reports/`, fora do Git). Nada depende de hover; controles principais ≥ 44 px (`--ds-touch`), densos ≥ 24 px com `data-touch="dense"` e um equivalente maior; áreas que rolam na horizontal levam `data-scroll-x`; campos de texto ≥ 16 px. Popover, Modal e Menu já viram sheet/tela cheia no celular: use-os em vez de criar overlays novos.
 - Paleta de matérias e hábitos: `PALETTE_COLORS` (sem vermelho, verde, amarelo e laranja); confira com `node apps/web/scripts/palette-check.mjs` e `src/styles/palette.test.ts` (os dois temas: ΔE ≥ 15 no escuro e ≥ 14 no claro).
 - Tema: lógica pura em `lib/theme` (`theme.ts` = escolha `sistema | claro | escuro` em `daily:theme`, por dispositivo e fora do snapshot e da sincronização; `apply.ts`; `theme-store.ts`). `public/theme-init.js` repete a resolução antes da 1ª pintura (a CSP não permite script inline) e o teste `theme.test.ts` o roda num contexto isolado: mude os dois juntos. Usuário com dados começa no Escuro; instalação nova, em Sistema. Os e2e rodam com `colorScheme: 'dark'`.
+- Medalhas: lógica pura em `lib/achievements` (`catalog.ts` = catálogo como dados, ids estáveis que nunca mudam; `facts.ts`; `evaluate.ts` = avaliar só o novo, união entre dispositivos, destaques; `runner.ts` = avaliação com debounce e avisos que esperam o Modo Foco). Só a conquista é gravada (`achievements`, permanente); o progresso é sempre calculado. Medalha nova: entrada no catálogo + teste nos limites (meta − 1, meta, meta + 1); nada premia excesso e descanso não quebra sequência.
 - Excluir algo = `deleteEventWithUndo` / `deleteSubjectWithUndo` (toast “Desfazer”, 6 s).
 
 ## Fixture visual

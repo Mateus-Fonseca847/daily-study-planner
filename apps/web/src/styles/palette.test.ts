@@ -204,3 +204,25 @@ describe('tema claro (tokens.css × palette-check)', () => {
     expect(contrast(over(L.fg, 0.6, chip), chip)).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('níveis de medalha (bronze, prata, ouro) nos dois temas', () => {
+  const pct = Number(/--ds-tier-soft-mix:\s*(\d+)%/.exec(tokens)![1]) / 100;
+  const dark = (name: string) => token(name);
+  const lightTier = light;
+  it.each(['bronze', 'silver', 'gold'])(
+    '%s: tinta ≥ 4,5:1 na superfície, no fundo e no disco',
+    (tier) => {
+      const surface = token('color-surface');
+      const ink = dark(`tier-${tier}`);
+      expect(contrast(ink, surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(ink, BG)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(ink, over(ink, pct, surface))).toBeGreaterThanOrEqual(4.5);
+
+      const lInk = lightTier(`tier-${tier}`);
+      const lSoft = lightTier(`tier-${tier}-soft`);
+      for (const base of ['#ffffff', '#f4f4f6', lSoft]) {
+        expect(contrast(lInk, base)).toBeGreaterThanOrEqual(4.5);
+      }
+    },
+  );
+});

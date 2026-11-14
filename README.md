@@ -59,6 +59,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 | **Tarefas**: resumo, Atrasadas, Hoje e todas as Próximas, com concluir em um clique.<br>![Tarefas](docs/images/tarefas.webp)                                    | **Painel de tarefa**: tipo, status em 3 opções, prazo, conteúdos/subtarefas e descrição.<br>![Painel de tarefa](docs/images/painel-tarefa.webp)               |
 | **Tarefas recorrentes**: repetir com atalhos ou personalizado, resumo e prévia das próximas datas.<br>![Repetir no painel](docs/images/recorrentes-painel.webp) | **Escopo**: editar ou excluir só esta ocorrência, esta e as próximas, ou todas.<br>![Escopo da edição](docs/images/recorrentes-escopo.webp)                   |
 | **Tema claro**: o mesmo app em fundo claro, com o seletor Sistema, Claro ou Escuro.<br>![Tema claro](docs/images/tema-claro-calendario.webp)                    | **Perfil no claro**: cartões brancos, tinta escura e as cores de significado com contraste AA.<br>![Perfil no tema claro](docs/images/tema-claro-perfil.webp) |
+| **Conquistas**: medalhas com níveis, progresso e a data, agrupadas por categoria.<br>![Conquistas](docs/images/conquistas.webp)                                 | **Detalhe da medalha**: critério, data de cada nível e "Destacar no perfil".<br>![Detalhe da medalha](docs/images/medalha-detalhe.webp)                       |
 | **Modo Foco**: dígitos grandes, duração digitada no próprio relógio.<br>![Foco](docs/images/modo-foco.webp)                                                     | **Foco travado**: só o tempo e "Segurar para destravar".<br>![Foco travado](docs/images/modo-foco-travado.webp)                                               |
 
 ## Funcionalidades
@@ -92,6 +93,7 @@ A versão **1.0** está publicada em [https://dailystudyplanner.vercel.app](http
 - [x] **Login opcional com Google e sincronização na nuvem** (Supabase): local-first, com tela de entrada, menu da conta, resolução de conflito e exclusão da conta
 - [x] **Celular e tablet**: barra inferior com "Mais" e botão + no celular, trilho de ícones no tablet, popovers viram sheets, formulários em tela cheia, gestos (deslizar para mudar o dia ou o mês, toque longo para criar na grade) e alvos de toque de 44 px (veja "Usar no celular e no tablet")
 - [x] Armazenamento persistente solicitado ao navegador, com situação e espaço usado em Preferências, e indicador "Offline" na topbar
+- [x] **Medalhas e conquistas** no Perfil: 13 medalhas (tarefas, dias limpos, provas preparadas, recorrência, subtarefas, foco e hábitos) com bronze, prata e ouro, progresso, vitrine com até 3 destaques e aviso discreto, que espera o fim do Modo Foco; nada premia excesso e descanso não quebra sequência
 - [x] **Tema claro e escuro**: Preferências → Aparência (Sistema, Claro ou Escuro) e atalho sol/lua na topbar e no "Mais"; "Sistema" acompanha o aparelho; a escolha vale por dispositivo e abre sem flash
 
 ### Em planejamento
@@ -298,6 +300,7 @@ A pílula **Travar** (visível só com o cronômetro parado) liga a trava para a
 
 ## Limitações conhecidas
 
+- **Medalhas:** o app não guarda quando uma tarefa foi concluída, então a data de uma medalha conquistada **antes** desta versão é aproximada pelo dia da tarefa (nunca depois de hoje); daqui em diante, é o momento da conquista. "Preparado" só sabe que os conteúdos estavam prontos antes da prova a partir desta versão (provas antigas com 100 % contam, com a data aproximada). As medalhas ficam no perfil local; o perfil público vem depois
 - **Tema e app instalado:** a tela de abertura do PWA instalado (splash) usa as cores fixas do manifest, que são as do escuro; o tema escolhido vale assim que o app abre. A cor das barras do sistema segue o tema (metas `theme-color`)
 - **Tema por dispositivo:** a escolha de tema não sincroniza com a conta (de propósito: um celular claro e um PC escuro não brigam)
 - **Testado apenas no Chromium** (Playwright e uso manual); Firefox e Safari não foram verificados, e os campos nativos de data e hora variam entre navegadores
