@@ -18,7 +18,11 @@ export function LevelTag({ item }: { item: AchievementItem }) {
   const stars = level === 0 || item.def.levels.length === 1 ? 1 : level;
   return (
     <span
-      className={cn('inline-flex items-center gap-1 text-sm font-medium', TIER_CLASS[tier].ink)}
+      className={cn(
+        'inline-flex items-center gap-1 text-sm font-medium',
+        // Bloqueada: o texto precisa de contraste AA (a silhueta da medalha fica apagada).
+        level === 0 ? 'text-soft' : TIER_CLASS[tier].ink,
+      )}
     >
       <span className="inline-flex" aria-hidden>
         {Array.from({ length: stars }, (_, i) => (
