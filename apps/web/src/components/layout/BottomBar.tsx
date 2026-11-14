@@ -1,9 +1,8 @@
 import { Ellipsis } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import type { NavCounts } from '../../lib/data/selectors';
 import { cn } from '../../lib/cn';
 import { Badge } from '../ui/Badge';
-import { MENU_ITEMS, type NavItem } from './nav';
+import { counterLabel, MENU_ITEMS, type NavItem, type ShellCounts } from './nav';
 
 /** Os quatro destinos fixos da barra inferior; o resto fica em "Mais". */
 const BAR_PATHS = ['/calendario', '/habitos', '/foco', '/perfil'] as const;
@@ -15,7 +14,7 @@ const ITEM =
   'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-2xs font-medium transition-colors short:flex-row short:gap-2 short:text-xs';
 
 interface BottomBarProps {
-  counts: NavCounts;
+  counts: ShellCounts;
   /** Algum destino de "Mais" é a página atual (destaca o botão). */
   moreActive: boolean;
   moreOpen: boolean;
@@ -42,7 +41,12 @@ export function BottomBar({ counts, moreActive, moreOpen, onMore }: BottomBarPro
               <Icon aria-hidden strokeWidth={1.5} className="size-icon" />
               {count > 0 && (
                 <span className="absolute -top-2 left-full -ml-1.5 short:right-full short:left-auto short:-mr-1.5 short:ml-0">
-                  <Badge variant="counter">{count}</Badge>
+                  <Badge
+                    variant="counter"
+                    label={item.counter && counterLabel(item.counter, count)}
+                  >
+                    {count}
+                  </Badge>
                 </span>
               )}
             </span>
@@ -57,7 +61,16 @@ export function BottomBar({ counts, moreActive, moreOpen, onMore }: BottomBarPro
         onClick={onMore}
         className={cn(ITEM, moreActive || moreOpen ? 'text-accent-ink' : 'text-soft')}
       >
-        <Ellipsis aria-hidden strokeWidth={1.5} className="size-icon" />
+        <span className="relative inline-flex">
+          <Ellipsis aria-hidden strokeWidth={1.5} className="size-icon" />
+          {counts.amigos > 0 && (
+            <span className="absolute -top-2 left-full -ml-1.5 short:right-full short:left-auto short:-mr-1.5 short:ml-0">
+              <Badge variant="counter" label={counterLabel('amigos', counts.amigos)}>
+                {counts.amigos}
+              </Badge>
+            </span>
+          )}
+        </span>
         <span className="truncate">Mais</span>
       </button>
     </nav>

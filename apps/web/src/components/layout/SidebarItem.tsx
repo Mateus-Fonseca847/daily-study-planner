@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../lib/cn';
 import { Badge } from '../ui/Badge';
-import type { NavItem } from './nav';
+import { counterLabel, type NavItem } from './nav';
 
 interface SidebarItemProps {
   item: NavItem;
@@ -29,7 +29,9 @@ export function SidebarItem({ item, collapsed, count }: SidebarItemProps) {
           <Icon aria-hidden strokeWidth={1.5} className="size-icon shrink-0" />
           <span className={collapsed ? 'sr-only' : 'truncate'}>{item.label}</span>
           {!collapsed && count !== undefined && count > 0 && (
-            <Badge variant="counter">{count}</Badge>
+            <Badge variant="counter" label={item.counter && counterLabel(item.counter, count)}>
+              {count}
+            </Badge>
           )}
           {!collapsed && item.badgeNew && <Badge variant="new">New</Badge>}
           {isActive && <span aria-hidden className="absolute inset-y-0 right-0 w-bar bg-accent" />}

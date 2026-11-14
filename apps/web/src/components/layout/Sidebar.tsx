@@ -1,8 +1,7 @@
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
-import type { NavCounts } from '../../lib/data/selectors';
 import { cn } from '../../lib/cn';
 import { Button } from '../ui/Button';
-import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem } from './nav';
+import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem, type ShellCounts } from './nav';
 import { CreateMenu } from './CreateMenu';
 import { InstallButton } from './InstallButton';
 import { SidebarItem } from './SidebarItem';
@@ -10,14 +9,14 @@ import { SidebarItem } from './SidebarItem';
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
-  counts: NavCounts;
+  counts: ShellCounts;
 }
 
 interface NavGroupProps {
   label: string;
   items: readonly NavItem[];
   collapsed: boolean;
-  counts: NavCounts;
+  counts: ShellCounts;
 }
 
 function NavGroup({ label, items, collapsed, counts }: NavGroupProps) {

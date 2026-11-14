@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { PHASE_LABEL } from '../../features/account/SyncStatusLabel';
 import { useSignOut } from '../../features/account/useSignOut';
 import { useAuth } from '../../lib/auth/auth-store';
-import type { NavCounts } from '../../lib/data/selectors';
 import { cn } from '../../lib/cn';
 import { useSync } from '../../lib/sync/sync-store';
 import { BottomSheet } from '../ui/BottomSheet';
@@ -11,7 +10,7 @@ import { Badge } from '../ui/Badge';
 import { BAR_ITEMS } from './BottomBar';
 import { InstallButton } from './InstallButton';
 import { InstallHelp } from './InstallHelp';
-import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem } from './nav';
+import { counterLabel, MENU_ITEMS, SETTINGS_ITEMS, type NavItem, type ShellCounts } from './nav';
 import { ThemeToggleRow } from './ThemeToggle';
 
 const ROW =
@@ -25,11 +24,11 @@ const PREFERENCES = SETTINGS_ITEMS.find((item) => item.to === '/preferencias') a
 const HELP_ITEMS = SETTINGS_ITEMS.filter((item) => item !== PREFERENCES);
 
 interface MoreSheetProps {
-  counts: NavCounts;
+  counts: ShellCounts;
   onClose: () => void;
 }
 
-function NavRow({ item, counts }: { item: NavItem; counts: NavCounts }) {
+function NavRow({ item, counts }: { item: NavItem; counts: ShellCounts }) {
   const Icon = item.icon;
   const count = item.counter ? counts[item.counter] : 0;
   return (
@@ -40,7 +39,11 @@ function NavRow({ item, counts }: { item: NavItem; counts: NavCounts }) {
     >
       <Icon aria-hidden strokeWidth={1.5} className="size-icon shrink-0" />
       <span className="flex-1 truncate">{item.label}</span>
-      {count > 0 && <Badge variant="counter">{count}</Badge>}
+      {count > 0 && (
+        <Badge variant="counter" label={item.counter && counterLabel(item.counter, count)}>
+          {count}
+        </Badge>
+      )}
     </NavLink>
   );
 }
