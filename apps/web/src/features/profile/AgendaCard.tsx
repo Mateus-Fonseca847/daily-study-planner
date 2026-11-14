@@ -84,11 +84,13 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
             <div
               key={hour}
               aria-hidden
-              className="flex h-hour items-start border-t-hair border-dashed"
+              className="flex h-hour items-start"
             >
-              <span className="w-agenda-label -translate-y-2.5 pr-3 text-md text-muted tabular-nums">
+              <span className="w-agenda-label shrink-0 -translate-y-2.5 pr-3 text-md text-muted tabular-nums">
                 {String(hour).padStart(2, '0')}h
               </span>
+              {/* O tracejado começa depois do rótulo: passar por trás da hora tirava contraste. */}
+              <span className="flex-1 border-t-hair border-dashed" />
             </div>
           ))}
 
