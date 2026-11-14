@@ -7,11 +7,22 @@ export interface BackupFile {
   content: string;
 }
 
-/** Conteúdo e nome do arquivo de backup (mesmo formato salvo no navegador). */
-export function createBackupFile(snapshot: DataSnapshot, now: Date): BackupFile {
+/**
+ * Conteúdo e nome do arquivo de backup (mesmo formato salvo no navegador). `social` (opcional): o
+ * perfil social e os aceites, num campo de topo FORA de `data` — a importação ignora esse campo,
+ * então o formato v6 não muda. A foto não vai em binário (só a indicação de que existe).
+ */
+export function createBackupFile(
+  snapshot: DataSnapshot,
+  now: Date,
+  social?: Record<string, unknown> | null,
+): BackupFile {
+  const content = serializeEnvelope(snapshot, now);
   return {
     filename: `daily-backup-${format(now, 'yyyy-MM-dd')}.json`,
-    content: serializeEnvelope(snapshot, now),
+    content: social
+      ? JSON.stringify({ ...(JSON.parse(content) as object), social }, null, 2)
+      : content,
   };
 }
 

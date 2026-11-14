@@ -220,3 +220,38 @@ export function startSocial(): () => void {
   sync();
   return useAuth.subscribe(sync);
 }
+
+/**
+ * Para o arquivo de backup: perfil e aceites (sem a foto em binário). Só busca no servidor se este
+ * aparelho sabe que o perfil existe (cache), para não gerar requisição para quem nunca ativou.
+ * `null` = sem perfil social; `'erro'` = existe, mas não deu para buscar agora.
+ */
+export async function socialExport(): Promise<Record<string, unknown> | null | 'erro'> {
+  const id = userId();
+  if (!id || !readSocialCache(id)) return null;
+  const r = repositoryFor(id);
+  if (!r) return null;
+  try {
+    const { profile, consents } = await r.exportData();
+    if (!profile) return null;
+    return {
+      perfil: {
+        username: profile.username,
+        nomeDeExibicao: profile.displayName,
+        temFoto: profile.avatarPath !== null,
+        mesDeNascimento: profile.birthMonth?.slice(0, 7) ?? null,
+        privacidade: {
+          descobrivel: profile.discoverable,
+          mostrarMedalhas: profile.showAchievements,
+          mostrarSequencias: profile.showStreaks,
+          mostrarEstatisticas: profile.showStats,
+        },
+        ativadoEm: profile.socialEnabledAt,
+        desativadoEm: profile.disabledAt,
+      },
+      consentimentos: consents,
+    };
+  } catch {
+    return 'erro';
+  }
+}
