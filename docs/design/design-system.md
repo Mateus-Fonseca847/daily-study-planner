@@ -1,4 +1,4 @@
-# Daily — Design System (v1.4)
+# Daily — Design System (v1.5)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
@@ -643,3 +643,18 @@ AA testado em `src/styles/palette.test.ts` (tinta sobre superfície, fundo e o p
 | Conquistas (escuro)                      | Conquistas (claro)                                      | Celular                                       |
 | ---------------------------------------- | ------------------------------------------------------- | --------------------------------------------- |
 | ![Conquistas](../images/conquistas.webp) | ![Conquistas no claro](../images/conquistas-claro.webp) | ![Celular](../images/celular-conquistas.webp) |
+
+## 20. Perfil social (v1.5)
+
+Sem cores novas: usa os tokens existentes nos dois temas. Token novo só de tamanho: `--ds-crop` (16 rem, a prévia do recorte; `size-crop` e `max-w-crop`).
+
+- **Avatar social** (`features/social/SocialAvatar.tsx`): foto por `blob:` em círculo (`size-avatar-sm`, `size-avatar-md` ou `size-profile-avatar`), ou as iniciais em `bg-surface` com borda fina. Decorativo (o nome acessível fica no botão ou no texto ao lado).
+- **Assistente** (`ActivationWizard`): o `Modal` (diálogo no desktop, tela cheia no celular, botões no rodapé), “Passo N de 6” anunciado, Voltar/Continuar; o aviso para 14 a 17 anos em `bg-accent-soft`; “Ninguém além de você vê seu perfil por enquanto” em `bg-hover`.
+- **Campo do @** (`SocialFields.tsx`): prefixo “@”, anel de foco único no contorno do campo, situação ao vivo (`aria-live`): “Verificando…”, “Disponível” (`text-concluido` com ícone) ou o problema (`text-danger`), e as regras sempre visíveis.
+- **Recorte da foto** (`AvatarPicker`): prévia circular em canvas, focável, que se move pelas setas (Shift = mais rápido) e por arrasto; zoom num controle deslizante (`accent-accent-ink`).
+- **Privacidade:** caixas de seleção `plain`; para 14 a 17 anos, as travadas ficam `opacity-dimmed`, com a explicação.
+- **Contraste** (auditoria `--social`, controles desabilitados fora, como a WCAG permite): escuro 4,81:1 e claro 5,07:1 no pior caso, no desktop e no celular.
+
+| Gerenciar (escuro)                         | Assistente (claro)                                     | Celular                                          |
+| ------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------ |
+| ![Gerenciar](../images/perfil-social.webp) | ![Assistente](../images/perfil-social-assistente.webp) | ![Celular](../images/celular-perfil-social.webp) |
