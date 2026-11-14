@@ -47,6 +47,7 @@
   --color-accent-ink: var(--ds-color-accent-ink);
   --color-focus-ring: var(--ds-color-focus);
   --color-on-status: var(--ds-color-on-status);
+  --color-on-habit: var(--ds-color-on-habit);
   --color-badge: var(--ds-color-badge);
   --color-badge-fg: var(--ds-color-badge-fg);
   --color-fg: var(--ds-color-fg);
@@ -419,7 +420,7 @@
   --habit: var(--ds-habit-cinza);
 }
 @utility habit-text {
-  color: var(--habit);
+  color: color-mix(in srgb, var(--habit), var(--ds-color-fg) var(--ds-habit-ink-mix));
 }
 @utility habit-bg {
   background-color: var(--habit);

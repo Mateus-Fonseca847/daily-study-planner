@@ -181,6 +181,24 @@ describe('tema claro (tokens.css × palette-check)', () => {
     );
   });
 
+  it('cor do hábito como texto (com a tinta) sobre o bloco do hábito; marca branca sobre a cor sólida', () => {
+    const pct = (name: string) =>
+      Number(new RegExp(`--ds-${name}:\\s*(\\d+)%`).exec(lightBlock)![1]) / 100;
+    const ink = pct('habit-ink-mix');
+    const block = pct('habit-block-mix');
+    for (const color of Object.values(PALETTE_LIGHT)) {
+      const text = over(L.fg, ink, color);
+      expect(contrast(text, over(color, block, L.bg))).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(light('color-on-habit'), color)).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('texto escuro sobre a água (onda, preenchimento e fundo) ≥ 4,5:1', () => {
+    for (const water of ['color-water', 'color-water-deep', 'color-water-wave']) {
+      expect(contrast(L.fg, light(water))).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('cancelado esmaecido (opacidade 60 %) ainda tem título ≥ 3:1', () => {
     const chip = light('color-status-cancelado-soft');
     expect(contrast(over(L.fg, 0.6, chip), chip)).toBeGreaterThanOrEqual(3);

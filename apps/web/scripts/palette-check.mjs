@@ -31,7 +31,7 @@ export const PALETTE_LIGHT = {
   ciano: '#007d77',
   petroleo: '#177692',
   gelo: '#4c575e',
-  lilas: '#7f608a',
+  lilas: '#7a5a86',
   fucsia: '#9a1686',
   rosa: '#bd3f71',
   cinza: '#72685c',

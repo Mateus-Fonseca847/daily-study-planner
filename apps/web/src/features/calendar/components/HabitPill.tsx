@@ -39,7 +39,7 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
     'flex h-habit-pill items-center gap-1 rounded-full text-2xs font-medium',
     phone ? 'size-touch-dense justify-center' : 'w-full px-2',
     HABIT_COLOR_CLASS[habit.color],
-    done ? 'habit-bg text-accent-fg' : 'habit-bg-soft text-fg',
+    done ? 'habit-bg text-on-habit' : 'habit-bg-soft text-fg',
     interactive && 'hover:brightness-125',
   );
   const content = (

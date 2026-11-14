@@ -164,6 +164,10 @@
   /* Fundo suave da cor do hábito (ícone do cartão) e do bloco do hábito na grade de horas. */
   --ds-habit-soft-mix: 18%;
   --ds-habit-block-mix: 14%;
+  /* Texto e ícones na cor do hábito: quanto da tinta (`fg`) entra na mistura (0 = a cor pura). */
+  --ds-habit-ink-mix: 0%;
+  /* Marca sobre a cor sólida do hábito (check do hábito feito, amostra escolhida). */
+  --ds-color-on-habit: var(--ds-color-accent-fg);
   /* Paleta dos hábitos: a mesma das matérias. */
   --ds-habit-ciano: var(--ds-palette-ciano);
   --ds-habit-petroleo: var(--ds-palette-petroleo);
@@ -424,12 +428,16 @@
   --ds-palette-ciano: #007d77;
   --ds-palette-petroleo: #177692;
   --ds-palette-gelo: #4c575e;
-  --ds-palette-lilas: #7f608a;
+  --ds-palette-lilas: #7a5a86;
   --ds-palette-fucsia: #9a1686;
   --ds-palette-rosa: #bd3f71;
   --ds-palette-cinza: #72685c;
 
-  --ds-color-water-button: rgb(255 255 255 / 0.25);
+  /* Água mais clara: o texto escuro do cartão lê sobre a onda em qualquer nível. */
+  --ds-color-water: #a49cf7;
+  --ds-color-water-deep: #8c83ef;
+  --ds-color-water-wave: #bcb6fb;
+  --ds-color-water-button: rgb(255 255 255 / 0.5);
   --ds-color-chart-track: rgb(0 0 0 / 0.08);
   --ds-color-chart-track-strong: rgb(0 0 0 / 0.14);
 
@@ -449,7 +457,9 @@
   --ds-color-heat-0: rgb(0 0 0 / 0.09);
   --ds-color-heat-off: rgb(0 0 0 / 0.04);
   --ds-habit-soft-mix: 14%;
-  --ds-habit-block-mix: 12%;
+  --ds-habit-block-mix: 8%;
+  --ds-habit-ink-mix: 20%;
+  --ds-color-on-habit: #ffffff;
 
   --ds-shadow-popover: 0 12px 32px rgb(0 0 0 / 0.12), 0 0 0 1px rgb(0 0 0 / 0.08);
 }
