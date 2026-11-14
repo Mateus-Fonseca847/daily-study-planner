@@ -10,7 +10,7 @@
 
 -- Limite de taxa: conta uma chamada de `action` na janela atual (`bucket`) e diz se ainda cabe.
 -- Interna (sem EXECUTE para ninguém além do dono); limpa contadores com mais de 2 dias.
-create function public.social_rate_hit(action text, bucket interval, max_calls integer)
+create function public.social_rate_hit(p_action text, p_bucket interval, p_max integer)
 returns boolean
 language plpgsql
 security definer
@@ -19,17 +19,17 @@ as $$
 declare
   uid uuid := auth.uid();
   start_at timestamptz := to_timestamp(
-    floor(extract(epoch from now()) / extract(epoch from bucket)) * extract(epoch from bucket)
+    floor(extract(epoch from now()) / extract(epoch from p_bucket)) * extract(epoch from p_bucket)
   );
   used integer;
 begin
   insert into public.social_rate_limits as r (user_id, action, window_start, count)
-    values (uid, action, start_at, 1)
+    values (uid, p_action, start_at, 1)
     on conflict (user_id, action, window_start) do update set count = r.count + 1
     returning r.count into used;
   delete from public.social_rate_limits
     where user_id = uid and window_start < now() - interval '2 days';
-  return used <= max_calls;
+  return used <= p_max;
 end;
 $$;
 
