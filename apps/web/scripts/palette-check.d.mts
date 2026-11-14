@@ -6,7 +6,11 @@ export const MIN_DELTA_E: number;
 export function luminance(hex: string): number;
 export function contrast(a: string, b: string): number;
 export function deltaE(a: string, b: string): number;
-export function report(): {
+export const PALETTE_LIGHT: Record<string, string>;
+export const RESERVED_LIGHT: Record<string, string>;
+export const SURFACE_LIGHT: string;
+export const MIN_DELTA_E_LIGHT: number;
+export function report(theme?: 'dark' | 'light'): {
   pairs: { a: string; b: string; dE: number }[];
   contrasts: { name: string; ratio: number }[];
 };

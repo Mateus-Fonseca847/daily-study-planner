@@ -1,6 +1,7 @@
 /**
- * Verifica a paleta v4: distinção (CIEDE2000) entre todas as cores de matéria/hábito, os status, os
- * tipos e a marca, e contraste sobre a superfície. Uso: `node apps/web/scripts/palette-check.mjs`.
+ * Verifica a paleta dos dois temas: distinção (CIEDE2000) entre todas as cores de matéria/hábito, os
+ * status, os tipos e a marca, e contraste sobre a superfície. Uso:
+ * `node apps/web/scripts/palette-check.mjs [dark|light]` (sem argumento, os dois).
  * Os valores precisam espelhar `src/styles/tokens.css` (o teste `palette.test.ts` confere).
  */
 export const PALETTE = {
@@ -24,6 +25,39 @@ export const RESERVED = {
 export const SURFACE = '#1b1b1d';
 /** Distância mínima entre cores da paleta e entre a paleta e as cores reservadas. */
 export const MIN_DELTA_E = 15;
+
+/** Tema claro: tinta escura (AA sobre o branco); o ΔE mínimo é 14 (decisão do Prompt 13). */
+export const PALETTE_LIGHT = {
+  ciano: '#007d77',
+  petroleo: '#177692',
+  gelo: '#4c575e',
+  lilas: '#7f608a',
+  fucsia: '#9a1686',
+  rosa: '#bd3f71',
+  cinza: '#72685c',
+};
+export const RESERVED_LIGHT = {
+  'status-pendente': '#8a6100',
+  'status-concluido': '#16794a',
+  'status-cancelado': '#c22a3b',
+  'tipo-prova': '#2458c9',
+  'tipo-especial': '#7545d6',
+  marca: '#6b5d00',
+  chama: '#b04f09',
+};
+/** Fundo da página no claro (o pior caso de contraste; a superfície é branca). */
+export const SURFACE_LIGHT = '#f4f4f6';
+export const MIN_DELTA_E_LIGHT = 14;
+
+export const THEMES = {
+  dark: { palette: PALETTE, reserved: RESERVED, surface: SURFACE, minDeltaE: MIN_DELTA_E },
+  light: {
+    palette: PALETTE_LIGHT,
+    reserved: RESERVED_LIGHT,
+    surface: SURFACE_LIGHT,
+    minDeltaE: MIN_DELTA_E_LIGHT,
+  },
+};
 
 const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
 const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
@@ -90,33 +124,42 @@ export function deltaE(h1, h2) {
   return Math.sqrt((dL / SL) ** 2 + (dC / SC) ** 2 + (dH / SH) ** 2 + RT * (dC / SC) * (dH / SH));
 }
 
-export function report() {
-  const all = { ...PALETTE, ...RESERVED };
+export function report(theme = 'dark') {
+  const { palette, reserved, surface } = THEMES[theme];
+  const all = { ...palette, ...reserved };
   const names = Object.keys(all);
   const pairs = [];
   for (let i = 0; i < names.length; i += 1) {
     for (let j = i + 1; j < names.length; j += 1) {
       const [a, b] = [names[i], names[j]];
       // Entre cores reservadas a distinção já é dada por ícone/texto; mede o que envolve a paleta.
-      if (!(a in PALETTE) && !(b in PALETTE)) continue;
+      if (!(a in palette) && !(b in palette)) continue;
       pairs.push({ a, b, dE: deltaE(all[a], all[b]) });
     }
   }
-  const contrasts = names.map((n) => ({ name: n, ratio: contrast(all[n], SURFACE) }));
+  const contrasts = names.map((n) => ({ name: n, ratio: contrast(all[n], surface) }));
   return { pairs: pairs.sort((x, y) => x.dE - y.dE), contrasts };
 }
 
 if (process.argv[1]?.endsWith('palette-check.mjs')) {
-  const { pairs, contrasts } = report();
-  console.log('Menores distâncias (ΔE2000):');
-  for (const p of pairs.slice(0, 10)) console.log(`  ${p.a} × ${p.b}: ${p.dE.toFixed(1)}`);
-  console.log(`\nContraste sobre ${SURFACE}:`);
-  for (const c of contrasts) console.log(`  ${c.name}: ${c.ratio.toFixed(2)}:1`);
-  const bad = pairs.filter((p) => p.dE < MIN_DELTA_E);
-  const low = contrasts.filter((c) => c.ratio < 4.5);
-  if (bad.length || low.length) {
-    console.error(`\nFALHOU: ${bad.length} pares < ${MIN_DELTA_E}, ${low.length} cores < 4.5:1`);
-    process.exit(1);
+  const arg = process.argv[2];
+  let failed = false;
+  for (const theme of arg ? [arg] : ['dark', 'light']) {
+    const { surface, minDeltaE } = THEMES[theme];
+    const { pairs, contrasts } = report(theme);
+    console.log(`\n[${theme}] Menores distâncias (ΔE2000):`);
+    for (const p of pairs.slice(0, 10)) console.log(`  ${p.a} × ${p.b}: ${p.dE.toFixed(1)}`);
+    console.log(`\n[${theme}] Contraste sobre ${surface}:`);
+    for (const c of contrasts) console.log(`  ${c.name}: ${c.ratio.toFixed(2)}:1`);
+    const bad = pairs.filter((p) => p.dE < minDeltaE);
+    const low = contrasts.filter((c) => c.ratio < 4.5);
+    if (bad.length || low.length) {
+      console.error(
+        `\n[${theme}] FALHOU: ${bad.length} pares < ${minDeltaE}, ${low.length} cores < 4.5:1`,
+      );
+      failed = true;
+    }
   }
+  if (failed) process.exit(1);
   console.log('\nok');
 }
