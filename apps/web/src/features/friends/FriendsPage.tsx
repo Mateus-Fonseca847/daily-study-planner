@@ -242,7 +242,6 @@ export function FriendsPage() {
   return (
     <PageShell
       title="Amigos"
-      description="Pessoas com quem você se conectou. Só amigos veem a sua foto."
       actions={
         gate === 'ok' ? (
           <Button variant="secondary" onClick={() => setSearching(true)} className="phone:w-full">

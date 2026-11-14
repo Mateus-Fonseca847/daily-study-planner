@@ -581,7 +581,7 @@ Sem tokens novos: tudo usa os existentes (chips de seleção, `MetaRow`, `Modal`
 - **Ícone de repetição** (`ui/RecurrenceIcon`, `Repeat2` do lucide em `size-icon-sm`, `currentColor`): ao lado do rótulo do tipo nos chips e blocos, e antes da regra nas linhas da página Tarefas. É decorativo onde o nome acessível do chip já diz “repete: Toda segunda e quarta”; fora disso tem `role="img"` e `aria-label`.
 - **Linha “Repetir”** no painel (Tarefa e Especial): atalhos como chips de seleção (`radiogroup`, um toque), “Personalizado…” abre um `fieldset` com borda fina (`border-hair`, `rounded-card-sm`): “A cada” (número + unidade), dias da semana como chips `aria-pressed` (DOM–SÁB, nome completo no `aria-label`), dia do mês ou “Último dia do mês” e término (Nunca / Em / Após). Embaixo, sempre: o resumo em texto (`text-sm font-medium`), “Próximas: …” (`text-soft`), o erro em `role="alert"` e a dica hábito × tarefa recorrente (`text-muted`, ícone `Info`).
 - **Diálogo de escopo** (`features/tasks/ScopeDialog`): `Modal` pequeno por cima do painel (só o diálogo do topo trata Esc e Tab), três opções em cartões com rádio e dica; a escolhida ganha `border-accent`; “Somente esta” fica esmaecida e explicada quando a mudança vale para a série. Botões Voltar (secundário) e Salvar/Excluir (primário).
-- **Entrada rápida** (página Tarefas): campo largo; o “Entendi: **título** · data · hora · regra” fica abaixo, ligado por `aria-describedby`.
+- **Página Tarefas:** sem campo de entrada rápida (removido no Prompt 17); “+ Nova tarefa” é um `Button` primário no cabeçalho, igual a “Novo hábito”.
 - **Contraste:** o horário nos chips e blocos passou de `text-muted` para `text-soft` (era 4,06:1 sobre os fundos suaves de status). Medido nas visões Semana e Mês, na página Tarefas, no painel com “Personalizado” aberto e no diálogo de escopo: tudo ≥ 4,5:1.
 
 | Repetir no painel                                       | Escopo da edição                                       |
@@ -724,3 +724,9 @@ Sem tokens novos. O chip e o bloco do calendário viram um **contêiner com duas
 - **Prova** nunca ganha o controle (prepara-se pelos conteúdos). **Cancelada** mostra um “×” (`text-cancelado`) onde há folga, sem ação; reabrir fica no painel.
 - **Ocorrência de série** conclui só a si mesma (id `serie@data`), sem perguntar escopo.
 - Toast “Desfazer” (`toggleDoneWithUndo`) e medalhas avaliadas como em qualquer conclusão. O Ano não tem chips (só densidade).
+
+## 23. Cabeçalho de página mínimo (v1.8)
+
+- `PageShell` tem só **título** (`h1`, `text-xl`; no celular `sr-only`, porque a topbar já mostra o nome) e **ações** à direita, alinhados ao centro. Não há subtítulo descritivo: a página se explica pelo título, pelas seções e pelos rótulos.
+- A ação principal de criar é um `Button` primário com `Plus` e o nome da coisa (“Novo hábito”, “Nova tarefa”); no celular ocupa a largura do cabeçalho, com alvo de 44 px.
+- Texto explicativo só onde ele muda o que a pessoa faz: estados vazios (`EmptyState`), diálogos e confirmações, avisos, Entrar e Privacidade.

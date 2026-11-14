@@ -50,15 +50,9 @@ export function ProfileSection() {
       aria-labelledby="profile-title"
       className="flex flex-col gap-4 rounded-xl border-hair p-6 phone:p-4"
     >
-      <div>
-        <h2 id="profile-title" className="text-lg font-semibold tracking-tight">
-          Perfil e Modo Foco
-        </h2>
-        <p className="mt-1 text-md text-muted">
-          Usado na saudação e nas metas de água. A duração do Modo Foco é a última que você
-          confirmou lá.
-        </p>
-      </div>
+      <h2 id="profile-title" className="text-lg font-semibold tracking-tight">
+        Perfil e Modo Foco
+      </h2>
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
         <TextField
           label="Nome"

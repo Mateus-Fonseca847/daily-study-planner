@@ -54,7 +54,6 @@ export function HabitsPage() {
   return (
     <PageShell
       title="Hábitos"
-      description="Acompanhe o que você repete: cada hábito tem o próprio calendário, sequência e taxa."
       actions={
         <div className="flex items-center gap-3 phone:grid phone:grid-cols-2 phone:gap-2">
           <Select

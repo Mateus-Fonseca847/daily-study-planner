@@ -15,6 +15,16 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 - Cor desconhecida (de uma versão mais nova) abre sem erro, aparece como Cinza e é mantida ao salvar.
 - A chama de sequência zerada usa `fg-muted` (o `fg-subtle` ficava abaixo de AA nos cartões), e em Hábitos de hoje a chama ganha uma pílula escura.
 
+### Alterado (minimalismo das páginas)
+
+- **Páginas sem subtítulo descritivo:** Hábitos, Tarefas, Provas, Matérias, Amigos e Preferências mostram só o título e as ações (a prop `description` saiu do `PageShell`). Estados vazios, diálogos, Entrar e Privacidade mantêm os textos.
+- **Tarefas mais enxuta:** sem os quatro cartões de resumo (as contagens ficam nos cabeçalhos das seções e no distintivo do menu) e com o botão **“+ Nova tarefa”** no mesmo padrão de “Novo hábito”, que abre o painel de nova tarefa.
+- **Preferências:** a seção “Perfil e Modo Foco” perdeu o parágrafo que repetia os rótulos dos campos.
+
+### Removido
+
+- **Entrada rápida em pt-BR** da página Tarefas (`Treinar toda segunda 19h`, “Entendi: …”), com `lib/tasks/quick-parse` e `lib/forms/quick-create`. Tarefas recorrentes continuam pelo painel (“Repetir”).
+
 ### Corrigido (acabamento 13.1)
 
 - **Contraste AA no tema escuro:** o texto secundário (`--ds-color-fg-muted`) passa de `#8A8A93` para `#92929B` e o contador rosa (`--ds-color-badge`) de `#FF2D9B` para `#FF3DA3`; a linha tracejada da agenda de hoje deixa de passar por trás das horas. A auditoria completa (todas as telas e estados, desktop e celular) fica sem reprovações nos dois temas: menor razão 4,59:1 no escuro e 4,73:1 no claro. O claro não muda.

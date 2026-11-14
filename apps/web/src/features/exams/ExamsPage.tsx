@@ -80,7 +80,6 @@ export function ExamsPage() {
   return (
     <PageShell
       title="Provas"
-      description="Suas provas, com contagem regressiva e progresso dos conteúdos."
       actions={
         <Button onClick={() => openEventForm({ type: 'prova' })}>
           <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
