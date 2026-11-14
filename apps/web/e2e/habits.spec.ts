@@ -23,11 +23,9 @@ async function createGym(page: Page) {
   await expect(dialog).toHaveCount(0);
 }
 
-const stat = (page: Page, name: string, label: string) =>
-  habitCard(page, name)
-    .locator('div', { has: page.getByText(label, { exact: true }) })
-    .locator('dd')
-    .first();
+/** Chama de sequência ao lado do nome (o cartão não mostra mais Sequência, Melhor e Taxa). */
+const streak = (page: Page, name: string) =>
+  habitCard(page, name).getByRole('img', { name: /^Sequência: / });
 
 test.describe('Hábitos', () => {
   test.beforeEach(async ({ page }) => {
@@ -55,28 +53,25 @@ test.describe('Hábitos', () => {
     await expect(page.getByRole('link', { name: /Hábitos/ })).toContainText('1'); // pendente hoje
   });
 
-  test('marcar hoje, corrigir um dia passado e recarregar: sequência e taxa mudam e persistem', async ({
+  test('marcar hoje, corrigir um dia passado e recarregar: a sequência muda e persiste', async ({
     page,
   }) => {
     await page.goto('/habitos');
     await createGym(page);
-    await expect(stat(page, 'Musculação', 'Sequência')).toHaveText('0 dias');
+    await expect(streak(page, 'Musculação')).toHaveAccessibleName('Sequência: 0 dias');
 
-    // Hoje (quarta): feito → 1 dia; taxa = 1 de 5 dias agendados (2, 4, 6, 9 e hoje).
+    // Hoje (quarta): feito → 1 dia.
     await page.getByRole('checkbox', { name: 'Musculação: feito hoje' }).click();
-    await expect(stat(page, 'Musculação', 'Sequência')).toHaveText('1 dia');
-    await expect(stat(page, 'Musculação', 'Taxa (90 dias)')).toHaveText('20%');
+    await expect(streak(page, 'Musculação')).toHaveAccessibleName('Sequência: 1 dia');
 
     // Corrige a segunda 09/11 pelo heatmap: a terça não agendada não quebra → sequência de 2.
     await cell(page, 'Musculação', '2026-11-09').click();
     await page.getByRole('button', { name: 'Marcar como feito' }).click();
     await expect(cell(page, 'Musculação', '2026-11-09')).toHaveAttribute('aria-label', /: feito/);
-    await expect(stat(page, 'Musculação', 'Sequência')).toHaveText('2 dias');
-    await expect(stat(page, 'Musculação', 'Taxa (90 dias)')).toHaveText('40%');
+    await expect(streak(page, 'Musculação')).toHaveAccessibleName('Sequência: 2 dias');
 
     await page.reload();
-    await expect(stat(page, 'Musculação', 'Sequência')).toHaveText('2 dias');
-    await expect(stat(page, 'Musculação', 'Melhor')).toHaveText('2 dias');
+    await expect(streak(page, 'Musculação')).toHaveAccessibleName('Sequência: 2 dias');
     await expect(page.getByRole('checkbox', { name: 'Musculação: feito hoje' })).toHaveAttribute(
       'aria-checked',
       'true',
@@ -196,7 +191,7 @@ test.describe('Hábitos', () => {
     });
     await page.goto('/habitos');
     const card = habitCard(page, 'Leitura');
-    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
+    await expect(streak(page, 'Leitura')).toHaveAccessibleName('Sequência: 5 dias');
     await expect(card.getByRole('img', { name: 'Sequência: 5 dias' })).toBeVisible();
 
     await cell(page, 'Leitura', '2026-11-05').click();
@@ -204,19 +199,19 @@ test.describe('Hábitos', () => {
     await day.getByRole('button', { name: 'Só este hábito' }).click();
 
     await expect(cell(page, 'Leitura', '2026-11-05')).toHaveAttribute('aria-label', /descanso/);
-    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('9 dias');
+    await expect(streak(page, 'Leitura')).toHaveAccessibleName('Sequência: 9 dias');
     await expect(card.getByRole('img', { name: 'Sequência: 9 dias' })).toBeVisible();
 
     // Persiste ao recarregar…
     await page.reload();
-    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('9 dias');
+    await expect(streak(page, 'Leitura')).toHaveAccessibleName('Sequência: 9 dias');
     // …e dá para desfazer pelo próprio dia.
     await cell(page, 'Leitura', '2026-11-05').click();
     await page
       .getByRole('dialog', { name: /^Leitura, / })
       .getByRole('button', { name: 'Desfazer descanso' })
       .click();
-    await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
+    await expect(streak(page, 'Leitura')).toHaveAccessibleName('Sequência: 5 dias');
   });
 
   test('água: “Marcar descanso” no dia, sequência intacta e desfazer', async ({ page }) => {
@@ -249,7 +244,7 @@ test.describe('Hábitos', () => {
       waterLogs: days.map((date) => ({ id: `w-${date}`, date, ml: 2000, time: '10:00' })),
     });
     await page.goto('/habitos');
-    await expect(stat(page, 'Água', 'Sequência')).toHaveText('5 dias');
+    await expect(streak(page, 'Água')).toHaveAccessibleName('Sequência: 5 dias');
 
     await cell(page, 'Água', '2026-11-05').click();
     const day = page.getByRole('dialog', { name: /^Água de / });
@@ -259,16 +254,16 @@ test.describe('Hábitos', () => {
     await expect(page.getByText('Descanso marcado (dia, este hábito)')).toBeVisible();
 
     await expect(cell(page, 'Água', '2026-11-05')).toHaveAttribute('aria-label', /descanso/);
-    await expect(stat(page, 'Água', 'Sequência')).toHaveText('9 dias');
+    await expect(streak(page, 'Água')).toHaveAccessibleName('Sequência: 9 dias');
     await page.reload();
-    await expect(stat(page, 'Água', 'Sequência')).toHaveText('9 dias');
+    await expect(streak(page, 'Água')).toHaveAccessibleName('Sequência: 9 dias');
 
     await cell(page, 'Água', '2026-11-05').click();
     await page
       .getByRole('dialog', { name: /^Água de / })
       .getByRole('button', { name: 'Desfazer descanso' })
       .click();
-    await expect(stat(page, 'Água', 'Sequência')).toHaveText('5 dias');
+    await expect(streak(page, 'Água')).toHaveAccessibleName('Sequência: 5 dias');
   });
 
   test('o heatmap se navega pelo teclado: setas movem entre dias e Enter abre o dia', async ({

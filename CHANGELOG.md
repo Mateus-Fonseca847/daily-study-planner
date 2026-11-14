@@ -4,6 +4,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Alterado (cartões de hábitos)
+
+- **Cartões de hábitos mais limpos:** saem os números Sequência, Melhor e Taxa (90 dias) e os avisos “Não agendado hoje” e “Descanso hoje”. A sequência continua na chama ao lado do nome; o heatmap mostra os dias de descanso.
+
 ### Adicionado (paleta completa)
 
 - **Novas cores para hábitos e matérias:** o seletor oferece 8 (vermelho, laranja, amarelo, lima, verde, ciano, azul e fúcsia), em 2 linhas × 4 colunas, com valores próprios no escuro e no claro e contraste AA em todos os usos. Hábitos e matérias com as cores antigas continuam iguais.
