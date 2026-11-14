@@ -17,6 +17,12 @@
   --ds-color-accent: #f5e94b;
   --ds-color-accent-soft: color-mix(in srgb, var(--ds-color-accent) 15%, transparent);
   --ds-color-accent-fg: #0b0b0c;
+  /*
+   * Papéis separados (iguais no escuro): `accent` preenche (botões, pílulas, hoje); `accent-ink` é
+   * tinta sobre superfície (texto, ícone, borda, anel); `focus` é o anel de foco.
+   */
+  --ds-color-accent-ink: var(--ds-color-accent);
+  --ds-color-focus: var(--ds-color-accent);
   --ds-color-badge: #ff2d9b;
   --ds-color-badge-fg: #0b0b0c;
   --ds-color-fg: #ffffff;
@@ -64,6 +70,8 @@
   );
   /* Chama de sequência: a única exceção laranja documentada; cinza com sequência zero. */
   --ds-color-streak: #ff8a3d;
+  /* Marca desenhada sobre um preenchimento de status (o check sobre o verde de concluído). */
+  --ds-color-on-status: var(--ds-color-accent-fg);
   --ds-color-streak-off: var(--ds-color-fg-subtle);
   /* Dia de descanso no heatmap (listras neutras). */
   --ds-color-rest: rgb(255 255 255 / 0.22);
@@ -153,6 +161,9 @@
   --ds-heat-mix-2: 52%;
   --ds-heat-mix-3: 76%;
   --ds-heat-mix-4: 100%;
+  /* Fundo suave da cor do hábito (ícone do cartão) e do bloco do hábito na grade de horas. */
+  --ds-habit-soft-mix: 18%;
+  --ds-habit-block-mix: 14%;
   /* Paleta dos hábitos: a mesma das matérias. */
   --ds-habit-ciano: var(--ds-palette-ciano);
   --ds-habit-petroleo: var(--ds-palette-petroleo);

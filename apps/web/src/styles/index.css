@@ -44,6 +44,9 @@
   --color-accent: var(--ds-color-accent);
   --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
+  --color-accent-ink: var(--ds-color-accent-ink);
+  --color-focus-ring: var(--ds-color-focus);
+  --color-on-status: var(--ds-color-on-status);
   --color-badge: var(--ds-color-badge);
   --color-badge-fg: var(--ds-color-badge-fg);
   --color-fg: var(--ds-color-fg);
@@ -422,7 +425,7 @@
   background-color: var(--habit);
 }
 @utility habit-bg-soft {
-  background-color: color-mix(in srgb, var(--habit) 18%, transparent);
+  background-color: color-mix(in srgb, var(--habit) var(--ds-habit-soft-mix), transparent);
 }
 /* Visão Ano: 4×3 a partir de 1600 px, 3×4 a partir do tablet (768 px) e 2×6 no celular. */
 @utility year-grid {
@@ -462,7 +465,7 @@
 /* Hábito com horário na grade: borda tracejada e fundo tingido na cor do hábito. */
 @utility habit-block {
   border: var(--ds-habit-block-border) dashed var(--habit);
-  background-color: color-mix(in srgb, var(--habit) 14%, transparent);
+  background-color: color-mix(in srgb, var(--habit) var(--ds-habit-block-mix), transparent);
 }
 @utility heat-lvl-0 {
   background-color: var(--ds-color-heat-0);
@@ -538,7 +541,7 @@
   z-index: 20;
   scale: var(--ds-drag-scale);
   box-shadow: var(--ds-shadow-popover);
-  outline: var(--ds-drag-outline-w) dashed var(--ds-color-accent);
+  outline: var(--ds-drag-outline-w) dashed var(--ds-color-focus);
   outline-offset: var(--ds-focus-offset);
 }
 /* Só a alça inicia o arrasto: sem rolagem/zoom do navegador sobre ela. */
@@ -580,7 +583,7 @@
     border-color: var(--ds-color-border);
   }
   :focus-visible {
-    outline: var(--ds-focus-w) solid var(--ds-color-accent);
+    outline: var(--ds-focus-w) solid var(--ds-color-focus);
     outline-offset: var(--ds-focus-offset);
   }
   button {
@@ -615,7 +618,7 @@
   }
   input[type='radio'],
   input[type='checkbox'] {
-    accent-color: var(--ds-color-accent);
+    accent-color: var(--ds-color-accent-ink);
   }
 }
 
