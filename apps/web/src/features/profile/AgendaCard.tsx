@@ -98,7 +98,7 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
               style={{ top: `calc(${nowOffset} * var(--ds-agenda-hour-h))` }}
             >
               <span className="size-dot -translate-x-1/2 rounded-full bg-accent" />
-              <span className="h-0 flex-1 border-t-hair border-accent" />
+              <span className="h-0 flex-1 border-t-hair border-accent-ink" />
             </div>
           )}
 

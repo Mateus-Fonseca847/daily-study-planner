@@ -38,7 +38,7 @@ export function CompleteButton({ event, className }: CompleteButtonProps) {
         className={cn(
           'inline-flex size-checkbox items-center justify-center rounded-full border-hair transition-colors',
           done
-            ? 'border-concluido bg-concluido text-accent-fg'
+            ? 'border-concluido bg-concluido text-on-status'
             : 'border-line-strong text-transparent group-hover:border-concluido group-hover:text-concluido',
         )}
       >

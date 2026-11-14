@@ -20,7 +20,7 @@ export function SidebarItem({ item, collapsed, count }: SidebarItemProps) {
         cn(
           'relative flex h-item items-center text-nav font-medium transition-colors coarse:h-touch',
           collapsed ? 'justify-center' : 'ml-inset gap-3 rounded-l-md pr-3 pl-4.5',
-          isActive ? 'bg-hover text-accent' : 'text-soft hover:bg-hover hover:text-fg',
+          isActive ? 'bg-hover text-accent-ink' : 'text-soft hover:bg-hover hover:text-fg',
         )
       }
     >

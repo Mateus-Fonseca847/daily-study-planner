@@ -231,7 +231,7 @@ export function RepeatPicker({ value, anchor, onChange }: RepeatPickerProps) {
                   type="checkbox"
                   checked={draft.lastDay}
                   onChange={(e) => update({ lastDay: e.target.checked })}
-                  className="size-checkbox accent-accent"
+                  className="size-checkbox accent-accent-ink"
                 />
                 Último dia do mês
               </label>
@@ -248,7 +248,7 @@ export function RepeatPicker({ value, anchor, onChange }: RepeatPickerProps) {
                     name={ids.end}
                     checked={draft.end === kind}
                     onChange={() => update({ end: kind })}
-                    className="size-checkbox accent-accent"
+                    className="size-checkbox accent-accent-ink"
                   />
                   {kind === 'nunca' ? 'Nunca' : kind === 'em' ? 'Em' : 'Após'}
                   {kind === 'em' && (

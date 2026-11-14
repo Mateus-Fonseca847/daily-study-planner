@@ -35,7 +35,7 @@ function NavRow({ item, counts }: { item: NavItem; counts: NavCounts }) {
     <NavLink
       to={item.to}
       replace
-      className={({ isActive }) => cn(ROW, isActive ? 'bg-hover text-accent' : 'text-fg')}
+      className={({ isActive }) => cn(ROW, isActive ? 'bg-hover text-accent-ink' : 'text-fg')}
     >
       <Icon aria-hidden strokeWidth={1.5} className="size-icon shrink-0" />
       <span className="flex-1 truncate">{item.label}</span>

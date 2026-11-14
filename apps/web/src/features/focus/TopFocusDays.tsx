@@ -46,7 +46,7 @@ export function TopFocusDays() {
                 <span
                   className={cn(
                     'text-md font-semibold tabular-nums',
-                    i === 0 ? 'text-accent' : 'text-fg',
+                    i === 0 ? 'text-accent-ink' : 'text-fg',
                   )}
                 >
                   {formatDayTotal(day.seconds)}

@@ -272,7 +272,7 @@ export function TimeGrid({
                 {pressed?.date === column.date && (
                   <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-0 z-10 flex items-start justify-end rounded-sm border-hair border-accent bg-accent-soft px-1 text-2xs font-bold text-accent"
+                    className="pointer-events-none absolute inset-x-0 z-10 flex items-start justify-end rounded-sm border-hair border-accent-ink bg-accent-soft px-1 text-2xs font-bold text-accent-ink"
                     style={{ top: `${pressed.pct}%`, height: `${(30 / (hours * 60)) * 100}%` }}
                   >
                     {pressed.time}

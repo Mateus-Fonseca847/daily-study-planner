@@ -23,7 +23,7 @@ export function Topbar() {
         <Button
           variant="outline"
           aria-current={onFocusPage ? 'page' : undefined}
-          className={cn(onFocusPage && 'border-accent! text-accent!')}
+          className={cn(onFocusPage && 'border-accent-ink! text-accent-ink!')}
           onClick={() => navigate('/foco')}
         >
           Modo Foco

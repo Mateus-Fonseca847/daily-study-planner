@@ -64,7 +64,7 @@ export function WaterCard({ ml, goalMl, cupMl, now }: WaterCardProps) {
               type="button"
               aria-label={`Água de hoje: ${formatLiters(ml)}. Editar`}
               title="Editar a água de hoje"
-              className="rounded-md text-stat font-normal tabular-nums hover:text-accent coarse:min-h-touch"
+              className="rounded-md text-stat font-normal tabular-nums hover:text-accent-ink coarse:min-h-touch"
               {...trigger}
             >
               {formatLiters(ml)}

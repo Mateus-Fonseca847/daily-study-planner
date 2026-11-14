@@ -161,7 +161,7 @@ export function FocusPage() {
                 <FocusPill
                   aria-pressed={lockChoice}
                   aria-describedby="lock-help"
-                  className={cn(lockChoice && 'border-accent text-accent')}
+                  className={cn(lockChoice && 'border-accent-ink text-accent-ink')}
                   onClick={toggleLock}
                 >
                   {lockChoice ? (

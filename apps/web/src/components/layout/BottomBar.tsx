@@ -36,7 +36,7 @@ export function BottomBar({ counts, moreActive, moreOpen, onMore }: BottomBarPro
           <NavLink
             key={item.to}
             to={item.to}
-            className={({ isActive }) => cn(ITEM, isActive ? 'text-accent' : 'text-soft')}
+            className={({ isActive }) => cn(ITEM, isActive ? 'text-accent-ink' : 'text-soft')}
           >
             <span className="relative inline-flex">
               <Icon aria-hidden strokeWidth={1.5} className="size-icon" />
@@ -55,7 +55,7 @@ export function BottomBar({ counts, moreActive, moreOpen, onMore }: BottomBarPro
         aria-haspopup="dialog"
         aria-expanded={moreOpen}
         onClick={onMore}
-        className={cn(ITEM, moreActive || moreOpen ? 'text-accent' : 'text-soft')}
+        className={cn(ITEM, moreActive || moreOpen ? 'text-accent-ink' : 'text-soft')}
       >
         <Ellipsis aria-hidden strokeWidth={1.5} className="size-icon" />
         <span className="truncate">Mais</span>

@@ -322,7 +322,7 @@ export function HabitFormModal({ habit, onClose }: HabitFormModalProps) {
                 type="checkbox"
                 checked={form.timeOn}
                 onChange={(e) => set('timeOn', e.target.checked)}
-                className="size-checkbox accent-accent"
+                className="size-checkbox accent-accent-ink"
               />
               Definir horário
             </label>

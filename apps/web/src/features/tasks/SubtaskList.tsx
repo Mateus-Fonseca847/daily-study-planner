@@ -67,7 +67,7 @@ export function SubtaskList({
                   item.done ? 'border-concluido bg-concluido' : 'border-line-strong',
                 )}
               >
-                {item.done && <Check strokeWidth={3} className="size-icon-sm text-accent-fg" />}
+                {item.done && <Check strokeWidth={3} className="size-icon-sm text-on-status" />}
               </span>
             </button>
             <input

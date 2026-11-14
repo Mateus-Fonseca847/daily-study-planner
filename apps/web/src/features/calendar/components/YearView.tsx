@@ -67,7 +67,7 @@ function MiniMonthView({
           aria-label={`Abrir ${name} na visão Mês`}
           title={`Abrir ${name} na visão Mês`}
           onClick={() => onOpenMonth(first)}
-          className="rounded-sm text-md font-semibold tracking-tight hover:text-accent coarse:inline-flex coarse:min-h-touch coarse:min-w-touch coarse:items-center"
+          className="rounded-sm text-md font-semibold tracking-tight hover:text-accent-ink coarse:inline-flex coarse:min-h-touch coarse:min-w-touch coarse:items-center"
         >
           {name}
         </button>
@@ -100,7 +100,7 @@ function MiniMonthView({
               className={cn(
                 'relative mx-auto inline-flex size-year-day items-center justify-center rounded-sm text-2xs tabular-nums hover:brightness-125',
                 DENSITY_CLASS[density?.level ?? 0],
-                day === today && 'outline-2 outline-offset-1 outline-accent',
+                day === today && 'outline-2 outline-offset-1 outline-accent-ink',
               )}
             >
               {Number(day.slice(8, 10))}

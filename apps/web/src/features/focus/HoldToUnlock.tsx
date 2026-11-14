@@ -73,7 +73,7 @@ export function HoldToUnlock({ onUnlock }: HoldToUnlockProps) {
           aria-hidden
           className="relative size-focus-hold rounded-full"
           style={{
-            background: `conic-gradient(var(--color-accent) ${progress * 360}deg, var(--color-line-strong) 0)`,
+            background: `conic-gradient(var(--ds-color-accent-ink) ${progress * 360}deg, var(--color-line-strong) 0)`,
           }}
         >
           <span className="absolute inset-focus-hold-ring grid place-items-center rounded-full bg-bg">

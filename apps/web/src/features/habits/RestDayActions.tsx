@@ -61,7 +61,7 @@ export function RestDayActions({ habit, date, ctx, onDone }: RestDayActionsProps
           type="checkbox"
           checked={span}
           onChange={(e) => setSpan(e.target.checked)}
-          className="size-checkbox accent-accent"
+          className="size-checkbox accent-accent-ink"
         />
         Também os próximos {REST_SPAN_DAYS - 1} dias
       </label>
