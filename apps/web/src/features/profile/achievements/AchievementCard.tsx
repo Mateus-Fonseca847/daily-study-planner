@@ -51,9 +51,10 @@ export function AchievementCard({ item, onOpen }: AchievementCardProps) {
       data-achievement={def.id}
       className="flex h-full w-full flex-col gap-3 rounded-card-sm border-hair bg-surface p-4 text-left transition-colors hover:bg-hover"
     >
-      <div className="flex items-start gap-3">
+      {/* No celular (2 colunas estreitas), a medalha vai em cima do título. */}
+      <div className="flex items-start gap-3 phone:flex-col phone:gap-2">
         <Medal def={def} level={achieved?.level ?? 0} />
-        <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex min-w-0 flex-col gap-1 break-words">
           <span className="text-md font-semibold text-fg">{def.title}</span>
           <LevelTag item={item} />
         </div>
