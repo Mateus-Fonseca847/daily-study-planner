@@ -68,7 +68,7 @@ export function PreferencesPage() {
   };
 
   return (
-    <PageShell title="Preferências" description="Perfil, Modo Foco e backup dos seus dados.">
+    <PageShell title="Preferências">
       <AccountSection />
       <SocialSection />
       <ProfileSection />

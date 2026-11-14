@@ -46,7 +46,6 @@ export function SubjectsPage() {
   return (
     <PageShell
       title="Matérias"
-      description="Organize seus estudos por matéria e escolha uma cor para cada uma."
       actions={
         <Button onClick={() => openSubjectForm()}>
           <Plus aria-hidden strokeWidth={1.5} className="size-icon" />

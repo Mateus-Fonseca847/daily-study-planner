@@ -226,10 +226,7 @@ export function TasksPage() {
   };
 
   return (
-    <PageShell
-      title="Tarefas"
-      description="Tarefas, provas e especiais: o que está atrasado, o que vence hoje e tudo o que vem."
-    >
+    <PageShell title="Tarefas">
       <form onSubmit={add}>
         <input
           aria-label="Nova tarefa"
