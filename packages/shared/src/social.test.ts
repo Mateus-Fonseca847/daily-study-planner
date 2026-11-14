@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   ageOn,
@@ -49,19 +47,7 @@ describe('@ (mesmos casos do pgTAP)', () => {
     expect(result.error?.issues[0]?.message).toMatch(/dois sinais seguidos/);
   });
 
-  it('a lista de reservados é a mesma da migração SQL', () => {
-    const sql = readFileSync(
-      fileURLToPath(
-        new URL('../../../supabase/migrations/20261115000001_social_tables.sql', import.meta.url),
-      ),
-      'utf8',
-    );
-    const block = sql.slice(
-      sql.indexOf('insert into public.reserved_usernames'),
-      sql.indexOf(';', sql.indexOf('insert into public.reserved_usernames')),
-    );
-    const inSql = [...block.matchAll(/\('([a-z0-9._]+)'\)/g)].map((m) => m[1]).sort();
-    expect(inSql).toEqual([...RESERVED_USERNAMES].sort());
+  it('lista de reservados sem repetição (a comparação com o SQL fica em apps/web)', () => {
     expect(new Set(RESERVED_USERNAMES).size).toBe(RESERVED_USERNAMES.length);
   });
 });
