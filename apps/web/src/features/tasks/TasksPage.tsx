@@ -1,17 +1,16 @@
-import { useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useId, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarDays, ChevronDown, ListTodo } from 'lucide-react';
+import { CalendarDays, ChevronDown, ListTodo, Plus } from 'lucide-react';
 import { subtaskProgress, subtaskListLabel, type StudyEvent } from '@daily/shared';
 import { PageShell } from '../../components/layout/PageShell';
+import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { cn } from '../../lib/cn';
 import { useData } from '../../lib/data/app-store';
 import { chipStyle, EVENT_TYPE_META } from '../../lib/event-meta';
 import { appNow } from '../../lib/fixture';
-import { quickTaskDraft } from '../../lib/forms/quick-create';
-import { parseQuickEntry } from '../../lib/tasks/quick-parse';
 import { dueOf, filterByType, taskSections, type UpcomingGroup } from '../../lib/tasks/sections';
 import { useTypeFilter } from '../../lib/tasks/type-filter-store';
 import { openEventForm } from '../../lib/ui-store';
@@ -167,10 +166,7 @@ const List = ({
 export function TasksPage() {
   const allEvents = useData((s) => s.events);
   const exceptions = useData((s) => s.exceptions);
-  const createEvent = useData((s) => s.createEvent);
   const types = useTypeFilter((s) => s.types);
-  const [title, setTitle] = useState('');
-  const quickHintId = useId();
   const now = useMemo(() => appNow(), []);
 
   const events = useMemo(() => filterByType(allEvents, types), [allEvents, types]);
@@ -179,39 +175,16 @@ export function TasksPage() {
   const nothingOpen =
     sections.atrasadas.length === 0 && sections.hoje.length === 0 && upcomingCount === 0;
 
-  // Entrada rápida: entende dia, hora e repetição em pt-BR e mostra antes de salvar.
-  const parsed = useMemo(() => parseQuickEntry(title, now), [title, now]);
-  const add = (e: FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) return;
-    const { title: name, understood: _u, ...options } = parsed;
-    void _u;
-    createEvent(quickTaskDraft(name, now, options));
-    setTitle('');
-  };
-
   return (
-    <PageShell title="Tarefas">
-      <form onSubmit={add}>
-        <input
-          aria-label="Nova tarefa"
-          aria-describedby={quickHintId}
-          placeholder="Nova tarefa — ex.: Treinar toda segunda 19h (Enter para adicionar)"
-          value={title}
-          maxLength={160}
-          onChange={(e) => setTitle(e.target.value)}
-          className="h-control w-full rounded-full border-hair bg-surface px-5 text-md text-fg placeholder:text-muted"
-        />
-        <p id={quickHintId} aria-live="polite" className="mt-2 min-h-5 px-5 text-sm text-muted">
-          {parsed.understood.length > 0 && (
-            <>
-              Entendi: <span className="font-medium text-fg">{parsed.title}</span> ·{' '}
-              {parsed.understood.join(' · ')}
-            </>
-          )}
-        </p>
-      </form>
-
+    <PageShell
+      title="Tarefas"
+      actions={
+        <Button onClick={() => openEventForm({ type: 'tarefa' })}>
+          <Plus aria-hidden strokeWidth={1.5} className="size-icon" />
+          Nova tarefa
+        </Button>
+      }
+    >
       {nothingOpen && (
         <EmptyState
           icon={ListTodo}

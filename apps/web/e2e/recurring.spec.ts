@@ -158,15 +158,18 @@ test.describe('Tarefas recorrentes', () => {
     await expect(blocks(page)).toHaveCount(2);
   });
 
-  test('entrada rápida: “Treinar toda segunda 19h” e a página Tarefas mostra uma ocorrência por série', async ({
-    page,
-  }) => {
-    await seedSnapshot(page, { events: [TRAINING] });
+  test('a página Tarefas mostra uma ocorrência por série', async ({ page }) => {
+    const mondays = {
+      ...TRAINING,
+      id: 'treinar',
+      title: 'Treinar',
+      start: '2026-11-16T19:00:00',
+      end: '2026-11-16T19:00:00',
+      subtasks: [],
+      recurrence: { freq: 'semanal', interval: 1, weekdays: [1], end: { kind: 'nunca' } },
+    };
+    await seedSnapshot(page, { events: [TRAINING, mondays] });
     await page.goto('/tarefas');
-    const input = page.getByLabel('Nova tarefa');
-    await input.fill('Treinar toda segunda 19h');
-    await expect(page.getByText(/Entendi: Treinar · 16\/11 · 19:00 · Toda segunda/)).toBeVisible();
-    await input.press('Enter');
 
     const next = page
       .locator('section')
