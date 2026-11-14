@@ -42,25 +42,11 @@
   --color-subject-rosa: var(--ds-color-subject-rosa);
   --color-subject-cinza: var(--ds-color-subject-cinza);
   --color-subject-vermelho: var(--ds-color-subject-vermelho);
-  --color-subject-carmim: var(--ds-color-subject-carmim);
-  --color-subject-coral: var(--ds-color-subject-coral);
   --color-subject-laranja: var(--ds-color-subject-laranja);
-  --color-subject-terracota: var(--ds-color-subject-terracota);
   --color-subject-amarelo: var(--ds-color-subject-amarelo);
-  --color-subject-mostarda: var(--ds-color-subject-mostarda);
   --color-subject-lima: var(--ds-color-subject-lima);
   --color-subject-verde: var(--ds-color-subject-verde);
-  --color-subject-oliva: var(--ds-color-subject-oliva);
-  --color-subject-menta: var(--ds-color-subject-menta);
-  --color-subject-celeste: var(--ds-color-subject-celeste);
   --color-subject-azul: var(--ds-color-subject-azul);
-  --color-subject-anil: var(--ds-color-subject-anil);
-  --color-subject-violeta: var(--ds-color-subject-violeta);
-  --color-subject-roxo: var(--ds-color-subject-roxo);
-  --color-subject-vinho: var(--ds-color-subject-vinho);
-  --color-subject-marrom: var(--ds-color-subject-marrom);
-  --color-subject-pedra: var(--ds-color-subject-pedra);
-  --color-subject-grafite: var(--ds-color-subject-grafite);
   --color-accent: var(--ds-color-accent);
   --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
@@ -458,23 +444,11 @@
 @utility habit-vermelho {
   --habit: var(--ds-habit-vermelho);
 }
-@utility habit-carmim {
-  --habit: var(--ds-habit-carmim);
-}
-@utility habit-coral {
-  --habit: var(--ds-habit-coral);
-}
 @utility habit-laranja {
   --habit: var(--ds-habit-laranja);
 }
-@utility habit-terracota {
-  --habit: var(--ds-habit-terracota);
-}
 @utility habit-amarelo {
   --habit: var(--ds-habit-amarelo);
-}
-@utility habit-mostarda {
-  --habit: var(--ds-habit-mostarda);
 }
 @utility habit-lima {
   --habit: var(--ds-habit-lima);
@@ -482,38 +456,8 @@
 @utility habit-verde {
   --habit: var(--ds-habit-verde);
 }
-@utility habit-oliva {
-  --habit: var(--ds-habit-oliva);
-}
-@utility habit-menta {
-  --habit: var(--ds-habit-menta);
-}
-@utility habit-celeste {
-  --habit: var(--ds-habit-celeste);
-}
 @utility habit-azul {
   --habit: var(--ds-habit-azul);
-}
-@utility habit-anil {
-  --habit: var(--ds-habit-anil);
-}
-@utility habit-violeta {
-  --habit: var(--ds-habit-violeta);
-}
-@utility habit-roxo {
-  --habit: var(--ds-habit-roxo);
-}
-@utility habit-vinho {
-  --habit: var(--ds-habit-vinho);
-}
-@utility habit-marrom {
-  --habit: var(--ds-habit-marrom);
-}
-@utility habit-pedra {
-  --habit: var(--ds-habit-pedra);
-}
-@utility habit-grafite {
-  --habit: var(--ds-habit-grafite);
 }
 @utility habit-text {
   color: color-mix(in srgb, var(--habit), var(--ds-color-fg) var(--ds-habit-ink-mix));

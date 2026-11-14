@@ -31,7 +31,7 @@ const all = process.argv.includes('--all');
  */
 const social = process.argv.includes('--social');
 /**
- * `--palette`: semeia um hábito e uma matéria para cada uma das 27 cores (Prompt 13.2) e mede
+ * `--palette`: semeia um hábito e uma matéria para cada cor conhecida (13: as 8 do seletor e as da v4) e mede
  * Hábitos, Matérias, Perfil e a Semana do calendário (chips, pílulas, blocos, heatmap e anel).
  */
 const paletteMode = process.argv.includes('--palette');
@@ -44,25 +44,11 @@ const PALETTE_KEYS = [
   'rosa',
   'cinza',
   'vermelho',
-  'carmim',
-  'coral',
   'laranja',
-  'terracota',
   'amarelo',
-  'mostarda',
   'lima',
   'verde',
-  'oliva',
-  'menta',
-  'celeste',
   'azul',
-  'anil',
-  'violeta',
-  'roxo',
-  'vinho',
-  'marrom',
-  'pedra',
-  'grafite',
 ];
 function paletteSnapshot() {
   const today = new Date();
@@ -427,10 +413,13 @@ try {
     const socialState = social ? SOCIAL_STATES.find(([u]) => u === url) : null;
     if (socialState) await socialContext(context, socialState[1]);
     if (paletteMode)
-      await context.addInitScript((snap) => {
-        localStorage.setItem('daily:v6', JSON.stringify(snap.data));
-        localStorage.setItem('daily:theme', snap.theme);
-      }, { data: paletteSnapshot(), theme: theme === 'light' ? 'claro' : 'escuro' });
+      await context.addInitScript(
+        (snap) => {
+          localStorage.setItem('daily:v6', JSON.stringify(snap.data));
+          localStorage.setItem('daily:theme', snap.theme);
+        },
+        { data: paletteSnapshot(), theme: theme === 'light' ? 'claro' : 'escuro' },
+      );
     const page = await context.newPage();
     await page.goto(`http://localhost:5196${url}`);
     if (socialState) {

@@ -6,17 +6,16 @@ const habitCard = (page: Page, name: string) => page.getByRole('region', { name,
 const stored = (page: Page) =>
   page.evaluate(() => JSON.parse(localStorage.getItem('daily:v6') ?? '{}').data);
 
-/** Uma cor de cada grupo do seletor. */
-const ONE_PER_GROUP = [
+/** As 8 cores do seletor (2 linhas × 4 colunas). */
+const PICKER = [
   ['Vermelho', 'vermelho'],
-  ['Terracota', 'terracota'],
-  ['Mostarda', 'mostarda'],
-  ['Oliva', 'oliva'],
-  ['Azul-petróleo', 'petroleo'],
-  ['Anil', 'anil'],
-  ['Violeta', 'violeta'],
+  ['Laranja', 'laranja'],
+  ['Amarelo', 'amarelo'],
+  ['Lima', 'lima'],
+  ['Verde', 'verde'],
+  ['Ciano', 'ciano'],
+  ['Azul', 'azul'],
   ['Fúcsia', 'fucsia'],
-  ['Grafite', 'grafite'],
 ] as const;
 
 async function newHabit(page: Page, name: string, color: string) {
@@ -38,23 +37,21 @@ test.describe('paleta completa de cores', () => {
     await page.clock.install({ time: NOW });
   });
 
-  test('um hábito por grupo: a cor chega ao cartão, ao heatmap e persiste', async ({ page }) => {
+  test('um hábito por cor do seletor: a cor chega ao cartão e persiste', async ({ page }) => {
     await seedSnapshot(page, {});
     await page.goto('/habitos');
-    for (const [label, id] of ONE_PER_GROUP) {
+    for (const [label, id] of PICKER) {
       await newHabit(page, `Hábito ${label}`, label);
       const card = habitCard(page, `Hábito ${label}`);
       await expect(card).toHaveClass(new RegExp(`habit-${id}\\b`));
     }
     await page.reload();
     const data = await stored(page);
-    expect(data.habits.map((h: { color: string }) => h.color)).toEqual(
-      ONE_PER_GROUP.map(([, id]) => id),
-    );
-    await expect(habitCard(page, 'Hábito Grafite')).toHaveClass(/habit-grafite\b/);
+    expect(data.habits.map((h: { color: string }) => h.color)).toEqual(PICKER.map(([, id]) => id));
+    await expect(habitCard(page, 'Hábito Fúcsia')).toHaveClass(/habit-fucsia\b/);
   });
 
-  test('matéria: escolher Vinho pelo teclado e ver a bolinha na lista', async ({ page }) => {
+  test('matéria: escolher pelo teclado na grade e ver a bolinha na lista', async ({ page }) => {
     await seedSnapshot(page, {});
     await page.goto('/materias');
     await page.getByRole('button', { name: 'Criar', exact: true }).first().click();
@@ -62,38 +59,37 @@ test.describe('paleta completa de cores', () => {
     const dialog = page.getByRole('dialog', { name: 'Nova matéria' });
     await dialog.getByLabel('Nome').fill('Química');
     const picker = dialog.getByRole('radiogroup', { name: 'Cor da matéria' });
-    // Tab entra na grade pela cor marcada (a primeira sugerida é Ciano).
-    await picker.getByRole('radio', { name: 'Ciano' }).focus();
-    // ↑ ↑ ↑ ↑ sobem Verdes → Amarelos → Laranjas → Vermelhos (1ª posição); → → chega ao Vinho.
-    for (const key of ['ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowUp', 'ArrowRight', 'ArrowRight'])
-      await page.keyboard.press(key);
-    await expect(picker.getByRole('radio', { name: 'Vinho' })).toBeFocused();
+    // Tab entra na grade pela cor marcada (a primeira sugerida é Vermelho).
+    await picker.getByRole('radio', { name: 'Vermelho' }).focus();
+    // ↓ desce para Verde (mesma coluna); → → chega ao Azul.
+    for (const key of ['ArrowDown', 'ArrowRight', 'ArrowRight']) await page.keyboard.press(key);
+    await expect(picker.getByRole('radio', { name: 'Azul', exact: true })).toBeFocused();
     await page.keyboard.press('Enter');
-    await expect(picker.getByRole('radio', { name: 'Vinho' })).toHaveAttribute(
+    await expect(picker.getByRole('radio', { name: 'Azul', exact: true })).toHaveAttribute(
       'aria-checked',
       'true',
     );
-    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowUp');
     await page.keyboard.press('Space');
-    await expect(picker.getByRole('radio', { name: 'Carmim' })).toHaveAttribute(
+    await expect(picker.getByRole('radio', { name: 'Amarelo' })).toHaveAttribute(
       'aria-checked',
       'true',
     );
-    await picker.getByRole('radio', { name: 'Vinho' }).click();
+    await picker.getByRole('radio', { name: 'Azul', exact: true }).click();
     await dialog.getByRole('button', { name: 'Salvar' }).click();
-    await expect(page.locator('main .bg-subject-vinho')).toHaveCount(1);
+    await expect(page.locator('main .bg-subject-azul')).toHaveCount(1);
     await page.reload();
-    expect((await stored(page)).subjects[0].color).toBe('vinho');
+    expect((await stored(page)).subjects[0].color).toBe('azul');
   });
 
-  test('cores antigas não mudam; cor desconhecida aparece como Cinza e não se perde ao salvar', async ({
+  test('cores da paleta antiga não mudam (sem marca no seletor); cor desconhecida aparece como Cinza e não se perde ao salvar', async ({
     page,
   }) => {
-    const old = { ...manualHabit('antigo', 'Antigo', 0), color: 'ciano' };
+    const old = { ...manualHabit('antigo', 'Antigo', 0), color: 'petroleo' };
     const future = { ...manualHabit('futuro', 'Futuro', 1), color: 'cor-do-futuro' };
     await seedSnapshot(page, { habits: [old, future] });
     await page.goto('/habitos');
-    await expect(habitCard(page, 'Antigo')).toHaveClass(/habit-ciano\b/);
+    await expect(habitCard(page, 'Antigo')).toHaveClass(/habit-petroleo\b/);
     await expect(habitCard(page, 'Futuro')).toHaveClass(/habit-cinza\b/);
 
     await habitCard(page, 'Antigo')
@@ -101,9 +97,10 @@ test.describe('paleta completa de cores', () => {
       .click();
     await page.getByRole('menuitem', { name: 'Editar' }).click();
     const edit = page.getByRole('dialog', { name: /Editar hábito/ });
+    // Petróleo saiu do seletor: continua valendo no hábito, só não aparece marcado.
     await expect(
-      edit.getByRole('radiogroup', { name: 'Cor do hábito' }).getByRole('radio', { name: 'Ciano' }),
-    ).toHaveAttribute('aria-checked', 'true');
+      edit.getByRole('radiogroup', { name: 'Cor do hábito' }).getByRole('radio', { checked: true }),
+    ).toHaveCount(0);
     await page.keyboard.press('Escape');
 
     await habitCard(page, 'Futuro')
@@ -150,7 +147,7 @@ test.describe('paleta completa de cores', () => {
         expect(overflow).toBeLessThanOrEqual(0);
         const swatch = await picker.getByRole('radio', { name: 'Vermelho' }).boundingBox();
         expect(swatch!.width).toBeGreaterThanOrEqual(44);
-        await expect(picker.getByRole('radio')).toHaveCount(27);
+        await expect(picker.getByRole('radio')).toHaveCount(8);
         const save = await dialog.getByRole('button', { name: 'Criar hábito' }).boundingBox();
         expect(save!.y + save!.height).toBeLessThanOrEqual(view.height + 0.5);
       });

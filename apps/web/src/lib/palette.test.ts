@@ -12,47 +12,48 @@ import { createDataStore } from './data/store';
 import { memoryRepo } from './data/test-utils';
 import {
   habitColorClass,
-  PALETTE_GROUPS,
   PALETTE_NAME,
   paletteName,
-  PICKER_ORDER,
+  PICKER_COLORS,
+  PICKER_COLUMNS,
 } from './palette';
 import { nextPickerIndex } from './palette-nav';
 
 describe('catálogo de cores', () => {
-  it('27 cores, ids únicos e no formato; as 7 da v4 primeiro e inalteradas', () => {
-    expect(PALETTE_COLORS).toHaveLength(27);
+  it('ids únicos e no formato; as 7 da v4 primeiro e inalteradas', () => {
     expect(new Set(PALETTE_COLORS).size).toBe(PALETTE_COLORS.length);
     for (const id of PALETTE_COLORS) expect(id).toMatch(/^[a-z][a-z-]{0,31}$/);
     expect(PALETTE_COLORS.slice(0, 7)).toEqual([...PALETTE_V4]);
     expect(PALETTE_V4).toEqual(['ciano', 'petroleo', 'gelo', 'lilas', 'fucsia', 'rosa', 'cinza']);
   });
 
-  it('todo id tem nome em pt-BR e classe literal; os grupos cobrem cada cor uma vez', () => {
+  it('o seletor oferece 8 cores em 2 linhas × 4 colunas, por matiz', () => {
+    expect(PICKER_COLORS).toEqual([
+      'vermelho',
+      'laranja',
+      'amarelo',
+      'lima',
+      'verde',
+      'ciano',
+      'azul',
+      'fucsia',
+    ]);
+    expect(PICKER_COLUMNS).toBe(4);
+    expect(PICKER_COLORS.length / PICKER_COLUMNS).toBe(2);
+  });
+
+  it('toda cor conhecida tem nome em pt-BR e classe literal', () => {
     for (const id of PALETTE_COLORS) {
       expect(PALETTE_NAME[id].length).toBeGreaterThan(0);
       expect(habitColorClass(id)).toBe(`habit-${id}`);
     }
-    expect([...PICKER_ORDER].sort()).toEqual([...PALETTE_COLORS].sort());
-    expect(PALETTE_GROUPS.map((g) => g.name)).toEqual([
-      'Vermelhos',
-      'Laranjas e terrosos',
-      'Amarelos',
-      'Verdes',
-      'Azul-esverdeados',
-      'Azuis',
-      'Roxos',
-      'Rosas',
-      'Neutros',
-    ]);
-    expect(PALETTE_NAME.petroleo).toBe('Azul-petróleo');
   });
 });
 
 describe('resolução de cor', () => {
-  it('conhecida fica igual; desconhecida usa a cor segura, sem erro', () => {
+  it('conhecida fica igual (inclusive as da v4 fora do seletor); desconhecida usa a cor segura', () => {
     expect(resolvePaletteColor('verde')).toBe('verde');
-    expect(resolvePaletteColor('ciano')).toBe('ciano');
+    expect(resolvePaletteColor('petroleo')).toBe('petroleo');
     expect(resolvePaletteColor('ultravioleta')).toBe(FALLBACK_PALETTE_COLOR);
     expect(habitColorClass('ultravioleta')).toBe('habit-cinza');
     expect(paletteName('ultravioleta')).toBe('Cinza');
@@ -63,18 +64,18 @@ describe('resolução de cor', () => {
     expect(subjectSchema.parse(subject).color).toBe('ultravioleta');
     expect(subjectSchema.safeParse({ ...subject, color: 'Azul!' }).success).toBe(false);
     expect(subjectSchema.safeParse({ ...subject, color: '' }).success).toBe(false);
-    expect(habitSchema.shape.color.parse('terracota')).toBe('terracota');
+    expect(habitSchema.shape.color.parse('laranja')).toBe('laranja');
   });
 });
 
 describe('importar e exportar', () => {
-  it('cores novas e desconhecidas passam pelo backup sem mudar', () => {
+  it('cores novas, antigas e desconhecidas passam pelo backup sem mudar', () => {
     const snap = {
       ...createDataStore(memoryRepo().repo).getState().snapshot(),
       subjects: [
-        { id: 'a', name: 'Química', color: 'terracota' },
+        { id: 'a', name: 'Química', color: 'laranja' },
         { id: 'b', name: 'Física', color: 'cor-do-futuro' },
-        { id: 'c', name: 'História', color: 'ciano' },
+        { id: 'c', name: 'História', color: 'lilas' },
       ],
     };
     const now = new Date('2026-11-14T10:00:00');
@@ -82,9 +83,9 @@ describe('importar e exportar', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.snapshot.subjects.map((s) => s.color)).toEqual([
-        'terracota',
+        'laranja',
         'cor-do-futuro',
-        'ciano',
+        'lilas',
       ]);
     }
   });
@@ -95,23 +96,24 @@ describe('importar e exportar', () => {
   });
 });
 
-describe('teclado do seletor', () => {
-  const at = (id: string) => PICKER_ORDER.indexOf(id as never);
+describe('teclado do seletor (grade 2 × 4)', () => {
+  const at = (id: string) => PICKER_COLORS.indexOf(id as never);
 
   it('← → andam uma cor sem dar a volta; Home e End vão às pontas', () => {
     expect(nextPickerIndex(0, 'ArrowLeft')).toBe(0);
     expect(nextPickerIndex(0, 'ArrowRight')).toBe(1);
+    expect(nextPickerIndex(at('lima'), 'ArrowRight')).toBe(at('verde'));
     expect(nextPickerIndex(5, 'Home')).toBe(0);
-    expect(nextPickerIndex(0, 'End')).toBe(PICKER_ORDER.length - 1);
-    expect(nextPickerIndex(PICKER_ORDER.length - 1, 'ArrowRight')).toBe(PICKER_ORDER.length - 1);
+    expect(nextPickerIndex(0, 'End')).toBe(7);
+    expect(nextPickerIndex(7, 'ArrowRight')).toBe(7);
   });
 
-  it('↑ ↓ trocam de grupo na mesma posição (ou na última do grupo menor)', () => {
-    expect(nextPickerIndex(at('vermelho'), 'ArrowDown')).toBe(at('laranja'));
-    expect(nextPickerIndex(at('marrom'), 'ArrowDown')).toBe(at('mostarda'));
-    expect(nextPickerIndex(at('mostarda'), 'ArrowUp')).toBe(at('coral'));
+  it('↑ ↓ andam uma linha na mesma coluna e param nas bordas', () => {
+    expect(nextPickerIndex(at('vermelho'), 'ArrowDown')).toBe(at('verde'));
+    expect(nextPickerIndex(at('amarelo'), 'ArrowDown')).toBe(at('azul'));
+    expect(nextPickerIndex(at('fucsia'), 'ArrowUp')).toBe(at('lima'));
     expect(nextPickerIndex(at('vermelho'), 'ArrowUp')).toBe(at('vermelho'));
-    expect(nextPickerIndex(at('grafite'), 'ArrowDown')).toBe(at('grafite'));
+    expect(nextPickerIndex(at('fucsia'), 'ArrowDown')).toBe(at('fucsia'));
   });
 
   it('outras teclas não navegam (Enter e Espaço ficam com o botão)', () => {

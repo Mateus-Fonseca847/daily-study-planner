@@ -7,32 +7,19 @@ import { z } from 'zod';
 export const PALETTE_V4 = ['ciano', 'petroleo', 'gelo', 'lilas', 'fucsia', 'rosa', 'cinza'] as const;
 
 /**
- * Paleta de matérias e hábitos (v5, Prompt 13.2): as 7 da v4 com os mesmos ids e valores, mais 20
- * cores de todos os matizes e neutros. Ids estáveis: nunca renomeie nem reordene; só acrescente no
- * fim. Cada chave tem os tokens `--ds-palette-<chave>` nos dois temas.
+ * Paleta de matérias e hábitos (v5, Prompt 13.2): as 7 da v4 com os mesmos ids e valores (dados
+ * antigos desenham igual) mais vermelho, laranja, amarelo, lima, verde e azul. O seletor oferece 8
+ * delas (`PICKER_COLORS` no app). Ids estáveis: nunca renomeie nem reordene; só acrescente no fim.
+ * Cada chave tem os tokens `--ds-palette-<chave>` nos dois temas.
  */
 export const PALETTE_COLORS = [
   ...PALETTE_V4,
   'vermelho',
-  'carmim',
-  'coral',
   'laranja',
-  'terracota',
   'amarelo',
-  'mostarda',
   'lima',
   'verde',
-  'oliva',
-  'menta',
-  'celeste',
   'azul',
-  'anil',
-  'violeta',
-  'roxo',
-  'vinho',
-  'marrom',
-  'pedra',
-  'grafite',
 ] as const;
 
 export type PaletteColor = (typeof PALETTE_COLORS)[number];

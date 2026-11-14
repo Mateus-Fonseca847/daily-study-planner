@@ -1,8 +1,8 @@
+import { PICKER_COLORS } from '../palette';
 import { addMinutes, format, isValid, parseISO } from 'date-fns';
 import {
   DEFAULT_EVENT_TYPE,
   EVENT_TYPES,
-  SUBJECT_COLORS,
   studyEventSchema,
   type EventStatus,
   type EventType,
@@ -167,7 +167,7 @@ export function validateEventForm(
     v.subjectId === NEW_SUBJECT
       ? {
           name: v.newSubjectName,
-          color: SUBJECT_COLORS[subjects.length % SUBJECT_COLORS.length] ?? 'ciano',
+          color: PICKER_COLORS[subjects.length % PICKER_COLORS.length] ?? 'ciano',
         }
       : null;
   const subtasks: Subtask[] = rows.map((row, order) => ({

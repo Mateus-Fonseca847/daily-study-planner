@@ -90,7 +90,8 @@ describe('validateEventForm', () => {
       newId,
       CREATED,
     );
-    expect(ok.ok && ok.newSubject).toEqual({ name: 'Química', color: 'petroleo' });
+    // Com uma matéria já criada, a sugestão é a 2ª cor do seletor (rodízio entre as 8).
+    expect(ok.ok && ok.newSubject).toEqual({ name: 'Química', color: 'laranja' });
     expect(ok.ok && ok.draft.subjectId).toBeNull();
   });
 

@@ -1,5 +1,5 @@
 import { useId, useState, type FormEvent } from 'react';
-import { SUBJECT_COLORS, subjectSchema, type Subject } from '@daily/shared';
+import { subjectSchema, type Subject } from '@daily/shared';
 import { useData } from '../../lib/data/app-store';
 import { deleteSubjectWithUndo } from '../../lib/data/actions';
 import { eventsOfSubject, type SubjectDeletion } from '../../lib/data/rules';
@@ -7,6 +7,7 @@ import { Button } from '../ui/Button';
 import { SelectField, TextField } from '../ui/Field';
 import { Modal } from '../ui/Modal';
 import { ColorPicker } from '../ui/ColorPicker';
+import { PICKER_COLORS } from '../../lib/palette';
 
 export function SubjectFormModal({
   subject,
@@ -19,7 +20,7 @@ export function SubjectFormModal({
   const count = useData((s) => s.subjects.length);
   const [name, setName] = useState(subject?.name ?? '');
   const [color, setColor] = useState<string>(
-    subject?.color ?? SUBJECT_COLORS[count % SUBJECT_COLORS.length] ?? 'ciano',
+    subject?.color ?? PICKER_COLORS[count % PICKER_COLORS.length] ?? 'ciano',
   );
   const [error, setError] = useState<string | undefined>();
 

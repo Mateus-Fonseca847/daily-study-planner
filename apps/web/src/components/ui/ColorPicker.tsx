@@ -1,8 +1,8 @@
 import { useRef, type KeyboardEvent } from 'react';
 import { Check } from 'lucide-react';
-import { isPaletteColor, type PaletteColor } from '@daily/shared';
+import type { PaletteColor } from '@daily/shared';
 import { cn } from '../../lib/cn';
-import { HABIT_COLOR_CLASS, PALETTE_GROUPS, PALETTE_NAME, PICKER_ORDER } from '../../lib/palette';
+import { HABIT_COLOR_CLASS, PALETTE_NAME, PICKER_COLORS } from '../../lib/palette';
 import { nextPickerIndex } from '../../lib/palette-nav';
 
 interface ColorPickerProps {
@@ -14,56 +14,52 @@ interface ColorPickerProps {
 }
 
 /**
- * Seletor de cor de hábitos e matérias: uma linha por matiz (ordem estável), a cor escolhida com
- * anel e check, nome em pt-BR no rótulo e na dica. Teclado: Tab entra e sai; ← → andam uma cor;
- * ↑ ↓ trocam de grupo; Home e End vão às pontas; Enter e Espaço escolhem.
+ * Seletor de cor de hábitos e matérias: 8 cores em 2 linhas × 4 colunas, a escolhida com anel e
+ * check, nome em pt-BR no rótulo e na dica. Teclado: Tab entra e sai; ← → andam uma cor; ↑ ↓ uma
+ * linha; Home e End vão às pontas; Enter e Espaço escolhem. Uma cor guardada fora destas 8 (as da
+ * paleta antiga) continua valendo e só não aparece marcada.
  */
 export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
-  const selected = isPaletteColor(value) ? value : null;
-  const tabStop = selected ?? PICKER_ORDER[0];
+  const selected = PICKER_COLORS.find((c) => c === value) ?? null;
+  const tabStop = selected ?? PICKER_COLORS[0];
 
   const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>, color: PaletteColor) => {
-    const next = nextPickerIndex(PICKER_ORDER.indexOf(color), e.key);
+    const next = nextPickerIndex(PICKER_COLORS.indexOf(color), e.key);
     if (next === null) return;
     e.preventDefault();
     refs.current[next]?.focus();
   };
 
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-col gap-2">
-      {PALETTE_GROUPS.map((group) => (
-        <div key={group.name} role="group" aria-label={group.name} className="flex flex-wrap gap-2">
-          {group.colors.map((color) => {
-            const index = PICKER_ORDER.indexOf(color);
-            const checked = color === selected;
-            return (
-              <button
-                key={color}
-                ref={(el) => {
-                  refs.current[index] = el;
-                }}
-                type="button"
-                role="radio"
-                aria-checked={checked}
-                aria-label={PALETTE_NAME[color]}
-                title={PALETTE_NAME[color]}
-                data-color={color}
-                tabIndex={color === tabStop ? 0 : -1}
-                onClick={() => onChange(color)}
-                onKeyDown={(e) => onKeyDown(e, color)}
-                className={cn(
-                  'habit-bg inline-flex size-control items-center justify-center rounded-full text-on-habit coarse:size-touch',
-                  HABIT_COLOR_CLASS[color],
-                  checked && 'ring-2 ring-fg ring-offset-2 ring-offset-raised',
-                )}
-              >
-                {checked && <Check aria-hidden strokeWidth={3} className="size-icon-sm" />}
-              </button>
-            );
-          })}
-        </div>
-      ))}
+    <div role="radiogroup" aria-label={label} className="grid w-max grid-cols-4 gap-2">
+      {PICKER_COLORS.map((color, index) => {
+        const checked = color === selected;
+        return (
+          <button
+            key={color}
+            ref={(el) => {
+              refs.current[index] = el;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            aria-label={PALETTE_NAME[color]}
+            title={PALETTE_NAME[color]}
+            data-color={color}
+            tabIndex={color === tabStop ? 0 : -1}
+            onClick={() => onChange(color)}
+            onKeyDown={(e) => onKeyDown(e, color)}
+            className={cn(
+              'habit-bg inline-flex size-control items-center justify-center rounded-full text-on-habit coarse:size-touch',
+              HABIT_COLOR_CLASS[color],
+              checked && 'ring-2 ring-fg ring-offset-2 ring-offset-raised',
+            )}
+          >
+            {checked && <Check aria-hidden strokeWidth={3} className="size-icon-sm" />}
+          </button>
+        );
+      })}
     </div>
   );
 }
