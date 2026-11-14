@@ -23,11 +23,11 @@
    */
   --ds-color-accent-ink: var(--ds-color-accent);
   --ds-color-focus: var(--ds-color-accent);
-  --ds-color-badge: #ff2d9b;
+  --ds-color-badge: #ff3da3;
   --ds-color-badge-fg: #0b0b0c;
   --ds-color-fg: #ffffff;
   --ds-color-fg-soft: #b0b0b6;
-  --ds-color-fg-muted: #8a8a93;
+  --ds-color-fg-muted: #92929b;
   --ds-color-fg-subtle: #808089;
   --ds-color-white-pill: #ffffff;
   --ds-color-white-pill-fg: #0b0b0c;
