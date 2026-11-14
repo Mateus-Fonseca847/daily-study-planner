@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { PRIVACY_POLICY_VERSION } from '@daily/shared';
+import { CONTROLLER_CONTACT } from '../lib/social/texts';
 
 const REPO_ISSUES = 'https://github.com/Mateus-Fonseca847/daily-study-planner/issues';
 
@@ -89,11 +91,39 @@ export function PrivacyPage() {
           </p>
         </Block>
 
+        <Block title="Perfil social">
+          <p>
+            É opcional e precisa de conta. <strong>O que coletamos:</strong> @, nome de exibição,
+            foto (opcional, guardada num espaço privado), mês e ano de nascimento, a data e a versão
+            do seu aceite e as suas escolhas de privacidade. A data completa de nascimento é usada
+            só no momento da ativação, para confirmar a idade mínima de 14 anos, e não é guardada.
+          </p>
+          <p>
+            <strong>Para quê:</strong> criar e mostrar o seu perfil, confirmar a idade mínima e
+            registrar o seu consentimento. <strong>Base legal:</strong> consentimento (LGPD, art.
+            7º, I; para adolescentes de 14 a 17 anos, observando o melhor interesse, art. 14). Para
+            menores de 18, o perfil começa e fica no mais privado.
+          </p>
+          <p>
+            <strong>Quem vê:</strong> hoje, só você. A foto não é analisada por sistemas
+            automáticos; no futuro, quando houver amigos, só será revisada se houver denúncia.
+            <strong> Retenção:</strong> enquanto o perfil social existir. Ao excluir, apagamos tudo
+            do perfil social na hora, inclusive a foto; o @ fica bloqueado para outras pessoas por
+            90 dias, sem ligação com você.
+          </p>
+          <p>
+            <strong>Seus direitos:</strong> acessar e exportar (Preferências → Backup inclui o
+            perfil social), corrigir (Preferências → Perfil social), desativar (o que revoga o
+            consentimento) e excluir tudo. Contato do controlador: {CONTROLLER_CONTACT}.
+          </p>
+        </Block>
+
         <Block title="Limites do serviço">
           <p>
             É um projeto sem garantia de disponibilidade. Mantenha um backup (Preferências →
             Exportar dados) dos estudos que importam. Esta política pode mudar; a data da última
-            revisão é <time dateTime="2026-10-30">30/10/2026</time>.
+            revisão é <time dateTime="2026-11-15">15/11/2026</time> (versão {PRIVACY_POLICY_VERSION}
+            ).
           </p>
         </Block>
       </div>

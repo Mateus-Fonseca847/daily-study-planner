@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { useAuth } from '../../lib/auth/auth-store';
 import { getSupabase } from '../../lib/cloud/client';
+import { removeSocialPhotoBeforeAccountDeletion } from '../../lib/social/social-store';
 import { signOutAndWipe, syncNow } from '../../lib/sync/runtime';
 import { useSync } from '../../lib/sync/sync-store';
 import { useToasts } from '../../lib/toast-store';
@@ -25,6 +26,16 @@ export function AccountSection() {
   const deleteAccount = async () => {
     setBusy(true);
     setError(null);
+    // A foto do perfil social não sai em cascata no Storage: apaga antes da conta. Sem o social
+    // no banco (migração não aplicada), não há o que apagar.
+    const photo = await removeSocialPhotoBeforeAccountDeletion(
+      auth.status === 'signed-in' ? auth.user.id : null,
+    );
+    if (photo !== 'ok') {
+      setError(`Não foi possível excluir: ${photo}`);
+      setBusy(false);
+      return;
+    }
     const { error: rpcError } = (await getSupabase()?.rpc('delete_my_account')) ?? {
       error: { message: 'Nuvem indisponível.' },
     };

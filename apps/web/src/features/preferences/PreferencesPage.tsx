@@ -9,6 +9,8 @@ import { useData } from '../../lib/data/app-store';
 import { appNow } from '../../lib/fixture';
 import { useToasts } from '../../lib/toast-store';
 import { AccountSection } from '../account/AccountSection';
+import { SocialSection } from '../social/SocialSection';
+import { socialExport } from '../../lib/social/social-store';
 import { AppSection } from './AppSection';
 import { AppearanceSection } from './AppearanceSection';
 import { ProfileSection } from './ProfileSection';
@@ -31,9 +33,21 @@ export function PreferencesPage() {
     events: useData((s) => s.events.length),
   };
 
-  const exportData = () => {
-    const file = createBackupFile(useData.getState().snapshot(), appNow());
+  const exportData = async () => {
+    // O perfil social entra no arquivo (fora de `data`) só para quem o ativou.
+    const social = await socialExport();
+    const file = createBackupFile(
+      useData.getState().snapshot(),
+      appNow(),
+      social === 'erro' ? null : social,
+    );
     download(file.filename, file.content);
+    if (social === 'erro') {
+      useToasts.getState().push({
+        message: 'Backup salvo sem o perfil social (sem conexão com o servidor).',
+        durationMs: 5000,
+      });
+    }
   };
 
   const onFile = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,8 +70,9 @@ export function PreferencesPage() {
   return (
     <PageShell title="Preferências" description="Perfil, Modo Foco e backup dos seus dados.">
       <AccountSection />
+      <SocialSection />
       <ProfileSection />
-      <AppSection onExport={exportData} />
+      <AppSection onExport={() => void exportData()} />
       <section
         aria-labelledby="backup-title"
         className="flex flex-col gap-3 rounded-xl border-hair p-6 phone:p-4"
@@ -71,7 +86,7 @@ export function PreferencesPage() {
           levar para outro computador.
         </p>
         <div className="flex flex-wrap gap-2 stack-on-phone">
-          <Button onClick={exportData}>
+          <Button onClick={() => void exportData()}>
             <Download aria-hidden strokeWidth={1.5} className="size-icon" />
             Exportar dados (JSON)
           </Button>

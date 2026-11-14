@@ -191,6 +191,7 @@
   --spacing-goal-icon: var(--ds-goal-icon);
   --spacing-medal: var(--ds-medal);
   --spacing-medal-lg: var(--ds-medal-lg);
+  --spacing-crop: var(--ds-crop);
   --spacing-goal-check: var(--ds-goal-check);
   --spacing-fab: var(--ds-fab);
   --spacing-wave: var(--ds-wave-h);
@@ -255,6 +256,7 @@
   --container-toast: var(--ds-toast-w);
   --container-content: var(--ds-page-max-w);
   --container-stats: var(--ds-stats-max-w);
+  --container-crop: var(--ds-crop);
 }
 
 /* Caixa fixa que acompanha a área visível (com o teclado virtual aberto, só a parte de cima da tela). */

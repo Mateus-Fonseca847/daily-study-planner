@@ -146,3 +146,17 @@ describe('store: medalhas', () => {
     expect(s.getState().achievements.find((a) => a.id === 'b')!.featured).toBe(false);
   });
 });
+
+describe('backup com o perfil social (fora de data)', () => {
+  it('o campo social vai no topo do arquivo e a importação o ignora', async () => {
+    const { createBackupFile } = await import('./backup');
+    const snap = dataSnapshotSchema.parse(makeSnapshot());
+    const file = createBackupFile(snap, FIXED_NOW, { perfil: { username: 'ana' } });
+    const json = JSON.parse(file.content) as Record<string, unknown>;
+    expect(json.social).toEqual({ perfil: { username: 'ana' } });
+    expect(json.version).toBe(6);
+    const back = readBackupFile(file.content);
+    expect(back.ok && back.snapshot).toEqual(snap);
+    expect(JSON.parse(createBackupFile(snap, FIXED_NOW).content)).not.toHaveProperty('social');
+  });
+});

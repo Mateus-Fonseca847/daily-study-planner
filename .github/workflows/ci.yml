@@ -46,3 +46,24 @@ jobs:
           name: playwright-traces
           path: apps/web/test-results
           if-no-files-found: ignore
+
+  # Testes de segurança do perfil social (pgTAP) num Supabase LOCAL do runner (Docker).
+  # Nunca fala com o banco de produção: as migrações de supabase/migrations são aplicadas só
+  # neste banco descartável, e quem aplica em produção é o dono do projeto (docs/social-setup.md).
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.1
+      - name: Supabase local (Postgres, Auth e Storage)
+        run: supabase start -x realtime,studio,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor,postgres-meta
+      - name: Testes de segurança (RLS, funções, Storage)
+        run: supabase test db
+      - name: Reversão aplica limpo (down na ordem inversa)
+        run: |
+          for f in $(ls supabase/rollback/*.down.sql | sort -r); do
+            echo "→ $f"
+            psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f "$f"
+          done

@@ -4,6 +4,15 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (perfil social: fundação)
+
+- **Perfil social visível só para a própria pessoa** (amigos chegam depois): @, nome de exibição, foto e interruptores de privacidade, em Preferências → Perfil social, com convite no Perfil.
+- **Assistente “Ativar perfil social”:** data de nascimento (a partir de 14 anos; menor de 14 vê uma mensagem gentil e nada é enviado), termo de consentimento com aceite explícito e versionado (aviso simples e padrões travados no mais privado para 14 a 17 anos), @ com verificação em tempo real, nome, foto opcional e revisão.
+- **Foto:** validada pelo conteúdo (JPEG, PNG ou WebP; GIF e SVG recusados), dimensões conferidas antes de decodificar, recorte quadrado com zoom (toque e teclado), 512 × 512 em WebP sem metadados, num espaço privado. Aparece no Perfil e no menu da conta.
+- **Gerenciar:** editar nome, trocar o @ (1 vez a cada 30 dias; o antigo fica reservado por 90 dias), foto, privacidade, desativar (revoga o aceite) e excluir tudo com confirmação pelo @. Excluir a conta também apaga a foto.
+- **Banco (só arquivos, aplicados pelo dono):** migrações aditivas em `supabase/migrations` com RLS só do dono, funções com limite de taxa e regras do @ e da idade impostas no servidor, reversões e 84 testes de segurança pgTAP rodando num Supabase local no CI (job `db`). Guia em `docs/social-setup.md`.
+- **Privacidade:** nova seção na política (versão `privacidade-2026-11`); o backup inclui o perfil social e os aceites, fora dos dados de estudo. Nada do social entra no `daily:v6` nem na sincronização, e quem não abre a seção não faz nenhuma requisição nova. CSP sem mudança.
+
 ### Adicionado (medalhas e conquistas)
 
 - **13 medalhas** que reconhecem constância e conclusão, nunca excesso: Primeiro passo, Rotina, Planejado, Mãos à obra, Dia limpo, Preparado, Ritmo, Passo a passo, Concentrado, Sessão completa, Constância, Hidratado e Variedade, com níveis bronze, prata e ouro (ou nível único). Cancelada e pulada não contam; dia de descanso não quebra sequência; medalha conquistada é permanente.

@@ -8,6 +8,7 @@ import { startAchievements } from './lib/achievements/start';
 import { startAuth } from './lib/auth/auth-store';
 import { setupPwa } from './lib/pwa/register';
 import { installVisualViewport } from './lib/responsive/visual-viewport';
+import { startSocial } from './lib/social/social-store';
 import { startSync } from './lib/sync/runtime';
 import { startTheme } from './lib/theme/theme-store';
 
@@ -17,6 +18,7 @@ installVisualViewport();
 startAuth();
 startSync();
 startAchievements();
+startSocial();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Elemento #root não encontrado');
