@@ -115,6 +115,46 @@ describe('dias de descanso', () => {
   });
 });
 
+describe('descanso no hábito de água', () => {
+  const water = habitSchema.parse({
+    id: 'agua',
+    name: 'Água',
+    icon: 'droplets',
+    color: 'ciano',
+    type: 'quantidade',
+    unit: 'ml',
+    source: 'agua',
+    rules: [{ since: '2026-11-01', repeat: EVERY_DAY, target: 2000, time: null }],
+    createdAt: '2026-11-01T08:00:00',
+    order: 0,
+  });
+  const met = ['01', '02', '03', '04', '06', '07', '08', '09'].map((d) => `2026-11-${d}`);
+  const ctxWith = (restDays: ReturnType<typeof rest>[], extra: string[] = []) =>
+    buildHabitContext(
+      {
+        habitLogs: [],
+        waterLogs: [...met, ...extra].map((date) => ({ id: date, date, ml: 2000, time: '10:00' })),
+        focusSessions: [],
+        restDays,
+      },
+      TODAY,
+    );
+
+  it('mesma regra dos outros: o dia de descanso não quebra a sequência nem entra na taxa', () => {
+    expect(streaks(water, ctxWith([]))).toEqual({ current: 4, best: 4 });
+    const ctx = ctxWith([rest('agua', '2026-11-05')]);
+    expect(dayState(water, '2026-11-05', ctx)).toBe('descanso');
+    expect(streaks(water, ctx)).toEqual({ current: 8, best: 8 });
+    expect(rate(water, ctx, 30)).toMatchObject({ done: 8, scheduled: 8, percent: 100 });
+  });
+
+  it('descanso de todos os hábitos também vale para a água; bater a meta no descanso conta', () => {
+    expect(dayState(water, '2026-11-05', ctxWith([rest(null, '2026-11-05')]))).toBe('descanso');
+    const drank = ctxWith([rest('agua', '2026-11-05')], ['2026-11-05']);
+    expect(dayState(water, '2026-11-05', drank)).toBe('feito');
+  });
+});
+
 describe('hábito de água automático', () => {
   it('primeiro uso (dados vazios): cria uma vez, com a meta de água das preferências', () => {
     const { repo } = memoryRepo();

@@ -411,6 +411,38 @@ describe('regras de borda', () => {
     expect(facts({ waterLogs }).waterDays).toEqual(['2026-07-01T12:00:00']);
   });
 
+  it('água em descanso: não quebra a sequência nem dá crédito de hidratação sem a meta', () => {
+    const water = habit('agua', {
+      source: 'agua',
+      type: 'quantidade',
+      unit: 'ml',
+      rules: [
+        {
+          since: '2026-11-01',
+          repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+          target: 2000,
+          time: null,
+        },
+      ],
+    });
+    // Meta batida de 01 a 09/11, exceto 05 (nada bebido); hoje (10) ainda em aberto.
+    const met = days('2026-11-01', 9).filter((d) => d !== '2026-11-05');
+    const waterLogs: WaterLog[] = met.map((date) => ({ id: date, date, ml: 2000, time: '10:00' }));
+    const without = facts({ habits: [water], waterLogs });
+    const withRest = facts({
+      habits: [water],
+      waterLogs,
+      restDays: [{ id: 'agua:2026-11-05', habitId: 'agua', date: '2026-11-05' }],
+    });
+    // Sem descanso, o 05 quebra: a maior sequência é de 4 dias (06 a 09).
+    expect(without.streakReach).toHaveLength(4);
+    // Com descanso no 05, a sequência atravessa o dia: 8 dias seguidos de meta.
+    expect(withRest.streakReach).toHaveLength(8);
+    // Hidratado conta só os dias com a meta batida; o descanso não soma nem tira.
+    expect(withRest.waterDays).toEqual(without.waterDays);
+    expect(withRest.waterDays).toHaveLength(8);
+  });
+
   it('foco: registro manual soma horas, mas não é “sessão completa”; interrompida não é completa', () => {
     const f = facts({
       focusSessions: [

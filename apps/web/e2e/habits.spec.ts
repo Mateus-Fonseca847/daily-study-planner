@@ -219,6 +219,58 @@ test.describe('Hábitos', () => {
     await expect(stat(page, 'Leitura', 'Sequência')).toHaveText('5 dias');
   });
 
+  test('água: “Marcar descanso” no dia, sequência intacta e desfazer', async ({ page }) => {
+    // Meta de 2000 ml batida de 01 a 10/11, exceto 05 (hoje é 11/11).
+    const days = ['01', '02', '03', '04', '06', '07', '08', '09', '10'].map((d) => `2026-11-${d}`);
+    await seedSnapshot(page, {
+      habits: [
+        {
+          id: 'agua',
+          name: 'Água',
+          icon: 'droplets',
+          color: 'ciano',
+          type: 'quantidade',
+          unit: 'ml',
+          source: 'agua',
+          rules: [
+            {
+              since: '2026-11-01',
+              repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+              target: 2000,
+              time: null,
+            },
+          ],
+          createdAt: '2026-11-01T08:00:00',
+          archivedAt: null,
+          endsOn: null,
+          order: 0,
+        },
+      ],
+      waterLogs: days.map((date) => ({ id: `w-${date}`, date, ml: 2000, time: '10:00' })),
+    });
+    await page.goto('/habitos');
+    await expect(stat(page, 'Água', 'Sequência')).toHaveText('5 dias');
+
+    await cell(page, 'Água', '2026-11-05').click();
+    const day = page.getByRole('dialog', { name: /^Água de / });
+    // O editor da água continua lá, com o “Marcar descanso” embaixo.
+    await expect(day.getByLabel('Quantidade personalizada')).toBeVisible();
+    await day.getByRole('button', { name: 'Só este hábito' }).click();
+    await expect(page.getByText('Descanso marcado (dia, este hábito)')).toBeVisible();
+
+    await expect(cell(page, 'Água', '2026-11-05')).toHaveAttribute('aria-label', /descanso/);
+    await expect(stat(page, 'Água', 'Sequência')).toHaveText('9 dias');
+    await page.reload();
+    await expect(stat(page, 'Água', 'Sequência')).toHaveText('9 dias');
+
+    await cell(page, 'Água', '2026-11-05').click();
+    await page
+      .getByRole('dialog', { name: /^Água de / })
+      .getByRole('button', { name: 'Desfazer descanso' })
+      .click();
+    await expect(stat(page, 'Água', 'Sequência')).toHaveText('5 dias');
+  });
+
   test('o heatmap se navega pelo teclado: setas movem entre dias e Enter abre o dia', async ({
     page,
   }) => {
