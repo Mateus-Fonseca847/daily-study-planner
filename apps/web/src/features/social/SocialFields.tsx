@@ -76,7 +76,7 @@ export interface PrivacyValues {
 const TOGGLES: readonly { key: keyof PrivacyValues; label: string; teenLocked: boolean }[] = [
   {
     key: 'discoverable',
-    label: 'Aparecer na busca (quando a busca existir)',
+    label: 'Aparecer na busca por @',
     teenLocked: true,
   },
   { key: 'showAchievements', label: 'Mostrar medalhas em destaque', teenLocked: false },

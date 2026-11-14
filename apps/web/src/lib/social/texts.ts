@@ -14,11 +14,11 @@ export const CONSENT_PARAGRAPHS: readonly { title: string; body: string }[] = [
   },
   {
     title: 'Para quê',
-    body: 'Mostrar o seu perfil e, nas próximas versões, permitir conexões com amigos que você aceitar.',
+    body: 'Mostrar o seu perfil, permitir que você encontre pessoas pelo @ e se conecte com amigos que você aceitar, e proteger a comunidade com bloqueio e denúncia.',
   },
   {
     title: 'Quem vê',
-    body: 'Por enquanto, só você. Nada fica visível para outras pessoas até você decidir, quando a função de amigos chegar.',
+    body: 'Seu @ e seu nome aparecem na busca só se você ligar “Aparecer na busca” (para menores de 18, nunca). Quem você aceitar como amigo vê seu nome, @ e foto. Você pode bloquear ou denunciar qualquer pessoa; uma denúncia é revisada pela equipe do Daily, que vê o @ e o nome denunciados.',
   },
   {
     title: 'Por quanto tempo',
@@ -34,9 +34,11 @@ export const CONSENT_CHECKBOX =
   'Li e concordo com o tratamento descrito acima e com a Política de privacidade.';
 
 export const TEEN_NOTICE =
-  'Como você tem menos de 18 anos, seu perfil começa com tudo no mais privado: ninguém encontra você por busca e só aparecem o nome, o @, a foto e as medalhas que você escolher. Se tiver dúvida, converse com seu responsável. Você pode excluir tudo quando quiser.';
+  'Como você tem menos de 18 anos, seu perfil começa com tudo no mais privado: ninguém encontra você por busca e só aparecem o nome, o @, a foto e as medalhas que você escolher. Por isso, por enquanto, o perfil não recebe pedidos de amizade. Se tiver dúvida, converse com seu responsável. Você pode excluir tudo quando quiser.';
 
 export const UNDER_14_MESSAGE =
   'O perfil social está disponível a partir dos 14 anos. Você pode continuar usando todo o resto do Daily normalmente. Nenhuma informação foi guardada.';
 
-export const ONLY_YOU = 'Ninguém além de você vê seu perfil por enquanto.';
+/** Quem vê o perfil (resumo mostrado na revisão do assistente e em Gerenciar). */
+export const WHO_SEES =
+  'Só amigos que você aceitar veem sua foto. Na busca, você só aparece se ligar “Aparecer na busca”.';

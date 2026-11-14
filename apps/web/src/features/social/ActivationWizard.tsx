@@ -12,7 +12,7 @@ import { useSocial } from '../../lib/social/social-store';
 import {
   CONSENT_CHECKBOX,
   CONSENT_PARAGRAPHS,
-  ONLY_YOU,
+  WHO_SEES,
   TEEN_NOTICE,
   UNDER_14_MESSAGE,
 } from '../../lib/social/texts';
@@ -236,7 +236,7 @@ export function ActivationWizard({
                 <p className="truncate text-md text-soft">@{username}</p>
               </div>
             </div>
-            <p className="rounded-md bg-hover p-3 text-md font-medium">{ONLY_YOU}</p>
+            <p className="rounded-md bg-hover p-3 text-md font-medium">{WHO_SEES}</p>
             <PrivacyToggles
               values={teen ? DEFAULT_PRIVACY : privacy}
               teen={teen}

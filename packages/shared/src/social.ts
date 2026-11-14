@@ -10,9 +10,13 @@ import { z } from 'zod';
 export const MIN_SOCIAL_AGE = 14;
 /** Idade a partir da qual os padrões deixam de ser os de adolescente. */
 export const ADULT_AGE = 18;
-/** Versões dos textos aceitos (gravadas em `consents.text_version`). */
-export const SOCIAL_CONSENT_VERSION = 'perfil-social-2026-11';
-export const PRIVACY_POLICY_VERSION = 'privacidade-2026-11';
+/**
+ * Versões dos textos aceitos (gravadas em `consents.text_version`). `…-11b` (Prompt 16): o termo e
+ * a política passaram a descrever amigos, busca, bloqueio e denúncia. Quem aceitou a versão
+ * anterior não precisa aceitar de novo (o novo texto vale para ativações e reativações).
+ */
+export const SOCIAL_CONSENT_VERSION = 'perfil-social-2026-11b';
+export const PRIVACY_POLICY_VERSION = 'privacidade-2026-11b';
 /** Troca de @: no máximo 1 a cada 30 dias; o antigo fica reservado por 90 dias. */
 export const USERNAME_CHANGE_DAYS = 30;
 export const USERNAME_HOLD_DAYS = 90;
