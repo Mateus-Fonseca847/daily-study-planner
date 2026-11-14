@@ -1,4 +1,4 @@
-# Daily — Design System (v1.3)
+# Daily — Design System (v1.4)
 
 Fonte de verdade para os tokens em `apps/web/src/styles/tokens.css` (variáveis com prefixo `--ds-`, ex.: `--ds-color-bg`).
 Referência: mockup de calendário de terceiros (808×609 px, com moldura de dispositivo), usado só como guia visual e não incluído no repositório.
@@ -618,3 +618,28 @@ Todas as rotas, a página inteira (sidebar, topbar, painéis) e os estados paine
 | Calendário no claro                                 | Perfil no claro                             | Celular                                       |
 | --------------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
 | ![Calendário](../images/tema-claro-calendario.webp) | ![Perfil](../images/tema-claro-perfil.webp) | ![Celular](../images/celular-tema-claro.webp) |
+
+## 19. Medalhas (v1.4)
+
+### Tokens de nível (dois temas)
+
+| Token                                              | Escuro                         | Claro                 | Contraste da tinta (pior caso)                     |
+| -------------------------------------------------- | ------------------------------ | --------------------- | -------------------------------------------------- |
+| `--ds-tier-bronze` / `-soft`                       | `#e09a6a` / 16 % sobre o fundo | `#8e4c1c` / `#f7e5d8` | 5,5:1 (escuro, no disco) · 5,4:1 (claro, no disco) |
+| `--ds-tier-silver` / `-soft`                       | `#c3cad4` / 16 %               | `#56606c` / `#e8ecf1` | 7,2:1 · 5,4:1                                      |
+| `--ds-tier-gold` / `-soft`                         | `#ecc94b` / 16 %               | `#7d5f00` / `#f8edc4` | 7,4:1 · 5,1:1                                      |
+| `--ds-tier-single` / `-soft`                       | `accent-ink` / `accent-soft`   | idem                  | (nível único)                                      |
+| `--ds-medal` / `--ds-medal-lg` / `--ds-medal-ring` | 3,5 rem / 5 rem / 3 px         | —                     | —                                                  |
+
+AA testado em `src/styles/palette.test.ts` (tinta sobre superfície, fundo e o próprio disco). O ouro fica perto do amarelo de “pendente”, mas o nível aparece sempre com ícone (estrelas) e texto, nunca só pela cor.
+
+### Componente
+
+- **Medalha** (`features/profile/achievements/Medal.tsx`): disco no fundo suave do nível, anel do nível (`border-medal`) e o ícone lucide da medalha na tinta do nível. Bloqueada: silhueta (anel tracejado `line-strong`, fundo `hover`, ícone `fg-subtle`). Decorativa: o nome acessível fica no botão do cartão (“Mãos à obra, prata, 167 de 200 tarefas”).
+- **Cartão**: medalha, título, nível com estrelas e texto (Bronze/Prata/Ouro, Conquistada ou Bloqueada em `fg-soft`), barra de progresso e “Desde …”. No celular a medalha vai acima do título. Grade: 2 colunas no celular, 3 a partir de 768 px, 4 a partir de 1280 px.
+- **Detalhe** no `Modal` (tela cheia no celular); **vitrine** em pílulas no topo do Perfil.
+- **Aviso**: o toast existente, com “Ver”; sem animação nova.
+
+| Conquistas (escuro)                      | Conquistas (claro)                                      | Celular                                       |
+| ---------------------------------------- | ------------------------------------------------------- | --------------------------------------------- |
+| ![Conquistas](../images/conquistas.webp) | ![Conquistas no claro](../images/conquistas-claro.webp) | ![Celular](../images/celular-conquistas.webp) |

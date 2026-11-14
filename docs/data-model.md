@@ -58,12 +58,13 @@ Regras (em `apps/web/src/lib/data/rules.ts`):
 
 | Chave                                | Conteúdo                                                               |
 | ------------------------------------ | ---------------------------------------------------------------------- |
-| `daily:v5`                           | Envelope `{ app: "daily", version: 5, savedAt, data }` (formato atual) |
-| `daily:v4`, `daily:v4:pre-v5`        | Formato anterior e cópia antes de migrar; removidos 30 dias depois     |
+| `daily:v6`                           | Envelope `{ app: "daily", version: 6, savedAt, data }` (formato atual) |
+| `daily:v5`, `daily:v5:pre-v6`        | Formato anterior e cópia antes de migrar; removidos 30 dias depois     |
+| `daily:v4`, `daily:v4:pre-v5`        | Formato v4 e cópia antes de migrar; removidos 30 dias depois           |
 | `daily:v3`, `daily:v3:pre-v4`        | Formato v3 e cópia antes de migrar; removidos 30 dias depois           |
-| `daily:v5:backup`                    | Último estado **válido** anterior à gravação mais recente              |
-| `daily:v5:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
-| `daily:v5:migrated-at`               | Quando a última migração rodou (marca o prazo da limpeza)              |
+| `daily:v6:backup`                    | Último estado **válido** anterior à gravação mais recente              |
+| `daily:v6:corrupt`                   | Cópia do dado ilegível, guardada para recuperação manual               |
+| `daily:v6:migrated-at`               | Quando a última migração rodou (marca o prazo da limpeza)              |
 | `daily:v2`, `daily:v1`               | Formatos antigos: lidos uma vez na migração e **nunca alterados**      |
 | `daily:v2:pre-v3`, `daily:v1:pre-v2` | Cópia do original feita **antes** de migrar                            |
 | `daily:v2:focus`                     | Sessão de foco ativa (fora do snapshot e do backup; chave histórica)   |
@@ -81,7 +82,7 @@ A chave leva a versão do formato; o campo `version` do envelope dispara as migr
 ### Fluxo de carregamento
 
 ```
-getItem(daily:v5) ─ null ─▶ getItem(daily:v4) ─ null ─▶ getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
+getItem(daily:v6) ─ null ─▶ getItem(daily:v5) ─ null ─▶ getItem(daily:v4) ─ null ─▶ getItem(daily:v3) ─ null ─▶ getItem(daily:v2) ─ null ─▶ getItem(daily:v1) ─ null ─▶ vazio
         │ (v2 ou v1 presentes: guarda o original em :pre-v3 / :pre-v2, migra e grava em daily:v3)
         │
         ▼ parseEnvelope (JSON → versão → migração → zod)
@@ -310,3 +311,38 @@ Só o que difere da série é salvo. Excluir a série remove as exceções dela.
 - Sem mudança no esquema do Supabase: a linha continua sendo um envelope JSON (agora `version: 5`).
 - Um app v4 em cache que leia uma linha v5 bloqueia o envio (fase `outdated`, “Atualize o app”); o envio é compare-and-set por `revision`, então ele nunca sobrescreve dados v5.
 - O rebase do ponto de sincronia ficou genérico: a meta guarda a `version`, e a cópia pré-migração daquela versão (`daily:vN:pre-vN+1`) é a referência. Testes em `lib/sync/engine-v5.test.ts`.
+
+## Entidades da versão 6 (medalhas)
+
+### Conquista (`Achievement`, `packages/shared/src/achievement.ts`)
+
+| Campo      | Tipo                          | Observação                                                                      |
+| ---------- | ----------------------------- | ------------------------------------------------------------------------------- |
+| `id`       | `[a-z0-9-]{1,40}`             | id do catálogo (`lib/achievements/catalog.ts`), estável; desconhecido é mantido |
+| `level`    | 1–3                           | 1 bronze, 2 prata, 3 ouro (medalha de nível único só tem o 1)                   |
+| `levels`   | ISO local[] (tamanho = level) | quando cada nível foi alcançado; o último é o nível atual                       |
+| `featured` | boolean                       | na vitrine do perfil (até 3)                                                    |
+
+Outras mudanças: `onboarding.achievementsSeededAt` (ISO local ou `null` = concessão retroativa pendente) e `preparedAt` (ISO local, opcional) na **Prova**: posta quando todos os conteúdos (≥ 1) ficam prontos **antes do início**, tirada se um for desmarcado antes, congelada depois do início. Integridade: medalhas sem id repetido; o histórico de níveis tem o tamanho do nível. **Só a conquista é gravada; o progresso é sempre calculado.** Um snapshot com medalha não é “virgem”.
+
+### Motor (`lib/achievements`, puro)
+
+- `facts.ts` monta, num passe, listas datadas (uma unidade por item: tarefa, dia, sessão…); a meta N é alcançada na data do N-ésimo item. Datas de dia ficam ao meio-dia e nunca passam de “agora”. As séries são expandidas só até hoje, e só para “Dia limpo” (as contagens leem as exceções).
+- `evaluate` devolve só o novo (medalha nova ou nível acima), é idempotente e nunca rebaixa. Na **concessão retroativa**, cada nível leva a data em que o histórico atingiu a meta; fora dela, a data da avaliação.
+- Regras: Tarefa e Especial contam como tarefas (Prova tem medalha própria); cancelada, pulada e subtarefa apagada do modelo não contam; dia sem tarefa não conta em “Dia limpo”; descanso e dia não agendado não quebram sequência; água pela meta do dia (regra versionada do hábito Água, ou a preferência); registro manual de foco soma horas, mas não é “sessão completa”.
+- O runner (`runner.ts`) avalia com debounce de 600 ms depois de mudanças relevantes, grava numa escrita só (medalhas, marca retroativa e `preparedAt`) e avisa uma vez, agrupado; com o Modo Foco rodando, o aviso espera. Desfazer não remove medalhas.
+
+### Migração v5 → v6
+
+1. Mesmo padrão: `daily:v5` → `daily:v5:pre-v6` (nunca reescrito), data em `daily:v6:migrated-at`, limpeza das chaves do v5 (e do que restar do v4/v3) em 30 dias.
+2. Conversão: `achievements: []` e `onboarding.achievementsSeededAt: null` (a 1ª avaliação concede o histórico com um único resumo).
+3. Idempotente; exportar grava v6; importar aceita v1 a v6.
+
+| Versão | Mudança                                                                                      |
+| ------ | -------------------------------------------------------------------------------------------- |
+| 6      | `achievements[]`, `onboarding.achievementsSeededAt`, `preparedAt` na prova; chave `daily:v6` |
+
+### Sincronização com o v6
+
+- Sem mudança no esquema do Supabase. App v5 diante de uma nuvem v6 fica em “Atualize o app” e não envia (compare-and-set por `revision`).
+- **Conflito:** qualquer que seja a escolha, as medalhas dos dois lados são unidas (`withAchievementsOf` em `lib/sync/engine.ts`): nível mais alto, data mais antiga de cada nível, destaque da versão escolhida (até 3); a concessão retroativa fica com a marca mais antiga. Escolher a nuvem com medalhas a mais no dispositivo reenvia a união no ciclo seguinte. Testes em `lib/sync/engine-v6.test.ts`.

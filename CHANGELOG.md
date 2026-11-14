@@ -4,6 +4,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (medalhas e conquistas)
+
+- **13 medalhas** que reconhecem constância e conclusão, nunca excesso: Primeiro passo, Rotina, Planejado, Mãos à obra, Dia limpo, Preparado, Ritmo, Passo a passo, Concentrado, Sessão completa, Constância, Hidratado e Variedade, com níveis bronze, prata e ouro (ou nível único). Cancelada e pulada não contam; dia de descanso não quebra sequência; medalha conquistada é permanente.
+- **Perfil → Conquistas:** contador, filtro Todas | Conquistadas | Em andamento, grade por categoria com progresso para o próximo nível (“17 de 25 tarefas”) e a data; bloqueadas em silhueta. **Detalhe** com o critério, a data de cada nível e “Destacar no perfil” (até 3). **Vitrine** no topo do Perfil.
+- **Aviso discreto e agrupado** (“Nova medalha: Constância — prata”), com “Ver”; espera o fim do Modo Foco. Quem já tinha histórico recebe as medalhas merecidas com **um único resumo**.
+- **Dados:** formato v6 (`daily:v6`) com `achievements` e a marca da concessão retroativa; prova ganha `preparedAt`. Migração idempotente do v5 (cópia em `daily:v5:pre-v6`, removida 30 dias depois). Importar aceita v1 a v6. **Sincronização:** num conflito, as medalhas dos dois lados são unidas (nível mais alto, data mais antiga); app v5 não sobrescreve dado v6; sem mudança no Supabase.
+- Tokens de nível (`--ds-tier-*`) nos dois temas, com AA.
+
 ### Adicionado (modo claro)
 
 - **Tema claro** com fundo cinza muito claro, cartões brancos com borda fina e sombra sutil, tinta escura. Status, tipos, chama, paleta de matérias e hábitos, heatmap, densidade do Ano, água, anel e barras com valores próprios; o amarelo da marca continua nos botões e na navegação. Contraste AA medido em todas as telas e estados (menor razão 4,73:1).
