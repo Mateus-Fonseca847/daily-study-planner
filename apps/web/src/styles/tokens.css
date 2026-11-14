@@ -332,6 +332,8 @@
   --ds-medal: 3.5rem;
   --ds-medal-lg: 5rem;
   --ds-medal-ring: 3px;
+  /* Prévia do recorte da foto de perfil (quadrado; a foto final tem 512 × 512). */
+  --ds-crop: 16rem;
   --ds-modal-max-h: 90dvh;
   --ds-menu-w: 13rem;
   --ds-toast-w: 26rem;
