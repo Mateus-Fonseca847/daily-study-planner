@@ -12,6 +12,26 @@ export const PALETTE = {
   fucsia: '#de2bee',
   rosa: '#d279a6',
   cinza: '#a3998f',
+  vermelho: '#fc4f4e',
+  carmim: '#ff85ad',
+  coral: '#ff9e7e',
+  laranja: '#f27b00',
+  terracota: '#b67d64',
+  amarelo: '#f4cc00',
+  mostarda: '#c09136',
+  lima: '#a0d101',
+  verde: '#00a749',
+  oliva: '#95975c',
+  menta: '#5ed5b0',
+  celeste: '#7fc4ec',
+  azul: '#5793f6',
+  anil: '#7a7ce8',
+  violeta: '#ae8cff',
+  roxo: '#d5a5f3',
+  vinho: '#af777b',
+  marrom: '#d5b092',
+  pedra: '#d2cabc',
+  grafite: '#7d8d9d',
 };
 export const RESERVED = {
   'status-pendente': '#f2c94c',
@@ -23,10 +43,14 @@ export const RESERVED = {
   chama: '#ff8a3d',
 };
 export const SURFACE = '#1b1b1d';
-/** Distância mínima entre cores da paleta e entre a paleta e as cores reservadas. */
-export const MIN_DELTA_E = 15;
+/**
+ * Distância mínima entre as cores da paleta (v5, Prompt 13.2: 27 cores com todos os matizes). As
+ * cores reservadas (status, tipos, marca e chama) ficam fora da conta: ali o significado vem do
+ * ícone e do texto, nunca só da cor.
+ */
+export const MIN_DELTA_E = 8;
 
-/** Tema claro: tinta escura (AA sobre o branco); o ΔE mínimo é 14 (decisão do Prompt 13). */
+/** Tema claro: tinta escura (AA sobre o branco); ΔE mínimo 8, como no escuro (Prompt 13.2). */
 export const PALETTE_LIGHT = {
   ciano: '#007d77',
   petroleo: '#177692',
@@ -35,6 +59,26 @@ export const PALETTE_LIGHT = {
   fucsia: '#9a1686',
   rosa: '#bd3f71',
   cinza: '#72685c',
+  vermelho: '#cf1928',
+  carmim: '#9d164b',
+  coral: '#933f25',
+  laranja: '#b74c00',
+  terracota: '#642c10',
+  amarelo: '#866900',
+  mostarda: '#6d4500',
+  lima: '#4e7000',
+  verde: '#00651b',
+  oliva: '#4b4b0d',
+  menta: '#02775d',
+  celeste: '#005a82',
+  azul: '#2865cb',
+  anil: '#4334b3',
+  violeta: '#774bcc',
+  roxo: '#673083',
+  vinho: '#7a2332',
+  marrom: '#44260a',
+  pedra: '#4c463b',
+  grafite: '#303d4b',
 };
 export const RESERVED_LIGHT = {
   'status-pendente': '#8a6100',
@@ -47,7 +91,7 @@ export const RESERVED_LIGHT = {
 };
 /** Fundo da página no claro (o pior caso de contraste; a superfície é branca). */
 export const SURFACE_LIGHT = '#f4f4f6';
-export const MIN_DELTA_E_LIGHT = 14;
+export const MIN_DELTA_E_LIGHT = 8;
 
 export const THEMES = {
   dark: { palette: PALETTE, reserved: RESERVED, surface: SURFACE, minDeltaE: MIN_DELTA_E },
@@ -132,8 +176,8 @@ export function report(theme = 'dark') {
   for (let i = 0; i < names.length; i += 1) {
     for (let j = i + 1; j < names.length; j += 1) {
       const [a, b] = [names[i], names[j]];
-      // Entre cores reservadas a distinção já é dada por ícone/texto; mede o que envolve a paleta.
-      if (!(a in palette) && !(b in palette)) continue;
+      // Só entre cores da paleta: status, tipos e marca têm ícone e texto (regra do Prompt 13.2).
+      if (!(a in palette) || !(b in palette)) continue;
       pairs.push({ a, b, dE: deltaE(all[a], all[b]) });
     }
   }
