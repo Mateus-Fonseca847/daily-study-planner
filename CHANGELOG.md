@@ -4,6 +4,17 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (paleta completa)
+
+- **27 cores para hábitos e matérias**, em 9 grupos (vermelhos, laranjas e terrosos, amarelos, verdes, azul-esverdeados, azuis, roxos, rosas e neutros), com valores próprios no escuro e no claro e contraste AA em todos os usos. As 7 cores anteriores continuam iguais.
+- **Seletor de cor único** (`ColorPicker`) em hábitos e matérias: anel e check na cor escolhida, nome em pt-BR, setas, Home/End, Enter e Espaço, alvos de 44 px no toque, sem rolagem horizontal no celular.
+
+### Alterado
+
+- A paleta passa a ter todos os matizes: a regra “sem vermelho, verde, amarelo e laranja” sai, porque status e tipos sempre têm ícone e texto. Distância mínima entre cores da paleta: ΔE2000 ≥ 8 nos dois temas.
+- Cor desconhecida (de uma versão mais nova) abre sem erro, aparece como Cinza e é mantida ao salvar.
+- A chama de sequência zerada usa `fg-muted` (o `fg-subtle` ficava abaixo de AA nos cartões), e em Hábitos de hoje a chama ganha uma pílula escura.
+
 ### Corrigido (acabamento 13.1)
 
 - **Contraste AA no tema escuro:** o texto secundário (`--ds-color-fg-muted`) passa de `#8A8A93` para `#92929B` e o contador rosa (`--ds-color-badge`) de `#FF2D9B` para `#FF3DA3`; a linha tracejada da agenda de hoje deixa de passar por trás das horas. A auditoria completa (todas as telas e estados, desktop e celular) fica sem reprovações nos dois temas: menor razão 4,59:1 no escuro e 4,73:1 no claro. O claro não muda.
