@@ -10,7 +10,7 @@ import { isDone, isRestDay, isScheduled, type HabitContext } from '../../../lib/
 import { describeRepeat, formatTimeOfDay } from '../../../lib/habits/repeat';
 import { examPrep, nextExam } from '../../../lib/stats/derive';
 import { HabitControl } from '../../habits/HabitControl';
-import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
+import { habitColorClass, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
 import { ruleOn } from '../../../lib/habits';
 
 const CARD = 'rounded-card border-hair bg-surface p-4';
@@ -53,7 +53,7 @@ function DayHabits({
                 key={habit.id}
                 className={cn(
                   'flex flex-wrap items-center gap-x-3 gap-y-1 border-b-hair border-dashed py-2 last:border-b-0',
-                  HABIT_COLOR_CLASS[habit.color],
+                  habitColorClass(habit.color),
                 )}
               >
                 <span className="habit-bg-soft habit-text inline-flex size-goal-icon shrink-0 items-center justify-center rounded-full">

@@ -9,7 +9,7 @@ import {
   HABIT_ICONS,
   LEGACY_HABIT_COLORS,
   LEGACY_SUBJECT_COLORS,
-  PALETTE_COLORS,
+  PALETTE_V4,
   type DataSnapshot,
   type Goal,
   type HabitLog,
@@ -128,7 +128,7 @@ function goalToHabit(goal: Goal, index: number, waterGoalMl: unknown): Obj {
 }
 
 /** Cor v3 → v4 (sem vermelho, verde, amarelo e laranja; sem repetir o azul e o roxo dos tipos). */
-export const COLOR_V3_TO_V4: Record<string, (typeof PALETTE_COLORS)[number]> = {
+export const COLOR_V3_TO_V4: Record<string, (typeof PALETTE_V4)[number]> = {
   vermelho: 'fucsia',
   laranja: 'cinza',
   amarelo: 'ciano',
@@ -145,7 +145,8 @@ export const COLOR_V3_TO_V4: Record<string, (typeof PALETTE_COLORS)[number]> = {
  * Cores que já são da paleta nova ficam como estão (idempotente).
  */
 export function remapColors<T>(items: readonly T[]): T[] {
-  const palette = PALETTE_COLORS as readonly string[];
+  // A migração v3 → v4 usa só a paleta da v4 (congelada): o resultado não muda com cores novas.
+  const palette = PALETTE_V4 as readonly string[];
   const used = new Set<string>();
   return items.map((item) => {
     if (!isObj(item)) return item;

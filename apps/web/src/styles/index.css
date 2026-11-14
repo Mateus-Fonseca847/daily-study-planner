@@ -41,6 +41,12 @@
   --color-subject-fucsia: var(--ds-color-subject-fucsia);
   --color-subject-rosa: var(--ds-color-subject-rosa);
   --color-subject-cinza: var(--ds-color-subject-cinza);
+  --color-subject-vermelho: var(--ds-color-subject-vermelho);
+  --color-subject-laranja: var(--ds-color-subject-laranja);
+  --color-subject-amarelo: var(--ds-color-subject-amarelo);
+  --color-subject-lima: var(--ds-color-subject-lima);
+  --color-subject-verde: var(--ds-color-subject-verde);
+  --color-subject-azul: var(--ds-color-subject-azul);
   --color-accent: var(--ds-color-accent);
   --color-accent-soft: var(--ds-color-accent-soft);
   --color-accent-fg: var(--ds-color-accent-fg);
@@ -434,6 +440,24 @@
 }
 @utility habit-cinza {
   --habit: var(--ds-habit-cinza);
+}
+@utility habit-vermelho {
+  --habit: var(--ds-habit-vermelho);
+}
+@utility habit-laranja {
+  --habit: var(--ds-habit-laranja);
+}
+@utility habit-amarelo {
+  --habit: var(--ds-habit-amarelo);
+}
+@utility habit-lima {
+  --habit: var(--ds-habit-lima);
+}
+@utility habit-verde {
+  --habit: var(--ds-habit-verde);
+}
+@utility habit-azul {
+  --habit: var(--ds-habit-azul);
 }
 @utility habit-text {
   color: color-mix(in srgb, var(--habit), var(--ds-color-fg) var(--ds-habit-ink-mix));

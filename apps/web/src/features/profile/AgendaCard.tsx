@@ -98,7 +98,7 @@ export function AgendaCard({ events, subjects, today, now }: AgendaCardProps) {
             <div
               data-now-line
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 z-10 flex items-center"
+              className="pointer-events-none absolute right-0 left-agenda-label z-10 flex items-center"
               style={{ top: `calc(${nowOffset} * var(--ds-agenda-hour-h))` }}
             >
               <span className="size-dot -translate-x-1/2 rounded-full bg-accent" />

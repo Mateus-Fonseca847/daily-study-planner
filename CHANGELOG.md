@@ -4,6 +4,17 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (paleta completa)
+
+- **Novas cores para hábitos e matérias:** o seletor oferece 8 (vermelho, laranja, amarelo, lima, verde, ciano, azul e fúcsia), em 2 linhas × 4 colunas, com valores próprios no escuro e no claro e contraste AA em todos os usos. Hábitos e matérias com as cores antigas continuam iguais.
+- **Seletor de cor único** (`ColorPicker`) em hábitos e matérias: anel e check na cor escolhida, nome em pt-BR, setas (↑ ↓ andam uma linha), Home/End, Enter e Espaço, alvos de 44 px no toque.
+
+### Alterado
+
+- A paleta pode ter vermelho, verde, amarelo e laranja (status e tipos sempre têm ícone e texto). Distância mínima entre cores da paleta: ΔE2000 ≥ 8 nos dois temas.
+- Cor desconhecida (de uma versão mais nova) abre sem erro, aparece como Cinza e é mantida ao salvar.
+- A chama de sequência zerada usa `fg-muted` (o `fg-subtle` ficava abaixo de AA nos cartões), e em Hábitos de hoje a chama ganha uma pílula escura. A linha do “agora” na agenda de hoje começa depois das horas (passava por cima de “14h”).
+
 ### Alterado (minimalismo das páginas)
 
 - **Páginas sem subtítulo descritivo:** Hábitos, Tarefas, Provas, Matérias, Amigos e Preferências mostram só o título e as ações (a prop `description` saiu do `PageShell`). Estados vazios, diálogos, Entrar e Privacidade mantêm os textos.

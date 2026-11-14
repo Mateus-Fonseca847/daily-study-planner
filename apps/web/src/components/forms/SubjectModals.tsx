@@ -1,14 +1,13 @@
 import { useId, useState, type FormEvent } from 'react';
-import { Check } from 'lucide-react';
-import { SUBJECT_COLORS, subjectSchema, type Subject, type SubjectColor } from '@daily/shared';
+import { subjectSchema, type Subject } from '@daily/shared';
 import { useData } from '../../lib/data/app-store';
 import { deleteSubjectWithUndo } from '../../lib/data/actions';
 import { eventsOfSubject, type SubjectDeletion } from '../../lib/data/rules';
-import { cn } from '../../lib/cn';
 import { Button } from '../ui/Button';
 import { SelectField, TextField } from '../ui/Field';
 import { Modal } from '../ui/Modal';
-import { SUBJECT_COLOR_CLASS } from '../ui/SubjectDot';
+import { ColorPicker } from '../ui/ColorPicker';
+import { PICKER_COLORS } from '../../lib/palette';
 
 export function SubjectFormModal({
   subject,
@@ -20,8 +19,8 @@ export function SubjectFormModal({
   const formId = useId();
   const count = useData((s) => s.subjects.length);
   const [name, setName] = useState(subject?.name ?? '');
-  const [color, setColor] = useState<SubjectColor>(
-    subject?.color ?? SUBJECT_COLORS[count % SUBJECT_COLORS.length] ?? 'ciano',
+  const [color, setColor] = useState<string>(
+    subject?.color ?? PICKER_COLORS[count % PICKER_COLORS.length] ?? 'ciano',
   );
   const [error, setError] = useState<string | undefined>();
 
@@ -63,26 +62,7 @@ export function SubjectFormModal({
         />
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-1 text-base font-medium text-soft">Cor</legend>
-          <div role="radiogroup" aria-label="Cor da matéria" className="flex flex-wrap gap-2">
-            {SUBJECT_COLORS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                role="radio"
-                aria-checked={c === color}
-                aria-label={c}
-                onClick={() => setColor(c)}
-                className={cn(
-                  'inline-flex size-swatch items-center justify-center rounded-full',
-                  SUBJECT_COLOR_CLASS[c],
-                )}
-              >
-                {c === color && (
-                  <Check aria-hidden strokeWidth={3} className="size-icon-sm text-accent-fg" />
-                )}
-              </button>
-            ))}
-          </div>
+          <ColorPicker label="Cor da matéria" value={color} onChange={setColor} />
         </fieldset>
       </form>
     </Modal>

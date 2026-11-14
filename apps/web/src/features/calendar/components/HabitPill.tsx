@@ -4,7 +4,7 @@ import { cn } from '../../../lib/cn';
 import { usePhone } from '../../../lib/responsive/use-media';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../../lib/habits';
 import { formatAmount, stateText } from '../../../lib/habits/summary';
-import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
+import { habitColorClass, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
 
 interface HabitPillProps {
   habit: Habit;
@@ -38,7 +38,7 @@ export function HabitPill({ habit, date, ctx, onToggle }: HabitPillProps) {
   const className = cn(
     'flex h-habit-pill items-center gap-1 rounded-full text-2xs font-medium',
     phone ? 'size-touch-dense justify-center' : 'w-full px-2',
-    HABIT_COLOR_CLASS[habit.color],
+    habitColorClass(habit.color),
     done ? 'habit-bg text-on-habit' : 'habit-bg-soft text-fg',
     interactive && 'hover:brightness-125',
   );

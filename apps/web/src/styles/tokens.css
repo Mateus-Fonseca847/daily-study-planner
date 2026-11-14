@@ -93,7 +93,7 @@
   --ds-color-streak: #ff8a3d;
   /* Marca desenhada sobre um preenchimento de status (o check sobre o verde de concluído). */
   --ds-color-on-status: var(--ds-color-accent-fg);
-  --ds-color-streak-off: var(--ds-color-fg-subtle);
+  --ds-color-streak-off: var(--ds-color-fg-muted);
   /* Dia de descanso no heatmap (listras neutras). */
   --ds-color-rest: rgb(255 255 255 / 0.22);
   --ds-rest-stripe: 2px;
@@ -101,8 +101,8 @@
   --ds-color-danger: #ff6b78;
 
   /*
-   * Paleta de matérias e hábitos (v4): sem vermelho, verde, amarelo e laranja e sem repetir o azul
-   * da Prova e o roxo do Especial. Verificada por `scripts/palette-check.mjs` (ΔE2000 ≥ 15 e
+   * Paleta de matérias e hábitos (v5, Prompt 13.2): 27 cores por matiz, as 7 da v4 intactas.
+   * Status nunca dependem só da cor (ícone e texto). Verificada por `scripts/palette-check.mjs` (ΔE2000 ≥ 8 e
    * contraste ≥ 4.5:1 sobre a superfície).
    */
   --ds-palette-ciano: #2beeee;
@@ -112,6 +112,12 @@
   --ds-palette-fucsia: #de2bee;
   --ds-palette-rosa: #d279a6;
   --ds-palette-cinza: #a3998f;
+  --ds-palette-vermelho: #fc4f4e;
+  --ds-palette-laranja: #f27b00;
+  --ds-palette-amarelo: #f4cc00;
+  --ds-palette-lima: #a0d101;
+  --ds-palette-verde: #00a749;
+  --ds-palette-azul: #5793f6;
   --ds-color-subject-ciano: var(--ds-palette-ciano);
   --ds-color-subject-petroleo: var(--ds-palette-petroleo);
   --ds-color-subject-gelo: var(--ds-palette-gelo);
@@ -119,6 +125,12 @@
   --ds-color-subject-fucsia: var(--ds-palette-fucsia);
   --ds-color-subject-rosa: var(--ds-palette-rosa);
   --ds-color-subject-cinza: var(--ds-palette-cinza);
+  --ds-color-subject-vermelho: var(--ds-palette-vermelho);
+  --ds-color-subject-laranja: var(--ds-palette-laranja);
+  --ds-color-subject-amarelo: var(--ds-palette-amarelo);
+  --ds-color-subject-lima: var(--ds-palette-lima);
+  --ds-color-subject-verde: var(--ds-palette-verde);
+  --ds-color-subject-azul: var(--ds-palette-azul);
 
   /* Água (índigo/roxo) e gráficos do dashboard */
   --ds-color-water: #5b4fe0;
@@ -197,6 +209,12 @@
   --ds-habit-fucsia: var(--ds-palette-fucsia);
   --ds-habit-rosa: var(--ds-palette-rosa);
   --ds-habit-cinza: var(--ds-palette-cinza);
+  --ds-habit-vermelho: var(--ds-palette-vermelho);
+  --ds-habit-laranja: var(--ds-palette-laranja);
+  --ds-habit-amarelo: var(--ds-palette-amarelo);
+  --ds-habit-lima: var(--ds-palette-lima);
+  --ds-habit-verde: var(--ds-palette-verde);
+  --ds-habit-azul: var(--ds-palette-azul);
   --ds-heat-min: 0.4;
   --ds-color-focus-frac: var(--ds-color-fg-muted);
   --ds-color-focus-sub: var(--ds-color-fg-soft);
@@ -465,6 +483,12 @@
   --ds-palette-fucsia: #9a1686;
   --ds-palette-rosa: #bd3f71;
   --ds-palette-cinza: #72685c;
+  --ds-palette-vermelho: #cf1928;
+  --ds-palette-laranja: #b74c00;
+  --ds-palette-amarelo: #866900;
+  --ds-palette-lima: #4e7000;
+  --ds-palette-verde: #00651b;
+  --ds-palette-azul: #2865cb;
 
   /* Água mais clara: o texto escuro do cartão lê sobre a onda em qualquer nível. */
   --ds-color-water: #a49cf7;

@@ -6,7 +6,7 @@ import { isDone, scheduledToday, streaks, type HabitContext } from '../../lib/ha
 import { percentOf } from '../../lib/stats/format';
 import { HabitControl, SOURCE_TEXT } from '../habits/HabitControl';
 import { StreakFlame } from '../habits/StreakFlame';
-import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../habits/habit-icons';
+import { habitColorClass, HABIT_ICON_COMPONENT } from '../habits/habit-icons';
 import { StatCard } from './StatCard';
 
 interface HabitsTodayCardProps {
@@ -53,7 +53,7 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
                 key={habit.id}
                 className={cn(
                   'flex items-center gap-3 border-b-hair border-dashed py-3 last:border-b-0',
-                  HABIT_COLOR_CLASS[habit.color],
+                  habitColorClass(habit.color),
                 )}
               >
                 <span className="habit-bg-soft habit-text inline-flex size-goal-icon shrink-0 items-center justify-center rounded-full">
@@ -70,7 +70,11 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
                     </span>
                   )}
                 </span>
-                <StreakFlame days={streaks(habit, ctx).current} />
+                {/* Pílula própria: o brilho amarelo do cartão tirava contraste da chama. */}
+                <StreakFlame
+                  days={streaks(habit, ctx).current}
+                  className="rounded-full bg-raised px-1.5 py-0.5"
+                />
                 <HabitControl habit={habit} date={today} ctx={ctx} now={now} showSource={false} />
               </li>
             );

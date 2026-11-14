@@ -489,27 +489,45 @@ Cada status aparece sempre com ícone e texto (controle de 3 opções no painel)
 - Fundo do chip = cor a `--ds-event-chip-alpha` (14 %); faixa lateral e rótulo na cor cheia. Classes sempre literais (mapas em `event-meta.ts`).
 - **Concluir com um clique** (`features/tasks/CompleteButton`): círculo de 24 px (`--ds-check-target`), 44 px no toque (`coarse:size-touch`); concluído = círculo verde com check escuro.
 
-### Paleta de matérias e hábitos (`--ds-palette-*`)
+### Paleta de matérias e hábitos (`--ds-palette-*`, v5)
 
-Uma paleta só para matérias e hábitos, **sem vermelho, verde, amarelo e laranja** (e vizinhos), e sem repetir o azul da Prova e o roxo do Especial:
+O seletor oferece **8 cores** (escolha do dono no Prompt 13.2), em **2 linhas × 4 colunas**, por matiz. Cada uma tem um valor no escuro e outro no claro (`:root[data-theme='light']`); a cor guardada é só a chave (`habits.color`, `subjects.color`).
 
-| Chave      | Cor       | Contraste sobre `surface` |
-| ---------- | --------- | ------------------------- |
-| `ciano`    | `#2beeee` | 11,9:1                    |
-| `petroleo` | `#53a9c6` | 6,4:1                     |
-| `gelo`     | `#c6dfec` | 12,4:1                    |
-| `lilas`    | `#e2c6ec` | 11,1:1                    |
-| `fucsia`   | `#de2bee` | 4,7:1                     |
-| `rosa`     | `#d279a6` | 5,8:1                     |
-| `cinza`    | `#a3998f` | 6,2:1 (cinza quente)      |
+| Id         | Nome     | Escuro    | Menor razão do texto | Claro     | Menor razão do texto |
+| ---------- | -------- | --------- | -------------------- | --------- | -------------------- |
+| `vermelho` | Vermelho | `#fc4f4e` | 5,21                 | `#cf1928` | 5,00                 |
+| `laranja`  | Laranja  | `#f27b00` | 6,23                 | `#b74c00` | 4,72                 |
+| `amarelo`  | Amarelo  | `#f4cc00` | 11,04                | `#866900` | 4,74                 |
+| `lima`     | Lima     | `#a0d101` | 9,51                 | `#4e7000` | 5,25                 |
+| `verde`    | Verde    | `#00a749` | 5,42                 | `#00651b` | 6,64                 |
+| `ciano`    | Ciano    | `#2beeee` | 11,93                | `#007d77` | 4,55                 |
+| `azul`     | Azul     | `#5793f6` | 5,66                 | `#2865cb` | 5,01                 |
+| `fucsia`   | Fúcsia   | `#de2bee` | 4,66                 | `#9a1686` | 6,75                 |
 
-**Verificação** (`node apps/web/scripts/palette-check.mjs`, e o teste `src/styles/palette.test.ts`, que confere se `tokens.css` bate com o script): CIEDE2000 ≥ 15 entre todas as cores da paleta e entre a paleta e as cores reservadas (status, tipos, marca, chama). Os pares mais próximos: rosa × cancelado 16,0; petróleo × Prova 16,3; fúcsia × Especial 17,3. As cores da paleta só aparecem junto de texto/ícone (nome da matéria, nome do hábito), nunca sozinhas como informação.
+“Menor razão do texto” é a pior entre: a cor como texto sobre o fundo e a superfície; a marca sobre a cor sólida (texto escuro no escuro, branco no claro); e, no claro, o nome do hábito (cor com 20 % de tinta) sobre o bloco. Ícone sobre o círculo suave (só ícone, 3:1): mínimo de 3,86 no escuro e 4,13 no claro.
 
-Remapeamento v3 → v4 (migração): vermelho → fúcsia, laranja → cinza, amarelo → ciano, verde → gelo, turquesa → ciano, azul → petróleo, violeta → lilás, rosa → rosa; se a cor já foi usada por outro item e ainda há cor livre, usa a primeira livre.
+As cores da paleta da v4 que saíram do seletor (`petroleo`, `gelo`, `lilas`, `rosa`, `cinza`) **continuam como chaves conhecidas**, com os mesmos tokens: hábitos e matérias antigos desenham igual e só não aparecem marcados no seletor (escolher outra cor troca; não escolher mantém).
+
+**Regras (v5):**
+
+- **ΔE2000 ≥ 8** entre todas as cores conhecidas, nos dois temas. As cores de status, tipos, marca e chama **ficam fora da conta**: o significado delas vem sempre de ícone e texto, nunca só da cor. Por isso a paleta pode ter vermelho, verde, amarelo e laranja.
+- AA (4,5:1) como texto sobre fundo e superfície; marca sobre a cor sólida ≥ 4,5:1; nome do hábito sobre o bloco ≥ 4,5:1 no claro (`palette.test.ts`).
+- **Ids estáveis:** nunca renomeie nem reordene `PALETTE_COLORS`; cor nova entra no fim, com token nos dois temas, classes literais (`HABIT_COLOR_CLASS`, `SUBJECT_COLOR_CLASS` e `@utility habit-<cor>`), nome em `PALETTE_NAME` e, se for oferecida, em `PICKER_COLORS` (`lib/palette.ts`).
+- **Cor desconhecida** (de uma versão mais nova): o esquema aceita qualquer chave bem formada, o app desenha com a cor segura (`cinza`, `resolvePaletteColor`) e mantém o valor guardado ao salvar.
+
+**Seletor** (`components/ui/ColorPicker`, usado em hábitos e matérias): grade de 4 colunas, swatch de 36 px (44 px no toque), a cor escolhida com anel `ring-fg` e check (`text-on-habit`); nome em pt-BR no `aria-label` e na dica. Teclado: Tab entra pela cor marcada e sai; ← → andam uma cor; ↑ ↓ uma linha; Home e End; Enter e Espaço escolhem. Matéria nova sugere a cor em rodízio entre as 8.
+
+| Escuro                                             | Claro                                            | Celular                                              |
+| -------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------- |
+| ![Seletor no escuro](../images/paleta-escuro.webp) | ![Seletor no claro](../images/paleta-claro.webp) | ![Seletor no celular](../images/celular-paleta.webp) |
+
+**Verificação:** `node apps/web/scripts/palette-check.mjs`, `src/styles/palette.test.ts` e a auditoria `node apps/web/scripts/contrast-audit.mjs <rótulo> --palette --all --theme=dark|light` (semeia um hábito e uma matéria por cor conhecida).
+
+Remapeamento v3 → v4 (migração, congelado em `PALETTE_V4`): vermelho → fúcsia, laranja → cinza, amarelo → ciano, verde → gelo, turquesa → ciano, azul → petróleo, violeta → lilás, rosa → rosa; se a cor já foi usada por outro item e ainda há cor livre, usa a primeira livre.
 
 ### Chama de sequência (a exceção laranja)
 
-`--ds-color-streak` (`#ff8a3d`) com sequência > 0 e `--ds-color-streak-off` (cinza) com zero, sempre com o número ao lado (`features/habits/StreakFlame`). É a **única** exceção documentada à regra de não usar laranja. Substitui a pílula amarela “Sequência”.
+`--ds-color-streak` (`#ff8a3d`) com sequência > 0 e `--ds-color-streak-off` (`fg-muted` desde a 13.2; antes `fg-subtle`, abaixo de AA) com zero, sempre com o número ao lado (`features/habits/StreakFlame`). Substitui a pílula amarela “Sequência”. Em Hábitos de hoje (Perfil) a chama fica numa pílula `bg-raised`, porque o brilho amarelo do cartão tirava contraste.
 
 ### Dia de descanso
 

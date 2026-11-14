@@ -40,7 +40,7 @@ const STATUS_AND_TYPES = {
   'type-especial': token('color-type-especial'),
 };
 
-describe('paleta v4 (tokens.css × scripts/palette-check.mjs)', () => {
+describe('paleta v5 (tokens.css × scripts/palette-check.mjs)', () => {
   it('os tokens da paleta e das cores reservadas batem com o verificador', () => {
     for (const key of PALETTE_COLORS) expect(token(`palette-${key}`)).toBe(PALETTE[key]);
     expect(STATUS_AND_TYPES['status-pendente']).toBe(RESERVED['status-pendente']);
@@ -52,16 +52,36 @@ describe('paleta v4 (tokens.css × scripts/palette-check.mjs)', () => {
     expect(token('color-accent')).toBe(RESERVED.marca);
   });
 
-  it(`cores distintas: ΔE2000 ≥ ${MIN_DELTA_E} entre a paleta e contra status, tipos e marca`, () => {
+  it(`cores distintas: ΔE2000 ≥ ${MIN_DELTA_E} entre as cores da paleta`, () => {
     const close = report().pairs.filter((p) => p.dE < MIN_DELTA_E);
     expect(close).toEqual([]);
   });
 
-  it('a paleta não tem vermelho, verde, amarelo nem laranja', () => {
-    expect(PALETTE_COLORS).not.toContain('vermelho');
-    expect(PALETTE_COLORS).not.toContain('verde');
-    expect(PALETTE_COLORS).not.toContain('amarelo');
-    expect(PALETTE_COLORS).not.toContain('laranja');
+  it('as 7 cores da v4 continuam com os mesmos valores (nada muda para quem já escolheu)', () => {
+    expect(PALETTE_COLORS.slice(0, 7)).toEqual([
+      'ciano',
+      'petroleo',
+      'gelo',
+      'lilas',
+      'fucsia',
+      'rosa',
+      'cinza',
+    ]);
+    expect(PALETTE).toMatchObject({
+      ciano: '#2beeee',
+      petroleo: '#53a9c6',
+      gelo: '#c6dfec',
+      lilas: '#e2c6ec',
+      fucsia: '#de2bee',
+      rosa: '#d279a6',
+      cinza: '#a3998f',
+    });
+  });
+
+  it('marca escura do hábito (ícone sobre a cor sólida) ≥ 4,5:1 em todas as cores', () => {
+    for (const color of Object.values(PALETTE)) {
+      expect(contrast(token('color-accent-fg'), color)).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });
 
@@ -133,7 +153,7 @@ describe('tema claro (tokens.css × palette-check)', () => {
     expect(lightBlock).not.toMatch(/--ds-color-accent:/);
   });
 
-  it(`cores distintas: ΔE2000 ≥ ${MIN_DELTA_E_LIGHT} entre a paleta e contra status, tipos e marca`, () => {
+  it(`cores distintas: ΔE2000 ≥ ${MIN_DELTA_E_LIGHT} entre as cores da paleta`, () => {
     expect(report('light').pairs.filter((p) => p.dE < MIN_DELTA_E_LIGHT)).toEqual([]);
   });
 

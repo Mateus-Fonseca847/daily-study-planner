@@ -7,7 +7,7 @@ import { RecurrenceIcon } from '../../../components/ui/RecurrenceIcon';
 import { recurrenceText } from '../../../lib/recurrence/view';
 import { dayState, isDone, targetOn, valueOn, type HabitContext } from '../../../lib/habits';
 import { formatAmount, stateText } from '../../../lib/habits/summary';
-import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
+import { habitColorClass, HABIT_ICON_COMPONENT } from '../../habits/habit-icons';
 import { blockLines } from '../lib/time-layout';
 import type { PlacedItem } from '../lib/grid-items';
 import { itemTime } from './TimeGrid';
@@ -107,7 +107,7 @@ export function HabitBlock({ item, date, ctx, onToggle }: HabitBlockProps) {
       title={`${habit.name} · ${time} · ${state}`}
       className={cn(
         'habit-block flex size-full min-w-0 flex-col justify-start overflow-hidden rounded-sm px-2 py-chip-y text-left phone:px-1',
-        HABIT_COLOR_CLASS[habit.color],
+        habitColorClass(habit.color),
         done && 'opacity-done',
       )}
     >

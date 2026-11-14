@@ -30,6 +30,94 @@ const all = process.argv.includes('--all');
  * Supabase simulados por interceptação (nunca um banco real).
  */
 const social = process.argv.includes('--social');
+/**
+ * `--palette`: semeia um hábito e uma matéria para cada cor conhecida (13: as 8 do seletor e as da v4) e mede
+ * Hábitos, Matérias, Perfil e a Semana do calendário (chips, pílulas, blocos, heatmap e anel).
+ */
+const paletteMode = process.argv.includes('--palette');
+const PALETTE_KEYS = [
+  'ciano',
+  'petroleo',
+  'gelo',
+  'lilas',
+  'fucsia',
+  'rosa',
+  'cinza',
+  'vermelho',
+  'laranja',
+  'amarelo',
+  'lima',
+  'verde',
+  'azul',
+];
+function paletteSnapshot() {
+  const today = new Date();
+  const key = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const since = key(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 20));
+  const habits = PALETTE_KEYS.map((color, order) => ({
+    id: `h-${color}`,
+    name: `Hábito ${color}`,
+    icon: 'target',
+    color,
+    type: 'check',
+    unit: '',
+    source: 'manual',
+    rules: [
+      {
+        since,
+        repeat: { kind: 'dias-da-semana', days: [0, 1, 2, 3, 4, 5, 6] },
+        target: null,
+        time: null,
+      },
+    ],
+    createdAt: `${since}T08:00:00`,
+    archivedAt: null,
+    endsOn: null,
+    order,
+  }));
+  const habitLogs = [];
+  for (const h of habits)
+    for (let i = 1; i <= 14; i += 1) {
+      if ((i + h.order) % 3 === 0) continue;
+      const date = key(new Date(today.getFullYear(), today.getMonth(), today.getDate() - i));
+      habitLogs.push({
+        id: `${h.id}:${date}`,
+        habitId: h.id,
+        date,
+        value: 1,
+        updatedAt: `${date}T09:00:00`,
+      });
+    }
+  return {
+    app: 'daily',
+    version: 6,
+    savedAt: today.toISOString(),
+    data: {
+      subjects: PALETTE_KEYS.map((color) => ({
+        id: `s-${color}`,
+        name: `Matéria ${color}`,
+        color,
+      })),
+      events: [],
+      preferences: {
+        name: 'Ana',
+        waterGoalMl: 2000,
+        cupMl: 250,
+        focusDurationSec: 1500,
+        lockByDefault: false,
+      },
+      habits,
+      habitLogs,
+      waterLogs: [],
+      focusSessions: [],
+      restDays: [],
+      exceptions: [],
+      achievements: [],
+      onboarding: { waterHabitCreated: true, achievementsSeededAt: '2026-01-01T00:00:00' },
+    },
+  };
+}
 const SOCIAL_USER = '11111111-1111-4111-8111-111111111111';
 const SOCIAL_PROFILE = {
   user_id: SOCIAL_USER,
@@ -158,11 +246,7 @@ const SOCIAL_STATES = [
 ];
 SOCIAL_STATES.push(
   ['/amigos#amigos', true, async (p) => p.getByRole('list', { name: 'Amigos' }).waitFor()],
-  [
-    '/amigos#solicitacoes',
-    true,
-    async (p) => p.getByRole('tab', { name: /Solicitações/ }).click(),
-  ],
+  ['/amigos#solicitacoes', true, async (p) => p.getByRole('tab', { name: /Solicitações/ }).click()],
   ['/amigos#bloqueados', true, async (p) => p.getByRole('tab', { name: 'Bloqueados' }).click()],
   ['/amigos#convite', false, async (p) => p.getByText('Ative seu perfil social').waitFor()],
   [
@@ -287,20 +371,11 @@ await server.listen();
 const browser = await chromium.launch();
 const results = [];
 try {
-  const targets = social
-    ? SOCIAL_STATES.map(([u]) => u)
-    : phone
-      ? [
-          ...PAGES,
-          '/provas?fixture=views',
-          '/tarefas?fixture=views',
-          '/materias?fixture=views',
-          '/preferencias?fixture=stats',
-          '/entrar',
-          '/privacidade',
-          ...PHONE_STATES.map(([u]) => u),
-        ]
-      : all
+  const targets = paletteMode
+    ? ['/habitos', '/materias', '/perfil', `/calendario?visao=semana`]
+    : social
+      ? SOCIAL_STATES.map(([u]) => u)
+      : phone
         ? [
             ...PAGES,
             '/provas?fixture=views',
@@ -309,9 +384,20 @@ try {
             '/preferencias?fixture=stats',
             '/entrar',
             '/privacidade',
-            ...DESKTOP_STATES.map(([u]) => u),
+            ...PHONE_STATES.map(([u]) => u),
           ]
-        : PAGES;
+        : all
+          ? [
+              ...PAGES,
+              '/provas?fixture=views',
+              '/tarefas?fixture=views',
+              '/materias?fixture=views',
+              '/preferencias?fixture=stats',
+              '/entrar',
+              '/privacidade',
+              ...DESKTOP_STATES.map(([u]) => u),
+            ]
+          : PAGES;
   for (const url of targets) {
     const context = await browser.newContext({
       colorScheme: theme,
@@ -326,6 +412,14 @@ try {
     });
     const socialState = social ? SOCIAL_STATES.find(([u]) => u === url) : null;
     if (socialState) await socialContext(context, socialState[1]);
+    if (paletteMode)
+      await context.addInitScript(
+        (snap) => {
+          localStorage.setItem('daily:v6', JSON.stringify(snap.data));
+          localStorage.setItem('daily:theme', snap.theme);
+        },
+        { data: paletteSnapshot(), theme: theme === 'light' ? 'claro' : 'escuro' },
+      );
     const page = await context.newPage();
     await page.goto(`http://localhost:5196${url}`);
     if (socialState) {
