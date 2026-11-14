@@ -10,6 +10,7 @@ import { appNow } from '../../lib/fixture';
 import { useToasts } from '../../lib/toast-store';
 import { AccountSection } from '../account/AccountSection';
 import { AppSection } from './AppSection';
+import { AppearanceSection } from './AppearanceSection';
 import { ProfileSection } from './ProfileSection';
 
 function download(filename: string, content: string): void {
@@ -94,6 +95,7 @@ export function PreferencesPage() {
           </p>
         )}
       </section>
+      <AppearanceSection />
 
       {pending && (
         <Modal

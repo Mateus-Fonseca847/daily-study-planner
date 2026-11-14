@@ -12,6 +12,7 @@ import { BAR_ITEMS } from './BottomBar';
 import { InstallButton } from './InstallButton';
 import { InstallHelp } from './InstallHelp';
 import { MENU_ITEMS, SETTINGS_ITEMS, type NavItem } from './nav';
+import { ThemeToggleRow } from './ThemeToggle';
 
 const ROW =
   'flex h-touch w-full items-center gap-3 rounded-md px-3 text-left text-md active:bg-hover';
@@ -64,6 +65,7 @@ export function MoreSheet({ counts, onClose }: MoreSheetProps) {
           <NavRow key={item.to} item={item} counts={counts} />
         ))}
         <NavRow item={PREFERENCES} counts={counts} />
+        <ThemeToggleRow className={ROW} />
       </nav>
 
       {(auth.status === 'visitor' || auth.status === 'signed-in') && (

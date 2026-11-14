@@ -4,6 +4,7 @@ import { cn } from '../../lib/cn';
 import { AccountMenu } from '../../features/account/AccountMenu';
 import { Button } from '../ui/Button';
 import { OfflineBadge } from './OfflineBadge';
+import { ThemeToggle } from './ThemeToggle';
 import { TypeFilter } from './TypeFilter';
 
 export function Topbar() {
@@ -14,6 +15,7 @@ export function Topbar() {
       <TypeFilter />
       <div className="flex items-center gap-2">
         <OfflineBadge />
+        <ThemeToggle />
         <Button variant="icon" aria-label="Buscar">
           <Search aria-hidden strokeWidth={1.5} className="size-icon" />
         </Button>
