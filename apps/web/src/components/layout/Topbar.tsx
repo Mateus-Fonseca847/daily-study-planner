@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Bell, Focus, Search } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/cn';
 import { AccountMenu } from '../../features/account/AccountMenu';
+import { SearchDialog } from '../../features/friends/SearchDialog';
 import { Button } from '../ui/Button';
 import { OfflineBadge } from './OfflineBadge';
 import { ThemeToggle } from './ThemeToggle';
@@ -10,13 +12,19 @@ import { TypeFilter } from './TypeFilter';
 export function Topbar() {
   const navigate = useNavigate();
   const onFocusPage = useLocation().pathname === '/foco';
+  const [searching, setSearching] = useState(false);
   return (
     <header className="flex h-topbar shrink-0 items-center pt-3 justify-between border-b-hair px-page">
       <TypeFilter />
       <div className="flex items-center gap-2">
         <OfflineBadge />
         <ThemeToggle />
-        <Button variant="icon" aria-label="Buscar">
+        <Button
+          variant="icon"
+          aria-label="Buscar pessoas"
+          aria-haspopup="dialog"
+          onClick={() => setSearching(true)}
+        >
           <Search aria-hidden strokeWidth={1.5} className="size-icon" />
         </Button>
         <Button variant="icon" aria-label="Notificações">
@@ -33,6 +41,7 @@ export function Topbar() {
         </Button>
         <AccountMenu />
       </div>
+      {searching && <SearchDialog onClose={() => setSearching(false)} />}
     </header>
   );
 }
