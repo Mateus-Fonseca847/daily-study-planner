@@ -31,12 +31,18 @@ export default defineConfig({
   projects: [
     {
       name: 'app',
-      testIgnore: ['**/pwa/**', '**/responsive/**'],
+      testIgnore: ['**/pwa/**', '**/responsive/**', '**/social/**'],
       use: { ...shared, baseURL: `http://localhost:${PORT}` },
     },
     {
       name: 'responsive',
       testMatch: '**/responsive/**/*.spec.ts',
+      use: { ...shared, baseURL: `http://localhost:${RESPONSIVE_PORT}` },
+    },
+    {
+      // Perfil social com o Supabase simulado por interceptação (servidor com nuvem falsa).
+      name: 'social',
+      testMatch: '**/social/**/*.spec.ts',
       use: { ...shared, baseURL: `http://localhost:${RESPONSIVE_PORT}` },
     },
     {
