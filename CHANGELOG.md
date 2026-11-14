@@ -4,6 +4,20 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Corrigido (acabamento 13.1)
+
+- **Contraste AA no tema escuro:** o texto secundário (`--ds-color-fg-muted`) passa de `#8A8A93` para `#92929B` e o contador rosa (`--ds-color-badge`) de `#FF2D9B` para `#FF3DA3`; a linha tracejada da agenda de hoje deixa de passar por trás das horas. A auditoria completa (todas as telas e estados, desktop e celular) fica sem reprovações nos dois temas: menor razão 4,59:1 no escuro e 4,73:1 no claro. O claro não muda.
+- **Concluir com um clique nos chips e blocos do calendário** (Dia, Semana, Mês, lista “+N mais”, agenda do Mês no celular e agenda de hoje no Perfil), sem botão dentro de botão: o chip tem duas áreas irmãs, a que abre o painel e a de concluir. Ocorrência de série conclui só a si mesma; Prova não ganha o controle; cancelada mostra o estado. Visível sempre nas listas, com mouse nos blocos grandes, ao passar o mouse ou focar nos chips do Mês, e no celular pelo painel e pela agenda quando não cabe. Toast com “Desfazer” e medalhas avaliadas como em qualquer conclusão.
+- **“Marcar descanso” no hábito de água**, com a mesma regra dos outros hábitos.
+- **Rótulos sem cortar:** “Concluídas na semana” e “Próximas provas” (Tarefas), Sequência, Melhor e Taxa (Hábitos) quebram linha em vez de truncar; em Hábitos de hoje (Perfil) a origem automática vai para baixo do nome.
+- **Capturas do README** e `hero.webp` regeneradas com o app atual e dados fictícios.
+
+### Testes
+
+- e2e novos: concluir pelo chip (Dia, Semana com série, Mês por teclado e mouse, agenda de hoje, Prova sem o controle, Desfazer e medalha), descanso na água, rótulos nos três tamanhos e modais longos (Prova com 40 conteúdos, série com 40 subtarefas e hábito) em cinco tamanhos de tela.
+- O e2e de excluir o perfil social espera o estado do Supabase simulado (falhava às vezes no CI).
+- Linhas de base visuais do desktop e dos dois temas regeneradas (fora do Git).
+
 ### Adicionado (amizades, busca, bloquear e denunciar)
 
 - **Amizade mútua com aceite:** enviar, cancelar (com “Desfazer”), aceitar e recusar pedidos; um pedido para quem já te pediu vira amizade na hora. Limites: 20 pedidos pendentes, 20 envios por dia e 200 amigos. Uma recusa nunca é avisada: quem enviou continua vendo “pendente” por até 7 dias e só pode pedir de novo depois de 30.
