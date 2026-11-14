@@ -9,7 +9,8 @@ import { formatAmount } from '../../lib/habits/summary';
 import { formatLiters } from '../../lib/stats/format';
 import { WaterTrigger } from '../water/WaterPanel';
 
-const SOURCE_TEXT = {
+/** De onde vem o valor de um hábito automático. */
+export const SOURCE_TEXT = {
   agua: 'Automático: água do dia',
   foco: 'Automático: tempo de foco',
   blocos: 'Automático: blocos de estudo',
@@ -20,10 +21,12 @@ interface HabitControlProps {
   date: string;
   ctx: HabitContext;
   now: Date;
+  /** Mostra a origem ao lado do valor (cartões estreitos a põem embaixo do nome). */
+  showSource?: boolean;
 }
 
 /** Controle do dia: check, − / valor / + (manuais) ou a origem e o valor (fontes automáticas). */
-export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
+export function HabitControl({ habit, date, ctx, now, showSource = true }: HabitControlProps) {
   const setHabitValue = useData((s) => s.setHabitValue);
   const value = valueOn(habit, date, ctx);
   const target = targetOn(habit, date);
@@ -47,7 +50,7 @@ export function HabitControl({ habit, date, ctx, now }: HabitControlProps) {
             )}
           </WaterTrigger>
         )}
-        <span className="min-w-0 truncate">{SOURCE_TEXT[habit.source]}</span>
+        {showSource && <span className="min-w-0 truncate">{SOURCE_TEXT[habit.source]}</span>}
         <span
           role="img"
           aria-label={done ? 'Cumprido automaticamente' : 'Ainda não cumprido (automático)'}

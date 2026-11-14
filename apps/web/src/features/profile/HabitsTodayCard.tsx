@@ -4,7 +4,7 @@ import type { Habit } from '@daily/shared';
 import { cn } from '../../lib/cn';
 import { isDone, scheduledToday, streaks, type HabitContext } from '../../lib/habits';
 import { percentOf } from '../../lib/stats/format';
-import { HabitControl } from '../habits/HabitControl';
+import { HabitControl, SOURCE_TEXT } from '../habits/HabitControl';
 import { StreakFlame } from '../habits/StreakFlame';
 import { HABIT_COLOR_CLASS, HABIT_ICON_COMPONENT } from '../habits/habit-icons';
 import { StatCard } from './StatCard';
@@ -63,9 +63,15 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
                   <span className={cn('block truncate text-md', finished && 'line-through')}>
                     {habit.name}
                   </span>
+                  {habit.source !== 'manual' && (
+                    // A origem fica embaixo do nome: ao lado do valor ela espremia o nome.
+                    <span className="block text-xs leading-tight text-muted">
+                      {SOURCE_TEXT[habit.source]}
+                    </span>
+                  )}
                 </span>
                 <StreakFlame days={streaks(habit, ctx).current} />
-                <HabitControl habit={habit} date={today} ctx={ctx} now={now} />
+                <HabitControl habit={habit} date={today} ctx={ctx} now={now} showSource={false} />
               </li>
             );
           })}
