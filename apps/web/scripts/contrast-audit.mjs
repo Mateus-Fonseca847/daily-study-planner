@@ -24,6 +24,103 @@ const theme = /--theme=(light|dark)/.exec(process.argv.join(' '))?.[1] ?? 'dark'
  * acrescenta estados abertos e de interação no desktop (foco, hover, selecionado, painel, menu, toast).
  */
 const all = process.argv.includes('--all');
+/**
+ * `--social`: mede as telas do perfil social (Preferências → Perfil social e o assistente) com uma
+ * sessão e um Supabase simulados por interceptação (nunca um banco real).
+ */
+const social = process.argv.includes('--social');
+const SOCIAL_USER = '11111111-1111-4111-8111-111111111111';
+const SOCIAL_PROFILE = {
+  user_id: SOCIAL_USER,
+  username: 'ana.lima',
+  display_name: 'Ana Lima',
+  avatar_path: null,
+  avatar_version: 0,
+  discoverable: false,
+  show_achievements: true,
+  show_streaks: false,
+  show_stats: false,
+  created_at: '2026-11-15T10:00:00Z',
+  social_enabled_at: '2026-11-15T10:00:00Z',
+  disabled_at: null,
+  username_changed_at: null,
+};
+async function socialContext(context, withProfile) {
+  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
+  const exp = Math.floor(Date.now() / 1000) + 3600 * 24 * 365;
+  const session = {
+    access_token: `${b64({ alg: 'HS256' })}.${b64({ sub: SOCIAL_USER, exp })}.x`,
+    token_type: 'bearer',
+    expires_in: 3600,
+    expires_at: exp,
+    refresh_token: 'r',
+    user: {
+      id: SOCIAL_USER,
+      aud: 'authenticated',
+      email: 'ana@teste.local',
+      user_metadata: { full_name: 'Ana Lima' },
+      app_metadata: {},
+    },
+  };
+  await context.addInitScript((value) => {
+    localStorage.setItem('sb-localhost-auth-token', value);
+  }, JSON.stringify(session));
+  await context.route('http://localhost:54321/**', (route) => {
+    const path = new URL(route.request().url()).pathname;
+    const body = (v) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(v) });
+    if (path === '/rest/v1/profiles') return body(withProfile ? [SOCIAL_PROFILE] : []);
+    if (path === '/rest/v1/profile_private')
+      return body(withProfile ? [{ birth_month: '2000-05-01' }] : []);
+    if (path === '/rest/v1/rpc/social_username_status') return body('ok');
+    if (path === '/rest/v1/user_data') return body([]);
+    return body({});
+  });
+}
+/** [rota, perfil já ativo?, ação] — a ação abre o estado medido. */
+const SOCIAL_STATES = [
+  [
+    '/preferencias#gerenciar',
+    true,
+    async (p) => p.locator('#perfil-social').scrollIntoViewIfNeeded(),
+  ],
+  [
+    '/preferencias#ativar',
+    false,
+    async (p) => p.locator('#perfil-social').scrollIntoViewIfNeeded(),
+  ],
+  [
+    '/preferencias#termo',
+    false,
+    async (p) => {
+      await p.getByRole('button', { name: 'Ativar perfil social' }).click();
+      const w = p.getByRole('dialog', { name: 'Ativar perfil social' });
+      await w.getByLabel('Data de nascimento').fill('2010-03-10');
+      await w.getByRole('button', { name: 'Continuar' }).click();
+    },
+  ],
+  [
+    '/preferencias#arroba',
+    false,
+    async (p) => {
+      await p.getByRole('button', { name: 'Ativar perfil social' }).click();
+      const w = p.getByRole('dialog', { name: 'Ativar perfil social' });
+      await w.getByLabel('Data de nascimento').fill('2000-03-10');
+      await w.getByRole('button', { name: 'Continuar' }).click();
+      await w.getByRole('checkbox', { name: /Li e concordo/ }).check({ force: true });
+      await w.getByRole('button', { name: 'Continuar' }).click();
+      await w.getByLabel('Seu @').fill('ana.lima');
+      await p.waitForTimeout(900);
+    },
+  ],
+  [
+    '/preferencias#excluir',
+    true,
+    async (p) => {
+      await p.getByRole('button', { name: 'Excluir perfil social' }).click();
+    },
+  ],
+];
 const DESKTOP_STATES = [
   [
     '/calendario?visao=semana&data=2026-10-29&fixture=views#painel',
@@ -118,18 +215,9 @@ await server.listen();
 const browser = await chromium.launch();
 const results = [];
 try {
-  const targets = phone
-    ? [
-        ...PAGES,
-        '/provas?fixture=views',
-        '/tarefas?fixture=views',
-        '/materias?fixture=views',
-        '/preferencias?fixture=stats',
-        '/entrar',
-        '/privacidade',
-        ...PHONE_STATES.map(([u]) => u),
-      ]
-    : all
+  const targets = social
+    ? SOCIAL_STATES.map(([u]) => u)
+    : phone
       ? [
           ...PAGES,
           '/provas?fixture=views',
@@ -138,9 +226,20 @@ try {
           '/preferencias?fixture=stats',
           '/entrar',
           '/privacidade',
-          ...DESKTOP_STATES.map(([u]) => u),
+          ...PHONE_STATES.map(([u]) => u),
         ]
-      : PAGES;
+      : all
+        ? [
+            ...PAGES,
+            '/provas?fixture=views',
+            '/tarefas?fixture=views',
+            '/materias?fixture=views',
+            '/preferencias?fixture=stats',
+            '/entrar',
+            '/privacidade',
+            ...DESKTOP_STATES.map(([u]) => u),
+          ]
+        : PAGES;
   for (const url of targets) {
     const context = await browser.newContext({
       colorScheme: theme,
@@ -153,8 +252,15 @@ try {
           }
         : { viewport: { width: 1920, height: 1080 } }),
     });
+    const socialState = social ? SOCIAL_STATES.find(([u]) => u === url) : null;
+    if (socialState) await socialContext(context, socialState[1]);
     const page = await context.newPage();
     await page.goto(`http://localhost:5196${url}`);
+    if (socialState) {
+      await page.waitForTimeout(800);
+      await socialState[2](page);
+      await page.waitForTimeout(400);
+    }
     await page.waitForTimeout(600);
     const state = (phone ? PHONE_STATES : DESKTOP_STATES).find(([u]) => u === url);
     if (state) {
@@ -171,7 +277,7 @@ try {
     }
     await page.waitForTimeout(300);
 
-    const rootSelector = all ? 'body' : 'main';
+    const rootSelector = all || social ? 'body' : 'main';
     const items = await page.evaluate((rootSelector) => {
       const out = [];
       const walker = document.createTreeWalker(
@@ -183,6 +289,8 @@ try {
         const el = node.parentElement;
         if (!el || seen.has(el) || !node.textContent.trim()) continue;
         if (el.closest('.sr-only')) continue;
+        // Controle desabilitado: a WCAG (1.4.3) isenta componentes inativos do contraste mínimo.
+        if (el.closest(':disabled, [aria-disabled="true"]')) continue;
         seen.add(el);
         // Texto coberto por outro elemento (ex.: rolado para trás do cabeçalho fixo) não é visível.
         {
