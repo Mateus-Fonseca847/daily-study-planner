@@ -93,7 +93,7 @@
   --ds-color-streak: #ff8a3d;
   /* Marca desenhada sobre um preenchimento de status (o check sobre o verde de concluído). */
   --ds-color-on-status: var(--ds-color-accent-fg);
-  --ds-color-streak-off: var(--ds-color-fg-subtle);
+  --ds-color-streak-off: var(--ds-color-fg-muted);
   /* Dia de descanso no heatmap (listras neutras). */
   --ds-color-rest: rgb(255 255 255 / 0.22);
   --ds-rest-stripe: 2px;

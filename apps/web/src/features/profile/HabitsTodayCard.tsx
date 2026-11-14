@@ -70,7 +70,11 @@ export function HabitsTodayCard({ habits, ctx, now }: HabitsTodayCardProps) {
                     </span>
                   )}
                 </span>
-                <StreakFlame days={streaks(habit, ctx).current} />
+                {/* Pílula própria: o brilho amarelo do cartão tirava contraste da chama. */}
+                <StreakFlame
+                  days={streaks(habit, ctx).current}
+                  className="rounded-full bg-raised px-1.5 py-0.5"
+                />
                 <HabitControl habit={habit} date={today} ctx={ctx} now={now} showSource={false} />
               </li>
             );
