@@ -18,7 +18,7 @@ import {
 import { z } from 'zod';
 import { toLocalIso } from '../dates';
 
-export const DATA_VERSION = 5;
+export const DATA_VERSION = 6;
 export const APP_ID = 'daily';
 
 export type ParseResult =
@@ -245,6 +245,26 @@ function migrateV4(data: unknown): unknown {
   return { ...data, exceptions: Array.isArray(data.exceptions) ? data.exceptions : [] };
 }
 
+/**
+ * v5 → v6: medalhas. Só acrescenta a coleção vazia e a marca de concessão retroativa pendente
+ * (`achievementsSeededAt: null`): a 1ª avaliação concede o que o histórico já merece.
+ */
+function migrateV5(data: unknown): unknown {
+  if (!isObj(data) || !Array.isArray(data.events)) return data;
+  const onboarding = isObj(data.onboarding) ? data.onboarding : {};
+  return {
+    ...data,
+    achievements: Array.isArray(data.achievements) ? data.achievements : [],
+    onboarding: {
+      ...onboarding,
+      achievementsSeededAt:
+        typeof onboarding.achievementsSeededAt === 'string'
+          ? onboarding.achievementsSeededAt
+          : null,
+    },
+  };
+}
+
 interface MigrationContext {
   /** Relógio injetável: data de criação das metas padrão. */
   now: Date;
@@ -257,6 +277,7 @@ const MIGRATIONS: Record<number, (data: unknown, ctx: MigrationContext) => unkno
   2: migrateV2,
   3: (data) => migrateV3(data),
   4: (data) => migrateV4(data),
+  5: (data) => migrateV5(data),
 };
 
 /**

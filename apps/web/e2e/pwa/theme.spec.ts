@@ -34,7 +34,7 @@ test.describe('Tema na abertura (produção)', () => {
   test('usuário existente abre no escuro mesmo com o aparelho claro', async ({ page }) => {
     await page.addInitScript(() => {
       if (!localStorage.getItem('daily:theme') && !sessionStorage.getItem('seeded')) {
-        localStorage.setItem('daily:v5', '{}');
+        localStorage.setItem('daily:v6', '{}');
         sessionStorage.setItem('seeded', '1');
       }
     });

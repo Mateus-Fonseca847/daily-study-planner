@@ -39,8 +39,9 @@ export interface StorageLike {
   removeItem(key: string): void;
 }
 
-export const STORAGE_KEY = 'daily:v5';
+export const STORAGE_KEY = 'daily:v6';
 /** Chaves dos formatos anteriores: lidas uma vez na migração e nunca mais alteradas. */
+export const LEGACY_V5_KEY = 'daily:v5';
 export const LEGACY_V4_KEY = 'daily:v4';
 export const LEGACY_V3_KEY = 'daily:v3';
 export const LEGACY_V2_KEY = 'daily:v2';
@@ -53,6 +54,8 @@ export const PRE_V3_KEY = `${LEGACY_V2_KEY}:pre-v3`;
 export const PRE_V4_KEY = `${LEGACY_V3_KEY}:pre-v4`;
 /** Cópia do dado v4 feita ANTES de migrar para o v5. */
 export const PRE_V5_KEY = `${LEGACY_V4_KEY}:pre-v5`;
+/** Cópia do dado v5 feita ANTES de migrar para o v6. */
+export const PRE_V6_KEY = `${LEGACY_V5_KEY}:pre-v6`;
 /**
  * Cópia feita antes de migrar a partir de cada versão (`daily:vN:pre-vN+1`): o que o app daquela
  * versão tinha salvo. Usada no “rebase” da sincronização.
@@ -62,13 +65,20 @@ export const PRE_MIGRATION_KEYS: Readonly<Record<number, string>> = {
   2: PRE_V3_KEY,
   3: PRE_V4_KEY,
   4: PRE_V5_KEY,
+  5: PRE_V6_KEY,
 };
 /** Quando a última migração de formato rodou (epoch ms): marca o prazo de limpeza. */
 export const MIGRATED_AT_KEY = `${STORAGE_KEY}:migrated-at`;
 /** Dias que as chaves dos formatos anteriores ficam guardadas depois da migração. */
 export const LEGACY_RETENTION_DAYS = 30;
-/** O que a limpeza remove: formatos v3 e v4, cópias pré-migração e marcas/backup antigos. */
+/** O que a limpeza remove: formatos v3 a v5, cópias pré-migração e marcas/backup antigos. */
 const LEGACY_CLEANUP_KEYS = [
+  LEGACY_V5_KEY,
+  PRE_V6_KEY,
+  `${LEGACY_V5_KEY}:backup`,
+  `${LEGACY_V5_KEY}:corrupt`,
+  `${LEGACY_V5_KEY}:migrated-at`,
+  `${LEGACY_V5_KEY}:pre-sync`,
   LEGACY_V4_KEY,
   PRE_V5_KEY,
   `${LEGACY_V4_KEY}:backup`,
@@ -79,7 +89,7 @@ const LEGACY_CLEANUP_KEYS = [
   PRE_V4_KEY,
 ] as const;
 /** Chaves de formatos anteriores que uma aba antiga ainda aberta pode gravar. */
-export const LEGACY_TAB_KEYS: readonly string[] = [LEGACY_V4_KEY, LEGACY_V3_KEY];
+export const LEGACY_TAB_KEYS: readonly string[] = [LEGACY_V5_KEY, LEGACY_V4_KEY, LEGACY_V3_KEY];
 export const BACKUP_KEY = `${STORAGE_KEY}:backup`;
 export const CORRUPT_KEY = `${STORAGE_KEY}:corrupt`;
 /** Sessão de foco ativa (fora do snapshot e do backup; chave histórica, não mudou na v3). */
@@ -264,6 +274,7 @@ export class LocalStorageRepository implements DataRepository {
       return;
     }
     for (const [key, preKey] of [
+      [LEGACY_V5_KEY, PRE_V6_KEY],
       [LEGACY_V4_KEY, PRE_V5_KEY],
       [LEGACY_V3_KEY, PRE_V4_KEY],
     ] as const) {

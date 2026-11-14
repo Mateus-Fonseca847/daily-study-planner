@@ -111,7 +111,7 @@ test.describe('Hábitos', () => {
 
   test('metas salvas no formato v2 viram hábitos, sem perder registros', async ({ page }) => {
     await page.addInitScript(() => {
-      if (localStorage.getItem('daily:v5')) return;
+      if (localStorage.getItem('daily:v6')) return;
       const goal = (id: string, title: string, kind: string, order: number) => ({
         id,
         title,
@@ -151,10 +151,10 @@ test.describe('Hábitos', () => {
     await expect(cell(page, 'Dormir 7h', '2026-11-09')).toHaveAttribute('aria-label', /: feito/);
 
     const keys = await page.evaluate(() => ({
-      v5: localStorage.getItem('daily:v5') !== null,
+      v6: localStorage.getItem('daily:v6') !== null,
       backup: localStorage.getItem('daily:v2:pre-v3') !== null,
     }));
-    expect(keys).toEqual({ v5: true, backup: true });
+    expect(keys).toEqual({ v6: true, backup: true });
     // Conta que já tinha dados: o hábito de água automático não é criado.
     await expect(habitCard(page, 'Água')).toHaveCount(0);
   });

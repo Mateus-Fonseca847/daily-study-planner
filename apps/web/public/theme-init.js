@@ -6,7 +6,7 @@
 /* global localStorage, window, document */
 (function () {
   var KEY = 'daily:theme';
-  var DATA = ['daily:v5', 'daily:v4', 'daily:v3', 'daily:v2', 'daily:v1'];
+  var DATA = ['daily:v6', 'daily:v5', 'daily:v4', 'daily:v3', 'daily:v2', 'daily:v1'];
   var COLOR = { dark: '#131313', light: '#f4f4f6' };
   var choice = null;
   try {

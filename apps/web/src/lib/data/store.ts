@@ -4,6 +4,7 @@ import {
   hasUserData,
   habitLogId,
   restDayId,
+  type Achievement,
   type ActiveFocus,
   type DataSnapshot,
   type EventStatus,
@@ -19,6 +20,7 @@ import {
   type Subject,
   type WaterLog,
 } from '@daily/shared';
+import { mergeAchievements, setFeatured } from '../achievements/evaluate';
 import { dayKey, toLocalIso } from '../dates';
 import {
   applyHabitEdit,
@@ -61,6 +63,8 @@ export interface DataState {
   restDays: RestDay[];
   /** Exceções por ocorrência das séries (status, subtarefas e mudanças pontuais). */
   exceptions: OccurrenceException[];
+  /** Medalhas conquistadas (permanentes). */
+  achievements: Achievement[];
   onboarding: Onboarding;
   /** Sessão de foco em andamento (fora do snapshot/backup). */
   focusActive: ActiveFocus | null;
@@ -132,6 +136,13 @@ export interface DataActions {
   /** Idempotente pelo `id` (duas abas podem finalizar a mesma sessão). */
   addFocusSession(session: FocusSession): void;
   setFocusActive(active: ActiveFocus | null): void;
+  /**
+   * Grava o resultado de uma avaliação de medalhas numa escrita só: medalhas novas ou que subiram
+   * de nível, a marca da concessão retroativa e as marcas `preparedAt` das provas.
+   */
+  applyAchievements(result: AchievementWrite): void;
+  /** Destaca (até 3) ou tira do destaque; com 3 marcadas, `replace` diz qual sai. */
+  setAchievementFeatured(id: string, featured: boolean, replace?: string): 'limite' | 'ok';
   replaceAll(snapshot: DataSnapshot): void;
   /** Relê o armazenamento (outra aba/janela gravou). */
   reload(): void;
@@ -141,6 +152,13 @@ export interface DataActions {
 }
 
 export type DataStore = DataState & DataActions;
+
+export interface AchievementWrite {
+  changes: readonly Achievement[];
+  /** Concessão retroativa feita agora (grava `onboarding.achievementsSeededAt`). */
+  seededAt?: string;
+  prepared?: readonly { id: string; preparedAt: string | null }[];
+}
 
 /** Cria o store de dados sobre qualquer `DataRepository` (a UI nunca toca o storage). */
 export function createDataStore(
@@ -157,6 +175,7 @@ export function createDataStore(
       waterLogs: repo.waterLogs.list(),
       focusSessions: repo.focusSessions.list(),
       exceptions: repo.snapshot().exceptions,
+      achievements: repo.snapshot().achievements,
       restDays: repo.restDays.list(),
       onboarding: repo.onboarding.get(),
       focusActive: repo.focusActive.get(),
@@ -221,6 +240,33 @@ export function createDataStore(
             applyOccurrenceEdit(repo.snapshot(), id, scope, draft, newId, toLocalIso(now)),
           ),
         ),
+      applyAchievements: ({ changes, seededAt, prepared = [] }) =>
+        void run(() => {
+          if (changes.length === 0 && !seededAt && prepared.length === 0) return;
+          const current = repo.snapshot();
+          const marks = new Map(prepared.map((p) => [p.id, p.preparedAt]));
+          repo.replaceAll({
+            ...current,
+            events: current.events.map((e) => {
+              if (!marks.has(e.id)) return e;
+              const at = marks.get(e.id);
+              const { preparedAt: _old, ...rest } = e;
+              void _old;
+              return at ? { ...rest, preparedAt: at } : rest;
+            }),
+            achievements: mergeAchievements(current.achievements, changes),
+            onboarding: seededAt
+              ? { ...current.onboarding, achievementsSeededAt: seededAt }
+              : current.onboarding,
+          });
+        }),
+      setAchievementFeatured: (id, featured, replace) => {
+        const current = repo.snapshot();
+        const next = setFeatured(current.achievements, id, featured, replace);
+        if (next === 'limite') return 'limite';
+        run(() => repo.replaceAll({ ...current, achievements: next }));
+        return 'ok';
+      },
       deleteOccurrence: (id, scope) =>
         void run(() => repo.replaceAll(deleteOccurrence(repo.snapshot(), id, scope))),
       setRecurrence: (eventId, recurrence) =>

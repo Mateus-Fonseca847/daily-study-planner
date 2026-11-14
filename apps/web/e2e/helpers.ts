@@ -6,12 +6,12 @@ import { expect, type Page } from '@playwright/test';
  */
 export async function withoutAutoWater(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    if (localStorage.getItem('daily:v5')) return;
+    if (localStorage.getItem('daily:v6')) return;
     localStorage.setItem(
-      'daily:v5',
+      'daily:v6',
       JSON.stringify({
         app: 'daily',
-        version: 5,
+        version: 6,
         savedAt: '2026-11-01T00:00:00.000Z',
         data: {
           subjects: [],
@@ -29,7 +29,8 @@ export async function withoutAutoWater(page: Page): Promise<void> {
           focusSessions: [],
           restDays: [],
           exceptions: [],
-          onboarding: { waterHabitCreated: true },
+          achievements: [],
+          onboarding: { waterHabitCreated: true, achievementsSeededAt: '2026-01-01T00:00:00' },
         },
       }),
     );
@@ -39,7 +40,7 @@ export async function withoutAutoWater(page: Page): Promise<void> {
 /** Grava um snapshot v4 antes de o app carregar (só se ainda não houver dados). */
 export async function seedSnapshot(page: Page, data: Record<string, unknown>): Promise<void> {
   await page.addInitScript((patch) => {
-    if (localStorage.getItem('daily:v5')) return;
+    if (localStorage.getItem('daily:v6')) return;
     const base = {
       subjects: [],
       events: [],
@@ -56,11 +57,12 @@ export async function seedSnapshot(page: Page, data: Record<string, unknown>): P
       focusSessions: [],
       restDays: [],
       exceptions: [],
-      onboarding: { waterHabitCreated: true },
+      achievements: [],
+      onboarding: { waterHabitCreated: true, achievementsSeededAt: '2026-01-01T00:00:00' },
     };
     localStorage.setItem(
-      'daily:v5',
-      JSON.stringify({ app: 'daily', version: 5, savedAt: 'x', data: { ...base, ...patch } }),
+      'daily:v6',
+      JSON.stringify({ app: 'daily', version: 6, savedAt: 'x', data: { ...base, ...patch } }),
     );
   }, data);
 }

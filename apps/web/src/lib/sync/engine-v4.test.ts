@@ -1,3 +1,4 @@
+import { DATA_VERSION } from '../data/envelope';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createInitialSnapshot, type DataSnapshot } from '@daily/shared';
 import { parseEnvelope } from '../data/envelope';
@@ -92,7 +93,7 @@ describe('sincronização com o formato v4', () => {
     await vi.advanceTimersByTimeAsync(150);
     await settle();
     expect(cloud.calls.update).toBe(1);
-    expect(cloud.row).toMatchObject({ revision: 2, version: 5 });
+    expect(cloud.row).toMatchObject({ revision: 2, version: DATA_VERSION });
   });
 
   it('(d) dispositivo novo com só o hábito de água automático conta como vazio: baixa a nuvem', async () => {
@@ -188,7 +189,7 @@ describe('ponto de sincronia depois de atualizar o app (rebase)', () => {
     await t.engine.start();
     expect(last(t.status)).toBe('synced');
     expect(cloud.calls.update + cloud.calls.insert).toBe(0);
-    expect(t.meta).toMatchObject({ revision: 1, version: 5 });
+    expect(t.meta).toMatchObject({ revision: 1, version: DATA_VERSION });
   });
 
   it('(b) sem a cópia pre-v4 (já limpa), a nuvem intacta serve de referência', async () => {
@@ -215,7 +216,7 @@ describe('ponto de sincronia depois de atualizar o app (rebase)', () => {
     const t = setup(cloud, withExtraSubject(migratedLocal()), v3Meta, legacy());
     await t.engine.start();
     expect(cloud.calls.update).toBe(1);
-    expect(cloud.row).toMatchObject({ revision: 2, version: 5 });
+    expect(cloud.row).toMatchObject({ revision: 2, version: DATA_VERSION });
   });
 
   it('(c) local editado depois da atualização e nuvem editada em outro lugar: conflito real', async () => {

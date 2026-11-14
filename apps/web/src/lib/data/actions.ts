@@ -1,3 +1,4 @@
+import { unionAchievements } from '../achievements/evaluate';
 import type { DataSnapshot } from '@daily/shared';
 import { useToasts } from '../toast-store';
 import type { Draft } from './repository';
@@ -20,8 +21,25 @@ function withUndo(message: string, mutate: () => void): void {
   useToasts.getState().push({
     message,
     actionLabel: 'Desfazer',
-    onAction: () => useData.getState().replaceAll(before),
+    onAction: () => useData.getState().replaceAll(keepAchievements(before)),
   });
+}
+
+/**
+ * Desfazer volta o estado de antes, mas medalha é permanente: as conquistadas no meio (e a marca
+ * da concessão retroativa) ficam.
+ */
+function keepAchievements(before: DataSnapshot): DataSnapshot {
+  const now = useData.getState().snapshot();
+  return {
+    ...before,
+    achievements: unionAchievements(now.achievements, before.achievements),
+    onboarding: {
+      ...before.onboarding,
+      achievementsSeededAt:
+        now.onboarding.achievementsSeededAt ?? before.onboarding.achievementsSeededAt,
+    },
+  };
 }
 
 export function deleteEventWithUndo(id: string): void {
