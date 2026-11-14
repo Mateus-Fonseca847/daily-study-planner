@@ -151,6 +151,15 @@ describe('public/theme-init.js (antes da 1ª pintura) concorda com o módulo', (
     );
   });
 
+  it('THEME_COLOR é o --ds-color-bg de cada tema em tokens.css', () => {
+    const tokens = readFileSync(
+      fileURLToPath(new URL('../../styles/tokens.css', import.meta.url)),
+      'utf8',
+    );
+    const bgs = [...tokens.matchAll(/--ds-color-bg:\s*(#[0-9a-f]{6})/gi)].map((m) => m[1]);
+    expect(bgs).toEqual([THEME_COLOR.dark, THEME_COLOR.light]);
+  });
+
   it('as cores e as chaves do script são as do módulo', () => {
     expect(source).toContain(`'${THEME_KEY}'`);
     expect(source).toContain(THEME_COLOR.dark);
