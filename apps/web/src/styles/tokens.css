@@ -370,6 +370,8 @@
   --ds-sheet-handle-h: 0.25rem;
   --ds-sheet-max-h: 92dvh;
   --ds-sheet-duration: 200ms;
+  /* Troca de tema: só as cores animam (desligado com prefers-reduced-motion). */
+  --ds-theme-transition: 200ms;
   --ds-bar-gap: 0.75rem;
   /* Altura da área visível com o teclado virtual aberto (a JS a atualiza; sem teclado = a janela). */
   --ds-vv-h: 100dvh;

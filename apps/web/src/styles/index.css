@@ -605,6 +605,18 @@
   [role='checkbox'] {
     touch-action: manipulation;
   }
+  /* Troca de tema: transição curta, só de cores, enquanto a classe estiver no <html> (200 ms). */
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-switching,
+    .theme-switching *,
+    .theme-switching ::before,
+    .theme-switching ::after {
+      transition-property:
+        background-color, border-color, color, fill, stroke, outline-color !important;
+      transition-duration: var(--ds-theme-transition) !important;
+      transition-timing-function: ease-out !important;
+    }
+  }
   /* Animações respeitam a preferência de menos movimento. */
   @media (prefers-reduced-motion: reduce) {
     *,

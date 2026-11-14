@@ -8,7 +8,9 @@ import { startAuth } from './lib/auth/auth-store';
 import { setupPwa } from './lib/pwa/register';
 import { installVisualViewport } from './lib/responsive/visual-viewport';
 import { startSync } from './lib/sync/runtime';
+import { startTheme } from './lib/theme/theme-store';
 
+startTheme();
 setupPwa();
 installVisualViewport();
 startAuth();
