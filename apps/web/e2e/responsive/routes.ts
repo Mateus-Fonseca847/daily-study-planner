@@ -26,6 +26,7 @@ export const ROUTES: readonly RouteCase[] = [
   { name: 'preferencias', url: '/preferencias?fixture=stats', now: STATS_NOW },
   { name: 'entrar', url: '/entrar', now: STATS_NOW },
   { name: 'privacidade', url: '/privacidade', now: STATS_NOW },
+  { name: 'termos', url: '/termos', now: STATS_NOW },
 ];
 
 export interface ViewportCase {
