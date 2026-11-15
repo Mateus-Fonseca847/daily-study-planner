@@ -102,7 +102,11 @@ export function AccountSection() {
             </Button>
           </div>
           <p className="text-md text-muted">
-            Ao sair, os dados deste dispositivo são removidos (continuam na nuvem). Veja a{' '}
+            Ao sair, os dados deste dispositivo são removidos (continuam na nuvem). Veja os{' '}
+            <Link to="/termos" className="underline">
+              Termos de Serviço
+            </Link>{' '}
+            e a{' '}
             <Link to="/privacidade" className="underline">
               política de privacidade
             </Link>

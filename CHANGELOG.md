@@ -4,6 +4,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Adicionado (termos de serviço)
+
+- **Página pública `/termos`** (Termos de Serviço, versão `termos-2026-11`), fora do shell como a Política de privacidade: o serviço no estado em que se encontra, conta e idade mínima (14 anos), conteúdo e dados, uso aceitável, perfil social e moderação, suspensão e exclusão, limitação de responsabilidade, código aberto (MIT) e marca, lei e foro. **Rascunho para revisão do dono e, se possível, jurídica**; o contato usa `CONTROLLER_CONTACT`.
+- Links para os Termos na tela de entrada (“Ao entrar, você concorda…”), em Preferências → Conta e na Política de privacidade. `LegalBlock` passa a ser compartilhado pelas duas páginas.
+- e2e dos Termos; `/termos` e `/privacidade` entram nos testes de cabeçalhos e de responsividade.
+
 ### Alterado (cartões de hábitos)
 
 - **Cartões de hábitos mais limpos:** saem os números Sequência, Melhor e Taxa (90 dias) e os avisos “Não agendado hoje” e “Descanso hoje”. A sequência continua na chama ao lado do nome; o heatmap mostra os dias de descanso.
