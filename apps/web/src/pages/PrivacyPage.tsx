@@ -1,18 +1,9 @@
-import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { PRIVACY_POLICY_VERSION } from '@daily/shared';
 import { CONTROLLER_CONTACT } from '../lib/social/texts';
+import { LegalBlock as Block } from './LegalBlock';
 
 const REPO_ISSUES = 'https://github.com/Mateus-Fonseca847/daily-study-planner/issues';
-
-function Block({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-      <div className="flex flex-col gap-2 text-md text-soft">{children}</div>
-    </section>
-  );
-}
 
 /** Política de privacidade pública (exigida também pelo Google para publicar o login). */
 export function PrivacyPage() {
@@ -151,7 +142,11 @@ export function PrivacyPage() {
             É um projeto sem garantia de disponibilidade. Mantenha um backup (Preferências →
             Exportar dados) dos estudos que importam. Esta política pode mudar; a data da última
             revisão é <time dateTime="2026-11-16">16/11/2026</time> (versão {PRIVACY_POLICY_VERSION}
-            ).
+            ). As regras de uso estão nos{' '}
+            <Link to="/termos" data-touch="inline" className="underline">
+              Termos de Serviço
+            </Link>
+            .
           </p>
         </Block>
       </div>

@@ -15,6 +15,7 @@ import { EntryRedirect } from './pages/EntryRedirect';
 import { LoginPage } from './pages/LoginPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
 
 const CALENDAR_PATH = '/calendario';
 
@@ -35,6 +36,7 @@ const routes: RouteObject[] = [
   // Fora do shell: sem barra lateral nem topo.
   { path: '/entrar', element: <LoginPage /> },
   { path: '/privacidade', element: <PrivacyPage /> },
+  { path: '/termos', element: <TermsPage /> },
   {
     // Roteador de dados: necessário para o bloqueador de navegação do Modo Foco (`useBlocker`).
     element: <AppShell />,

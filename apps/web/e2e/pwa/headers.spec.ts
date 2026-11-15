@@ -10,6 +10,8 @@ const ROUTES = [
   '/foco',
   '/perfil',
   '/preferencias',
+  '/privacidade',
+  '/termos',
 ];
 
 test.describe('Cabeçalhos de produção (vercel.json)', () => {

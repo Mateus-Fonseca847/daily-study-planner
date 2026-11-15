@@ -66,9 +66,13 @@ export function LoginPage() {
 
         <p className="text-sm text-muted">
           Usamos o Google só para identificar você (nome e e-mail). Não vemos sua senha e não
-          compartilhamos seus dados. Leia a{' '}
+          compartilhamos seus dados. Ao entrar, você concorda com os{' '}
+          <Link to="/termos" data-touch="inline" className="underline">
+            Termos de Serviço
+          </Link>{' '}
+          e com a{' '}
           <Link to="/privacidade" data-touch="inline" className="underline">
-            política de privacidade
+            Política de privacidade
           </Link>
           .
         </p>
