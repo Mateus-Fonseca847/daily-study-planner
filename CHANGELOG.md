@@ -4,6 +4,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 
 ## [Não lançado]
 
+### Alterado (banco de dados)
+
+- **Perfil social e amizades aplicados na produção** (as 8 migrações de `supabase/migrations`, uma por vez, com as conferências de `docs/social-setup.md`). O histórico de migrações do projeto foi alinhado aos nomes dos arquivos.
+- **Migrações da sincronização versionadas** (`20261030161655_create_user_data`, `20261030163545_user_data_size_and_shape_limits`, `20261030170909_delete_my_account_rpc`): já estavam na produção, faltavam no repositório. O banco local e o CI passam a reproduzir o banco completo.
+
 ### Adicionado (termos de serviço)
 
 - **Página pública `/termos`** (Termos de Serviço, versão `termos-2026-11`), fora do shell como a Política de privacidade: o serviço no estado em que se encontra, conta e idade mínima (14 anos), conteúdo e dados, uso aceitável, perfil social e moderação, suspensão e exclusão, limitação de responsabilidade, código aberto (MIT) e marca, lei e foro. **Rascunho para revisão do dono e, se possível, jurídica**; o contato usa `CONTROLLER_CONTACT`.

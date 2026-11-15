@@ -4,6 +4,8 @@ Este guia é para quem administra o projeto Supabase de produção. **Nada do pe
 
 São dois conjuntos, **sempre nesta ordem**: as 4 migrações do **Prompt 15** (perfil social, `20261115…`) e depois as 4 do **Prompt 16** (amizades, busca, bloqueio e denúncia, `20261116…`). As do 16 dependem das do 15.
 
+**Estado da produção (15/11/2026):** as oito migrações do social foram aplicadas no projeto de produção, uma por vez e na ordem, com as conferências do §3 aprovadas. O histórico do projeto (`supabase_migrations.schema_migrations`) usa as mesmas versões dos arquivos de `supabase/migrations/`, que agora também inclui as três da sincronização (`20261030…`, já aplicadas): `supabase db push` não reaplica nada. As do 15 e do 16 são **só para quem monta um projeto novo**.
+
 O front é seguro em qualquer ordem: sem as tabelas do 15, Preferências → Perfil social mostra “ainda não disponível”; sem as do 16, Amigos e a busca mostram “ainda não disponível”; o resto do app segue igual. Mesmo assim, a ordem recomendada é **migrações antes do deploy**.
 
 ## O que vem no repositório
